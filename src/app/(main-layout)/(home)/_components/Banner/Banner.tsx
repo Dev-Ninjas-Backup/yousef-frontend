@@ -2,23 +2,28 @@ import React from "react";
 import Link from "next/link";
 import { Apple, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import homeBanner from "../../../../../assets/home/banner/home_banner.png";
+
 
 const HeroBanner: React.FC = () => {
   return (
     <section className="relative w-full h-[500px] sm:h-[600px] md:h-[700px] lg:h-[900px] overflow-hidden">
+      {/* Video Background */}
       <div className="absolute inset-0 z-0">
-        <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{
-            backgroundImage: `url(${homeBanner.src})`,
-          }}
-          role="img"
-          aria-label="SayaraHub automotive platform banner"
-        />
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover"
+          poster="/path-to-poster-image.jpg" // Optional: fallback image while video loads
+        >
+          <source src='./banner.mp4' type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
         <div className="absolute inset-0 bg-black/60" />
       </div>
 
+      {/* Content */}
       <div className="relative z-10 flex items-center h-full px-4 sm:px-6 lg:px-20">
         <div className="max-w-2xl">
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight">
