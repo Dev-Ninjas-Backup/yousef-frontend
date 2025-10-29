@@ -29,7 +29,7 @@ const services = [
 
 const AutomotiveSolutions: React.FC = () => {
   return (
-    <section className="w-full py-12 md:py-16 lg:py-20 px-4">
+    <section className="container mx-auto py-10 md:py-20 px-4">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-8 md:mb-12">
           <h2 className="text-2xl md:text-5xl font-bold text-[#333333] mb-3 md:mb-6">

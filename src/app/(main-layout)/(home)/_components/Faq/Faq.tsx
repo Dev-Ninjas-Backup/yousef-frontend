@@ -1,6 +1,6 @@
 import React from "react";
 import { Accordion } from "@/components/ui/accordion";
-import FaqAns from "./_components/FaqAns";
+import FaqItem from "./_components/FaqItem";
 const faqData = [
   {
     id: "item-1",
@@ -57,7 +57,7 @@ const Faq: React.FC = () => {
 
           <Accordion type="single" collapsible className="space-y-4  ">
             {faqData.map((faq) => (
-              <FaqAns
+              <FaqItem
                 key={faq.id}
                 id={faq.id}
                 question={faq.question}

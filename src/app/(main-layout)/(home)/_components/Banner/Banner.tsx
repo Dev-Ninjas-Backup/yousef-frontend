@@ -1,13 +1,13 @@
 import React from "react";
 import Link from "next/link";
-import { Apple, Play } from "lucide-react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
-
+import applestore from "@/assets/home/banner/apple_store.svg";
+import playstore from "@/assets/home/banner/playstore.svg";
 
 const HeroBanner: React.FC = () => {
   return (
     <section className="relative w-full h-[500px] sm:h-[600px] md:h-[700px] lg:h-[900px] overflow-hidden">
-      {/* Video Background */}
       <div className="absolute inset-0 z-0">
         <video
           autoPlay
@@ -15,16 +15,14 @@ const HeroBanner: React.FC = () => {
           muted
           playsInline
           className="absolute inset-0 w-full h-full object-cover"
-          poster="/path-to-poster-image.jpg" // Optional: fallback image while video loads
+          poster="/path-to-poster-image.jpg"
         >
-          <source src='./banner.mp4' type="video/mp4" />
+          <source src="./banner.mp4" type="video/mp4" />
           Your browser does not support the video tag.
         </video>
         <div className="absolute inset-0 bg-black/60" />
       </div>
-
-      {/* Content */}
-      <div className="relative z-10 flex items-center h-full px-4 sm:px-6 lg:px-20">
+      <div className="relative container mx-auto z-10 flex items-center h-full px-4">
         <div className="max-w-2xl">
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight">
             Next-Generation
@@ -48,11 +46,15 @@ const HeroBanner: React.FC = () => {
               asChild
               className="bg-white hover:bg-gray-100 text-black rounded-lg py-3 px-4 sm:py-4 sm:px-5 w-full sm:w-[160px] md:w-[200px] h-16 sm:h-18 md:h-20"
             >
-              <Link href="#" className="flex items-center gap-2">
-                <Apple className="w-5 h-5 sm:w-6 sm:h-6" />
+              <Link href="#" className="flex items-center gap-3">
+                <Image
+                  src={applestore}
+                  alt="Apple Store"
+                  className="w-10 h-10 sm:w-6 sm:h-6"
+                />
                 <div className="text-left">
-                  <div className="text-[9px] sm:text-[10px]">Download on the</div>
-                  <div className="text-xs font-semibold">App Store</div>
+                  <div className="text-base">Download on the</div>
+                  <div className="text-2xl font-semibold">App Store</div>
                 </div>
               </Link>
             </Button>
@@ -61,11 +63,15 @@ const HeroBanner: React.FC = () => {
               asChild
               className="bg-white hover:bg-gray-100 text-black rounded-lg py-3 px-4 sm:py-4 sm:px-5 w-full sm:w-[160px] md:w-[200px] h-16 sm:h-18 md:h-20"
             >
-              <Link href="#" className="flex items-center gap-2">
-                <Play className="w-5 h-5 sm:w-6 sm:h-6 fill-current" />
+              <Link href="#" className="flex items-center gap-3">
+                <Image
+                  src={playstore}
+                  alt="Play Store"
+                  className="w-10 h-10 sm:w-6 sm:h-6"
+                />
                 <div className="text-left">
-                  <div className="text-[9px] sm:text-[10px]">Download on the</div>
-                  <div className="text-xs font-semibold">Play Store</div>
+                  <div className="text-base">Download on the</div>
+                  <div className="text-2xl font-semibold">Play Store</div>
                 </div>
               </Link>
             </Button>

@@ -4,7 +4,10 @@ import CarBrands from './_components/CarBrands/CarBrands';
 import SearchGarages from './_components/SearchGarages/SearchGarages';
 import AutomotiveSolutions from './_components/AutomotiveSolutions/AutomotiveSolutions';
 import FeaturedGarages from './_components/FeaturedGarages/FeaturedGarages';
+import HowItWorks from './_components/HowItWorks/HowItWorks';
 import Faq from './_components/Faq/Faq';
+import SpareParts from './_components/SpareParts/SpareParts';
+import TestimonialsSection from './_components/Testimonials/Testimonials';
 
 const HomePage = () => {
   return (
@@ -13,7 +16,10 @@ const HomePage = () => {
     <CarBrands />
     <SearchGarages />
     <AutomotiveSolutions />
+    <HowItWorks />
     <FeaturedGarages />
+    <SpareParts />
+    <TestimonialsSection />
     <Faq/>
     </div>
   )

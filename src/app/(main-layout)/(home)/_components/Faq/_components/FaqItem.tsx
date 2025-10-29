@@ -11,7 +11,7 @@ interface FaqItemProps {
   answer: string;
 }
 
-const FaqAns: React.FC<FaqItemProps> = ({ id, question, answer }) => {
+const FaqItem: React.FC<FaqItemProps> = ({ id, question, answer }) => {
   return (
     <AccordionItem value={id} className="bg-[#E8F1FD80] rounded-2xl px-4">
       <AccordionTrigger className="text-left text-base md:text-lg font-semibold">
@@ -24,4 +24,4 @@ const FaqAns: React.FC<FaqItemProps> = ({ id, question, answer }) => {
   );
 };
 
-export default FaqAns;
+export default FaqItem;
