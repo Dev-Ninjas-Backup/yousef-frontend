@@ -3,7 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import footerWave from "@/assets/footer/footer-wave.svg";
-import sayarahublogo from "@/assets/Images/SayaraHubLogo/sayarahub.svg";
+import sayarahublogo from "@/assets/footer/sayarahub.svg"
 import { Input } from "@/components/ui/input";
 
 const Footer: React.FC = () => {
