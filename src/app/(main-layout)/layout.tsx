@@ -1,9 +1,16 @@
-import { ReactNode } from "react"
+import { ReactNode } from "react";
+import Footer from "@/components/shared/main/Footer/Footer";
+import Navbar from "@/components/shared/main/Navbar/Navbar";
 
-const MainLayout = ({children}:{children:ReactNode}) => {
+const MainLayout = ({ children }: { children: ReactNode }) => {
   return (
-    <div>{children}</div>
-  )
-}
+    <div>
+      <Navbar />
+      <div className="p-3"> {children}</div>
 
-export default MainLayout
+      <Footer />
+    </div>
+  );
+};
+
+export default MainLayout;
