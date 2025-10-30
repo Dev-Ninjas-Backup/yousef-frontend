@@ -55,19 +55,21 @@ const Navbar = () => {
           )}
         </Link>
 
-<div
+        <div
           className={`hidden md:flex items-center gap-2 backdrop-blur-md rounded-full px-8 py-3 shadow-[0_0_15px_rgba(255,255,255,0.1)] transition-all duration-300 relative ${
             isScrolled ? "bg-black/40" : "bg-white/5"
           }`}
         >
-          <div 
+          <div
             className="absolute inset-0 rounded-full pointer-events-none"
             style={{
-              background: 'linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.3) 20%, rgba(255,255,255,0.3) 80%, transparent 100%)',
-              WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
-              WebkitMaskComposite: 'xor',
-              maskComposite: 'exclude',
-              padding: '1px',
+              background:
+                "linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.3) 20%, rgba(255,255,255,0.3) 80%, transparent 100%)",
+              WebkitMask:
+                "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+              WebkitMaskComposite: "xor",
+              maskComposite: "exclude",
+              padding: "1px",
             }}
           />
           {menuItems.map((item, index) => {

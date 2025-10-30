@@ -3,7 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import footerWave from "@/assets/footer/footer-wave.svg";
-import sayarahublogo from "@/assets/footer/sayarahub.svg"
+import sayarahublogo from "@/assets/footer/sayarahub.svg";
 import { Input } from "@/components/ui/input";
 
 const Footer: React.FC = () => {
@@ -80,14 +80,14 @@ const Footer: React.FC = () => {
           </div>
         </div>
       </div>
-      
+
       {/* bottom */}
       <div className="relative w-full ">
         <div className="w-full">
-          <Image 
-            src={footerWave} 
-            alt="" 
-            className="w-full h-auto object-cover min-h-[100px]" 
+          <Image
+            src={footerWave}
+            alt=""
+            className="w-full h-auto object-cover min-h-[100px]"
           />
         </div>
 
