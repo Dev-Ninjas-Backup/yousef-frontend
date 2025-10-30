@@ -12,24 +12,24 @@ const menuItems = [
   { label: "Home", href: "/" },
   { label: "Service", href: "/service" },
   { label: "Spare Parts", href: "/spare-parts" },
-  { label: "Download App", href: "/download" },
+  { label: "Download App", href: "/download-app" },
   { label: "About Us", href: "/about" },
-  { label: "Contact us", href: "/contact" },
+  { label: "Contact us", href: "/contact-us" },
 ];
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(true);
   const pathname = usePathname();
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
-    };
+  // useEffect(() => {
+  //   const handleScroll = () => {
+  //     setIsScrolled(window.scrollY > 10);
+  //   };
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  //   window.addEventListener("scroll", handleScroll);
+  //   return () => window.removeEventListener("scroll", handleScroll);
+  // }, []);
 
   return (
     <nav className="fixed z-50 w-full py-4 px-4 md:px-8 bg-white/70 backdrop-blur-md md:bg-transparent md:backdrop-blur-none">
@@ -55,11 +55,21 @@ const Navbar = () => {
           )}
         </Link>
 
-        <div
-          className={`hidden md:flex items-center gap-2 backdrop-blur-md rounded-full px-8 py-3 border border-white/20 shadow-[0_0_15px_rgba(255,255,255,0.1)] transition-all duration-300 ${
+<div
+          className={`hidden md:flex items-center gap-2 backdrop-blur-md rounded-full px-8 py-3 shadow-[0_0_15px_rgba(255,255,255,0.1)] transition-all duration-300 relative ${
             isScrolled ? "bg-black/40" : "bg-white/5"
           }`}
         >
+          <div 
+            className="absolute inset-0 rounded-full pointer-events-none"
+            style={{
+              background: 'linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.3) 20%, rgba(255,255,255,0.3) 80%, transparent 100%)',
+              WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+              WebkitMaskComposite: 'xor',
+              maskComposite: 'exclude',
+              padding: '1px',
+            }}
+          />
           {menuItems.map((item, index) => {
             const isActive = pathname === item.href;
             return (
@@ -78,23 +88,23 @@ const Navbar = () => {
             );
           })}
         </div>
-
         {/* My Account */}
         {showMyAccount && (
           <Link
             href="/"
-            className="hidden md:flex items-center gap-2 text-white hover:text-[#0A84FF] transition-colors"
+            className="hidden md:flex items-center gap-2 text-white hover:text-[#0A84FF] py-2 px-4 rounded-full bg-black/40  shadow-[0_0_15px_rgba(255,255,255,0.1)] transition-all duration-300"
           >
             <span
               className={`text-sm md:text-xl ${
-                isScrolled ? "text-black" : "text-white/80"
+                // isScrolled ? "text-black" : "text-white/80" " --- IGNORE ---
+                isScrolled ? "text-white/80" : "text-white/80"
               }`}
             >
               My Account
             </span>
             <UserCircle
               className={`w-5 h-5 md:w-6 md:h-6 ${
-                isScrolled ? "text-black" : "text-white/80"
+                isScrolled ? "text-white/80" : "text-white/80"
               }`}
             />
           </Link>

@@ -4,46 +4,52 @@ import FaqItem from "./_components/FaqItem";
 const faqData = [
   {
     id: "item-1",
-    question: "What is SayaraHub?",
+    question: "What is this platform?",
     answer:
-      "SayaraHub is a next-generation automotive platform that connects you with trusted garages, mobile mechanics, emergency services, and spare parts marketplace, all in one powerful app.",
+      "SayaraHub is an all-in-one automotive platform connecting you with trusted garages, mobile mechanics, emergency services, and a spare parts marketplace for all your vehicle needs.",
   },
   {
     id: "item-2",
-    question: "How do I book a service?",
+    question: "Who is this platform designed for?",
     answer:
-      "Simply select your emirate, choose the service type you need, and search for nearby garages. You can then view their ratings, get directions, or message them directly to book an appointment.",
+      "SayaraHub is designed for vehicle owners, fleet managers, and anyone seeking reliable automotive services, whether for routine maintenance, emergency repairs, or purchasing spare parts.",
   },
   {
     id: "item-3",
-    question: "Is the app available for both iOS and Android?",
+    question: "Can I book home or office car repair services?",
     answer:
-      "Yes! SayaraHub is available for download on both the Apple App Store and Google Play Store.",
+      "Yes! You can book mobile mechanics who will come directly to your home or office location to perform repairs and maintenance at your convenience.",
   },
   {
     id: "item-4",
-    question: "How do I know if a garage is trustworthy?",
+    question: "How does the spare-parts marketplace work?",
     answer:
-      "All garages on SayaraHub are verified and rated by real customers. You can check their ratings, reviews, and service history before making a booking.",
+      "Browse our marketplace to find genuine spare parts from verified sellers. You can compare prices, check availability, and order parts directly through the app for delivery or pickup.",
   },
   {
     id: "item-5",
-    question: "Can I get emergency roadside assistance?",
+    question: "Are there any free services for new users?",
     answer:
-      "Yes, SayaraHub provides emergency roadside assistance services. You can quickly connect with nearby mobile mechanics for urgent repairs and assistance.",
+      "New users can enjoy special promotions and discounts on their first service booking. Check the app regularly for exclusive offers and seasonal deals.",
   },
   {
     id: "item-6",
-    question: "How do I contact customer support?",
+    question: "How does SayaraHub ensure safety and reliability?",
     answer:
-      "You can reach our customer support team through the app's messaging feature or contact us directly through our website's contact form.",
+      "All service providers are thoroughly verified and vetted. We feature real customer ratings and reviews, ensuring you can make informed decisions and trust the quality of service.",
   },
-];
+  {
+    id: "item-7",
+    question: "Who should I contact for help or feedback?",
+    answer:
+      "You can reach our customer support team through the in-app messaging feature, email us through our website's contact form, or call our helpline for immediate assistance.",
+  },
+];;
 
 const Faq: React.FC = () => {
   return (
     <>
-      <section className="w-full py-12 md:py-16">
+      <section className="w-full py-12 md:py-16 ">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-8 md:mb-12">
             <h2 className="text-3xl md:text-5xl font-bold text-[#101010] mb-4">

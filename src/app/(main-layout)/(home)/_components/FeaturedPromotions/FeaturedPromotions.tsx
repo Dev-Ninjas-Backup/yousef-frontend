@@ -186,10 +186,10 @@ const FeaturedPromotions: React.FC = () => {
               <h4 className="font-semibold text-xs md:text-sm mb-1 line-clamp-1">
                 {promo.title}
               </h4>
-              <p className="text-[10px] md:text-xs text-gray-600 mb-2">
+              <p className="text-[10px] md:text-xs text-gray-600 mb-2 border inline py-1 px-2 rounded-md">
                 {promo.badge}
               </p>
-              <div className="flex items-center gap-1">
+              <div className="flex items-center justify-between gap-1 mt-1 ">
                 <div className="flex">
                   {[...Array(5)].map((_, i) => (
                     <span
@@ -200,7 +200,7 @@ const FeaturedPromotions: React.FC = () => {
                     </span>
                   ))}
                 </div>
-                <span className="text-[10px] md:text-xs text-gray-500">
+                <span className="text-[9px] md:text-xs text-gray-500">
                   (4.61 89 reviews)
                 </span>
               </div>

@@ -23,7 +23,7 @@ const HeroBanner: React.FC = () => {
         <div className="absolute inset-0 bg-black/60" />
       </div>
       <div className="relative container mx-auto z-10 flex items-center h-full px-4">
-        <div className="max-w-2xl">
+        <div className="max-w-4xl">
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight">
             Next-Generation
           </h2>

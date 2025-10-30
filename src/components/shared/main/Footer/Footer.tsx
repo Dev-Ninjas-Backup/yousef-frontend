@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 
 const Footer: React.FC = () => {
   return (
-    <footer className="bg-white pt-16 pb-0 overflow-hidden">
+    <footer className="bg-white pt-16 pb-0 overflow-hidden mt-20">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Logo and Contact Button */}
