@@ -9,7 +9,7 @@ import FilterSidebar from "./_components/filter-sidebar/FilterSidebar";
 import SellPartsForm from "./_components/sell-parts/SellPartsForm";
 import PaymentDialog from "./_components/sell-parts/PaymentDialog";
 import DuplicateDialog from "./_components/sell-parts/DuplicateDialog";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import ProductImage from "@/assets/spareparts/product/productImage.jpg";
 
 const products = [
@@ -129,8 +129,14 @@ export default function SparePartsPage() {
       <SellCTA onSellClick={() => setSellFormOpen(true)} />
 
       <Dialog open={sellFormOpen} onOpenChange={setSellFormOpen}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-          <SellPartsForm onPayment={() => { setSellFormOpen(false); setPaymentOpen(true); }} />
+        <DialogContent className="sm:max-w-4xl w-auto max-h-[90vh] overflow-y-auto scrollbar-hide">
+          <DialogTitle className="sr-only">Sell Your Auto Parts</DialogTitle>
+          <SellPartsForm
+            onPayment={() => {
+              setSellFormOpen(false);
+              setPaymentOpen(true);
+            }}
+          />
         </DialogContent>
       </Dialog>
 

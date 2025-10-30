@@ -77,7 +77,7 @@ export default function GarageHero({
                 <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
                 <span className="font-medium">{rating}</span>
                 <span className="text-gray-600">({reviews})</span>
-                <span className="text-gray-400 mx-1">•</span>
+                <span className="text-gray-400 mx-1"> • </span>
                 <span className="text-gray-600">{distance}</span>
               </div>
 

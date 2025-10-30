@@ -19,6 +19,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import { icons } from "lucide-react";
 
 const garagesData = [
   {
@@ -34,6 +35,7 @@ const garagesData = [
     priceRange: "AED 150-300",
     status: "Open 24/7",
     position: { lat: 25.0772, lng: 55.1398 },
+    icons: "wrench",
   },
   {
     id: "2",
@@ -48,6 +50,7 @@ const garagesData = [
     priceRange: "AED 200-400",
     status: "Emergency",
     position: { lat: 25.0818, lng: 55.1364 },
+    icons: "wrench",
   },
   {
     id: "3",
@@ -62,6 +65,7 @@ const garagesData = [
     priceRange: "AED 100-250",
     status: "Open Now",
     position: { lat: 25.1872, lng: 55.2631 },
+    icons: "wrench",
   },
   {
     id: "4",
@@ -76,6 +80,7 @@ const garagesData = [
     priceRange: "AED 80-180",
     status: "Closes 10 PM",
     position: { lat: 25.1124, lng: 55.1979 },
+    icons: "Phone",
   },
 ];
 
@@ -85,10 +90,10 @@ export default function GarageList() {
   const [currentPage, setCurrentPage] = useState(1);
 
   return (
-    <section className="relative bg-gray-50 py-8">
+    <section className="relative py-8">
       <div className="container mx-auto px-4">
         {/* Header */}
-        <div className="mb-6 flex flex-col gap-8 md:flex-row md:items-center">
+        <div className="mb-12 flex flex-col gap-8 md:flex-row md:items-center">
           <div>
             <h2 className="text-2xl font-bold">23 Garages Found</h2>
             <p className="text-sm text-gray-600">Near Dubai Marina</p>
@@ -137,7 +142,10 @@ export default function GarageList() {
           <Pagination className="justify-start">
             <PaginationContent>
               <PaginationItem>
-                <PaginationPrevious href="#" />
+                <PaginationPrevious
+                  href="#"
+                  className="bg-gray-300 text-gray-800 hover:bg-gray-400"
+                />
               </PaginationItem>
               <PaginationItem>
                 <PaginationLink href="#" isActive>
@@ -157,7 +165,10 @@ export default function GarageList() {
                 <PaginationLink href="#">28</PaginationLink>
               </PaginationItem>
               <PaginationItem>
-                <PaginationNext href="#" />
+                <PaginationNext
+                  href="#"
+                  className="bg-blue-600 text-white hover:bg-blue-800 hover:text-white"
+                />
               </PaginationItem>
             </PaginationContent>
           </Pagination>

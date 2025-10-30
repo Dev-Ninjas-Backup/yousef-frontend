@@ -19,7 +19,7 @@ export default function HeroSection() {
   const [serviceType, setServiceType] = useState("");
 
   return (
-    <section className="relative h-[640px] md:h-[720px] w-full overflow-hidden">
+    <section className="relative h-[640px] md:h-[720px] w-full overflow-hidden mb-16">
       {/* Background Image with Overlay */}
       <div className="absolute inset-0">
         <Image
@@ -43,7 +43,7 @@ export default function HeroSection() {
           </p>
 
           {/* Search Form */}
-          <div className="bg-white rounded-lg p-6 w-full max-w-2xl shadow-lg md:pb-18">
+          <div className="bg-white rounded-lg p-6 w-full max-w-3xl shadow-lg md:pb-18">
             <div className="flex flex-col md:flex-row gap-4">
               {/* Location Input */}
               <div className="flex-1">

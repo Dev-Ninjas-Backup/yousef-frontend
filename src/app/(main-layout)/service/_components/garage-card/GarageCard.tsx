@@ -3,8 +3,10 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Navigation, Phone, Star, Wrench } from "lucide-react";
+import { MessageCircle, Phone, Star, Wrench } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
+import DirectionIcon from "@/assets/service/GarageCard/direc_icon.svg";
 
 interface GarageCardProps {
   id: string;
@@ -93,7 +95,11 @@ export default function GarageCard({
           {/* Services */}
           <div className="mb-3 flex flex-wrap gap-2">
             {services.map((service, index) => (
-              <Badge key={index} variant="outline" className="text-xs">
+              <Badge
+                key={index}
+                variant="default"
+                className="text-xs bg-gray-100 text-gray-800 font-light"
+              >
                 {service}
               </Badge>
             ))}
@@ -107,20 +113,26 @@ export default function GarageCard({
         <div className="flex items-center justify-between">
           <div className="flex gap-2">
             <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
-              <Navigation className="mr-1 h-4 w-4" />
+              <Image
+                src={DirectionIcon}
+                alt="Direction"
+                width={16}
+                height={16}
+                className="mr-1 border-0"
+              />
               Directions
             </Button>
             <Button
               size="sm"
               variant="outline"
-              className="border-green-600 text-green-600 hover:bg-green-50"
+              className="border-green-600 bg-green-600 text-white  hover:bg-green-50"
             >
-              <Phone className="h-4 w-4" />
+              <MessageCircle className="h-4 w-4" />
             </Button>
             <Button
               size="sm"
               variant="outline"
-              className="border-green-600 text-green-600 hover:bg-green-50"
+              className="border-green-600 bg-green-600 text-white hover:bg-green-50"
             >
               <Phone className="h-4 w-4" />
             </Button>
