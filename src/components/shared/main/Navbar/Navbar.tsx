@@ -11,7 +11,7 @@ const showMyAccount = true;
 const menuItems = [
   { label: "Home", href: "/" },
   { label: "Service", href: "/service" },
-  { label: "Spare Parts", href: "/parts" },
+  { label: "Spare Parts", href: "/spare-parts" },
   { label: "Download App", href: "/download" },
   { label: "About Us", href: "/about" },
   { label: "Contact us", href: "/contact" },

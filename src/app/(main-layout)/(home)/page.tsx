@@ -8,6 +8,7 @@ import HowItWorks from './_components/HowItWorks/HowItWorks';
 import Faq from './_components/Faq/Faq';
 import SpareParts from './_components/SpareParts/SpareParts';
 import TestimonialsSection from './_components/Testimonials/Testimonials';
+import FeaturedPromotions from './_components/FeaturedPromotions/FeaturedPromotions';
 
 const HomePage = () => {
   return (
@@ -16,9 +17,10 @@ const HomePage = () => {
     <CarBrands />
     <SearchGarages />
     <AutomotiveSolutions />
+    <SpareParts />
+    <FeaturedPromotions />
     <HowItWorks />
     <FeaturedGarages />
-    <SpareParts />
     <TestimonialsSection />
     <Faq/>
     </div>
