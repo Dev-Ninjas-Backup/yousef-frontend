@@ -4,6 +4,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Tag, Clock, ChevronLeft, ChevronRight } from "lucide-react";
 import homeBanner from "@/assets/home/banner/home_banner.png";
+import imgWithFallback from "@/assets/home/FeaturedPromotions/ImageWithFallback.png";
 
 const promotions = [
   {
@@ -20,7 +21,7 @@ const promotions = [
     title: "BMW Service Special",
     description:
       "Premium BMW service packages now available! Expert technicians with genuine parts. Save up to 25% on maintenance.",
-    image: homeBanner,
+    image: imgWithFallback,
     badge: "Featured Service",
     validUntil: "Nov 15, 2025",
   },
@@ -38,7 +39,7 @@ const promotions = [
     title: "SpeedPro Garage Dubai",
     description:
       "Top-rated garage services with certified mechanics. Complete car maintenance and repair solutions.",
-    image: homeBanner,
+    image: imgWithFallback,
     badge: "Featured Garage",
     validUntil: "Dec 15, 2025",
   },
@@ -94,7 +95,7 @@ const FeaturedPromotions: React.FC = () => {
 
       <div className="relative mb-8 md:mb-6">
         <div className="overflow-hidden rounded-2xl md:rounded-3xl">
-          <div className="relative h-[300px] md:h-[400px]">
+          <div className="relative h-[300px] md:h-[500px]">
             <div
               className="flex transition-transform duration-700 ease-in-out h-full"
               style={{ transform: `translateX(-${currentSlide * 100}%)` }}
@@ -102,7 +103,7 @@ const FeaturedPromotions: React.FC = () => {
               {promotions.map((promo, idx) => (
                 <div
                   key={promo.id}
-                  className="min-w-full max-h-[500px] relative"
+                  className="min-w-full relative"
                 >
                   <Image
                     src={promo.image}
