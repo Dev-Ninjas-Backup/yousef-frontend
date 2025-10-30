@@ -1,37 +1,39 @@
-import Image from "next/image";
+import Image, { StaticImageData } from "next/image";
+import garageOverviewBg from "@/assets/service/garage/garage_overview.png";
 
 interface GarageOverviewProps {
   description: string[];
-  image?: string;
+  image?: string | StaticImageData;
 }
 
 export default function GarageOverview({
   description,
-  image = "/images/garage-overview.jpg",
+  image = garageOverviewBg,
 }: GarageOverviewProps) {
   return (
-    <section className="bg-gray-50 py-12">
+    <section className="py-16 bg-white">
       <div className="container mx-auto px-4">
-        <h2 className="mb-6 text-2xl font-bold">Garage Overview</h2>
-
-        <div className="grid gap-8 lg:grid-cols-2">
+        <div className="grid gap-12 lg:grid-cols-2 items-start">
           {/* Description */}
-          <div className="space-y-4">
-            {description.map((paragraph, index) => (
-              <p key={index} className="text-gray-700 leading-relaxed">
-                {paragraph}
-              </p>
-            ))}
+          <div>
+            <h2 className="mb-8 text-2xl md:text-4xl font-bold text-gray-900">
+              Garage Overview
+            </h2>
+            <div className="space-y-6">
+              {description.map((paragraph, index) => (
+                <p
+                  key={index}
+                  className="text-gray-600 leading-relaxed text-lg"
+                >
+                  {paragraph}
+                </p>
+              ))}
+            </div>
           </div>
 
           {/* Image */}
-          <div className="relative h-[300px] overflow-hidden rounded-xl lg:h-full">
-            <Image
-              src={image}
-              alt="Garage"
-              fill
-              className="object-cover"
-            />
+          <div className="relative h-[400px] lg:h-[500px] overflow-hidden rounded-2xl">
+            <Image src={image} alt="Garage" fill className="object-cover" />
           </div>
         </div>
       </div>

@@ -34,71 +34,74 @@ export default function GarageCard({
   icon = "wrench",
 }: GarageCardProps) {
   return (
-    <Link href={`/service/${id}`}>
-      <Card className="cursor-pointer overflow-hidden bg-white shadow-md transition-shadow hover:shadow-2xl">
+    <Card className="cursor-pointer overflow-hidden bg-white shadow-md transition-shadow hover:shadow-2xl py-0">
       <div className="p-5">
-        {/* Header */}
-        <div className="mb-4 flex items-start justify-between">
-          <div className="flex gap-3">
-            {/* Icon */}
-            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-50">
-              <Wrench className="h-6 w-6 text-blue-600" />
-            </div>
-
-            {/* Info */}
-            <div>
-              <div className="flex items-center gap-2">
-                <h3 className="text-lg font-semibold">{name}</h3>
-                {status && (
-                  <Badge
-                    variant={status === "Open 24/7" ? "default" : "destructive"}
-                    className={
-                      status === "Open 24/7" ? "bg-green-500" : "bg-red-500"
-                    }
-                  >
-                    {status}
-                  </Badge>
-                )}
+        <Link href={`/service/${id}`}>
+          {/* Header */}
+          <div className="mb-4 flex items-start justify-between">
+            <div className="flex gap-3">
+              {/* Icon */}
+              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-50">
+                <Wrench className="h-6 w-6 text-blue-600" />
               </div>
 
-              {/* Rating */}
-              <div className="mt-1 flex items-center gap-2">
-                <div className="flex items-center">
-                  {[...Array(5)].map((_, i) => (
-                    <Star
-                      key={i}
-                      className={`h-4 w-4 ${
-                        i < Math.floor(rating)
-                          ? "fill-yellow-400 text-yellow-400"
-                          : "text-gray-300"
-                      }`}
-                    />
-                  ))}
+              {/* Info */}
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-lg font-semibold">{name}</h3>
+                  {status && (
+                    <Badge
+                      variant={
+                        status === "Open 24/7" ? "default" : "destructive"
+                      }
+                      className={
+                        status === "Open 24/7" ? "bg-green-500" : "bg-red-500"
+                      }
+                    >
+                      {status}
+                    </Badge>
+                  )}
                 </div>
-                <span className="text-sm text-gray-600">
-                  {rating} ({reviews} reviews)
-                </span>
-              </div>
 
-              {/* Location */}
-              <p className="mt-1 text-sm text-gray-500">
-                {distance} • {location}
-              </p>
+                {/* Rating */}
+                <div className="mt-1 flex items-center gap-2">
+                  <div className="flex items-center">
+                    {[...Array(5)].map((_, i) => (
+                      <Star
+                        key={i}
+                        className={`h-4 w-4 ${
+                          i < Math.floor(rating)
+                            ? "fill-yellow-400 text-yellow-400"
+                            : "text-gray-300"
+                        }`}
+                      />
+                    ))}
+                  </div>
+                  <span className="text-sm text-gray-600">
+                    {rating} ({reviews} reviews)
+                  </span>
+                </div>
+
+                {/* Location */}
+                <p className="mt-1 text-sm text-gray-500">
+                  {distance} • {location}
+                </p>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Services */}
-        <div className="mb-3 flex flex-wrap gap-2">
-          {services.map((service, index) => (
-            <Badge key={index} variant="outline" className="text-xs">
-              {service}
-            </Badge>
-          ))}
-        </div>
+          {/* Services */}
+          <div className="mb-3 flex flex-wrap gap-2">
+            {services.map((service, index) => (
+              <Badge key={index} variant="outline" className="text-xs">
+                {service}
+              </Badge>
+            ))}
+          </div>
 
-        {/* Description */}
-        <p className="mb-4 text-sm text-gray-600">{description}</p>
+          {/* Description */}
+          <p className="mb-4 text-sm text-gray-600">{description}</p>
+        </Link>
 
         {/* Footer */}
         <div className="flex items-center justify-between">
@@ -130,6 +133,5 @@ export default function GarageCard({
         </div>
       </div>
     </Card>
-    </Link>
   );
 }

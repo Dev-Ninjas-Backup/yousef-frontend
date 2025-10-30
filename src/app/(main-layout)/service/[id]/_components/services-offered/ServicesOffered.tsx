@@ -1,38 +1,39 @@
-import { 
-  Snowflake, 
-  Battery, 
-  Wrench, 
-  Zap, 
-  Settings 
+import {
+  Snowflake,
+  Battery,
+  Wrench,
+  Zap,
+  Settings,
+  CircleDot,
 } from "lucide-react";
 
 const services = [
-  { icon: Snowflake, label: "AC Service" },
-  { icon: Battery, label: "Battery Replacement" },
-  { icon: Settings, label: "Tires" },
-  { icon: Wrench, label: "Engine Diagnostics" },
-  { icon: Zap, label: "Electrical" },
-  { icon: Settings, label: "Spares" },
+  { icon: Snowflake, label: "AC Service", color: "text-blue-500" },
+  { icon: Battery, label: "Battery Replacement", color: "text-green-500" },
+  { icon: CircleDot, label: "Tires", color: "text-gray-900" },
+  { icon: Wrench, label: "Engine Diagnostics", color: "text-gray-400" },
+  { icon: Zap, label: "Electrical", color: "text-yellow-500" },
+  { icon: Settings, label: "Spares", color: "text-orange-500" },
 ];
 
 export default function ServicesOffered() {
   return (
-    <section className="bg-white py-12">
+    <section className=" md:py-16">
       <div className="container mx-auto px-4">
-        <h2 className="mb-8 text-2xl font-bold">Services Offered</h2>
-        
-        <div className="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-6">
+        <h2 className="mb-10 text-2xl md:text-4xl font-bold text-gray-900">
+          Services Offered
+        </h2>
+
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
           {services.map((service, index) => {
             const Icon = service.icon;
             return (
               <div
                 key={index}
-                className="flex flex-col items-center gap-3 rounded-lg border p-6 transition-shadow hover:shadow-md"
+                className="flex flex-col items-center gap-4 rounded-2xl bg-white p-8 shadow-sm hover:shadow-md transition-shadow"
               >
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-50">
-                  <Icon className="h-6 w-6 text-blue-600" />
-                </div>
-                <span className="text-center text-sm font-medium">
+                <Icon className={`h-12 w-12 ${service.color}`} />
+                <span className="text-center text-base font-medium text-gray-700">
                   {service.label}
                 </span>
               </div>

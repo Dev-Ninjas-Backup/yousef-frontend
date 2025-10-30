@@ -28,12 +28,12 @@ export default function HeroSection() {
           fill
           className="object-cover"
         />
-        <div className="absolute inset-0 bg-black/60" />
+        <div className="absolute inset-0 bg-black/80" />
       </div>
 
       {/* Content */}
       <div className="relative z-10 flex h-full flex-col items-center justify-center px-4">
-        <div className="max-w-5xl text-center">
+        <div className="max-w-5xl text-center flex flex-col items-center">
           <h1 className="mb-3 text-4xl font-bold leading-tight text-white md:text-6xl">
             Find Car Service & Towing
           </h1>

@@ -125,7 +125,7 @@ export default function GarageList() {
           )}
 
           {/* Garage Cards */}
-          <div className="space-y-4 lg:absolute lg:left-4 lg:top-4 lg:z-10 lg:w-full lg:max-w-xl">
+          <div className="space-y-4 lg:absolute lg:left-4 lg:top-4 lg:z-10 lg:w-full lg:max-w-xl flex flex-col ">
             {garagesData.map((garage) => (
               <GarageCard key={garage.id} {...garage} />
             ))}
