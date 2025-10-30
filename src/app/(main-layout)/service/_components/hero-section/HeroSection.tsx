@@ -19,7 +19,7 @@ export default function HeroSection() {
   const [serviceType, setServiceType] = useState("");
 
   return (
-    <section className="relative h-[640px] md:h-[720px] w-full overflow-hidden mb-16">
+    <section className="relative h-[640px] md:h-[720px] w-full overflow-hidden mb-16 ">
       {/* Background Image with Overlay */}
       <div className="absolute inset-0">
         <Image

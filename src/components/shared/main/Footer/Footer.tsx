@@ -3,16 +3,12 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import footerWave from "@/assets/footer/footer-wave.svg";
-import sayarahublogo from "@/assets/footer/sayarahub.svg"
+import sayarahublogo from "@/assets/footer/sayarahub.svg";
 import { Input } from "@/components/ui/input";
 
 const Footer: React.FC = () => {
   return (
-<<<<<<< HEAD
-    <footer className="bg-white pt-16 pb-0 overflow-hidden">
-=======
     <footer className="bg-white pt-16 pb-0 overflow-hidden mt-20">
->>>>>>> c8aff80b040cecb3623494d85a72bc85d9ec0166
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Logo and Contact Button */}
@@ -84,14 +80,14 @@ const Footer: React.FC = () => {
           </div>
         </div>
       </div>
-      
+
       {/* bottom */}
       <div className="relative w-full ">
         <div className="w-full">
-          <Image 
-            src={footerWave} 
-            alt="" 
-            className="w-full h-auto object-cover min-h-[100px]" 
+          <Image
+            src={footerWave}
+            alt=""
+            className="w-full h-auto object-cover min-h-[100px]"
           />
         </div>
 

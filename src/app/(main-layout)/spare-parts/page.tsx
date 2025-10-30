@@ -102,7 +102,7 @@ export default function SparePartsPage() {
   const [duplicateOpen, setDuplicateOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       <SparePartsHero onSellClick={() => setSellFormOpen(true)} />
       <SearchSection />
 

@@ -12,7 +12,7 @@ import { Search } from "lucide-react";
 
 export default function SearchSection() {
   return (
-    <section className="bg-gray-50 py-12">
+    <section className=" py-12">
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-md p-8">
           <h2 className="text-2xl font-bold mb-8 text-center text-gray-900">
