@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 
 import { IoIosLogOut } from "react-icons/io";
@@ -10,7 +9,6 @@ import { HiX } from "react-icons/hi";
 import { LuLayoutGrid } from "react-icons/lu";
 
 import { cn } from "@/lib/utils";
-import logoImg from "@/assets/logo.png";
 import { useAuth } from "@/context/AuthContext";
 import { NavItem } from "@/config/navigation";
 
@@ -24,7 +22,6 @@ const DashboardSidebar = ({ navItems, title = "Florida Yacht Trader" }: Dashboar
   const pathname = usePathname();
   const { logout, user } = useAuth();
 
-  // Close mobile menu on window resize
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 1024) {
@@ -36,7 +33,6 @@ const DashboardSidebar = ({ navItems, title = "Florida Yacht Trader" }: Dashboar
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Prevent body scroll when mobile menu is open
   useEffect(() => {
     if (isMobileMenuOpen) {
       document.body.style.overflow = "hidden";
@@ -87,23 +83,11 @@ const DashboardSidebar = ({ navItems, title = "Florida Yacht Trader" }: Dashboar
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed left-0 top-0 z-50 h-screen w-[280px] lg:w-[310px] xl:w-80 bg-white shadow-lg flex flex-col transition-transform duration-300 ease-in-out",
+          "fixed left-0 top-16 z-50 h-[calc(100vh-4rem)] w-[280px] lg:w-[310px] xl:w-80 bg-white shadow-lg flex flex-col transition-transform duration-300 ease-in-out",
           "lg:translate-x-0",
           isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
-        {/* Logo Section */}
-        <div className="p-4 flex items-center gap-3 justify-center border-b border-gray-100">
-          <Image
-            src={logoImg}
-            className="h-8 sm:h-10 w-auto"
-            alt={title}
-            width={280}
-            height={100}
-            priority
-          />
-        </div>
-
         {/* User Info */}
         {user && (
           <div className="px-4 py-3 border-b border-gray-100">

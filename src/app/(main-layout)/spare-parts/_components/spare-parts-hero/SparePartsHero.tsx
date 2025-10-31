@@ -16,9 +16,9 @@ export default function SparePartsHero({ onSellClick }: SparePartsHeroProps) {
           src={sparePartsBg}
           alt="Garage background"
           fill
-          className="object-cover"
+          className="object-cover rounded-lg"
         />
-        <div className="absolute inset-0 bg-black/80" />
+        <div className="absolute inset-0 bg-black/80 rounded-lg" />
       </div>
 
       <div className="relative z-10 container mx-auto px-4 h-full flex flex-col items-center justify-center text-center">

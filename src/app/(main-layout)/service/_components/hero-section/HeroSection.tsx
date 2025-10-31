@@ -26,9 +26,9 @@ export default function HeroSection() {
           src={garageBg}
           alt="Garage background"
           fill
-          className="object-cover"
+          className="object-cover rounded-lg"
         />
-        <div className="absolute inset-0 bg-black/80" />
+        <div className="absolute inset-0 bg-black/80 rounded-lg" />
       </div>
 
       {/* Content */}

@@ -14,13 +14,13 @@ const HeroBanner: React.FC = () => {
           loop
           muted
           playsInline
-          className="absolute inset-0 w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-cover rounded-lg"
           poster="/path-to-poster-image.jpg"
         >
           <source src="./banner.mp4" type="video/mp4" />
           Your browser does not support the video tag.
         </video>
-        <div className="absolute inset-0 bg-black/60" />
+        <div className="absolute inset-0 bg-black/60 rounded-lg" />
       </div>
       <div className="relative container mx-auto z-10 flex items-center h-full px-4">
         <div className="max-w-4xl">

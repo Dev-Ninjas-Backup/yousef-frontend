@@ -62,7 +62,7 @@ export const adminNavItems: NavItem[] = [
   },
 ];
 
-// Seller navigation items
+// Garage admin navigation items
 export const garageAdminNavItems: NavItem[] = [
   {
     label: "Dashboard",
@@ -101,7 +101,12 @@ export const garageAdminNavItems: NavItem[] = [
   },
   {
     label: "Profile & Settings",
-    path: "/garage-admin/settings",
+    path: "/garage-admin/profile-settings",
+    icon: <LuSettings className="text-lg" />,
+  },
+  {
+    label: "Support & Help",
+    path: "/garage-admin/support-help",
     icon: <LuSettings className="text-lg" />,
   },
   {

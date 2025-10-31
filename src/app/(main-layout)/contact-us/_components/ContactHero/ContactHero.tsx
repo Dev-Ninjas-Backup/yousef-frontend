@@ -11,10 +11,10 @@ const ContactHero: React.FC = () => {
           src={contactHeroimg}
           alt="Contact us"
           fill
-          className="object-cover"
+          className="object-cover rounded-lg"
           priority
         />
-        <div className="absolute inset-0 bg-black/50" />
+        <div className="absolute inset-0 bg-black/50 rounded-lg" />
       </div>
 
       <div className="relative container mx-auto z-10 flex flex-col items-center justify-center h-full px-4 text-center">
