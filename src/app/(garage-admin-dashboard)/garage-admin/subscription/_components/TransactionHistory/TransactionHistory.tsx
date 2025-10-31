@@ -40,7 +40,7 @@ const TransactionHistory = () => {
         <CardContent className="p-0">
           <div className="overflow-x-auto -mx-4 sm:mx-0">
             <div className="inline-block min-w-full align-middle">
-              <table className="min-w-full">
+              <table className="min-w-full overfolow-x-auto">
                 <thead className="bg-gray-50 border-b">
                   <tr>
                     <th className="px-3 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 whitespace-nowrap">Transaction ID</th>

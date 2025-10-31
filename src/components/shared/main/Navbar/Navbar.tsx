@@ -33,7 +33,7 @@ const Navbar = () => {
 
   return (
     <nav className="fixed z-50 w-full py-4 px-4 md:mt-4 md:px-8 bg-white/70 backdrop-blur-md md:bg-transparent md:backdrop-blur-none">
-      <div className="container mx-auto flex items-center justify-between">
+      <div className="container mx-auto flex items-center justify-between gap-4">
         {/* Logo */}
         <Link href="/" className="flex items-center">
           {isScrolled ? (
@@ -97,7 +97,7 @@ const Navbar = () => {
             className="hidden md:flex items-center gap-2 text-white hover:text-[#0A84FF] py-2 px-4 rounded-full bg-black/40  shadow-[0_0_15px_rgba(255,255,255,0.1)] transition-all duration-300"
           >
             <span
-              className={`text-sm md:text-xl ${
+              className={`text-sm md:hidden lg:flex ${
                 // isScrolled ? "text-black" : "text-white/80" " --- IGNORE ---
                 isScrolled ? "text-white/80" : "text-white/80"
               }`}
