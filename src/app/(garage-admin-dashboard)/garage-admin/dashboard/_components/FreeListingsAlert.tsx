@@ -25,7 +25,7 @@ export function FreeListingsAlert() {
             </span>{" "}
             remaining. After that, a fee of 20 AED will apply per listing.
           </p>
-          <Progress value={progress} className="h-2 bg-blue-100" />
+          <Progress value={progress} className="h-2 bg-blue-100 [&>div]:bg-blue-600" />
         </div>
       </div>
     </Card>

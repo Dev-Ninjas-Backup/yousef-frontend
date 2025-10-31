@@ -75,7 +75,7 @@ export default function MyProductsPage() {
   };
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-6 space-y-6 bg-gray-50 rounded-md">
       <ProductsHeader
         onAddProduct={handleAddProduct}
         searchQuery={searchQuery}
@@ -92,7 +92,9 @@ export default function MyProductsPage() {
         />
       ) : searchQuery || statusFilter !== "all" ? (
         <div className="bg-white rounded-lg border p-12 text-center">
-          <p className="text-gray-600">No products found matching your criteria</p>
+          <p className="text-gray-600">
+            No products found matching your criteria
+          </p>
         </div>
       ) : (
         <EmptyProductsState onAddProduct={handleAddProduct} />

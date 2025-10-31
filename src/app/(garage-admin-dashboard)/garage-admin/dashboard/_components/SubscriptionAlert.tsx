@@ -41,7 +41,10 @@ export function SubscriptionAlert() {
                 {daysRemaining} days remaining
               </span>
             </div>
-            <Progress value={progress} className="h-2 bg-yellow-100 " />
+            <Progress
+              value={progress}
+              className="h-2 bg-blue-100 [&>div]:bg-blue-600"
+            />
           </div>
           <p className="text-xs text-gray-600 mb-4">
             You'll be notified before your free period expires. Keep your

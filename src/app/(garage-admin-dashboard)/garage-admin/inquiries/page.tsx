@@ -39,16 +39,18 @@ export default function InquiriesPage() {
   };
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-6 space-y-6 bg-gray-50 rounded-md">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Customer Inquiries</h1>
-        <p className="text-sm text-gray-600 mt-1">Manage customer messages and inquiries</p>
+        <h1 className="text-2xl font-bold text-gray-800">Customer Inquiries</h1>
+        <p className="text-sm text-gray-600 mt-1">
+          Manage customer messages and inquiries
+        </p>
       </div>
 
       {/* Inquiries List */}
       {inquiries.length > 0 ? (
-        <div className="space-y-4">
+        <div className="space-y-4 ">
           {inquiries.map((inquiry) => (
             <InquiryCard
               key={inquiry.id}

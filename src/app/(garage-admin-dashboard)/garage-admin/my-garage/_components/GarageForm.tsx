@@ -23,6 +23,7 @@ import {
   PaintBucket,
   Stethoscope,
   Wind,
+  LocateFixed,
 } from "lucide-react";
 
 interface GarageFormProps {
@@ -76,7 +77,7 @@ export function GarageForm({ onCancel, onSave, initialData }: GarageFormProps) {
   };
 
   return (
-    <div className="p-6">
+    <div className="p-6 border border-gray-200 rounded-lg shadow-sm bg-white my-8">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Add New Garage</h1>
         <p className="text-sm text-gray-600 mt-1">
@@ -90,18 +91,18 @@ export function GarageForm({ onCancel, onSave, initialData }: GarageFormProps) {
           </CardHeader>
           <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <Label className="mb-2">Cover Photo *</Label>
+              <Label className="mb-4">Cover Photo *</Label>
               <div className="border-2 border-dashed rounded-lg p-8 text-center hover:border-blue-500 cursor-pointer">
-                <Upload className="w-8 h-8 mx-auto text-gray-400 mb-2" />
+                <Upload className="w-8 h-8 mx-auto text-gray-400 mb-4" />
                 <p className="text-sm text-gray-600">
                   Click to upload cover photo
                 </p>
               </div>
             </div>
             <div>
-              <Label className="mb-2">Profile Image *</Label>
+              <Label className="mb-4">Profile Image *</Label>
               <div className="border-2 border-dashed rounded-lg p-8 text-center hover:border-blue-500 cursor-pointer">
-                <Upload className="w-8 h-8 mx-auto text-gray-400 mb-2" />
+                <Upload className="w-8 h-8 mx-auto text-gray-400 mb-4" />
                 <p className="text-sm text-gray-600">
                   Click to upload profile image
                 </p>
@@ -116,7 +117,7 @@ export function GarageForm({ onCancel, onSave, initialData }: GarageFormProps) {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <Label htmlFor="garageName" className="mb-2">
+              <Label htmlFor="garageName" className="mb-4">
                 Garage Name *
               </Label>
               <Input
@@ -126,14 +127,15 @@ export function GarageForm({ onCancel, onSave, initialData }: GarageFormProps) {
                   setFormData({ ...formData, garageName: e.target.value })
                 }
                 placeholder="Premium Auto Care Center"
+                className="border-0"
               />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
-              <div className="md:col-span-6">
-                <Label htmlFor="address" className="mb-2">
+              <div className="md:col-span-4">
+                <Label htmlFor="address" className="mb-4">
                   Address *
                 </Label>
-                <div className="relative">
+                <div className="flex items-center relative gap-2">
                   <Input
                     id="address"
                     value={formData.address}
@@ -141,18 +143,25 @@ export function GarageForm({ onCancel, onSave, initialData }: GarageFormProps) {
                       setFormData({ ...formData, address: e.target.value })
                     }
                     placeholder="Sheikh Zayed Road, Al Quoz Industrial Area 3"
+                    className="border-0"
                   />
-                  <MapPin className="absolute right-3 top-3 w-4 h-4 text-gray-400" />
+                  {/* <MapPin className="absolute right-3 top-3 w-4 h-4 text-gray-400" /> */}
+                  <LocateFixed className=" text-blue-500" />
                 </div>
               </div>
-              <div className="md:col-span-3">
-                <Label htmlFor="city" className="mb-2">
+              <div className="md:col-span-4">
+                <Label htmlFor="city" className="mb-4">
                   City
                 </Label>
-                <Input id="city" value={formData.city} readOnly />
+                <Input
+                  id="city"
+                  value={formData.city}
+                  readOnly
+                  className="border-0"
+                />
               </div>
-              <div className="md:col-span-3">
-                <Label htmlFor="emirate" className="mb-2">
+              <div className="md:col-span-4">
+                <Label htmlFor="emirate" className="mb-4">
                   Emirate *
                 </Label>
                 <Select
@@ -187,7 +196,7 @@ export function GarageForm({ onCancel, onSave, initialData }: GarageFormProps) {
           </CardHeader>
           <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="phone" className="mb-2">
+              <Label htmlFor="phone" className="mb-4">
                 Phone Number *
               </Label>
               <Input
@@ -197,10 +206,11 @@ export function GarageForm({ onCancel, onSave, initialData }: GarageFormProps) {
                   setFormData({ ...formData, phone: e.target.value })
                 }
                 placeholder="+971 50 123 4567"
+                className="border-0"
               />
             </div>
             <div>
-              <Label htmlFor="email" className="mb-2">
+              <Label htmlFor="email" className="mb-4">
                 Email Address *
               </Label>
               <Input
@@ -211,6 +221,7 @@ export function GarageForm({ onCancel, onSave, initialData }: GarageFormProps) {
                   setFormData({ ...formData, email: e.target.value })
                 }
                 placeholder="info@premiumauto.ae"
+                className="border-0"
               />
             </div>
           </CardContent>
@@ -222,7 +233,7 @@ export function GarageForm({ onCancel, onSave, initialData }: GarageFormProps) {
           </CardHeader>
           <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="weekdays" className="mb-2">
+              <Label htmlFor="weekdays" className="mb-4">
                 Weekdays
               </Label>
               <Input
@@ -231,10 +242,11 @@ export function GarageForm({ onCancel, onSave, initialData }: GarageFormProps) {
                 onChange={(e) =>
                   setFormData({ ...formData, weekdaysHours: e.target.value })
                 }
+                className="border-0"
               />
             </div>
             <div>
-              <Label htmlFor="weekends" className="mb-2">
+              <Label htmlFor="weekends" className="mb-4">
                 Weekends
               </Label>
               <Input
@@ -243,6 +255,7 @@ export function GarageForm({ onCancel, onSave, initialData }: GarageFormProps) {
                 onChange={(e) =>
                   setFormData({ ...formData, weekendsHours: e.target.value })
                 }
+                className="border-0"
               />
             </div>
           </CardContent>
@@ -265,7 +278,7 @@ export function GarageForm({ onCancel, onSave, initialData }: GarageFormProps) {
                       : "border-gray-200 hover:border-gray-300"
                   }`}
                 >
-                  <service.icon className="w-6 h-6 mx-auto mb-2" />
+                  <service.icon className="w-6 h-6 mx-auto mb-4" />
                   <p className="text-xs font-medium text-center">
                     {service.label}
                   </p>
@@ -290,7 +303,7 @@ export function GarageForm({ onCancel, onSave, initialData }: GarageFormProps) {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <Label htmlFor="description" className="mb-2">
+              <Label htmlFor="description" className="mb-4">
                 About Your Garage
               </Label>
               <Textarea
@@ -302,6 +315,7 @@ export function GarageForm({ onCancel, onSave, initialData }: GarageFormProps) {
                 placeholder="Describe your garage, services, and what makes you stand out..."
                 rows={4}
                 maxLength={210}
+                className="border-0 bg-gray-50"
               />
               <p className="text-xs text-gray-500 mt-1">
                 {formData.description.length}/210 characters
@@ -309,7 +323,7 @@ export function GarageForm({ onCancel, onSave, initialData }: GarageFormProps) {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="certifications" className="mb-2">
+                <Label htmlFor="certifications" className="mb-4">
                   Certifications
                 </Label>
                 <Input
@@ -319,10 +333,11 @@ export function GarageForm({ onCancel, onSave, initialData }: GarageFormProps) {
                     setFormData({ ...formData, certifications: e.target.value })
                   }
                   placeholder="ASE Certified, ISO 9001:2015, RTA Approved"
+                  className="border-0"
                 />
               </div>
               <div>
-                <Label htmlFor="brandExpertise" className="mb-2">
+                <Label htmlFor="brandExpertise" className="mb-4">
                   Brand Expertise
                 </Label>
                 <Input
@@ -332,6 +347,7 @@ export function GarageForm({ onCancel, onSave, initialData }: GarageFormProps) {
                     setFormData({ ...formData, brandExpertise: e.target.value })
                   }
                   placeholder="BMW, Mercedes-Benz, Audi, Toyota, Honda, Nissan"
+                  className="border-0"
                 />
               </div>
             </div>

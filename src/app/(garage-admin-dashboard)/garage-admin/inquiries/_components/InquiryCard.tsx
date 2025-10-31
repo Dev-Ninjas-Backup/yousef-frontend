@@ -20,7 +20,11 @@ interface InquiryCardProps {
   onMarkClosed: (id: string) => void;
 }
 
-export function InquiryCard({ inquiry, onReply, onMarkClosed }: InquiryCardProps) {
+export function InquiryCard({
+  inquiry,
+  onReply,
+  onMarkClosed,
+}: InquiryCardProps) {
   return (
     <Card className="p-6">
       {/* Header */}
@@ -35,8 +39,18 @@ export function InquiryCard({ inquiry, onReply, onMarkClosed }: InquiryCardProps
           )}
           {inquiry.status === "Replied" && (
             <Badge className="bg-gray-100 text-gray-700">
-              <svg className="w-3 h-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              <svg
+                className="w-3 h-3 mr-1"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M5 13l4 4L19 7"
+                />
               </svg>
               Replied
             </Badge>
@@ -51,7 +65,9 @@ export function InquiryCard({ inquiry, onReply, onMarkClosed }: InquiryCardProps
           <User className="w-4 h-4 text-gray-400" />
           <div>
             <p className="text-xs text-gray-500">Customer</p>
-            <p className="text-sm font-medium text-gray-900">{inquiry.customerName}</p>
+            <p className="text-sm font-medium text-gray-900">
+              {inquiry.customerName}
+            </p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -65,24 +81,34 @@ export function InquiryCard({ inquiry, onReply, onMarkClosed }: InquiryCardProps
           <Mail className="w-4 h-4 text-gray-400" />
           <div>
             <p className="text-xs text-gray-500">Email</p>
-            <p className="text-sm font-medium text-gray-900 truncate">{inquiry.email}</p>
+            <p className="text-sm font-medium text-gray-900 truncate">
+              {inquiry.email}
+            </p>
           </div>
         </div>
       </div>
 
       {/* Message */}
-      <div className="mb-4">
+      <div className="mb-4 bg-gray-50 p-4 rounded-md">
         <p className="text-xs text-gray-500 mb-1">Message:</p>
         <p className="text-sm text-gray-700">{inquiry.message}</p>
       </div>
 
       {/* Actions */}
       <div className="flex flex-col sm:flex-row gap-2">
-        <Button onClick={() => onReply(inquiry.id)} size="sm">
+        <Button
+          className="bg-blue-500 hover:bg-blue-600"
+          onClick={() => onReply(inquiry.id)}
+          size="sm"
+        >
           <Send className="w-4 h-4" />
           Reply
         </Button>
-        <Button onClick={() => onMarkClosed(inquiry.id)} variant="outline" size="sm">
+        <Button
+          onClick={() => onMarkClosed(inquiry.id)}
+          variant="outline"
+          size="sm"
+        >
           Mark as Closed
         </Button>
       </div>
