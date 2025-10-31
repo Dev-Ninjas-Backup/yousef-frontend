@@ -1,6 +1,6 @@
 import { Lightbulb, Rocket, TrendingUp, Sparkles, Star } from "lucide-react";
 import Image from "next/image";
-import AboutStats from "@/assets/about/Stats/about_stats.jpg";
+import AboutStats from "@/assets/about/stats/about_stats.jpg";
 
 const stats = [
   { value: "500+", label: "Happy Customers" },
