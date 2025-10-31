@@ -2,7 +2,7 @@
 import React from "react";
 import Image from "next/image";
 import { Check } from "lucide-react";
-import phoneImage from "@/assets/download-app/downloadhero/iPhone-13-Pro-Front.svg";
+import phoneImage from "@/assets/download-app/DownloadHero/iPhone-13-Pro-Front.svg";
 
 const DownloadHero: React.FC = () => {
   return (

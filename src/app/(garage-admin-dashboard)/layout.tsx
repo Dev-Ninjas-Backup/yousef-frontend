@@ -14,7 +14,7 @@ export default function GarageAdminLayout({ children }: { children: ReactNode })
       <DashboardSidebar navItems={garageAdminNavItems} title="Garage Dashboard" />
       <div className="flex-1 lg:ml-80">
         <DashboardNavbar />
-        <main className="pt-20 p-4 sm:p-6 lg:p-8">
+        <main className="pt-20 p-4 sm:p-6 lg:p-8 md:mt-20">
           <div className="max-w-7xl mx-auto">{children}</div>
         </main>
       </div>

@@ -2,17 +2,17 @@
 import React from "react";
 import Image from "next/image";
 import './carBrands.css'
-import Subaru from "@/assets/home/carBrands/Subaru.svg";
-import Nissan from "@/assets/home/carBrands/Nissan.svg";
-import Chery from "@/assets/home/carBrands/Chery.svg";
-import Suzuki from "@/assets/home/carBrands/Suzuki.svg";
-import Datsun from "@/assets/home/carBrands/Datsun.svg";
-import Hyundai from "@/assets/home/carBrands/Hyundai.svg";
-import Honda from "@/assets/home/carBrands/Honda.svg";
-import BMW from "@/assets/home/carBrands/BMW.svg";
-import Mazda from "@/assets/home/carBrands/Mazda.svg";
-import Toyota from "@/assets/home/carBrands/Toyota.svg";
-import Daihatsu from "@/assets/home/carBrands/Daihatsu.svg";
+import Subaru from "@/assets/home/CarBrands/Subaru.svg";
+import Nissan from "@/assets/home/CarBrands/Nissan.svg";
+import Chery from "@/assets/home/CarBrands/Chery.svg";
+import Suzuki from "@/assets/home/CarBrands/Suzuki.svg";
+import Datsun from "@/assets/home/CarBrands/Datsun.svg";
+import Hyundai from "@/assets/home/CarBrands/Hyundai.svg";
+import Honda from "@/assets/home/CarBrands/Honda.svg";
+import BMW from "@/assets/home/CarBrands/BMW.svg";
+import Mazda from "@/assets/home/CarBrands/Mazda.svg";
+import Toyota from "@/assets/home/CarBrands/Toyota.svg";
+import Daihatsu from "@/assets/home/CarBrands/Daihatsu.svg";
 
 const brands = [
   { name: "Subaru", logo: Subaru },
