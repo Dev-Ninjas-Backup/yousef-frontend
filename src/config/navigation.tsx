@@ -1,3 +1,4 @@
+import { CreditCard, MessageCircleQuestionMark } from "lucide-react";
 import {
   LuChartColumn,
   LuFileText,
@@ -79,23 +80,23 @@ export const garageAdminNavItems: NavItem[] = [
     icon: <LuPackage className="text-lg" />,
   },
   {
-    label: "Messages",
-    path: "/garage-admin/messages",
-    icon: <LuShoppingCart className="text-lg" />,
-  },
-  {
     label: "Inquiries",
     path: "/garage-admin/inquiries",
     icon: <LuShoppingCart className="text-lg" />,
   },
   {
-    label: "Subscription",
-    path: "/garage-admin/subscription",
+    label: "Messages",
+    path: "/garage-admin/messages",
     icon: <LuMessageSquare className="text-lg" />,
   },
   {
+    label: "Subscription",
+    path: "/garage-admin/subscription",
+    icon: <CreditCard className="text-lg" />,
+  },
+  {
     label: "Ad & Promotion",
-    path: "/garage-admin/ads-promotions",
+    path: "/garage-admin/ad-promotion",
     icon: <LuChartColumn className="text-lg" />,
   },
   {
@@ -107,6 +108,11 @@ export const garageAdminNavItems: NavItem[] = [
     label: "Support & Help",
     path: "/garage-admin/support-help",
     icon: <LuSettings className="text-lg" />,
+  },
+  {
+    label: "Support & Help",
+    path: "/garage-admin/support",
+    icon: <MessageCircleQuestionMark className="text-lg" />,
   },
 ];
 
