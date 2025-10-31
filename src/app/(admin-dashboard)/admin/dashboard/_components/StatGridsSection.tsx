@@ -1,14 +1,14 @@
 import { StatCard } from "@/components/shared/dashboard/admin/StatCard";
-import React from "react";
 import {
   LuUsers,
-  LuShoppingCart,
   LuClock,
   LuTriangleAlert,
   LuMessageSquare,
   LuTrendingUp,
-  LuBanknote,
-  LuClipboardCheck,
+  LuStore,
+  LuBox,
+  LuDollarSign,
+  LuBell
 } from "react-icons/lu";
 
 const StatGridsSection = () => {
@@ -16,7 +16,7 @@ const StatGridsSection = () => {
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
       {/* Total Garages */}
       <StatCard
-        icon={LuShoppingCart}
+        icon={LuStore}
         value="45"
         label="Total Garages"
         change="+17% from last month"
@@ -40,7 +40,7 @@ const StatGridsSection = () => {
 
       {/* Spare Parts Listed */}
       <StatCard
-        icon={LuClipboardCheck}
+        icon={LuBox}
         value="850"
         label="Spare Parts Listed"
         change="+10% from last month"
@@ -52,7 +52,7 @@ const StatGridsSection = () => {
 
       {/* Monthly Revenue */}
       <StatCard
-        icon={LuBanknote}
+        icon={LuDollarSign}
         value="$45,780"
         label="Monthly Revenue"
         change="+6% from last month"
@@ -83,7 +83,7 @@ const StatGridsSection = () => {
         iconBg="bg-red-50"
         iconColor="text-red-600"
         changeColor="text-red-600"
-        trendIcon={LuTriangleAlert}
+        trendIcon={LuBell}
       />
     </div>
   );
