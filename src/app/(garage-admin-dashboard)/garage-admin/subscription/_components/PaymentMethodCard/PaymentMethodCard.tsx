@@ -5,34 +5,34 @@ import { CreditCard, Plus } from "lucide-react";
 
 const PaymentMethodCard = () => {
   return (
-    <div className="space-y-4 border bg-white p-6 rounded-xl">
-      <div className="flex items-center justify-between">
+    <div className="space-y-4 border bg-white p-4 sm:p-6 rounded-xl">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
           <h3 className="font-semibold text-gray-900">Payment Methods</h3>
           <p className="text-sm text-gray-500">Manage your payment options</p>
         </div>
-        <Button className="bg-blue-600 hover:bg-blue-700 gap-2">
+        <Button className="bg-blue-600 hover:bg-blue-700 gap-2 text-white w-full sm:w-auto">
           <Plus className="w-4 h-4" />
           Add Payment Method
         </Button>
       </div>
-      <div className="border-t border-gray-200 my-6" />
+      <div className="border-t border-gray-200 my-4 sm:my-6" />
 
       <Card className="shadow-none">
-        <CardContent className=" flex items-center justify-between">
+        <CardContent className="p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-blue-100 rounded flex items-center justify-center">
+            <div className="w-10 h-10 bg-blue-100 rounded flex items-center justify-center shrink-0">
               <CreditCard className="w-5 h-5 text-blue-600" />
             </div>
-            <div>
-              <div className="flex items-center gap-2">
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
                 <p className="font-medium text-gray-900">•••• •••• •••• 4532</p>
                 <Badge variant="outline" className="text-xs">Default</Badge>
               </div>
-              <p className="text-sm text-gray-500">Ahmed Mohammed • Expires 12/26</p>
+              <p className="text-sm text-gray-500 truncate">Ahmed Mohammed • Expires 12/26</p>
             </div>
           </div>
-          <Button variant="outline" size="sm">Remove</Button>
+          <Button variant="outline" size="sm" className="w-full sm:w-auto">Remove</Button>
         </CardContent>
       </Card>
     </div>

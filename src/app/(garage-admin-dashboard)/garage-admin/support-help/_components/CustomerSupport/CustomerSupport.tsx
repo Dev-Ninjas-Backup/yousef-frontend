@@ -17,7 +17,7 @@ const CustomerSupport = () => {
           Chat with our support team for help with listings, verification, or any other questions.
         </p>
 
-        <Button className="w-full bg-blue-600 hover:bg-blue-700 gap-2 py-5">
+        <Button className="w-full bg-blue-600 hover:bg-blue-700 gap-2 py-5 text-white">
           <MessageSquare className="w-4 h-4" />
           Start Chat
         </Button>

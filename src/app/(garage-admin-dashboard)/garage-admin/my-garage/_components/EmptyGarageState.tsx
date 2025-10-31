@@ -27,7 +27,7 @@ export function EmptyGarageState({ onAddGarage }: EmptyGarageStateProps) {
         <Button
           onClick={onAddGarage}
           size="lg"
-          className="mt-4 bg-blue-500 hover:bg-blue-600"
+          className="mt-4 bg-blue-500 hover:bg-blue-600 text-white"
         >
           <Plus className="w-5 h-5" />
           Add New Garage

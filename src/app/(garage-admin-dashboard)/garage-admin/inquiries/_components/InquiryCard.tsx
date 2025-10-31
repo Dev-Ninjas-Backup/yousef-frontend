@@ -97,7 +97,7 @@ export function InquiryCard({
       {/* Actions */}
       <div className="flex flex-col sm:flex-row gap-2">
         <Button
-          className="bg-blue-500 hover:bg-blue-600"
+          className="bg-blue-500 hover:bg-blue-600 text-white"
           onClick={() => onReply(inquiry.id)}
           size="sm"
         >
@@ -108,6 +108,7 @@ export function InquiryCard({
           onClick={() => onMarkClosed(inquiry.id)}
           variant="outline"
           size="sm"
+          className=""
         >
           Mark as Closed
         </Button>
