@@ -68,7 +68,7 @@ export default function PlatformSettingsPage() {
   };
 
   return (
-    <div className="w-full space-y-5 sm:space-y-6 max-w-4xl">
+    <div className="w-full space-y-5 sm:space-y-6 ">
       {/* Header */}
       <div>
         <h1 className="text-xl sm:text-2xl font-semibold text-gray-900">

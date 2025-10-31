@@ -1,9 +1,9 @@
 import Image from "next/image";
 import { ShieldCheck, Users, Wrench, Clock } from "lucide-react";
-import OurStory from "@/assets/about/Story/our_story.jpg";
-import OurMission from "@/assets/about/Story/our_mission.jpg";
-import OurVision from "@/assets/about/Story/our_vision.jpg";
-import Empowering from "@/assets/about/Story/empowering.jpg";
+import OurStory from "@/assets/about/story/our_story.jpg";
+import OurMission from "@/assets/about/story/our_mission.jpg";
+import OurVision from "@/assets/about/story/our_vision.jpg";
+import Empowering from "@/assets/about/story/empowering.jpg";
 
 const features = [
   {

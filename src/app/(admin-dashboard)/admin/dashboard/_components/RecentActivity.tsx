@@ -1,9 +1,9 @@
 import { ActivityItem } from "@/components/shared/dashboard/admin/ActivityItem";
 import {
   LuUsers,
-  LuFileText,
-  LuBanknote,
-  LuClipboardCheck,
+  LuStore,
+  LuBox,
+  LuDollarSign
 } from "react-icons/lu";
 
 const RecentActivity = () => {
@@ -14,21 +14,21 @@ const RecentActivity = () => {
       </h2>
       <div className="divide-y divide-gray-100">
         <ActivityItem
-          icon={LuFileText}
+          icon={LuStore}
           title="New garage registration: QuickFix Auto Service"
           time="2 hours ago"
           iconBg="bg-blue-50"
           iconColor="text-blue-600"
         />
         <ActivityItem
-          icon={LuClipboardCheck}
+          icon={LuBox}
           title="Spare part submitted for approval: Engine Oil Filter"
           time="3 hours ago"
           iconBg="bg-orange-50"
           iconColor="text-orange-600"
         />
         <ActivityItem
-          icon={LuBanknote}
+          icon={LuDollarSign}
           title="Payment received: $650.00 from Precision Auto Care"
           time="6 hours ago"
           iconBg="bg-green-50"
