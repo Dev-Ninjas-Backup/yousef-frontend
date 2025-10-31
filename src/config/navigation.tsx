@@ -96,7 +96,7 @@ export const garageAdminNavItems: NavItem[] = [
   },
   {
     label: "Ad & Promotion",
-    path: "/garage-admin/ad-promotion",
+    path: "/garage-admin/ads-promotions",
     icon: <LuChartColumn className="text-lg" />,
   },
   {
@@ -107,11 +107,6 @@ export const garageAdminNavItems: NavItem[] = [
   {
     label: "Support & Help",
     path: "/garage-admin/support-help",
-    icon: <LuSettings className="text-lg" />,
-  },
-  {
-    label: "Support & Help",
-    path: "/garage-admin/support",
     icon: <MessageCircleQuestionMark className="text-lg" />,
   },
 ];
