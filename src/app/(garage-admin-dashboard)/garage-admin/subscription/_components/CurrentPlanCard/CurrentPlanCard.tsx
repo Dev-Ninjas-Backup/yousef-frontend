@@ -8,13 +8,13 @@ const CurrentPlanCard = () => {
   return (
     <div className="border rounded-xl bg-white">
       <Card className="bg-blue-600 text-white border-0 shadow-none rounded-br-none rounded-bl-none">
-        <CardContent className="p-6 space-y-4">
-          <div className="flex items-start justify-between">
+        <CardContent className="p-4 sm:p-6 space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
             <div className="flex items-center gap-2">
               <Sparkles className="w-5 h-5" />
-              <h3 className="font-semibold text-xl">Current Plan</h3>
+              <h3 className="font-semibold text-lg sm:text-xl">Current Plan</h3>
             </div>
-            <Badge className="bg-white text-blue-600 hover:bg-white">
+            <Badge className="bg-white text-blue-600 hover:bg-white w-fit">
               Trial Active
             </Badge>
           </div>
@@ -28,12 +28,12 @@ const CurrentPlanCard = () => {
             </div>
             <Progress value={70} className="bg-blue-800 [&>div]:bg-[#2ECC71] [&>div]:rounded-full" />
           </div>
-          <div className="flex justify-between ">
+          <div className="flex flex-col sm:flex-row sm:justify-between gap-4">
             <p className="text-sm flex flex-col gap-2">
               Trial ends on{" "}
               <span className="font-semibold text-xl">January 1, 2026</span>
             </p>
-            <Button className=" bg-white text-blue-600 hover:bg-gray-100 gap-2">
+            <Button className="bg-white text-blue-600 hover:bg-gray-100 gap-2 w-full sm:w-auto">
               <CreditCard className="w-4 h-4" />
               Upgrade Now
             </Button>
@@ -44,7 +44,7 @@ const CurrentPlanCard = () => {
         <Card className="bg-blue-50 border-blue-200 shadow-none rounded-tr-none rounded-tl-none">
           <CardContent className="p-4 flex items-start gap-3">
             <Info className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
-            <div>
+            <div className="space-y-1">
               <p className="text-sm text-blue-900">
                 After your trial ends, your subscription will automatically
                 convert to a paid plan.

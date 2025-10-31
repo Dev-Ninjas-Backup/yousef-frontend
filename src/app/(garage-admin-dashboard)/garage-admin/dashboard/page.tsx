@@ -29,7 +29,7 @@ export default function GarageAdminDashboard() {
             Monitor your listings and performance
           </p>
         </div>
-        <Button className="w-full sm:w-auto bg-blue-500 hover:bg-blue-600">
+        <Button className="w-full sm:w-auto bg-blue-500 hover:bg-blue-600 text-white">
           <Plus className="w-4 h-4" />
           Add New Product
         </Button>

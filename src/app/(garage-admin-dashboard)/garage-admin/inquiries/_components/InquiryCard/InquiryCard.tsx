@@ -40,10 +40,10 @@ const InquiryCard = (inquiry: InquiriesProps) => {
         </div>
 
         <div className="flex gap-2">
-          <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
+          <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white">
             Reply
           </Button>
-          <Button size="sm" variant="outline">
+          <Button size="sm" variant="outline" className="text-white">
             Mark as Closed
           </Button>
         </div>
