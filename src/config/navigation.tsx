@@ -62,40 +62,50 @@ export const adminNavItems: NavItem[] = [
 ];
 
 // Seller navigation items
-export const sellerNavItems: NavItem[] = [
+export const garageAdminNavItems: NavItem[] = [
   {
     label: "Dashboard",
-    path: "/seller/dashboard",
+    path: "/garage-admin/dashboard",
     icon: <LuLayoutDashboard className="text-lg" />,
   },
   {
-    label: "My Listings",
-    path: "/seller/listings",
+    label: "My Garage",
+    path: "/garage-admin/my-garage",
     icon: <LuShip className="text-lg" />,
   },
   {
-    label: "Add New Listing",
-    path: "/seller/listings/new",
+    label: "My Products",
+    path: "/garage-admin/my-products",
     icon: <LuPackage className="text-lg" />,
   },
   {
-    label: "Orders",
-    path: "/seller/orders",
+    label: "Inquiries",
+    path: "/garage-admin/inquiries",
     icon: <LuShoppingCart className="text-lg" />,
   },
   {
     label: "Messages",
-    path: "/seller/messages",
+    path: "/garage-admin/messages",
+    icon: <LuShoppingCart className="text-lg" />,
+  },
+  {
+    label: "Subscription",
+    path: "/garage-admin/subscription",
     icon: <LuMessageSquare className="text-lg" />,
   },
   {
-    label: "Analytics",
-    path: "/seller/analytics",
+    label: "Ad & Promotion",
+    path: "/garage-admin/ad-promotion",
     icon: <LuChartColumn className="text-lg" />,
   },
   {
-    label: "Settings",
-    path: "/seller/settings",
+    label: "Profile & Settings",
+    path: "/garage-admin/settings",
+    icon: <LuSettings className="text-lg" />,
+  },
+  {
+    label: "Support & Help",
+    path: "/garage-admin/support",
     icon: <LuSettings className="text-lg" />,
   },
 ];
