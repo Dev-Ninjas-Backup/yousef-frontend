@@ -34,7 +34,7 @@ const AdminDashboard = () => {
     <div className="w-full space-y-4 sm:space-y-6">
       {/* Header */}
       <div className="mb-4 sm:mb-6">
-        <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-1 sm:mb-2">
+        <h1 className="text-xl sm:text-2xl lg:text-3xl font-medium text-gray-900 mb-1 sm:mb-2">
           Dashboard Overview
         </h1>
         <p className="text-xs sm:text-sm text-gray-500">
