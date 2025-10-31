@@ -6,7 +6,7 @@ import {
   LuMessageSquare,
   LuTrendingUp,
   LuStore,
-  LuBox,
+  LuPackage,
   LuDollarSign,
   LuBell
 } from "react-icons/lu";
@@ -40,7 +40,7 @@ const StatGridsSection = () => {
 
       {/* Spare Parts Listed */}
       <StatCard
-        icon={LuBox}
+        icon={LuPackage}
         value="850"
         label="Spare Parts Listed"
         change="+10% from last month"

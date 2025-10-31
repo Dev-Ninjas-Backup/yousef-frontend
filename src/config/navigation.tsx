@@ -1,19 +1,15 @@
 import { CreditCard, MessageCircleQuestionMark } from "lucide-react";
 import {
   LuChartColumn,
-  LuFileText,
   LuLayoutDashboard,
   LuSettings,
-  LuShield,
   LuShip,
-  LuStar,
   LuUsers,
   LuPackage,
   LuShoppingCart,
   LuHeart,
   LuMessageSquare,
   LuStore,
-  LuBox,
   LuDollarSign,
 } from "react-icons/lu";
 
@@ -43,7 +39,7 @@ export const adminNavItems: NavItem[] = [
   {
     label: "Spare Parts",
     path: "/admin/spareparts",
-    icon: <LuBox className="text-lg" />,
+    icon: <LuPackage className="text-lg" />,
   },
   {
     label: "Financials",

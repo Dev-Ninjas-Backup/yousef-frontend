@@ -88,7 +88,7 @@ const StatCard = ({
         <TrendIcon className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
       )}
     </div>
-    <p className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1">{value}</p>
+    <p className="text-2xl sm:text-3xl font-semibold text-gray-900 mb-1">{value}</p>
     <p className="text-xs sm:text-sm text-gray-500 font-medium">{label}</p>
   </div>
 );

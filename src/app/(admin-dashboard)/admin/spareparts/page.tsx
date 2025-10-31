@@ -213,7 +213,7 @@ export default function SparePartsManagementPage() {
                 <th className="text-left py-4 px-5 text-xs font-semibold text-gray-600 uppercase tracking-wider">
                   Submitted
                 </th>
-                <th className="text-left py-4 px-5 text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                <th className="text-right py-4 px-5 text-xs font-semibold text-gray-600 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
@@ -252,7 +252,7 @@ export default function SparePartsManagementPage() {
                     <p className="text-sm text-gray-900">{part.submitted}</p>
                   </td>
                   <td className="py-4 px-5">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center justify-end gap-2">
                       {part.status === "Pending" && (
                         <>
                           <button

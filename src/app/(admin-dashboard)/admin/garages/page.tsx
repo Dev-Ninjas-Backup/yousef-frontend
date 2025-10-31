@@ -193,7 +193,7 @@ export default function GarageManagementPage() {
                 <th className="text-left py-4 px-5 text-xs font-semibold text-gray-600 uppercase tracking-wider">
                   Revenue
                 </th>
-                <th className="text-left py-4 px-5 text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                <th className="text-right py-4 px-5 text-xs font-semibold text-gray-600 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
@@ -236,7 +236,7 @@ export default function GarageManagementPage() {
                     <p className="text-sm font-medium text-gray-900">{garage.revenue}</p>
                   </td>
                   <td className="py-4 px-5">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center justify-end gap-2">
                       {garage.status === "Pending" && (
                         <>
                           <button
