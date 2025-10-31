@@ -61,41 +61,51 @@ export const adminNavItems: NavItem[] = [
   },
 ];
 
-// Seller navigation items
-export const sellerNavItems: NavItem[] = [
+// Garage admin navigation items
+export const garageAdminNavItems: NavItem[] = [
   {
     label: "Dashboard",
-    path: "/seller/dashboard",
+    path: "/garage-admin/dashboard",
     icon: <LuLayoutDashboard className="text-lg" />,
   },
   {
-    label: "My Listings",
-    path: "/seller/listings",
+    label: "My Garage",
+    path: "/garage-admin/my-garage",
     icon: <LuShip className="text-lg" />,
   },
   {
-    label: "Add New Listing",
-    path: "/seller/listings/new",
+    label: "My Products",
+    path: "/garage-admin/my-products",
     icon: <LuPackage className="text-lg" />,
   },
   {
-    label: "Orders",
-    path: "/seller/orders",
+    label: "Messages",
+    path: "/garage-admin/messages",
     icon: <LuShoppingCart className="text-lg" />,
   },
   {
-    label: "Messages",
-    path: "/seller/messages",
+    label: "Inquiries",
+    path: "/garage-admin/inquiries",
+    icon: <LuShoppingCart className="text-lg" />,
+  },
+  {
+    label: "Subscription",
+    path: "/garage-admin/subscription",
     icon: <LuMessageSquare className="text-lg" />,
   },
   {
-    label: "Analytics",
-    path: "/seller/analytics",
+    label: "Ad & Promotion",
+    path: "/garage-admin/ads-promotions",
     icon: <LuChartColumn className="text-lg" />,
   },
   {
-    label: "Settings",
-    path: "/seller/settings",
+    label: "Profile & Settings",
+    path: "/garage-admin/profile-settings",
+    icon: <LuSettings className="text-lg" />,
+  },
+  {
+    label: "Support & Help",
+    path: "/garage-admin/support",
     icon: <LuSettings className="text-lg" />,
   },
 ];
