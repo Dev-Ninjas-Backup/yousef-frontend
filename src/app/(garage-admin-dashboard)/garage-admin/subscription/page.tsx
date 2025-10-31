@@ -1,7 +1,5 @@
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
-import { Info } from "lucide-react";
 import CurrentPlanCard from "./_components/CurrentPlanCard/CurrentPlanCard";
 import PlanCard from "./_components/PlanCard/PlanCard";
 import PaymentMethodCard from "./_components/PaymentMethodCard/PaymentMethodCard";
@@ -11,23 +9,12 @@ import CancelSubscription from "./_components/CancelSubscription/CancelSubscript
 
 export default function SubscriptionPage() {
   return (
-    <div className="space-y-6 bg-[#F9FAFB] p-6 rounded-2xl">
+    <div className="space-y-4 sm:space-y-6 bg-[#F9FAFB] p-4 sm:p-6 rounded-2xl">
       <CurrentPlanCard />
-
-   
-{/* 
-      <div>
-        <h3 className="font-semibold text-gray-900 mb-1">Choose Your Plan</h3>
-        <p className="text-sm text-gray-500 mb-4">Select a billing cycle that works for you</p>
-        </div> */}
-        <PlanCard />
-
+      <PlanCard />
       <PaymentMethodCard />
-
       <BillingSettings />
-
       <TransactionHistory />
-
       <CancelSubscription />
     </div>
   );

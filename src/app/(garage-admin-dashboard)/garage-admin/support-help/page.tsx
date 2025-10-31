@@ -14,7 +14,7 @@ export default function SupportHelpPage() {
         </p>
       </div>
 
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <CustomerSupport />
         <HelpCenter />
       </div>

@@ -89,7 +89,7 @@ export default function AdsPromotionsPage() {
             Manage your featured promotions and special offers
           </p>
         </div>
-        <Button className="bg-blue-600 hover:bg-blue-700 gap-2" onClick={() => setIsModalOpen(true)}>
+        <Button className="bg-blue-600 hover:bg-blue-700 gap-2 text-white" onClick={() => setIsModalOpen(true)}>
           <Plus className="w-4 h-4" />
           Create New Ad
         </Button>

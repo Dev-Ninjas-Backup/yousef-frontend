@@ -93,7 +93,7 @@ const GarageInformation = () => {
             <div className="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center">
               <span className="text-2xl font-semibold text-gray-600">PA</span>
             </div>
-            <Button variant="outline" className="gap-2">
+            <Button variant="outline" className="gap-2 ">
               <Upload className="w-4 h-4" />
               Upload Logo
             </Button>
@@ -101,7 +101,7 @@ const GarageInformation = () => {
         </div>
 
         <div className="flex gap-3 pt-2 mt-10">
-          <Button className="bg-blue-600 hover:bg-blue-700">
+          <Button className="bg-blue-600 hover:bg-blue-700 text-white">
             Save Changes
           </Button>
           <Button variant="outline">Cancel</Button>
