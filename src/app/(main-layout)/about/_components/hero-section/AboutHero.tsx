@@ -10,9 +10,9 @@ export default function AboutHero() {
           src={AboutBg}
           alt="Garage background"
           fill
-          className="object-cover"
+          className="object-cover rounded-lg"
         />
-        <div className="absolute inset-0 bg-black/60" />
+        <div className="absolute inset-0 bg-black/60 rounded-lg" />
       </div>
 
       <div className="relative z-10 flex h-full flex-col items-center justify-center px-4 text-center">

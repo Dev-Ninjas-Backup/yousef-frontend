@@ -33,10 +33,10 @@ const Footer: React.FC = () => {
               <Link href="/spare-parts" className="hover:text-blue-600">
                 Spare Parts
               </Link>
-              <Link href="/download" className="hover:text-blue-600">
+              <Link href="/download-app" className="hover:text-blue-600">
                 Download App
               </Link>
-              <Link href="/contact" className="hover:text-blue-600">
+              <Link href="/contact-us" className="hover:text-blue-600">
                 Contact Us
               </Link>
             </div>

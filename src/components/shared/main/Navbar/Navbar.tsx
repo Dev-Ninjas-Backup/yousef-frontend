@@ -8,7 +8,7 @@ import logo from "@/assets/navbar/sayarahub_navbar.svg";
 import scroll_logo from "@/assets/navbar/sayarahub_scroll.svg";
 
 const showMyAccount = true;
-const menuItems = [
+ export const menuItems = [
   { label: "Home", href: "/" },
   { label: "Service", href: "/service" },
   { label: "Spare Parts", href: "/spare-parts" },
