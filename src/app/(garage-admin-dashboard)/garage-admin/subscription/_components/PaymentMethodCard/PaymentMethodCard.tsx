@@ -5,7 +5,7 @@ import { CreditCard, Plus } from "lucide-react";
 
 const PaymentMethodCard = () => {
   return (
-    <div className="space-y-4 boder bg-white p-6 rounded-xl">
+    <div className="space-y-4 border bg-white p-6 rounded-xl">
       <div className="flex items-center justify-between">
         <div>
           <h3 className="font-semibold text-gray-900">Payment Methods</h3>
@@ -18,7 +18,7 @@ const PaymentMethodCard = () => {
       </div>
       <div className="border-t border-gray-200 my-6" />
 
-      <Card>
+      <Card className="shadow-none">
         <CardContent className=" flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-blue-100 rounded flex items-center justify-center">

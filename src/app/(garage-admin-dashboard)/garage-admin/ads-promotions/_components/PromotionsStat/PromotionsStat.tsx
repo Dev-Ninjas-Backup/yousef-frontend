@@ -13,7 +13,7 @@ interface PromotionsStatProps {
 const PromotionsStat = ({ stats }: { stats: PromotionsStatProps[] }) => {
   return  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {stats.map((stat) => (
-          <Card key={stat.title}>
+          <Card key={stat.title} className="shadow-none">
             <CardContent className="">
               <div className="flex flex-col gap-2 ">
                 <div>

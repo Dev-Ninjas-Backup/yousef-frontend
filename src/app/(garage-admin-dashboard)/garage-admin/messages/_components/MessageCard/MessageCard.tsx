@@ -13,7 +13,7 @@ interface MessageProps {
 
 const MessageCard = (props: MessageProps) => {
   return (
-    <Card className="bg-[#EFF6FF] py-10 border-[#BEDBFF]">
+    <Card className="bg-[#EFF6FF] py-10 border-[#BEDBFF] shadow-none">
       <CardContent className="space-y-4">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-2">

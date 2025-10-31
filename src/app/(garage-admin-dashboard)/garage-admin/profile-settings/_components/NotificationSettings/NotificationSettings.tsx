@@ -11,23 +11,35 @@ const NotificationSettings = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="font-medium text-gray-900">Email Notifications</p>
-              <p className="text-sm text-gray-500">Receive notifications via email</p>
+              <p className="text-sm text-gray-500">
+                Receive notifications via email
+              </p>
             </div>
             <Switch defaultChecked />
           </div>
+          <div className="border-t border-gray-200" />
 
           <div className="flex items-center justify-between">
             <div>
-              <p className="font-medium text-gray-900">Customer Inquiry Alerts</p>
-              <p className="text-sm text-gray-500">Get notified of new inquiries</p>
+              <p className="font-medium text-gray-900">
+                Customer Inquiry Alerts
+              </p>
+              <p className="text-sm text-gray-500">
+                Get notified of new inquiries
+              </p>
             </div>
             <Switch defaultChecked />
           </div>
+          <div className="border-t border-gray-200" />
 
           <div className="flex items-center justify-between">
             <div>
-              <p className="font-medium text-gray-900">Product Approval Updates</p>
-              <p className="text-sm text-gray-500">Updates on listing approvals</p>
+              <p className="font-medium text-gray-900">
+                Product Approval Updates
+              </p>
+              <p className="text-sm text-gray-500">
+                Updates on listing approvals
+              </p>
             </div>
             <Switch defaultChecked />
           </div>

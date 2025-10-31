@@ -70,7 +70,7 @@ export default function AdsPromotionsPage() {
       <PromotionsStat stats={stats} />
     
 
-      <Card className="bg-[#EFF6FF] border-[#BEDBFF]">
+      <Card className="bg-[#EFF6FF] border-[#BEDBFF] shadow-none">
         <CardContent className="">
           <p className="text-sm font-bold text-blue-900 mb-1">
             Promotional Pricing:

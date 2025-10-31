@@ -32,7 +32,7 @@ const Navbar = () => {
   // }, []);
 
   return (
-    <nav className="fixed z-50 w-full py-4 px-4 md:px-8 bg-white/70 backdrop-blur-md md:bg-transparent md:backdrop-blur-none">
+    <nav className="fixed z-50 w-full py-4 px-4 md:mt-4 md:px-8 bg-white/70 backdrop-blur-md md:bg-transparent md:backdrop-blur-none">
       <div className="container mx-auto flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center">

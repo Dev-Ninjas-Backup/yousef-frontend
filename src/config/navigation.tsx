@@ -105,7 +105,7 @@ export const garageAdminNavItems: NavItem[] = [
   },
   {
     label: "Support & Help",
-    path: "/garage-admin/support",
+    path: "/garage-admin/support-help",
     icon: <LuSettings className="text-lg" />,
   },
 ];

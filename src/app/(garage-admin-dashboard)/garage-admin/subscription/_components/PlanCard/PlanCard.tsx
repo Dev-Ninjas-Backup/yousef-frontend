@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { CheckCircle, CreditCard } from "lucide-react";
+import { Check, CheckCircle, CircleCheckBig, CreditCard } from "lucide-react";
 
 const PlanCard = () => {
   return (
@@ -14,17 +14,17 @@ const PlanCard = () => {
         </p>
       </div>
       <div className="flex flex-col items-center">
-        <Card className="border-2 w-full max-w-[450px] border-gray-200 hover:border-blue-600 transition-colors">
+        <Card className="border-2 shadow-none w-full max-w-[450px] border-gray-200 hover:border-blue-600 transition-colors">
           <CardContent className="p-6 space-y-6">
             <div className="flex items-start justify-between">
               <div>
                 <h3 className="text-lg font-semibold text-gray-900">Monthly</h3>
                 <p className="text-sm text-gray-500">Billed every month</p>
               </div>
-              <CheckCircle className="w-5 h-5 text-blue-600 fill-blue-600" />
+             <CircleCheckBig className="w-5 h-5 text-green-600  shrink-0" />
             </div>
 
-            <div className="flex items-baseline gap-1">
+            <div className="flex items-baseline gap-1 my-8">
               <span className="text-sm text-gray-600">AED</span>
               <span className="text-5xl font-bold text-gray-900">100</span>
               <span className="text-sm text-gray-600">/month</span>
@@ -32,19 +32,19 @@ const PlanCard = () => {
 
             <ul className="space-y-3">
               <li className="flex items-center gap-2 text-sm text-gray-700">
-                <CheckCircle className="w-5 h-5 text-green-600 fill-green-600 flex-shrink-0" />
+                <CircleCheckBig className="w-5 h-5 text-green-600  shrink-0" />
                 All premium features
               </li>
               <li className="flex items-center gap-2 text-sm text-gray-700">
-                <CheckCircle className="w-5 h-5 text-green-600 fill-green-600 flex-shrink-0" />
+                <CircleCheckBig className="w-5 h-5 text-green-600  shrink-0" />
                 Unlimited listings
               </li>
               <li className="flex items-center gap-2 text-sm text-gray-700">
-                <CheckCircle className="w-5 h-5 text-green-600 fill-green-600 flex-shrink-0" />
+                <CircleCheckBig className="w-5 h-5 text-green-600  shrink-0" />
                 Priority support
               </li>
               <li className="flex items-center gap-2 text-sm text-gray-700">
-                <CheckCircle className="w-5 h-5 text-green-600 fill-green-600 flex-shrink-0" />
+                <CircleCheckBig className="w-5 h-5 text-green-600  shrink-0" />
                 Cancel anytime
               </li>
             </ul>
