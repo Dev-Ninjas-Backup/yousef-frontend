@@ -115,7 +115,11 @@ export default function GarageList() {
             {/* Show Map Toggle */}
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium">Show Map</span>
-              <Switch checked={showMap} onCheckedChange={setShowMap} />
+              <Switch
+                checked={showMap}
+                onCheckedChange={setShowMap}
+                className="bg-blue-600 data-[state=checked]:bg-blue-600"
+              />
             </div>
           </div>
         </div>

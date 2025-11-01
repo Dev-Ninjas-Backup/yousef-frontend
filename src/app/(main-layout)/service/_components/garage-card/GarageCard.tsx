@@ -41,53 +41,56 @@ export default function GarageCard({
         <Link href={`/service/${id}`}>
           {/* Header */}
           <div className="mb-4 flex items-start justify-between">
-            <div className="flex gap-3">
-              {/* Icon */}
-              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-50">
-                <Wrench className="h-6 w-6 text-blue-600" />
-              </div>
-
+            <div className="flex gap-3 w-full justify-between">
               {/* Info */}
-              <div>
-                <div className="flex items-center gap-2">
-                  <h3 className="text-lg font-semibold">{name}</h3>
-                  {status && (
-                    <Badge
-                      variant={
-                        status === "Open 24/7" ? "default" : "destructive"
-                      }
-                      className={
-                        status === "Open 24/7" ? "bg-green-500" : "bg-red-500"
-                      }
-                    >
-                      {status}
-                    </Badge>
-                  )}
-                </div>
 
-                {/* Rating */}
-                <div className="mt-1 flex items-center gap-2">
-                  <div className="flex items-center">
-                    {[...Array(5)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className={`h-4 w-4 ${
-                          i < Math.floor(rating)
-                            ? "fill-yellow-400 text-yellow-400"
-                            : "text-gray-300"
-                        }`}
-                      />
-                    ))}
+              <div className="flex gap-4">
+                {/* Icon */}
+                <div className="flex h-12 w-12 md:h-20 md:w-20 items-center justify-center rounded-lg bg-blue-50">
+                  <Wrench className="md:h-8 md:w-8 h-4 w-4 text-blue-600" />
+                </div>
+                <div>
+                  {" "}
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-base md:text-lg font-semibold">
+                      {name}
+                    </h3>
                   </div>
-                  <span className="text-sm text-gray-600">
-                    {rating} ({reviews} reviews)
-                  </span>
+                  {/* Rating */}
+                  <div className="mt-1 flex items-center gap-2">
+                    <div className="flex items-center">
+                      {[...Array(5)].map((_, i) => (
+                        <Star
+                          key={i}
+                          className={`h-4 w-4 ${
+                            i < Math.floor(rating)
+                              ? "fill-yellow-400 text-yellow-400"
+                              : "text-gray-300"
+                          }`}
+                        />
+                      ))}
+                    </div>
+                    <span className="text-sm text-gray-600">
+                      {rating} ({reviews} reviews)
+                    </span>
+                  </div>
+                  {/* Location */}
+                  <p className="mt-1 text-sm text-gray-500">
+                    {distance} • {location}
+                  </p>
                 </div>
-
-                {/* Location */}
-                <p className="mt-1 text-sm text-gray-500">
-                  {distance} • {location}
-                </p>
+              </div>
+              <div>
+                {status && (
+                  <Badge
+                    variant={status === "Open 24/7" ? "default" : "destructive"}
+                    className={
+                      status === "Open 24/7" ? "bg-green-500" : "bg-red-500"
+                    }
+                  >
+                    {status}
+                  </Badge>
+                )}
               </div>
             </div>
           </div>
@@ -138,10 +141,10 @@ export default function GarageCard({
             </Button>
           </div>
 
-          <div className="text-right">
+          {/* <div className="text-right">
             <p className="text-xs text-gray-500">Est. Price</p>
             <p className="font-semibold">{priceRange}</p>
-          </div>
+          </div> */}
         </div>
       </div>
     </Card>
