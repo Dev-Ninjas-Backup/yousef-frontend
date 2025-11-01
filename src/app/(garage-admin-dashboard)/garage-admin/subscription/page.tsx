@@ -9,7 +9,7 @@ import CancelSubscription from "./_components/CancelSubscription/CancelSubscript
 
 export default function SubscriptionPage() {
   return (
-    <div className="space-y-4 sm:space-y-6 bg-[#F9FAFB] rounded-2xl p-6">
+    <div className="space-y-4 sm:space-y-6 md:p-6 bg-[#F9FAFB] rounded-2xl">
       <CurrentPlanCard />
       <PlanCard />
       <PaymentMethodCard />

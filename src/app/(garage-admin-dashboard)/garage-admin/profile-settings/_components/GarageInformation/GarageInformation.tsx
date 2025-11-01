@@ -25,7 +25,7 @@ const GarageInformation = () => {
             <Label htmlFor="garageName">Garage Name</Label>
             <Input
               id="garageName"
-              defaultValue="Premium Auto Parts LLC"
+              placeholder="Premium Auto Parts LLC"
               className="bg-[#F3F3F5] border-0"
             />
           </div>
@@ -34,7 +34,7 @@ const GarageInformation = () => {
             <Label htmlFor="tradeLicense">Trade License Number</Label>
             <Input
               id="tradeLicense"
-              defaultValue="TRN-12345678"
+              placeholder="TRN-12345678"
               className="bg-[#F3F3F5] border-0"
             />
           </div>
@@ -45,7 +45,7 @@ const GarageInformation = () => {
             <Label htmlFor="phone">Phone Number</Label>
             <Input
               id="phone"
-              defaultValue="+971 50 123 4567"
+              placeholder="+971 50 123 4567"
               className="bg-[#F3F3F5] border-0"
             />
           </div>
@@ -54,35 +54,35 @@ const GarageInformation = () => {
             <Label htmlFor="email">Email Address</Label>
             <Input
               id="email"
-              defaultValue="info@premiumautoparts.ae"
+              placeholder="info@premiumautoparts.ae"
               className="bg-[#F3F3F5] border-0"
             />
           </div>
         </div>
 
         <div className="grid grid-cols-12 gap-4">
-          <div className="col-span-4 space-y-2">
+          <div className="col-span-12 md:col-span-4 space-y-2">
             <Label htmlFor="address">Address *</Label>
             <div className="relative">
               <Input
                 id="address"
-                defaultValue="Sheikh Zayed Road, Al Quoz Industrial Area 3"
+                placeholder="Sheikh Zayed Road"
                 className="bg-[#F3F3F5] border-0"
               />
               <MapPin className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-blue-600" />
             </div>
           </div>
 
-          <div className="col-span-4 space-y-2">
+          <div className="col-span-12 md:col-span-4 space-y-2">
             <Label htmlFor="city">City</Label>
             <Input
               id="city"
-              defaultValue="Dubai"
+              placeholder="Dubai"
               className="bg-[#F3F3F5] border-0"
             />
           </div>
 
-          <div className="col-span-4 space-y-2">
+          <div className="col-span-12 md:col-span-4 space-y-2">
             <Label htmlFor="emirate">Emirate *</Label>
             <Select defaultValue="dubai">
               <SelectTrigger

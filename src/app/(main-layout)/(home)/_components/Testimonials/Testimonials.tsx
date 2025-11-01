@@ -86,28 +86,13 @@ export default function TestimonialsSection() {
           </p>
         </div>
 
-        <div className="relative mb-6">
+        <div className="relative mb-10">
           <div className="overflow-hidden">
             <Marquee className="flex gap-6 ">
               <div className="flex gap-6 hover:paused">
-                {duplicatedTestimonials.map((testimonial, index) => (
+                {testimonials.map((testimonial, index) => (
                   <TestimonialCard
                     key={`row1-${testimonial.id}-${index}`}
-                    testimonial={testimonial}
-                  />
-                ))}
-              </div>
-            </Marquee>
-          </div>
-        </div>
-
-        <div className="relative mb-10 py-4">
-          <div className="overflow-hidden">
-            <Marquee direction="right">
-              <div className="flex gap-6 ">
-                {duplicatedTestimonials.map((testimonial, index) => (
-                  <TestimonialCard
-                    key={`row2-${testimonial.id}-${index}`}
                     testimonial={testimonial}
                   />
                 ))}
@@ -125,7 +110,6 @@ export default function TestimonialsSection() {
           </Button>
         </div>
       </div>
-
     </section>
   );
 }

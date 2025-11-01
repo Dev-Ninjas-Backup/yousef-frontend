@@ -47,7 +47,7 @@ const DashboardSidebar = ({
   const closeMobileMenu = useCallback(() => {
     onClose?.();
   }, [onClose]);
-  let message = 1;
+
 
   return (
     <>
