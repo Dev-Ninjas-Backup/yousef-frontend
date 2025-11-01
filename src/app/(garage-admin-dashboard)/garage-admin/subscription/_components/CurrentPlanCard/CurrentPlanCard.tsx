@@ -6,8 +6,8 @@ import { CreditCard, Info, Sparkles } from "lucide-react";
 
 const CurrentPlanCard = () => {
   return (
-    <div className="border rounded-xl bg-white">
-      <Card className="bg-blue-600 text-white border-0 shadow-none rounded-br-none rounded-bl-none">
+    <div className="border rounded-xl bg-white overflow-hidden w-[320px] md:w-full">
+      <Card className="bg-blue-600 text-white border-0 shadow-none rounded-b-none">
         <CardContent className="p-4 sm:p-6 space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
             <div className="flex items-center gap-2">
@@ -40,22 +40,21 @@ const CurrentPlanCard = () => {
           </div>
         </CardContent>
       </Card>
-      <div className="mt-6">
-        <Card className="bg-blue-50 border-blue-200 shadow-none rounded-tr-none rounded-tl-none">
-          <CardContent className="p-4 flex items-start gap-3">
-            <Info className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
-            <div className="space-y-1">
-              <p className="text-sm text-blue-900">
-                After your trial ends, your subscription will automatically
-                convert to a paid plan.
-              </p>
-              <p className="text-sm text-blue-900">
-                Add a payment method now to ensure uninterrupted service.
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      
+      <Card className="bg-blue-50 mt-5 border-blue-200 shadow-none rounded-t-none border-t-0">
+        <CardContent className="p-4 flex items-start gap-3">
+          <Info className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
+          <div className="space-y-1">
+            <p className="text-sm text-blue-900">
+              After your trial ends, your subscription will automatically
+              convert to a paid plan.
+            </p>
+            <p className="text-sm text-blue-900">
+              Add a payment method now to ensure uninterrupted service.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };

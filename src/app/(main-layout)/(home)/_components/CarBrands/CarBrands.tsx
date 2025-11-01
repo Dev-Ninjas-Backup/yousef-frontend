@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import Image from "next/image";
-import './carBrands.css'
+import Marquee from "react-fast-marquee";
 import Subaru from "@/assets/home/CarBrands/Subaru.svg";
 import Nissan from "@/assets/home/CarBrands/Nissan.svg";
 import Chery from "@/assets/home/CarBrands/Chery.svg";
@@ -31,11 +31,14 @@ const brands = [
 const CarBrands: React.FC = () => {
   return (
     <section className="w-full py-3 h-[120px] my-12 overflow-hidden">
-      <div className="flex items-center h-full animate-scroll">
+      <div className="flex items-center h-full ">
+        <Marquee>
+
+        
         {[...brands, ...brands].map((brand, index) => (
           <div
             key={`${brand.name}-${index}`}
-            className="shrink-0 mx-8 transition-all duration-300"
+            className="shrink-0 mx-8 "
           >
             <Image
               src={brand.logo}
@@ -46,6 +49,7 @@ const CarBrands: React.FC = () => {
             />
           </div>
         ))}
+        </Marquee>
       </div>
     
     </section>

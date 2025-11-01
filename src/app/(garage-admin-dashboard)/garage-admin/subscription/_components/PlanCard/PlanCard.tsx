@@ -4,8 +4,8 @@ import { CircleCheckBig, CreditCard } from "lucide-react";
 
 const PlanCard = () => {
   return (
-    <div className="mx-auto p-4 sm:p-6">
-      <div className="mb-6">
+    <div className="bg-white p-4 sm:p-6 rounded-xl border">
+      <div className="mb-4 sm:mb-6">
         <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-1">
           Choose Your Plan
         </h2>
@@ -24,7 +24,7 @@ const PlanCard = () => {
              <CircleCheckBig className="w-5 h-5 text-green-600 shrink-0" />
             </div>
 
-            <div className="flex items-baseline gap-1 my-6 sm:my-8">
+            <div className="flex items-baseline gap-1">
               <span className="text-sm text-gray-600">AED</span>
               <span className="text-4xl sm:text-5xl font-bold text-gray-900">100</span>
               <span className="text-sm text-gray-600">/month</span>
@@ -51,7 +51,7 @@ const PlanCard = () => {
           </CardContent>
         </Card>
 
-        <Button className="w-full text-white max-w-[450px] bg-blue-600 hover:bg-blue-700 gap-2 mt-6 h-11 sm:h-12 text-sm sm:text-base font-medium">
+        <Button className="w-full text-white max-w-[450px] bg-blue-600 hover:bg-blue-700 gap-2 mt-4 sm:mt-6 h-11 sm:h-12 text-sm sm:text-base font-medium">
           <CreditCard className="w-4 h-4 sm:w-5 sm:h-5" />
           Activate Monthly Plan - AED 100
         </Button>

@@ -3,7 +3,7 @@ import { Switch } from "@/components/ui/switch";
 
 const NotificationSettings = () => {
   return (
-    <Card>
+    <Card className="shadow-none">
       <CardContent className="p-6 space-y-4">
         <h3 className="font-semibold text-gray-900">Notification Settings</h3>
 

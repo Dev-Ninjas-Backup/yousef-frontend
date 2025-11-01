@@ -7,7 +7,7 @@ import playstore from "@/assets/home/banner/playstore.svg";
 
 const HeroBanner: React.FC = () => {
   return (
-    <section className="relative w-full h-[500px] sm:h-[600px] md:h-[700px] lg:h-[900px] overflow-hidden">
+    <section className="relative w-full h-[500px]  md:h-[700px] lg:h-[900px] overflow-hidden pt-10 md:pt-0">
       <div className="absolute inset-0 z-0">
         <video
           autoPlay
