@@ -4,7 +4,7 @@ import { MessageSquare } from "lucide-react";
 
 const CustomerSupport = () => {
   return (
-    <Card className="">
+    <Card className="shadow-none">
       <CardContent className="space-y-10">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">

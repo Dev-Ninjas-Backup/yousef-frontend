@@ -9,7 +9,7 @@ export default function GarageAdminLayout({ children }: { children: ReactNode })
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen mx-auto">
       <DashboardNavbar onMenuToggle={() => setIsSidebarOpen(!isSidebarOpen)} />
       <DashboardSidebar 
         navItems={garageAdminNavItems} 

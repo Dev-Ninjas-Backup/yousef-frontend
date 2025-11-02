@@ -18,10 +18,10 @@ const FaqItem: React.FC<FaqItemProps> = ({ id, question, answer }) => {
       value={id}
       className="bg-[#E8F1FD80] rounded-2xl px-4 border-0 transition-all duration-300"
     >
-      <AccordionTrigger className="text-left text-base md:text-lg font-semibold hover:no-underline [&>svg]:hidden [&[data-state=open]>svg.minus]:block [&[data-state=closed]>svg.plus]:block">
+      <AccordionTrigger className="text-left text-base md:text-lg font-semibold hover:no-underline [&>svg]:hidden group">
         {question}
-        <Plus className="plus h-5 w-5 shrink-0 transition-all duration-300 ease-in-out hidden" />
-        <Minus className="minus h-5 w-5 shrink-0 transition-all duration-300 ease-in-out hidden" />
+        <Plus className="h-5 w-5 shrink-0 transition-transform duration-300 ease-in-out group-data-[state=closed]:block group-data-[state=open]:hidden" />
+        <Minus className="h-5 w-5 shrink-0 transition-transform duration-300 ease-in-out group-data-[state=open]:block group-data-[state=closed]:hidden" />
       </AccordionTrigger>
       <AccordionContent className="text-sm md:text-base text-[#101010] transition-all duration-300 ease-in-out">
         {answer}

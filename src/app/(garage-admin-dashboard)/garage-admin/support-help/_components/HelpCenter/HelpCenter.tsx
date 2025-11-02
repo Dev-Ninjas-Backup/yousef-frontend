@@ -4,7 +4,7 @@ import { BookOpen, CircleQuestionMark, FileText } from "lucide-react";
 
 const HelpCenter = () => {
   return (
-    <Card>
+    <Card className="shadow-none">
       <CardContent className=" space-y-10">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">

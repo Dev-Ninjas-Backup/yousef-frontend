@@ -25,7 +25,7 @@ const FAQSection = () => {
   ];
 
   return (
-    <Card>
+    <Card className="shadow-none">
       <CardContent className="p-6 space-y-4">
         <h3 className="font-semibold text-lg text-gray-900">
           Frequently Asked Questions

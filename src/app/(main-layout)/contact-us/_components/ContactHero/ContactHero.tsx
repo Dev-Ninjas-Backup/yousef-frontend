@@ -5,7 +5,7 @@ import contactHeroimg from "@/assets/contactus/contactus-img.jpg";
 
 const ContactHero: React.FC = () => {
   return (
-    <section className="relative w-full h-[400px] md:h-[500px] lg:h-[720px] overflow-hidden">
+    <section className="relative w-full h-[450px] md:h-[500px] lg:h-[720px] overflow-hidden">
       <div className="absolute inset-0 z-0">
         <Image
           src={contactHeroimg}
@@ -17,7 +17,7 @@ const ContactHero: React.FC = () => {
         <div className="absolute inset-0 bg-black/50 rounded-lg" />
       </div>
 
-      <div className="relative container mx-auto z-10 flex flex-col items-center justify-center h-full px-4 text-center">
+      <div className="mt-10 md:mt-1 relative container mx-auto z-10 flex flex-col items-center justify-center h-full px-4 text-center">
         <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 md:mb-6">
           We're Here to Help You Anytime.
         </h1>
