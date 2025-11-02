@@ -16,6 +16,7 @@ import {
 export interface NavItem {
   label: string;
   path: string;
+  qty?: number;
   icon: React.ReactNode;
 }
 
@@ -73,16 +74,19 @@ export const garageAdminNavItems: NavItem[] = [
   {
     label: "My Products",
     path: "/garage-admin/my-products",
+    qty: 3,
     icon: <LuPackage className="text-lg" />,
   },
   {
     label: "Inquiries",
     path: "/garage-admin/inquiries",
+    qty: 2,
     icon: <LuShoppingCart className="text-lg" />,
   },
   {
     label: "Messages",
     path: "/garage-admin/messages",
+    qty: 2,
     icon: <LuMessageSquare className="text-lg" />,
   },
   {

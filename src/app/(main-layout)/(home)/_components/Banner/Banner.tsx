@@ -7,7 +7,7 @@ import playstore from "@/assets/home/banner/playstore.svg";
 
 const HeroBanner: React.FC = () => {
   return (
-    <section className="relative w-full h-[500px] sm:h-[600px] md:h-[700px] lg:h-[900px] overflow-hidden">
+    <section className="relative w-full h-[500px]  md:h-[700px] lg:h-[900px] overflow-hidden pt-10 md:pt-0">
       <div className="absolute inset-0 z-0">
         <video
           autoPlay
@@ -44,34 +44,42 @@ const HeroBanner: React.FC = () => {
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 md:gap-6">
             <Button
               asChild
-              className="bg-white hover:bg-gray-100 text-black rounded-lg py-3 px-4 sm:py-4 sm:px-5 w-full sm:w-[160px] md:w-[200px] h-16 sm:h-18 md:h-20"
+              className="bg-white hover:bg-gray-100 text-black rounded-lg py-3 px-4 sm:py-4 sm:px-6 w-full sm:w-auto h-14 sm:h-16"
             >
-              <Link href="#" className="flex items-center gap-3">
+              <Link href="#" className="flex items-center justify-start gap-3">
                 <Image
                   src={applestore}
                   alt="Apple Store"
-                  className="w-10 h-10 sm:w-6 sm:h-6"
+                  className="w-8 h-8 sm:w-10 sm:h-10"
                 />
                 <div className="text-left">
-                  <div className="text-base">Download on the</div>
-                  <div className="text-2xl font-semibold">App Store</div>
+                  <div className="text-xs sm:text-sm text-gray-600">
+                    Download on the
+                  </div>
+                  <div className="text-lg sm:text-xl font-semibold">
+                    App Store
+                  </div>
                 </div>
               </Link>
             </Button>
 
             <Button
               asChild
-              className="bg-white hover:bg-gray-100 text-black rounded-lg py-3 px-4 sm:py-4 sm:px-5 w-full sm:w-[160px] md:w-[200px] h-16 sm:h-18 md:h-20"
+              className="bg-white hover:bg-gray-100 text-black rounded-lg py-3 px-4 sm:py-4 sm:px-6 w-full sm:w-auto h-14 sm:h-16"
             >
-              <Link href="#" className="flex items-center gap-3">
+              <Link href="#" className="flex items-center justify-start gap-3">
                 <Image
                   src={playstore}
                   alt="Play Store"
-                  className="w-10 h-10 sm:w-6 sm:h-6"
+                  className="w-8 h-8 sm:w-10 sm:h-10"
                 />
                 <div className="text-left">
-                  <div className="text-base">Download on the</div>
-                  <div className="text-2xl font-semibold">Play Store</div>
+                  <div className="text-xs sm:text-sm text-gray-600">
+                    Download on the
+                  </div>
+                  <div className="text-lg sm:text-xl font-semibold">
+                    Play Store
+                  </div>
                 </div>
               </Link>
             </Button>

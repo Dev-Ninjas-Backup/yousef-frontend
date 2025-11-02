@@ -17,7 +17,7 @@ interface PromotionalAdCardProps {
 
 const PromotionalAdCard = (props: PromotionalAdCardProps) => {
   return (
-    <Card>
+    <Card className="shadow-none">
       <CardContent className="p-4 sm:p-6">
         <div className="flex flex-col items-center sm:flex-row gap-6">
           <div className="relative w-full sm:w-40 h-40 sm:h-28 shrink-0">
