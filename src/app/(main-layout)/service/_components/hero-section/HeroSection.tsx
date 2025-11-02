@@ -19,7 +19,7 @@ export default function HeroSection() {
   const [serviceType, setServiceType] = useState("");
 
   return (
-    <section className="relative h-[640px] md:h-[720px] w-full overflow-hidden mb-16 ">
+    <section className="relative h-[640px] md:h-[720px] w-full overflow-hidden md:mb-16 ">
       {/* Background Image with Overlay */}
       <div className="absolute inset-0">
         <Image
@@ -32,7 +32,7 @@ export default function HeroSection() {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 flex h-full flex-col items-center justify-center px-4">
+      <div className="relative z-10 flex h-full flex-col items-center justify-end md:justify-center px-4 pb-12">
         <div className="max-w-5xl text-center flex flex-col items-center">
           <h1 className="mb-3 text-4xl font-bold leading-tight text-white md:text-6xl">
             Find Car Service & Towing
