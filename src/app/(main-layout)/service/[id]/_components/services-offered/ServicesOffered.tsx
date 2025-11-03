@@ -35,7 +35,7 @@ export default function ServicesOffered() {
           {services.map((service, index) => (
             <div
               key={index}
-              className="flex flex-col items-center gap-4 rounded-2xl bg-white p-8 shadow-sm hover:shadow-md transition-shadow"
+              className="flex flex-col items-center gap-4 rounded-2xl bg-white p-8 shadow-sm hover:shadow-md transition-shadow border"
             >
               <Image
                 src={service.icon}
