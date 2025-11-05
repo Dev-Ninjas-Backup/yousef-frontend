@@ -23,7 +23,7 @@ const SpareParts: React.FC = () => {
           </h2>
 
           <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-200 max-w-xs sm:max-w-md md:max-w-2xl lg:max-w-3xl mb-4 md:mb-6 leading-relaxed">
-            Find authentic spare parts for your car from verified garages and
+            Find spare parts for your car from verified garages and
             sellers.
             <br className="hidden sm:block" />
             Have unused parts? List them on the platform and connect with real
