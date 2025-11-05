@@ -3,7 +3,11 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MessageCircle, Phone, Star, Wrench } from "lucide-react";
+import { MessageCircle, Phone, Star } from "lucide-react";
+import { FaTruck } from "react-icons/fa";
+import { FaCarBattery } from "react-icons/fa";
+import { FaOilCan } from "react-icons/fa6";
+import { AiFillTool } from "react-icons/ai";
 import Link from "next/link";
 import Image from "next/image";
 import DirectionIcon from "@/assets/service/GarageCard/direc_icon.svg";
@@ -20,6 +24,7 @@ interface GarageCardProps {
   priceRange: string;
   status?: string;
   icon?: string;
+  iconColor?: string;
 }
 
 export default function GarageCard({
@@ -34,9 +39,64 @@ export default function GarageCard({
   priceRange,
   status,
   icon = "wrench",
+  iconColor = "blue",
 }: GarageCardProps) {
+  const getStatusColor = () => {
+    switch (status) {
+      case "Open 24/7":
+        return "bg-green-200 text-green-800";
+      case "Emergency":
+        return "bg-red-200 text-red-800";
+      case "Open Now":
+        return "bg-blue-200 text-blue-800";
+      case "Closes 10 PM":
+        return "bg-orange-200 text-orange-800";
+      default:
+        return "bg-gray-500 text-gray-800";
+    }
+  };
+
+  const getIconBgColor = () => {
+    switch (iconColor) {
+      case "red":
+        return "bg-red-50";
+      case "purple":
+        return "bg-purple-50";
+      case "orange":
+        return "bg-orange-50";
+      default:
+        return "bg-blue-50";
+    }
+  };
+
+  const getIconColor = () => {
+    switch (iconColor) {
+      case "red":
+        return "text-red-600";
+      case "purple":
+        return "text-purple-600";
+      case "orange":
+        return "text-orange-600";
+      default:
+        return "text-blue-600";
+    }
+  };
+
+  const renderIcon = () => {
+    const iconClass = `md:h-8 md:w-8 h-4 w-4 ${getIconColor()}`;
+    switch (icon) {
+      case "truck":
+        return <FaTruck className={iconClass} />;
+      case "zap":
+        return <FaCarBattery className={iconClass} />;
+      case "droplet":
+        return <FaOilCan className={iconClass} />;
+      default:
+        return <AiFillTool className={iconClass} />;
+    }
+  };
   return (
-    <Card className="cursor-pointer overflow-hidden bg-white shadow-md transition-shadow hover:shadow-2xl py-0">
+    <Card className="cursor-pointer overflow-hidden bg-white shadow-md transition-shadow hover:shadow-2xl py-0 w-full">
       <div className="p-5">
         <Link href={`/service/${id}`}>
           {/* Header */}
@@ -46,8 +106,10 @@ export default function GarageCard({
 
               <div className="flex gap-4">
                 {/* Icon */}
-                <div className="flex h-12 w-12 md:h-20 md:w-20 items-center justify-center rounded-lg bg-blue-50">
-                  <Wrench className="md:h-8 md:w-8 h-4 w-4 text-blue-600" />
+                <div
+                  className={`flex h-12 w-12 md:h-20 md:w-20 items-center justify-center rounded-lg ${getIconBgColor()}`}
+                >
+                  {renderIcon()}
                 </div>
                 <div>
                   {" "}
@@ -82,12 +144,7 @@ export default function GarageCard({
               </div>
               <div>
                 {status && (
-                  <Badge
-                    variant={status === "Open 24/7" ? "default" : "destructive"}
-                    className={
-                      status === "Open 24/7" ? "bg-green-500" : "bg-red-500"
-                    }
-                  >
+                  <Badge variant="default" className={`${getStatusColor()} `}>
                     {status}
                   </Badge>
                 )}

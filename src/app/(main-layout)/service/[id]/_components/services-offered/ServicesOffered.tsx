@@ -31,7 +31,7 @@ export default function ServicesOffered() {
           Services Offered
         </h2>
 
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
+        <div className="grid grid-cols-2 gap-4 lg:gap-[2.5rem] md:grid-cols-3 lg:grid-cols-6">
           {services.map((service, index) => (
             <div
               key={index}

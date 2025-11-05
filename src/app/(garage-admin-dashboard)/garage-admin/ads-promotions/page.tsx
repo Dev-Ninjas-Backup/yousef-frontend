@@ -43,7 +43,7 @@ const promotionalAds = [
     category: "Garage Service",
     isFree: true,
     description:
-      "Get 20% off on brake pad replacement at SpeedPro Garage! Expert mechanics, genuine parts, same-day service.",
+      "Get 20% off on brake pad replacement at SpeedPro Garage! Expert mechanics, parts, same-day service.",
     location: "Dubai Marina",
     dateRange: "25/10/2025 - 15/11/2025",
   },
@@ -55,7 +55,7 @@ const promotionalAds = [
     category: "Garage Service",
     isFree: true,
     description:
-      "Get 20% off on brake pad replacement at SpeedPro Garage! Expert mechanics, genuine parts, same-day service.",
+      "Get 20% off on brake pad replacement at SpeedPro Garage! Expert mechanics, parts, same-day service.",
     location: "Dubai Marina",
     dateRange: "25/10/2025 - 15/11/2025",
   },
@@ -66,9 +66,7 @@ export default function AdsPromotionsPage() {
 
   return (
     <div className="space-y-6">
-
       <PromotionsStat stats={stats} />
-    
 
       <Card className="bg-[#EFF6FF] border-[#BEDBFF] shadow-none">
         <CardContent className="">
@@ -89,7 +87,10 @@ export default function AdsPromotionsPage() {
             Manage your featured promotions and special offers
           </p>
         </div>
-        <Button className="bg-blue-600 hover:bg-blue-700 gap-2 text-white" onClick={() => setIsModalOpen(true)}>
+        <Button
+          className="bg-blue-600 hover:bg-blue-700 gap-2 text-white"
+          onClick={() => setIsModalOpen(true)}
+        >
           <Plus className="w-4 h-4" />
           Create New Ad
         </Button>
@@ -101,7 +102,10 @@ export default function AdsPromotionsPage() {
         ))}
       </div>
 
-      <CreatePromotionalModal open={isModalOpen} onOpenChange={setIsModalOpen} />
+      <CreatePromotionalModal
+        open={isModalOpen}
+        onOpenChange={setIsModalOpen}
+      />
     </div>
   );
 }
