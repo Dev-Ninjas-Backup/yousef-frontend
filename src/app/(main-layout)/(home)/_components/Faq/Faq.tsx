@@ -24,7 +24,7 @@ const faqData = [
     id: "item-4",
     question: "How does the spare-parts marketplace work?",
     answer:
-      "Browse our marketplace to find genuine spare parts from verified sellers. You can compare prices, check availability, and order parts directly through the app for delivery or pickup.",
+      "Browse our marketplace to find spare parts from verified sellers. You can compare prices, check availability, and order parts directly through the app for delivery or pickup.",
   },
   {
     id: "item-5",

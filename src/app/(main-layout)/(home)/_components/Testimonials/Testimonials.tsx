@@ -2,13 +2,17 @@
 import { Button } from "@/components/ui/button";
 import TestimonialCard from "./_components/TestimonialCard/TestimonialCard";
 import Marquee from "react-fast-marquee";
+import emanuel from "@/assets/home/Testimonials/emanuel-avater.svg";
+import sharif from "@/assets/home/Testimonials/polics-avater.svg";
+import polich from "@/assets/home/Testimonials/polics-avater.svg";
+import toha from "@/assets/home/Testimonials/mohammad.svg";
 
 const testimonials = [
   {
     id: 1,
-    name: "Emanuel Islam",
+    name: "Emanuel",
     role: "Supervisor",
-    avatar: "/avatars/emanuel.jpg",
+    avatar: "emanuel",
     rating: 5,
     text: "The SayaraHub website is so easy to use and beautifully designed. I could explore all the key features before even...",
   },
@@ -18,7 +22,7 @@ const testimonials = [
     role: "Legacy Data Manager",
     avatar: "/avatars/ahamed.jpg",
     rating: 5,
-    text: "The SayaraHub website is so easy to use and beautifully designed. I could explore all the key features before even...",
+    text: "موقع SayaraHub سهل الاستخدام للغاية وذو تصميم جميل. تمكنت من استكشاف جميع الميزات الرئيسية قبل تنزيل التطبيق. تجربة سلسة وموثوقة للغاية!",
   },
   {
     id: 3,
@@ -26,7 +30,7 @@ const testimonials = [
     role: "Administrator",
     avatar: "/avatars/abu.jpg",
     rating: 5,
-    text: "The SayaraHub website is so easy to use and beautifully designed. I could explore all the key features before even...",
+    text: "موقع SayaraHub سهل الاستخدام للغاية وذو تصميم جميل. تمكنت من استكشاف جميع الميزات الرئيسية قبل تنزيل التطبيق. تجربة سلسة وموثوقة للغاية!",
   },
   {
     id: 4,
@@ -38,34 +42,10 @@ const testimonials = [
   },
   {
     id: 5,
-    name: "Mohammad Kadir",
+    name: "Harry ",
     role: "Legacy Data Manager",
     avatar: "/avatars/mohammad2.jpg",
     rating: 4,
-    text: "The SayaraHub website is so easy to use and beautifully designed. I could explore all the key features before even...",
-  },
-  {
-    id: 6,
-    name: "Abu Toha Mohammad",
-    role: "Administrator",
-    avatar: "/avatars/abu2.jpg",
-    rating: 5,
-    text: "The SayaraHub website is so easy to use and beautifully designed. I could explore all the key features before even...",
-  },
-  {
-    id: 7,
-    name: "Emanuel Islam",
-    role: "Supervisor",
-    avatar: "/avatars/emanuel2.jpg",
-    rating: 5,
-    text: "The SayaraHub website is so easy to use and beautifully designed. I could explore all the key features before even...",
-  },
-  {
-    id: 8,
-    name: "Emanuel",
-    role: "Supervisor",
-    avatar: "/avatars/emanuel3.jpg",
-    rating: 5,
     text: "The SayaraHub website is so easy to use and beautifully designed. I could explore all the key features before even...",
   },
 ];

@@ -43,7 +43,7 @@ const promotionalAds = [
     category: "Garage Service",
     isFree: true,
     description:
-      "Get 20% off on brake pad replacement at SpeedPro Garage! Expert mechanics, genuine parts, same-day service.",
+      "Get 20% off on brake pad replacement at SpeedPro Garage! Expert mechanics, parts, same-day service.",
     location: "Dubai Marina",
     dateRange: "25/10/2025 - 15/11/2025",
   },
@@ -55,7 +55,7 @@ const promotionalAds = [
     category: "Garage Service",
     isFree: true,
     description:
-      "Get 20% off on brake pad replacement at SpeedPro Garage! Expert mechanics, genuine parts, same-day service.",
+      "Get 20% off on brake pad replacement at SpeedPro Garage! Expert mechanics, parts, same-day service.",
     location: "Dubai Marina",
     dateRange: "25/10/2025 - 15/11/2025",
   },

@@ -23,7 +23,7 @@ const services = [
     icon: spare_parts,
     title: "Spare Parts Marketplace",
     description:
-      "Browse, buy, and sell verified auto parts from trusted sellers and garages with quality guarantees.",
+      "Browse, buy, and sell auto parts from sellers and garages with quality guarantees.",
   },
 ];
 

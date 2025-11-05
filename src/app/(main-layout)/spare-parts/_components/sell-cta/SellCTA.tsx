@@ -25,7 +25,7 @@ export default function SellCTA({ onSellClick }: SellCTAProps) {
 
           <div className="relative z-10 h-full flex flex-col items-center justify-center text-center px-4">
             <h2 className="text-xl md:text-2xl font-bold text-white mb-4">
-              Sell Genuine Spare Parts All in <br />
+              Sell Spare Parts All in <br />
               One Place
             </h2>
             <p className="text-gray-200 text-sm md:text-sm max-w-2xl mb-8">

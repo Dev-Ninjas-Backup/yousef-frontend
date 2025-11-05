@@ -31,7 +31,7 @@ const garagesData = [
     location: "Dubai Marina",
     services: ["Car Repair", "Oil Change", "Towing", "Emergency"],
     description:
-      "Professional auto repair services with certified mechanics. Specializing in all car brands with genuine parts.",
+      "Professional auto repair services with certified mechanics. Specializing in all car brands with parts.",
     priceRange: "AED 150-300",
     status: "Open 24/7",
     position: { lat: 25.0772, lng: 55.1398 },
