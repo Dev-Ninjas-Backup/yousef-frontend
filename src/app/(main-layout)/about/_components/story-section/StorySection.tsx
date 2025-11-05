@@ -93,10 +93,9 @@ export default function StorySection() {
                 To revolutionize the way car owners experience automotive
                 services across the UAE. We aim to create a digital ecosystem
                 where every car owner can effortlessly find trusted garages,
-                certified mechanics, towing services, and genuine spare parts
-                all in one place. Our mission is to eliminate the hassle,
-                uncertainty, and time loss that come with traditional car
-                maintenance.
+                certified mechanics, towing services, and spare parts all in one
+                place. Our mission is to eliminate the hassle, uncertainty, and
+                time loss that come with traditional car maintenance.
               </p>
               <p className="mt-4">
                 Through real-time location tracking, verified service providers,
@@ -120,7 +119,7 @@ export default function StorySection() {
                 platform connecting car owners, garages, and suppliers under one
                 digital roof. We envision a future where every vehicle service,
                 repair, or part purchase is just a few clicks away, supported by
-                innovation, technology, and genuine customer care.
+                innovation, technology, and customer care.
               </p>
               <p>
                 Our goal is to empower both customers and service providers by

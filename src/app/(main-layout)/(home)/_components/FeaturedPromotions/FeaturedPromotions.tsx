@@ -11,7 +11,7 @@ const promotions = [
     id: 1,
     title: "Original Toyota Parts Sale",
     description:
-      "Exclusive offer: Original Toyota parts now available! Genuine OEM parts with warranty. Up to 30% off on selected items.",
+      "Exclusive offer: Original Toyota parts now available! OEM parts with warranty. Up to 30% off on selected items.",
     image: homeBanner,
     badge: "Featured Parts",
     validUntil: "Oct 30, 2025",
@@ -20,7 +20,7 @@ const promotions = [
     id: 2,
     title: "BMW Service Special",
     description:
-      "Premium BMW service packages now available! Expert technicians with genuine parts. Save up to 25% on maintenance.",
+      "Premium BMW service packages now available! Expert technicians with parts. Save up to 25% on maintenance.",
     image: imgWithFallback,
     badge: "Featured Service",
     validUntil: "Nov 15, 2025",
@@ -89,7 +89,7 @@ const FeaturedPromotions: React.FC = () => {
         </div>
         <h2 className="text-base mb-2">Exclusive Offers & Featured Services</h2>
         <p className="text-base text-gray-600">
-          Discover top-rated garages and exclusive deals on genuine spare parts
+          Discover top-rated garages and exclusive deals on spare parts
         </p>
       </div>
 
@@ -101,10 +101,7 @@ const FeaturedPromotions: React.FC = () => {
               style={{ transform: `translateX(-${currentSlide * 100}%)` }}
             >
               {promotions.map((promo, idx) => (
-                <div
-                  key={promo.id}
-                  className="min-w-full relative"
-                >
+                <div key={promo.id} className="min-w-full relative">
                   <Image
                     src={promo.image}
                     alt={promo.title}
@@ -152,18 +149,18 @@ const FeaturedPromotions: React.FC = () => {
           <ChevronRight className="w-4 h-4 md:w-7 md:h-7 text-white" />
         </button>
       </div>
-        <div className="  mb-6 md:mb-8 w-fit mx-auto flex items-center gap-2 px-4 py-2 rounded-full">
-          {promotions.map((_, idx) => (
-            <button
-              key={idx}
-              onClick={() => goToSlide(idx)}
-              className={`h-2 rounded-full transition-all ${
-                idx === currentSlide ? "bg-blue-600 w-6" : "bg-gray-300 w-2"
-              }`}
-              aria-label={`Go to slide ${idx + 1}`}
-            />
-          ))}
-        </div>
+      <div className="  mb-6 md:mb-8 w-fit mx-auto flex items-center gap-2 px-4 py-2 rounded-full">
+        {promotions.map((_, idx) => (
+          <button
+            key={idx}
+            onClick={() => goToSlide(idx)}
+            className={`h-2 rounded-full transition-all ${
+              idx === currentSlide ? "bg-blue-600 w-6" : "bg-gray-300 w-2"
+            }`}
+            aria-label={`Go to slide ${idx + 1}`}
+          />
+        ))}
+      </div>
 
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-4">
         {promotions.map((promo, idx) => (
