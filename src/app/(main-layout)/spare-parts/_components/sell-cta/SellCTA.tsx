@@ -29,7 +29,7 @@ export default function SellCTA({ onSellClick }: SellCTAProps) {
               One Place
             </h2>
             <p className="text-gray-200 text-sm md:text-sm max-w-2xl mb-8">
-              Find authentic spare parts for your car from verified garages and
+              Find spare parts for your car from verified garages and
               sellers. <br /> Have unused parts? List them on the platform and
               connect with real buyers <br /> instantly. From filters and brakes
               to accessories, everything is just a click away!
