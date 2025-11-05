@@ -205,7 +205,7 @@ export function GarageDetailsView({ garage, onEdit }: GarageDetailsViewProps) {
             Premium Auto Care Center offers comprehensive automotive services
             with over 15 years of experience. We specialize in European and
             Japanese vehicles, providing quality repairs and maintenance with
-            parts.
+             parts.
           </p>
         </CardContent>
       </Card>

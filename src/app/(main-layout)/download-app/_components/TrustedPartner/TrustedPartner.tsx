@@ -2,6 +2,8 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import img1 from "@/assets/download-app/trustedpartner/trusted_1.svg";
 import img2 from "@/assets/download-app/trustedpartner/trusted_2.svg";
+import img3 from "@/assets/download-app/trustedpartner/top-img.png";
+import img4 from "@/assets/download-app/trustedpartner/bottom-img.png";
 
 const TrustedPartner: React.FC = () => {
   return (
@@ -17,7 +19,7 @@ const TrustedPartner: React.FC = () => {
         </div>
 
         <div className="bg-[#1A73E8] rounded-2xl md:rounded-3xl overflow-hidden h-[600px]">
-          <div className="grid lg:grid-cols-2 gap-6 md:gap-8 items-center h-full">
+          <div className="grid lg:grid-cols-2 items-center h-full">
             <div className="text-white flex flex-col justify-center items-center md:items-start space-y-4 md:space-y-6 md:p-12 p-6 h-full">
               <h3 className="text-2xl md:text-3xl lg:text-4xl font-bold">
                 Download <span className="italic">SayaraHub</span>
@@ -31,19 +33,19 @@ const TrustedPartner: React.FC = () => {
             </div>
 
            <div className="relative lg:flex justify-center items-end mt-6 lg:mt-0 h-full hidden">
-              <div className="absolute left-1/5 -translate-x-1/2 bottom-8 md:bottom-0 z-10">
-                <div className="bg-white rounded-2xl md:rounded-3xl shadow-2xl p-1.5 md:p-2 w-40 sm:w-48 md:w-56 lg:w-64">
+              <div className="absolute left-0 -bottom-5 z-10">
+                <div className="w-30">
                   <img 
-                    src={img1.src} 
+                    src={img4.src} 
                     alt="SayaraHub App Screen 1" 
                     className="w-full h-auto rounded-xl md:rounded-2xl"
                   />
                 </div>
               </div>
-              <div className="absolute right-1/4 translate-x-1/2 top-0">
-                <div className="bg-white rounded-2xl md:rounded-3xl shadow-2xl p-1.5 md:p-2 w-40 sm:w-48 md:w-56 lg:w-64">
+              <div className="absolute right-1/4 translate-x-1/3 -top-5">
+                <div className="w-30">
                   <img 
-                    src={img2.src} 
+                    src={img3.src} 
                     alt="SayaraHub App Screen 2" 
                     className="w-full h-auto rounded-xl md:rounded-2xl"
                   />

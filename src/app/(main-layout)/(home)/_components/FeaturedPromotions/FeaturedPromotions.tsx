@@ -3,16 +3,19 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Tag, Clock, ChevronLeft, ChevronRight } from "lucide-react";
-import homeBanner from "@/assets/home/banner/home_banner.png";
-import imgWithFallback from "@/assets/home/FeaturedPromotions/ImageWithFallback.png";
+import Toyotaimg from "@/assets/home/FeaturedPromotions/ImageWithFallback.png";
+import bmwimg from "@/assets/home/FeaturedPromotions/featured-bmw-service.png";
+import marcedesimg from "@/assets/home/FeaturedPromotions/featured-marcedes.jpg";
+import spedoGarageimg from "@/assets/home/FeaturedPromotions/featured-spedogarage.jpg";
+import bmwbrakeimg from "@/assets/home/FeaturedPromotions/featured-garage-dubai.png";
 
 const promotions = [
   {
     id: 1,
     title: "Original Toyota Parts Sale",
     description:
-      "Exclusive offer: Original Toyota parts now available! OEM parts with warranty. Up to 30% off on selected items.",
-    image: homeBanner,
+      "Exclusive offer: Toyota parts now available! parts with warranty. Up to 30% off on selected items.",
+    image: Toyotaimg,
     badge: "Featured Parts",
     validUntil: "Oct 30, 2025",
   },
@@ -20,8 +23,8 @@ const promotions = [
     id: 2,
     title: "BMW Service Special",
     description:
-      "Premium BMW service packages now available! Expert technicians with parts. Save up to 25% on maintenance.",
-    image: imgWithFallback,
+      "Premium BMW service packages now available! Expert technicians. Save up to 25% on maintenance.",
+    image: bmwimg,
     badge: "Featured Service",
     validUntil: "Nov 15, 2025",
   },
@@ -29,8 +32,8 @@ const promotions = [
     id: 3,
     title: "Mercedes Parts Collection",
     description:
-      "Authentic Mercedes parts in stock! OEM quality with warranty coverage. Limited time offer - 20% discount.",
-    image: homeBanner,
+      "Mercedes parts in stock! OEM quality with warranty coverage. Limited time offer - 20% discount.",
+    image: marcedesimg,
     badge: "Featured Parts",
     validUntil: "Dec 01, 2025",
   },
@@ -39,7 +42,7 @@ const promotions = [
     title: "SpeedPro Garage Dubai",
     description:
       "Top-rated garage services with certified mechanics. Complete car maintenance and repair solutions.",
-    image: imgWithFallback,
+    image: spedoGarageimg,
     badge: "Featured Garage",
     validUntil: "Dec 15, 2025",
   },
@@ -48,7 +51,7 @@ const promotions = [
     title: "BMW Brake System Parts",
     description:
       "Premium BMW brake components available now! High-performance parts with manufacturer warranty.",
-    image: homeBanner,
+    image: bmwbrakeimg,
     badge: "Premium Parts",
     validUntil: "Jan 01, 2026",
   },
@@ -83,11 +86,13 @@ const FeaturedPromotions: React.FC = () => {
   return (
     <section className="container mx-auto px-4 py-8 md:py-16">
       <div className="text-center mb-6 md:mb-8">
-        <div className="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-full mb-4 text-sm md:text-base">
+        <div className="inline-flex items-center gap-2 bg-[#0D6EFD] text-white px-4 py-2 rounded-md mb-4 text-sm md:text-base">
           <Tag className="w-4 h-4" />
-          <span className="font-semibold">Featured Promotions</span>
+          <span className="font-semibold">Featured Coming Soon</span>
         </div>
-        <h2 className="text-base mb-2">Exclusive Offers & Featured Services</h2>
+        <h2 className="text-base mb-2 text-[#101828]">
+          Exclusive Offers & Featured Services
+        </h2>
         <p className="text-base text-gray-600">
           Discover top-rated garages and exclusive deals on spare parts
         </p>

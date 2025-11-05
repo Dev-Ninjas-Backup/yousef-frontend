@@ -24,15 +24,16 @@ const StepCard: React.FC<StepCardProps> = ({
     >
       {/* Phone Image Section */}
       <div className="flex-1 flex items-center justify-center">
-        <div className="bg-[#E8F1FD] p-[25px] rounded-3xl w-full max-w-md">
+        <div className="bg-[#E8F1FD] p-4 md:p-[25px] rounded-3xl w-full max-w-md">
           <div className="relative h-[360px] md:h-[400px] lg:h-[450px] bg-[#DDEAFC] rounded-3xl overflow-hidden flex items-center justify-center">
-            <div className="relative w-[280px] h-[560px] md:w-[300px] md:h-[600px] translate-y-[25%]">
+            <div className="relative w-[200px] h-[400px] md:w-[250px] md:h-[400px] translate-y-[15%]">
               <Image
                 src={phoneImage}
                 alt={`${title} - Step ${stepNumber}`}
                 fill
-                className="object-contain drop-shadow-2xl"
+                className="object-contain drop-shadow-2xl px-5"
                 priority
+                
               />
             </div>
           </div>
