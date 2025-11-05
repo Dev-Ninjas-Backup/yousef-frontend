@@ -6,7 +6,7 @@ import phoneImage from "@/assets/download-app/DownloadHero/download-hero.png";
 
 const DownloadHero: React.FC = () => {
   return (
-    <section className="relative py-12 sm:py-16 md:py-20 lg:py-24 overflow-hidden mt-6 sm:mt-8 md:mt-10">
+    <section className="relative py-8 sm:py-12 md:py-10 lg:py-15 overflow-hidden mt-6 sm:mt-8 md:mt-10">
       {/* Soft gradient background effect */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
         <div
@@ -20,17 +20,20 @@ const DownloadHero: React.FC = () => {
       </div>
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-12 xl:gap-16">
+        <div className="flex flex-col lg:flex-row items-center justify-between ">
           
           {/* Left Content */}
           <div className="w-full lg:w-auto lg:flex-1 flex flex-col gap-6 lg:gap-8 text-center lg:text-left">
             <div className="space-y-4 sm:space-y-5 lg:space-y-6">
               <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight">
                 WE ARE
-              </h1>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-semibold leading-tight">
+         
+              <span className="text-3xl block sm:text-4xl md:text-5xl lg:text-5xl font-semibold leading-tight">
                 DRIVEN BY
-              </h2>
+              </span>
+         
+
+              </h1>
               <p className="text-gray-700 text-sm sm:text-base md:text-lg font-semibold max-w-md mx-auto lg:mx-0">
                 Trusted by thousands of car owners and garages across the UAE.
               </p>
@@ -43,7 +46,7 @@ const DownloadHero: React.FC = () => {
           </div>
 
           {/* Center - Phone Image */}
-          <div className="relative w-full max-w-[280px] sm:max-w-[350px] md:max-w-[450px] lg:max-w-[500px] xl:max-w-[550px] mx-auto lg:mx-0 lg:flex-shrink-0">
+          <div className="relative w-full sm:max-w-[350px] md:max-w-[450px] lg:max-w-[500px] xl:max-w-[550px] mx-auto lg:mx-0 lg:flex-shrink-0">
             {/* Top Left Badge */}
             <div className="absolute top-[20%] sm:top-[18%] md:top-[20%] -left-2 sm:-left-4 md:-left-6 bg-blue-600 text-white px-3 py-2 sm:px-4 sm:py-2.5 rounded-lg shadow-lg flex items-center gap-2 text-xs sm:text-sm z-10 max-w-[160px] sm:max-w-none">
               <div className="w-4 h-4 sm:w-5 sm:h-5 bg-white rounded-full flex items-center justify-center flex-shrink-0">
@@ -53,7 +56,7 @@ const DownloadHero: React.FC = () => {
             </div>
 
             {/* Phone Image */}
-            <div className="relative w-full aspect-[9/16] sm:aspect-[10/18]">
+            <div className="relative aspect-[9/16]">
               <Image
                 src={phoneImage}
                 alt="SayaraHub App"
