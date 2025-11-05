@@ -1,10 +1,6 @@
 "use client";
 import React from "react";
 import Image from "next/image";
-
-import phoneLeft from "@/assets/download-app/features/features_1.png";
-import phoneCenter from "@/assets/download-app/features/features_2.png";
-import phoneRight from "@/assets/download-app/features/features_3.png";
 import feature_img from "@/assets/download-app/features/feature_img.png";
 
 const Features: React.FC = () => {

@@ -5,7 +5,7 @@ import { UserCircle, Globe, ChevronDown } from "lucide-react";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import logo from "@/assets/navbar/sayarahub_navbar.svg";
-import scroll_logo from "@/assets/navbar/sayarahub_scroll.svg";
+import scroll_logo from "@/assets/navbar/sayarahub_fill.svg";
 
 const showMyAccount = true;
 export const menuItems = [
@@ -61,13 +61,16 @@ const Navbar = () => {
         {/* Logo */}
         <Link href="/" className="flex items-center">
           {isScrolled ? (
-            <Image
-              src={scroll_logo}
-              alt="SayaraHub"
-              width={150}
-              height={40}
-              className="h-8 md:h-10 w-auto"
-            />
+            <div className="">
+              
+              <Image
+                src={scroll_logo}
+                alt="SayaraHub"
+                width={150}
+                height={40}
+                className="h-8 md:h-10 w-auto"
+              />
+            </div>
           ) : (
             <Image
               src={logo}
