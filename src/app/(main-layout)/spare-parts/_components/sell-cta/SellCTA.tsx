@@ -34,7 +34,11 @@ export default function SellCTA({ onSellClick }: SellCTAProps) {
               connect with real buyers <br /> instantly. From filters and brakes
               to accessories, everything is just a click away!
             </p>
-            <Button onClick={onSellClick} size="lg" className="bg-blue-600 hover:bg-blue-700">
+            <Button
+              onClick={onSellClick}
+              size="lg"
+              className="bg-blue-600 hover:bg-blue-700"
+            >
               Sell Your Parts
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>

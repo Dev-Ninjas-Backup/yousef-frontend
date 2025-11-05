@@ -15,7 +15,11 @@ const garageData = {
   distance: "0.3 km",
   services: ["AC", "Engine", "Brakes", "Towing"],
   operatingHours: [
-    { day: "Sat - Thu: 8:00 AM - 8:00 PM", hours: "8:00 AM - 8:00 PM", status: "Open" as const },
+    {
+      day: "Sat - Thu: 8:00 AM - 8:00 PM",
+      hours: "8:00 AM - 8:00 PM",
+      status: "Open" as const,
+    },
     { day: "Friday", hours: "Closed", status: "Closed" as const },
   ],
   description: [
@@ -41,7 +45,10 @@ export default function GarageDetailsPage() {
       <ServicesOffered />
       <GarageOverview description={garageData.description} />
       <OperatingHours hours={garageData.operatingHours} />
-      <LocationMap address={garageData.address} position={garageData.position} />
+      <LocationMap
+        address={garageData.address}
+        position={garageData.position}
+      />
     </main>
   );
 }

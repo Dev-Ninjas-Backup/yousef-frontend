@@ -6,7 +6,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export default function ServicePage() {
   return (
-    <main className={`min-h-screen ${inter.className} mb-16`}>
+    <main className={`min-h-screen ${inter.className} md:mb-16`}>
       <HeroSection />
       <GarageList />
     </main>

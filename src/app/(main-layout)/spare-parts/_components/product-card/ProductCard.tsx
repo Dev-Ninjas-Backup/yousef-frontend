@@ -9,6 +9,7 @@ interface ProductCardProps {
   title: string;
   price: number;
   condition: "New" | "Used";
+  category: string;
   seller: string;
   isNew?: boolean;
 }
@@ -18,6 +19,7 @@ export default function ProductCard({
   title,
   price,
   condition,
+  category,
   seller,
   isNew,
 }: ProductCardProps) {
@@ -29,13 +31,11 @@ export default function ProductCard({
 
       <div className="p-4">
         <div className="flex gap-2 mb-2">
-          {isNew && (
-            <Badge className="bg-white text-gray-900 hover:bg-white border border-gray-300 shadow-none">
-              New
-            </Badge>
-          )}
           <Badge className="bg-white text-gray-700 hover:bg-white border border-gray-300 shadow-none">
             {condition}
+          </Badge>
+          <Badge className="bg-white text-gray-700 hover:bg-white border border-gray-300 shadow-none">
+            {category}
           </Badge>
         </div>
 

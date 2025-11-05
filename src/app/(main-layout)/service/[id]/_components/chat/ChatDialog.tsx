@@ -74,7 +74,7 @@ export default function ChatDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md h-[600px] p-0 gap-0">
+      <DialogContent className="max-w-md h-[800px] p-0 gap-0 scrollbar-hide">
         {/* Header */}
         <div className="border-b p-4 ">
           <h3 className="text-lg font-semibold text-center">{garageName}</h3>

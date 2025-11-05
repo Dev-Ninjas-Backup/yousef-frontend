@@ -44,7 +44,7 @@ const faqData = [
     answer:
       "You can reach our customer support team through the in-app messaging feature, email us through our website's contact form, or call our helpline for immediate assistance.",
   },
-];;
+];
 
 const Faq: React.FC = () => {
   return (
