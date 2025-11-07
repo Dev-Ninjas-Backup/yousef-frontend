@@ -32,7 +32,7 @@ export default function SayaraHubLogin() {
               className="object-cover"
               priority
             />
-            <div className="absolute inset-0 bg-white/70" />
+            <div className="absolute inset-0 bg-gray-200/70" />
           </div>
 
           {/* Header with Logo */}
