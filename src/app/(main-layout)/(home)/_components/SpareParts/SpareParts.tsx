@@ -18,14 +18,12 @@ const SpareParts: React.FC = () => {
 
         {/* Content */}
         <div className="relative z-10 flex flex-col items-center justify-center h-full text-center px-4 sm:px-6 md:px-8">
-          <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-[36px] font-bold text-white mb-3 md:mb-4 leading-tight">
-            Buy or Sell Genuine Spare Parts
-            <br className="hidden sm:block" />
-            All in One Place
+          <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-[36px] font-bold text-white mb-4 md:mb-4 leading-tight">
+            Buy or Sell Spare Parts All in One Place.
           </h2>
 
           <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-200 max-w-xs sm:max-w-md md:max-w-2xl lg:max-w-3xl mb-4 md:mb-6 leading-relaxed">
-            Find authentic spare parts for your car from verified garages and
+            Find spare parts for your car from verified garages and
             sellers.
             <br className="hidden sm:block" />
             Have unused parts? List them on the platform and connect with real

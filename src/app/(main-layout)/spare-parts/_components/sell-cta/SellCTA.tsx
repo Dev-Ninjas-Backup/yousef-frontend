@@ -25,16 +25,20 @@ export default function SellCTA({ onSellClick }: SellCTAProps) {
 
           <div className="relative z-10 h-full flex flex-col items-center justify-center text-center px-4">
             <h2 className="text-xl md:text-2xl font-bold text-white mb-4">
-              Sell Genuine Spare Parts All in <br />
+              Sell Spare Parts All in <br />
               One Place
             </h2>
             <p className="text-gray-200 text-sm md:text-sm max-w-2xl mb-8">
-              Find authentic spare parts for your car from verified garages and
+              Find spare parts for your car from verified garages and
               sellers. <br /> Have unused parts? List them on the platform and
               connect with real buyers <br /> instantly. From filters and brakes
               to accessories, everything is just a click away!
             </p>
-            <Button onClick={onSellClick} size="lg" className="bg-blue-600 hover:bg-blue-700">
+            <Button
+              onClick={onSellClick}
+              size="lg"
+              className="bg-blue-600 hover:bg-blue-700"
+            >
               Sell Your Parts
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>

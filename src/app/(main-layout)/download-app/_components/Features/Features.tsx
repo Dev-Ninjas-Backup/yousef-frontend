@@ -1,15 +1,11 @@
 "use client";
 import React from "react";
 import Image from "next/image";
-
-import phoneLeft from "@/assets/download-app/features/features_1.png";
-import phoneCenter from "@/assets/download-app/features/features_2.png";
-import phoneRight from "@/assets/download-app/features/features_3.png";
 import feature_img from "@/assets/download-app/features/feature_img.png";
 
 const Features: React.FC = () => {
   return (
-    <section className="py-16 md:py-24 bg-white">
+    <section className="py-10 md:py-15 bg-white">
       <div className="container mx-auto px-4 max-w-7xl">
         {/* Header */}
         <div className="text-center mb-12 space-y-4">

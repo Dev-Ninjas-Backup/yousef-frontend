@@ -31,11 +31,12 @@ const garagesData = [
     location: "Dubai Marina",
     services: ["Car Repair", "Oil Change", "Towing", "Emergency"],
     description:
-      "Professional auto repair services with certified mechanics. Specializing in all car brands with genuine parts.",
+      "Professional auto repair services with certified mechanics. Specializing in all car brands with parts.",
     priceRange: "AED 150-300",
     status: "Open 24/7",
     position: { lat: 25.0772, lng: 55.1398 },
-    icons: "wrench",
+    icon: "wrench",
+    iconColor: "red",
   },
   {
     id: "2",
@@ -50,7 +51,8 @@ const garagesData = [
     priceRange: "AED 200-400",
     status: "Emergency",
     position: { lat: 25.0818, lng: 55.1364 },
-    icons: "wrench",
+    icon: "truck",
+    iconColor: "red",
   },
   {
     id: "3",
@@ -65,7 +67,8 @@ const garagesData = [
     priceRange: "AED 100-250",
     status: "Open Now",
     position: { lat: 25.1872, lng: 55.2631 },
-    icons: "wrench",
+    icon: "zap",
+    iconColor: "purple",
   },
   {
     id: "4",
@@ -80,7 +83,8 @@ const garagesData = [
     priceRange: "AED 80-180",
     status: "Closes 10 PM",
     position: { lat: 25.1124, lng: 55.1979 },
-    icons: "Phone",
+    icon: "droplet",
+    iconColor: "orange",
   },
 ];
 
@@ -125,7 +129,11 @@ export default function GarageList() {
         </div>
 
         {/* Desktop: Map Background + Cards Overlay | Mobile: Cards then Map */}
-        <div className="space-y-4 lg:relative lg:h-[1150px]">
+        <div
+          className={`space-y-4 ${
+            showMap ? "lg:relative lg:h-[1150px]" : "md:block"
+          }`}
+        >
           {/* Map - Below on mobile, Background on desktop */}
           {showMap && (
             <div className="h-[400px] w-full overflow-hidden rounded-xl lg:absolute lg:inset-0 lg:h-full lg:z-0">
@@ -134,7 +142,13 @@ export default function GarageList() {
           )}
 
           {/* Garage Cards */}
-          <div className="space-y-4 lg:absolute lg:left-4 lg:top-4 lg:z-10 lg:w-full lg:max-w-xl flex flex-col ">
+          <div
+            className={`${
+              showMap
+                ? "space-y-4 flex flex-col lg:absolute lg:left-4 lg:top-4 lg:z-10 lg:w-full lg:max-w-xl"
+                : "md:grid md:grid-cols-2 md:gap-4 space-y-4 md:space-y-0"
+            }`}
+          >
             {garagesData.map((garage) => (
               <GarageCard key={garage.id} {...garage} />
             ))}
@@ -157,16 +171,22 @@ export default function GarageList() {
                 </PaginationLink>
               </PaginationItem>
               <PaginationItem>
-                <PaginationLink href="#">2</PaginationLink>
+                <PaginationLink className="bg-gray-100" href="#">
+                  2
+                </PaginationLink>
               </PaginationItem>
               <PaginationItem>
-                <PaginationLink href="#">3</PaginationLink>
+                <PaginationLink className="bg-gray-100" href="#">
+                  3
+                </PaginationLink>
               </PaginationItem>
               <PaginationItem>
                 <span className="px-4">...</span>
               </PaginationItem>
               <PaginationItem>
-                <PaginationLink href="#">28</PaginationLink>
+                <PaginationLink className="bg-gray-100" href="#">
+                  28
+                </PaginationLink>
               </PaginationItem>
               <PaginationItem>
                 <PaginationNext

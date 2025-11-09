@@ -39,7 +39,7 @@ export default function AboutHero() {
           service experience across the UAE, connecting vehicle owners with
           verified garages, towing services, and Parts listed here are provided
           by third-party sellers. We do not supply or take responsibility for
-          their quality or authenticity.
+          their quality.
         </p>
 
         <Button

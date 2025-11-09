@@ -31,11 +31,11 @@ export default function ServicesOffered() {
           Services Offered
         </h2>
 
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
+        <div className="grid grid-cols-2 gap-4 lg:gap-[2.5rem] md:grid-cols-3 lg:grid-cols-6">
           {services.map((service, index) => (
             <div
               key={index}
-              className="flex flex-col items-center gap-4 rounded-2xl bg-white p-8 shadow-sm hover:shadow-md transition-shadow"
+              className="flex flex-col items-center gap-4 rounded-2xl bg-white p-8 shadow-sm hover:shadow-md transition-shadow border"
             >
               <Image
                 src={service.icon}

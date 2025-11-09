@@ -1,14 +1,13 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
-import { UserCircle } from "lucide-react";
+import { UserCircle, Globe, ChevronDown } from "lucide-react";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
-import logo from "@/assets/navbar/sayarahub_navbar.svg";
-import scroll_logo from "@/assets/navbar/sayarahub_scroll.svg";
+import scroll_logo from "@/assets/navbar/sayarahub_fill.svg";
 
 const showMyAccount = true;
- export const menuItems = [
+export const menuItems = [
   { label: "Home", href: "/" },
   { label: "Service", href: "/service" },
   { label: "Spare Parts", href: "/spare-parts" },
@@ -19,24 +18,39 @@ const showMyAccount = true;
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(true);
+  const [isLangMenuOpen, setIsLangMenuOpen] = useState(false);
+  const [selectedLang, setSelectedLang] = useState("English");
   const pathname = usePathname();
 
-  // useEffect(() => {
-  //   const handleScroll = () => {
-  //     setIsScrolled(window.scrollY > 10);
-  //   };
+  const handleLanguageChange = (lang: string) => {
+    setSelectedLang(lang);
+    setIsLangMenuOpen(false);
+  };
 
-  //   window.addEventListener("scroll", handleScroll);
-  //   return () => window.removeEventListener("scroll", handleScroll);
-  // }, []);
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (!target.closest(".language-dropdown")) {
+        setIsLangMenuOpen(false);
+      }
+    };
+
+    if (isLangMenuOpen) {
+      document.addEventListener("click", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, [isLangMenuOpen]);
+
 
   return (
     <nav className="fixed z-50 w-full py-4 px-4 md:mt-4 md:px-8 bg-white/70 backdrop-blur-md md:bg-transparent md:backdrop-blur-none">
       <div className="container mx-auto flex items-center justify-between gap-4">
         {/* Logo */}
         <Link href="/" className="flex items-center">
-          {isScrolled ? (
+          <div className="">
             <Image
               src={scroll_logo}
               alt="SayaraHub"
@@ -44,22 +58,10 @@ const Navbar = () => {
               height={40}
               className="h-8 md:h-10 w-auto"
             />
-          ) : (
-            <Image
-              src={logo}
-              alt="SayaraHub"
-              width={150}
-              height={40}
-              className="h-8 md:h-10 w-auto"
-            />
-          )}
+          </div>
         </Link>
 
-        <div
-          className={`hidden md:flex items-center gap-2 backdrop-blur-md rounded-full px-8 py-3 shadow-[0_0_15px_rgba(255,255,255,0.1)] transition-all duration-300 relative ${
-            isScrolled ? "bg-black/40" : "bg-white/5"
-          }`}
-        >
+        <div className="hidden bg-black/40 md:flex  items-center gap-2 backdrop-blur-md rounded-full px-8 py-3 shadow-[0_0_15px_rgba(255,255,255,0.1)] transition-all duration-300 relative">
           <div
             className="absolute inset-0 rounded-full pointer-events-none"
             style={{
@@ -90,27 +92,52 @@ const Navbar = () => {
             );
           })}
         </div>
-        {/* My Account */}
-        {showMyAccount && (
-          <Link
-            href="/"
-            className="hidden md:flex items-center gap-2 text-white hover:text-[#0A84FF] py-2 px-4 rounded-full bg-black/40  shadow-[0_0_15px_rgba(255,255,255,0.1)] transition-all duration-300"
-          >
-            <span
-              className={`text-sm md:hidden lg:flex ${
-                // isScrolled ? "text-black" : "text-white/80" " --- IGNORE ---
-                isScrolled ? "text-white/80" : "text-white/80"
-              }`}
+
+        <div className="flex items-center gap-2">
+          {/* Language Selector */}
+          <div className="hidden md:block relative language-dropdown">
+            <button
+              onClick={() => setIsLangMenuOpen(!isLangMenuOpen)}
+              className="flex items-center gap-2 text-white hover:text-[#0A84FF] py-2 px-4 rounded-full bg-black/40 shadow-[0_0_15px_rgba(255,255,255,0.1)] transition-all duration-300"
             >
-              My Account
-            </span>
-            <UserCircle
-              className={`w-5 h-5 md:w-6 md:h-6 ${
-                isScrolled ? "text-white/80" : "text-white/80"
-              }`}
-            />
-          </Link>
-        )}
+              <Globe className="w-5 h-5 text-white/80" />
+              <ChevronDown className="w-4 h-4 text-white/80" />
+            </button>
+            {isLangMenuOpen && (
+              <div className="absolute right-0 mt-2 w-40 bg-black/90 backdrop-blur-md rounded-lg shadow-lg border border-white/20 overflow-hidden">
+                <button
+                  onClick={() => handleLanguageChange("English")}
+                  className={`w-full text-left px-4 py-3 text-white/80 hover:bg-white/10 transition-colors ${
+                    selectedLang === "English" ? "bg-white/5 font-semibold" : ""
+                  }`}
+                >
+                  English
+                </button>
+                <button
+                  onClick={() => handleLanguageChange("Arabic")}
+                  className={`w-full text-left px-4 py-3 text-white/80 hover:bg-white/10 transition-colors ${
+                    selectedLang === "Arabic" ? "bg-white/5 font-semibold" : ""
+                  }`}
+                >
+                  عربي
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* My Account */}
+          {showMyAccount && (
+            <Link
+              href="/"
+              className="hidden md:flex items-center gap-2 text-white hover:text-[#0A84FF] py-2 px-4 rounded-full bg-black/40  shadow-[0_0_15px_rgba(255,255,255,0.1)] transition-all duration-300"
+            >
+              <span className="text-sm md:hidden lg:flex text-white/80 ">
+                My Account
+              </span>
+              <UserCircle className="w-5 h-5 md:w-6 md:h-6 text-white/80" />
+            </Link>
+          )}
+        </div>
 
         <button
           className="md:hidden text-white"
@@ -155,6 +182,32 @@ const Navbar = () => {
                 {item.label}
               </Link>
             ))}
+
+            {/* Mobile Language Selector */}
+            <div className="border-t border-white/10 pt-4 mt-2">
+              <div className="px-4 py-2 text-white/60 text-sm font-semibold">
+                Language
+              </div>
+              <button
+                onClick={() => handleLanguageChange("English")}
+                className={`w-full text-left flex items-center gap-2 text-white/80 hover:text-[#0A84FF] transition-colors px-4 py-2 rounded-lg hover:bg-white/5 ${
+                  selectedLang === "English" ? "bg-white/5 font-semibold" : ""
+                }`}
+              >
+                <Globe className="w-4 h-4" />
+                <span>English</span>
+              </button>
+              <button
+                onClick={() => handleLanguageChange("Arabic")}
+                className={`w-full text-left flex items-center gap-2 text-white/80 hover:text-[#0A84FF] transition-colors px-4 py-2 rounded-lg hover:bg-white/5 ${
+                  selectedLang === "Arabic" ? "bg-white/5 font-semibold" : ""
+                }`}
+              >
+                <Globe className="w-4 h-4" />
+                <span>Arabic</span>
+              </button>
+            </div>
+
             {showMyAccount && (
               <Link
                 href="/account"

@@ -1,26 +1,28 @@
 "use client";
 import React from "react";
 import GarageCard from "./_components/GarageCard/GarageCard";
-import imageCar from "../../../../../assets/home/banner/home_banner.png"
+import dubaiCar from "@/assets/home/FeaturedGarages/featured-garage-dubai.png"
+import capitalCar from "@/assets/home/FeaturedGarages/featured-garage-capital.jpg"
+import sharjhaCar from "@/assets/home/FeaturedGarages/featured-garage-sharjha.png"
 
 const garages = [
   {
     name: "Dubai Auto Center",
     location: "Al Quoz Industrial Area, Dubai",
     rating: 4.8,
-    image: imageCar,
+    image: dubaiCar,
   },
   {
     name: "Capital Car Care",
     location: "Mussafah, Abu Dhabi",
     rating: 4.7,
-    image: imageCar,
+    image: capitalCar,
   },
   {
     name: "Sharjah Motors",
     location: "Industrial Area, Sharjah",
     rating: 4.9,
-    image: imageCar,
+    image: sharjhaCar,
   },
 ];
 
