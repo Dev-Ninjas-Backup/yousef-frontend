@@ -17,10 +17,10 @@ const HomePage = () => {
     <CarBrands />
     <SearchGarages />
     <AutomotiveSolutions />
-    <SpareParts />
-    <FeaturedPromotions />
     <HowItWorks />
+    <FeaturedPromotions />
     <FeaturedGarages />
+    <SpareParts />
     <TestimonialsSection />
     <Faq/>
     </div>
