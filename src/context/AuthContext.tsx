@@ -1,60 +1,70 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { useEffect, ReactNode } from "react";
 import { useRouter } from "next/navigation";
-import { User, UserRole, AuthContextType } from "@/types/auth";
-
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { setCredentials, setLoading, logout } from "@/store/slices/authSlice";
+import { User, UserRole } from "@/types/auth";
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const dispatch = useAppDispatch();
   const router = useRouter();
 
   // Check if user is logged in on mount
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
-      setUser(JSON.parse(storedUser));
+      try {
+        const user = JSON.parse(storedUser);
+        dispatch(setCredentials({ user }));
+      } catch (error) {
+        localStorage.removeItem("user");
+      }
     }
-    setIsLoading(false);
-  }, []);
+    dispatch(setLoading(false));
+  }, [dispatch]);
+
+  return <>{children}</>;
+};
+
+// Custom hook for auth operations
+export const useAuth = () => {
+  const dispatch = useAppDispatch();
+  const { user, isAuthenticated, isLoading } = useAppSelector(state => state.auth);
+  const router = useRouter();
 
   const login = async (email: string, password: string) => {
-    setIsLoading(true);
+    dispatch(setLoading(true));
     try {
-      // TODO: Replace with your actual API call
-      // const response = await fetch("/api/auth/login", {
-      //   method: "POST",
-      //   body: JSON.stringify({ email, password }),
-      // });
-      // const data = await response.json();
-
       // Mock login - replace with real API call
       const mockUser: User = {
         id: "1",
         name: "John Doe",
         email: email,
-        // Determine role based on email for demo
         role: email.includes("admin")
-          ? UserRole.ADMIN
-          : email.includes("seller")
-          ? UserRole.SELLER
-          : UserRole.USER,
+          ? UserRole.SUPER_ADMIN
+          : email.includes("garage")
+          ? UserRole.GARAGE_OWNER
+          : email.includes("car")
+          ? UserRole.CAR_OWNER
+          : UserRole.MEMBER,
       };
 
-      setUser(mockUser);
+      dispatch(setCredentials({ user: mockUser }));
       localStorage.setItem("user", JSON.stringify(mockUser));
 
       // Redirect based on role
       switch (mockUser.role) {
-        case UserRole.ADMIN:
+        case UserRole.SUPER_ADMIN:
           router.push("/admin/dashboard");
           break;
-        case UserRole.SELLER:
-          router.push("/seller/dashboard");
+        case UserRole.GARAGE_OWNER:
+          router.push("/garage-admin/dashboard");
           break;
-        case UserRole.USER:
+        case UserRole.CAR_OWNER:
+          router.push("/user/dashboard");
+          break;
+        case UserRole.MEMBER:
           router.push("/user/dashboard");
           break;
         default:
@@ -64,35 +74,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       console.error("Login error:", error);
       throw error;
     } finally {
-      setIsLoading(false);
+      dispatch(setLoading(false));
     }
   };
 
-  const logout = () => {
-    setUser(null);
+  const handleLogout = () => {
+    dispatch(logout());
     localStorage.removeItem("user");
     router.push("/login");
   };
 
-  return (
-    <AuthContext.Provider
-      value={{
-        user,
-        isAuthenticated: !!user,
-        login,
-        logout,
-        isLoading,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
-};
-
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
+  return {
+    user,
+    isAuthenticated,
+    login,
+    logout: handleLogout,
+    isLoading,
+  };
 };

@@ -3,9 +3,9 @@
 import { useState } from "react";
 import Image from "next/image";
 import { LuPencil, LuMail, LuPhone, LuMapPin } from "react-icons/lu";
-import userimg from "@/assets/user.jpg"
+import userimg from "@/assets/user.jpg";
 
-export default function UserDashboard() {
+function UserDashboardContent() {
   const [formData, setFormData] = useState({
     firstName: "John",
     lastName: "Doe",
@@ -16,7 +16,9 @@ export default function UserDashboard() {
     emirate: "",
   });
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -42,7 +44,8 @@ export default function UserDashboard() {
                     className="w-full h-full object-cover"
                     onError={(e) => {
                       const target = e.target as HTMLImageElement;
-                      target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96' viewBox='0 0 96 96'%3E%3Crect fill='%23E5E7EB' width='96' height='96'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='32' fill='%239CA3AF'%3EJD%3C/text%3E%3C/svg%3E";
+                      target.src =
+                        "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96' viewBox='0 0 96 96'%3E%3Crect fill='%23E5E7EB' width='96' height='96'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='32' fill='%239CA3AF'%3EJD%3C/text%3E%3C/svg%3E";
                     }}
                   />
                 </div>
@@ -249,4 +252,8 @@ export default function UserDashboard() {
       </div>
     </div>
   );
+}
+
+export default function UserDashboard() {
+  return <UserDashboardContent />;
 }
