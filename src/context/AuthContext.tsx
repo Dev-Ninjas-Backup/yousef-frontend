@@ -2,9 +2,11 @@
 
 import { useEffect, ReactNode } from "react";
 import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { setCredentials, setLoading, logout } from "@/store/slices/authSlice";
 import { User, UserRole } from "@/types/auth";
+import { useLoginMutation } from "@/store/api/authApi";
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
@@ -12,13 +14,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   // Check if user is logged in on mount
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
+    const storedUser = Cookies.get("user");
+    const token = Cookies.get("token");
+    if (storedUser && token) {
       try {
         const user = JSON.parse(storedUser);
-        dispatch(setCredentials({ user }));
+        dispatch(setCredentials({ user, token }));
       } catch (error) {
-        localStorage.removeItem("user");
+        Cookies.remove("user");
+        Cookies.remove("token");
       }
     }
     dispatch(setLoading(false));
@@ -30,31 +34,32 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 // Custom hook for auth operations
 export const useAuth = () => {
   const dispatch = useAppDispatch();
-  const { user, isAuthenticated, isLoading } = useAppSelector(state => state.auth);
+  const { user, isAuthenticated, isLoading } = useAppSelector(
+    (state) => state.auth
+  );
   const router = useRouter();
+
+  const [loginMutation] = useLoginMutation();
 
   const login = async (email: string, password: string) => {
     dispatch(setLoading(true));
     try {
-      // Mock login - replace with real API call
-      const mockUser: User = {
-        id: "1",
-        name: "John Doe",
-        email: email,
-        role: email.includes("admin")
-          ? UserRole.SUPER_ADMIN
-          : email.includes("garage")
-          ? UserRole.GARAGE_OWNER
-          : email.includes("car")
-          ? UserRole.CAR_OWNER
-          : UserRole.MEMBER,
+      const response = await loginMutation({ email, password }).unwrap();
+      const { token, user: apiUser } = response.result.data;
+
+      const user: User = {
+        id: apiUser.id,
+        name: apiUser.fullName,
+        email: apiUser.email,
+        role: apiUser.role as UserRole,
       };
 
-      dispatch(setCredentials({ user: mockUser }));
-      localStorage.setItem("user", JSON.stringify(mockUser));
+      dispatch(setCredentials({ user, token }));
+      Cookies.set("user", JSON.stringify(user), { expires: 7 });
+      Cookies.set("token", token, { expires: 7 });
 
       // Redirect based on role
-      switch (mockUser.role) {
+      switch (user.role) {
         case UserRole.SUPER_ADMIN:
           router.push("/admin/dashboard");
           break;
@@ -80,8 +85,9 @@ export const useAuth = () => {
 
   const handleLogout = () => {
     dispatch(logout());
-    localStorage.removeItem("user");
-    router.push("/login");
+    Cookies.remove("user");
+    Cookies.remove("token");
+    router.push("/");
   };
 
   return {

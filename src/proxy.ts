@@ -27,6 +27,9 @@ function decodeJWT(token: string): JWTPayload | null {
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+
+  console.log("Pathe name from Middleware :", pathname)
   
   if (
     pathname.startsWith('/_next/') ||
@@ -41,12 +44,16 @@ export function proxy(request: NextRequest) {
     request.cookies.get("token")?.value ||
     request.headers.get("authorization")?.replace("Bearer ", "");
 
+    console.log("Token from Middleware :", token)
+
   const protectedRoutes: Record<string, string[]> = {
     "/user/dashboard": ["CAR_OWNER"],
     "/user/settings": ["CAR_OWNER"],
     "/admin/dashboard": ["SUPER_ADMIN"],
     "/garage-admin/dashboard": ["GARAGE_OWNER"],
   };
+
+  console.log("Protected Routes :", protectedRoutes)
 
   const matchedRoute = Object.keys(protectedRoutes).find((route) =>
     pathname.startsWith(route)
