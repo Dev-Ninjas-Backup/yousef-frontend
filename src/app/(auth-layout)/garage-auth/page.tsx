@@ -20,34 +20,50 @@ import {
 import Image from "next/image";
 import loginbg from "@/assets/login/login_bg.jpg";
 import scroll_logo from "@/assets/navbar/sayarahub_fill.svg";
-import { useLoginMutation } from "@/store/api/authApi";
+import { useLoginMutation, useGarageRegisterMutation, useVerifyOtpMutation, useGoogleLoginMutation } from "@/store/api/authApi";
 import { useAppDispatch } from "@/store/hooks";
 import { setCredentials } from "@/store/slices/authSlice";
 import { getRedirectPath, storeAuthData } from "@/lib/auth";
+import GarageSignupForm from "@/app/(auth-layout)/garage-auth/_components/GarageSignupForm";
 
 export default function GarageAuth() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const [login, { isLoading }] = useLoginMutation();
+  const [garageRegister, { isLoading: isRegistering }] = useGarageRegisterMutation();
+  const [verifyOtp, { isLoading: isVerifying }] = useVerifyOtpMutation();
+  const [googleLogin, { isLoading: isGoogleLoading }] = useGoogleLoginMutation();
   const [authMode, setAuthMode] = useState("signin");
+  const [showOtpForm, setShowOtpForm] = useState(false);
+  const [verifyToken, setVerifyToken] = useState("");
+  const [otp, setOtp] = useState("");
   const [formData, setFormData] = useState({
-    businessEmail: "",
+    fullName: "",
+    email: "",
+    phone: "",
     password: "",
+    confirmPassword: "",
     garageName: "",
-    contactNumber: "",
-    tradeLicense: null as File | null,
-    garageLogo: null as File | null,
+    address: "",
+    city: "",
+    emirate: "",
     serviceCategories: [] as string[],
+    garageLogo: null as File | null,
+    tradeLicense: null as File | null,
     agreeToTerms: false,
   });
   const [error, setError] = useState("");
 
   const handleInputChange = (
     field: string,
-    value: string | boolean | string[]
+    value: string | boolean | string[] | File | null
   ) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     if (error) setError(""); // Clear error on input change
+  };
+
+  const handleFileUpload = (field: string, file: File | null) => {
+    setFormData((prev) => ({ ...prev, [field]: file }));
   };
 
   const handleTabChange = (value: string) => {
@@ -65,14 +81,14 @@ export default function GarageAuth() {
   };
 
   const handleSignIn = async () => {
-    if (!formData.businessEmail || !formData.password) {
+    if (!formData.email || !formData.password) {
       setError("Please fill in all fields");
       return;
     }
 
     try {
       const result = await login({
-        email: formData.businessEmail,
+        email: formData.email,
         password: formData.password,
       }).unwrap();
 
@@ -119,11 +135,103 @@ export default function GarageAuth() {
     }
   };
 
-  const handleSignUp = () => {
-    console.log("Garage Owner Sign up:", {
-      ...formData,
-      userType: "GARAGE_OWNER",
-    });
+  const handleSignUp = async () => {
+    // Validation
+    if (!formData.fullName || !formData.email || !formData.phone || !formData.password || !formData.confirmPassword) {
+      setError("Please fill in all required fields");
+      return;
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
+    if (!formData.garageName || !formData.address || !formData.city || !formData.emirate) {
+      setError("Please fill in all garage information");
+      return;
+    }
+
+    if (formData.serviceCategories.length === 0) {
+      setError("Please select at least one service category");
+      return;
+    }
+
+    if (!formData.agreeToTerms) {
+      setError("Please agree to the terms and conditions");
+      return;
+    }
+
+    try {
+      // Create FormData for file upload
+      const formDataToSend = new FormData();
+      formDataToSend.append('fullName', formData.fullName);
+      formDataToSend.append('email', formData.email);
+      formDataToSend.append('phone', formData.phone);
+      formDataToSend.append('password', formData.password);
+      formDataToSend.append('confirmPassword', formData.confirmPassword);
+      formDataToSend.append('garageName', formData.garageName);
+      formDataToSend.append('address', formData.address);
+      formDataToSend.append('city', formData.city);
+      formDataToSend.append('emirate', formData.emirate);
+      formDataToSend.append('serviceCategories', JSON.stringify(formData.serviceCategories));
+      formDataToSend.append('role', 'GARAGE_OWNER');
+
+      // Add files if selected
+      if (formData.garageLogo) {
+        formDataToSend.append('garageLogo', formData.garageLogo);
+      }
+      if (formData.tradeLicense) {
+        formDataToSend.append('tradeLicense', formData.tradeLicense);
+      }
+
+      const result = await garageRegister(formDataToSend).unwrap();
+
+      setVerifyToken(result.verifyToken);
+      setShowOtpForm(true);
+      setError("");
+    } catch (error: any) {
+      console.error("Registration error:", error);
+      setError(error?.data?.message || "Registration failed. Please try again.");
+    }
+  };
+
+  const handleVerifyOtp = async () => {
+    if (!otp || otp.length !== 6) {
+      setError("Please enter a valid 6-digit OTP");
+      return;
+    }
+
+    try {
+      const result = await verifyOtp({
+        resetToken: verifyToken,
+        emailOtp: otp
+      }).unwrap();
+
+      const { token, user } = result.data.data;
+
+      // Store auth data
+      storeAuthData(token, user);
+      dispatch(
+        setCredentials({
+          user: {
+            id: user.id,
+            email: user.email,
+            name: user.fullName,
+            role: user.role as any,
+            avatar: user.garageLogo || undefined,
+          },
+          token,
+        })
+      );
+
+      // Redirect to garage dashboard
+      const redirectPath = getRedirectPath(user.role);
+      router.push(redirectPath);
+    } catch (error: any) {
+      console.error("OTP verification error:", error);
+      setError(error?.data?.message || "OTP verification failed. Please try again.");
+    }
   };
 
   return (
@@ -245,7 +353,7 @@ export default function GarageAuth() {
                         htmlFor="businessEmail"
                         className="text-sm font-medium text-gray-700"
                       >
-                        Business Email
+                        Business Email <span className="text-red-500">*</span>
                       </Label>
                       <div className="relative">
                         <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
@@ -253,9 +361,9 @@ export default function GarageAuth() {
                           id="businessEmail"
                           type="email"
                           placeholder="garage@business.com"
-                          value={formData.businessEmail}
+                          value={formData.email}
                           onChange={(e) =>
-                            handleInputChange("businessEmail", e.target.value)
+                            handleInputChange("email", e.target.value)
                           }
                           className="pl-10 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                           disabled={isLoading}
@@ -296,7 +404,7 @@ export default function GarageAuth() {
                       onClick={handleSignIn}
                       disabled={
                         isLoading ||
-                        !formData.businessEmail ||
+                        !formData.email ||
                         !formData.password
                       }
                       className="w-full bg-black hover:bg-gray-800 text-white h-11 font-medium disabled:opacity-50"
@@ -307,178 +415,74 @@ export default function GarageAuth() {
                 )}
 
                 {/* Sign Up Form */}
-                {authMode === "signup" && (
+                {authMode === "signup" && !showOtpForm && (
+                  <GarageSignupForm
+                    formData={formData}
+                    handleInputChange={handleInputChange}
+                    handleFileUpload={handleFileUpload}
+                    handleServiceToggle={handleServiceToggle}
+                    handleSignUp={handleSignUp}
+                    isRegistering={isRegistering}
+                    error={error}
+                  />
+                )}
+
+                {/* OTP Verification Form */}
+                {showOtpForm && (
                   <div className="space-y-4">
-                    <div className="space-y-2">
-                      <Label
-                        htmlFor="garageName"
-                        className="text-sm font-medium text-gray-700"
-                      >
-                        Garage Name <span className="text-red-500">*</span>
-                      </Label>
-                      <div className="relative">
-                        <Building className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                        <Input
-                          id="garageName"
-                          type="text"
-                          placeholder="Your Garage Name"
-                          value={formData.garageName}
-                          onChange={(e) =>
-                            handleInputChange("garageName", e.target.value)
-                          }
-                          className="pl-10 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                        />
-                      </div>
+                    <div className="text-center mb-6">
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                        Verify Your Email
+                      </h3>
+                      <p className="text-sm text-gray-600">
+                        We've sent a 6-digit code to {formData.email}
+                      </p>
                     </div>
+
+                    {error && (
+                      <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+                        <p className="text-sm text-red-600">{error}</p>
+                      </div>
+                    )}
 
                     <div className="space-y-2">
                       <Label
-                        htmlFor="signupBusinessEmail"
+                        htmlFor="otp"
                         className="text-sm font-medium text-gray-700"
                       >
-                        Business Email <span className="text-red-500">*</span>
+                        Enter OTP
                       </Label>
-                      <div className="relative">
-                        <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                        <Input
-                          id="signupBusinessEmail"
-                          type="email"
-                          placeholder="garage@business.com"
-                          value={formData.businessEmail}
-                          onChange={(e) =>
-                            handleInputChange("businessEmail", e.target.value)
-                          }
-                          className="pl-10 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label
-                        htmlFor="contactNumber"
-                        className="text-sm font-medium text-gray-700"
-                      >
-                        Contact Number <span className="text-red-500">*</span>
-                      </Label>
-                      <div className="relative">
-                        <Phone className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                        <Input
-                          id="contactNumber"
-                          type="tel"
-                          placeholder="+971 50 123 4567"
-                          value={formData.contactNumber}
-                          onChange={(e) =>
-                            handleInputChange("contactNumber", e.target.value)
-                          }
-                          className="pl-10 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Trade License Upload */}
-                    <div className="space-y-2">
-                      <Label className="text-sm font-medium text-gray-700">
-                        Trade License
-                      </Label>
-                      <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-gray-400 transition-colors">
-                        <Upload className="mx-auto h-8 w-8 text-gray-400 mb-2" />
-                        <p className="text-sm text-gray-600">
-                          Upload Trade License (PDF, JPG, PNG)
-                        </p>
-                        <input
-                          type="file"
-                          className="hidden"
-                          accept=".pdf,.jpg,.jpeg,.png"
-                          title="Upload Trade License"
-                          aria-label="Upload Trade License"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Garage Logo Upload */}
-                    <div className="space-y-2">
-                      <Label className="text-sm font-medium text-gray-700">
-                        Garage Logo (Optional)
-                      </Label>
-                      <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-gray-400 transition-colors">
-                        <Upload className="mx-auto h-8 w-8 text-gray-400 mb-2" />
-                        <p className="text-sm text-gray-600">
-                          Upload Logo (JPG, PNG)
-                        </p>
-                        <input
-                          type="file"
-                          className="hidden"
-                          accept=".jpg,.jpeg,.png"
-                          title="Upload Garage Logo"
-                          aria-label="Upload Garage Logo"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Service Categories */}
-                    <div className="space-y-3">
-                      <Label className="text-sm font-medium text-gray-700">
-                        Select Service Categories{" "}
-                        <span className="text-red-500">*</span>
-                      </Label>
-                      <div className="grid grid-cols-2 gap-3">
-                        {[
-                          { id: "mechanical", label: "Mechanical Repair" },
-                          { id: "ac", label: "AC & Heating" },
-                          { id: "electrical", label: "Electrical Systems" },
-                          { id: "body", label: "Body & Paint" },
-                          { id: "diagnostics", label: "Diagnostics" },
-                          { id: "maintenance", label: "General Maintenance" },
-                        ].map((service) => (
-                          <div
-                            key={service.id}
-                            className="flex items-center space-x-2"
-                          >
-                            <Checkbox
-                              id={service.id}
-                              checked={formData.serviceCategories.includes(
-                                service.id
-                              )}
-                              onCheckedChange={() =>
-                                handleServiceToggle(service.id)
-                              }
-                            />
-                            <Label
-                              htmlFor={service.id}
-                              className="text-sm text-gray-700"
-                            >
-                              {service.label}
-                            </Label>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Terms & Conditions */}
-                    <div className="flex items-start space-x-2">
-                      <Checkbox
-                        id="terms"
-                        checked={formData.agreeToTerms}
-                        onCheckedChange={(checked) =>
-                          handleInputChange("agreeToTerms", checked as boolean)
-                        }
-                        className="mt-1"
+                      <Input
+                        id="otp"
+                        type="text"
+                        placeholder="123456"
+                        value={otp}
+                        onChange={(e) => setOtp(e.target.value)}
+                        className="text-center text-lg tracking-widest border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                        maxLength={6}
                       />
-                      <Label
-                        htmlFor="terms"
-                        className="text-sm text-gray-600 leading-relaxed"
-                      >
-                        I confirm that all provided information is valid.
-                      </Label>
                     </div>
 
-                    <Button
-                      onClick={handleSignUp}
-                      disabled={!formData.agreeToTerms}
-                      className="w-full bg-black hover:bg-gray-800 text-white h-11 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      Submit
-                    </Button>
+                    <div className="flex gap-3">
+                      <Button
+                        onClick={() => {
+                          setShowOtpForm(false);
+                          setOtp("");
+                          setError("");
+                        }}
+                        variant="outline"
+                        className="flex-1 h-11"
+                      >
+                        Back
+                      </Button>
+                      <Button
+                        onClick={handleVerifyOtp}
+                        disabled={!otp || otp.length !== 6 || isVerifying}
+                        className="flex-1 bg-black hover:bg-gray-800 text-white h-11 font-medium disabled:opacity-50"
+                      >
+                        {isVerifying ? "Verifying..." : "Verify OTP"}
+                      </Button>
+                    </div>
                   </div>
                 )}
               </div>

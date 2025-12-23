@@ -61,6 +61,20 @@ interface RegisterRequest {
   role: 'CAR_OWNER' | 'GARAGE_OWNER';
 }
 
+interface GarageRegisterRequest {
+  fullName: string;
+  email: string;
+  phone: string;
+  password: string;
+  confirmPassword: string;
+  garageName: string;
+  address: string;
+  city: string;
+  emirate: string;
+  serviceCategories: string[];
+  role: 'GARAGE_OWNER';
+}
+
 interface RegisterResponse {
   message: string;
   verifyToken: string;
@@ -125,6 +139,13 @@ export const authApi = apiSlice.injectEndpoints({
         body: userData,
       }),
     }),
+    garageRegister: builder.mutation<RegisterResponse, FormData>({
+      query: (formData) => ({
+        url: '/auth/register',
+        method: 'POST',
+        body: formData,
+      }),
+    }),
     verifyOtp: builder.mutation<VerifyOtpResponse, VerifyOtpRequest>({
       query: (otpData) => ({
         url: '/auth/signup-verify-otp',
@@ -149,6 +170,7 @@ export const authApi = apiSlice.injectEndpoints({
 export const {
   useLoginMutation,
   useRegisterMutation,
+  useGarageRegisterMutation,
   useVerifyOtpMutation,
   useGoogleLoginMutation,
   useGetProfileQuery,
