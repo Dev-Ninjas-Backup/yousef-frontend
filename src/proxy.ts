@@ -11,13 +11,13 @@ interface JWTPayload {
 
 function decodeJWT(token: string): JWTPayload | null {
   try {
-    const base64Url = token.split('.')[1];
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const base64Url = token.split(".")[1];
+    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
     const jsonPayload = decodeURIComponent(
       atob(base64)
-        .split('')
-        .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-        .join('')
+        .split("")
+        .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+        .join("")
     );
     return JSON.parse(jsonPayload);
   } catch (error) {
@@ -28,14 +28,13 @@ function decodeJWT(token: string): JWTPayload | null {
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  // console.log("Pathe name from Middleware :", pathname)
 
-  console.log("Pathe name from Middleware :", pathname)
-  
   if (
-    pathname.startsWith('/_next/') ||
-    pathname.startsWith('/api/') ||
-    pathname.includes('.') ||
-    pathname === '/favicon.ico'
+    pathname.startsWith("/_next/") ||
+    pathname.startsWith("/api/") ||
+    pathname.includes(".") ||
+    pathname === "/favicon.ico"
   ) {
     return NextResponse.next();
   }
@@ -44,7 +43,7 @@ export function proxy(request: NextRequest) {
     request.cookies.get("token")?.value ||
     request.headers.get("authorization")?.replace("Bearer ", "");
 
-    console.log("Token from Middleware :", token)
+  // console.log("Token from Middleware :", token)
 
   const protectedRoutes: Record<string, string[]> = {
     "/user/dashboard": ["CAR_OWNER"],
@@ -53,7 +52,7 @@ export function proxy(request: NextRequest) {
     "/garage-admin/dashboard": ["GARAGE_OWNER"],
   };
 
-  console.log("Protected Routes :", protectedRoutes)
+  // console.log("Protected Routes :", protectedRoutes)
 
   const matchedRoute = Object.keys(protectedRoutes).find((route) =>
     pathname.startsWith(route)
@@ -107,7 +106,10 @@ export function proxy(request: NextRequest) {
       }
 
       // Additional check for GARAGE_OWNER verification
-      if (userRole === 'GARAGE_OWNER' && matchedRoute.includes('garage-admin')) {
+      if (
+        userRole === "GARAGE_OWNER" &&
+        matchedRoute.includes("garage-admin")
+      ) {
         // For now, we'll let them through and handle verification in the dashboard
         // You can add isGarageVerified check here if it's available in the JWT
       }
@@ -131,5 +133,5 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|.*\\..*).*)"]
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|.*\\..*).*)"],
 };
