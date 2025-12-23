@@ -10,7 +10,7 @@ import { Mail, Lock, Sparkles, User, Store, Phone, Apple } from "lucide-react";
 import Image from "next/image";
 import loginbg from "@/assets/login/login_bg.jpg";
 import scroll_logo from "@/assets/navbar/sayarahub_fill.svg";
-import { useLoginMutation } from "@/store/api/authApi";
+import { useLoginMutation, useRegisterMutation, useVerifyOtpMutation } from "@/store/api/authApi";
 import { useAppDispatch } from "@/store/hooks";
 import { setCredentials } from "@/store/slices/authSlice";
 import { getRedirectPath, storeAuthData } from "@/lib/auth";
@@ -19,12 +19,18 @@ export default function UserAuth() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const [login, { isLoading }] = useLoginMutation();
+  const [register, { isLoading: isRegistering }] = useRegisterMutation();
+  const [verifyOtp, { isLoading: isVerifying }] = useVerifyOtpMutation();
   const [authMode, setAuthMode] = useState("signin");
+  const [showOtpForm, setShowOtpForm] = useState(false);
+  const [verifyToken, setVerifyToken] = useState("");
+  const [otp, setOtp] = useState("");
   const [formData, setFormData] = useState({
     email: "",
     password: "",
+    confirmPassword: "",
     fullName: "",
-    phoneNumber: "",
+    phone: "",
     agreeToTerms: false,
   });
   const [error, setError] = useState("");
@@ -88,8 +94,80 @@ export default function UserAuth() {
     }
   };
 
-  const handleSignUp = () => {
-    console.log("Car Owner Sign up:", { ...formData, userType: "CAR_OWNER" });
+  const handleSignUp = async () => {
+    if (!formData.fullName || !formData.email || !formData.phone || !formData.password || !formData.confirmPassword) {
+      setError("Please fill in all fields");
+      return;
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
+    if (!formData.agreeToTerms) {
+      setError("Please agree to the terms and conditions");
+      return;
+    }
+
+    try {
+      const result = await register({
+        fullName: formData.fullName,
+        email: formData.email,
+        phone: formData.phone,
+        password: formData.password,
+        confirmPassword: formData.confirmPassword,
+        role: "CAR_OWNER"
+      }).unwrap();
+
+      setVerifyToken(result.verifyToken);
+      setShowOtpForm(true);
+      setError("");
+    } catch (error: any) {
+      console.error("Registration error:", error);
+      setError(error?.data?.message || "Registration failed. Please try again.");
+    }
+  };
+
+  const handleVerifyOtp = async () => {
+    if (!otp || otp.length !== 6) {
+      setError("Please enter a valid 6-digit OTP");
+      return;
+    }
+
+    try {
+      const result = await verifyOtp({
+        resetToken: verifyToken,
+        emailOtp: otp
+      }).unwrap();
+
+      console.log('OTP Verification Result:', result);
+      
+      // Backend returns nested data structure
+      const { token, user } = result.data.data;
+
+      // Store auth data
+      storeAuthData(token, user);
+      dispatch(
+        setCredentials({
+          user: {
+            id: user.id,
+            email: user.email,
+            name: user.fullName,
+            role: user.role as any,
+            avatar: user.profilePhoto || undefined,
+          },
+          token,
+        })
+      );
+
+      // Redirect to dashboard
+      const redirectPath = getRedirectPath(user.role);
+      router.push(redirectPath);
+    } catch (error: any) {
+      console.error("OTP verification error:", error);
+      setError(error?.data?.message || "OTP verification failed. Please try again.");
+    }
   };
 
   return (
@@ -271,7 +349,7 @@ export default function UserAuth() {
                 )}
 
                 {/* Sign Up Form */}
-                {authMode === "signup" && (
+                {authMode === "signup" && !showOtpForm && (
                   <div className="space-y-4">
                     <div className="space-y-2">
                       <Label
@@ -330,9 +408,9 @@ export default function UserAuth() {
                           id="phoneNumber"
                           type="tel"
                           placeholder="+971 50 123 4567"
-                          value={formData.phoneNumber}
+                          value={formData.phone}
                           onChange={(e) =>
-                            handleInputChange("phoneNumber", e.target.value)
+                            handleInputChange("phone", e.target.value)
                           }
                           className="pl-10 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                         />
@@ -355,6 +433,28 @@ export default function UserAuth() {
                           value={formData.password}
                           onChange={(e) =>
                             handleInputChange("password", e.target.value)
+                          }
+                          className="pl-10 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label
+                        htmlFor="confirmPassword"
+                        className="text-sm font-medium text-gray-700"
+                      >
+                        Confirm Password
+                      </Label>
+                      <div className="relative">
+                        <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                        <Input
+                          id="confirmPassword"
+                          type="password"
+                          placeholder="Confirm your password"
+                          value={formData.confirmPassword}
+                          onChange={(e) =>
+                            handleInputChange("confirmPassword", e.target.value)
                           }
                           className="pl-10 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                         />
@@ -420,11 +520,70 @@ export default function UserAuth() {
 
                     <Button
                       onClick={handleSignUp}
-                      disabled={!formData.agreeToTerms}
+                      disabled={!formData.agreeToTerms || isRegistering}
                       className="w-full bg-black hover:bg-gray-800 text-white h-11 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      Create Account
+                      {isRegistering ? "Creating Account..." : "Create Account"}
                     </Button>
+                  </div>
+                )}
+
+                {/* OTP Verification Form */}
+                {showOtpForm && (
+                  <div className="space-y-4">
+                    <div className="text-center mb-6">
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                        Verify Your Email
+                      </h3>
+                      <p className="text-sm text-gray-600">
+                        We've sent a 6-digit code to {formData.email}
+                      </p>
+                    </div>
+
+                    {error && (
+                      <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+                        <p className="text-sm text-red-600">{error}</p>
+                      </div>
+                    )}
+
+                    <div className="space-y-2">
+                      <Label
+                        htmlFor="otp"
+                        className="text-sm font-medium text-gray-700"
+                      >
+                        Enter OTP
+                      </Label>
+                      <Input
+                        id="otp"
+                        type="text"
+                        placeholder="123456"
+                        value={otp}
+                        onChange={(e) => setOtp(e.target.value)}
+                        className="text-center text-lg tracking-widest border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                        maxLength={6}
+                      />
+                    </div>
+
+                    <div className="flex gap-3">
+                      <Button
+                        onClick={() => {
+                          setShowOtpForm(false);
+                          setOtp("");
+                          setError("");
+                        }}
+                        variant="outline"
+                        className="flex-1 h-11"
+                      >
+                        Back
+                      </Button>
+                      <Button
+                        onClick={handleVerifyOtp}
+                        disabled={!otp || otp.length !== 6 || isVerifying}
+                        className="flex-1 bg-black hover:bg-gray-800 text-white h-11 font-medium disabled:opacity-50"
+                      >
+                        {isVerifying ? "Verifying..." : "Verify OTP"}
+                      </Button>
+                    </div>
                   </div>
                 )}
               </div>

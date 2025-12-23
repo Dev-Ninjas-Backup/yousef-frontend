@@ -53,10 +53,36 @@ interface LoginResponse {
 }
 
 interface RegisterRequest {
-  name: string;
+  fullName: string;
   email: string;
+  phone: string;
   password: string;
-  role: string;
+  confirmPassword: string;
+  role: 'CAR_OWNER' | 'GARAGE_OWNER';
+}
+
+interface RegisterResponse {
+  message: string;
+  verifyToken: string;
+}
+
+interface VerifyOtpRequest {
+  resetToken: string;
+  emailOtp: string;
+}
+
+interface VerifyOtpResponse {
+  statusCode: number;
+  success: boolean;
+  message: string;
+  data: {
+    success: boolean;
+    message: string;
+    data: {
+      token: string;
+      user: User;
+    };
+  };
 }
 
 interface AuthResponse {
@@ -78,11 +104,18 @@ export const authApi = apiSlice.injectEndpoints({
         body: credentials,
       }),
     }),
-    register: builder.mutation<AuthResponse, RegisterRequest>({
+    register: builder.mutation<RegisterResponse, RegisterRequest>({
       query: (userData) => ({
         url: '/auth/register',
         method: 'POST',
         body: userData,
+      }),
+    }),
+    verifyOtp: builder.mutation<VerifyOtpResponse, VerifyOtpRequest>({
+      query: (otpData) => ({
+        url: '/auth/signup-verify-otp',
+        method: 'POST',
+        body: otpData,
       }),
     }),
     getProfile: builder.query<AuthResponse['user'], void>({
@@ -95,5 +128,6 @@ export const authApi = apiSlice.injectEndpoints({
 export const {
   useLoginMutation,
   useRegisterMutation,
+  useVerifyOtpMutation,
   useGetProfileQuery,
 } = authApi;
