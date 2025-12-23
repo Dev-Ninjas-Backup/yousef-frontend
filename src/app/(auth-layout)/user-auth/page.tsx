@@ -10,7 +10,7 @@ import { Mail, Lock, Sparkles, User, Store, Phone, Apple } from "lucide-react";
 import Image from "next/image";
 import loginbg from "@/assets/login/login_bg.jpg";
 import scroll_logo from "@/assets/navbar/sayarahub_fill.svg";
-import { useLoginMutation, useRegisterMutation, useVerifyOtpMutation } from "@/store/api/authApi";
+import { useLoginMutation, useRegisterMutation, useVerifyOtpMutation, useGoogleLoginMutation } from "@/store/api/authApi";
 import { useAppDispatch } from "@/store/hooks";
 import { setCredentials } from "@/store/slices/authSlice";
 import { getRedirectPath, storeAuthData } from "@/lib/auth";
@@ -21,6 +21,7 @@ export default function UserAuth() {
   const [login, { isLoading }] = useLoginMutation();
   const [register, { isLoading: isRegistering }] = useRegisterMutation();
   const [verifyOtp, { isLoading: isVerifying }] = useVerifyOtpMutation();
+  const [googleLogin, { isLoading: isGoogleLoading }] = useGoogleLoginMutation();
   const [authMode, setAuthMode] = useState("signin");
   const [showOtpForm, setShowOtpForm] = useState(false);
   const [verifyToken, setVerifyToken] = useState("");
@@ -167,6 +168,55 @@ export default function UserAuth() {
     } catch (error: any) {
       console.error("OTP verification error:", error);
       setError(error?.data?.message || "OTP verification failed. Please try again.");
+    }
+  };
+
+  const handleGoogleLogin = () => {
+    if (typeof window !== 'undefined' && window.google) {
+      window.google.accounts.id.initialize({
+        client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!,
+        callback: handleGoogleCallback,
+      });
+      
+      window.google.accounts.id.prompt();
+    }
+  };
+
+  const handleGoogleCallback = async (response: any) => {
+    try {
+      const result = await googleLogin({
+        idToken: response.credential
+      }).unwrap();
+
+      const { token, user } = result.data;
+
+      // Check if user is CAR_OWNER (for user-auth page)
+      if (user.role !== "CAR_OWNER") {
+        setError("This login is for Car Owners only. Please use the correct portal.");
+        return;
+      }
+
+      // Store auth data
+      storeAuthData(token, user);
+      dispatch(
+        setCredentials({
+          user: {
+            id: user.id,
+            email: user.email,
+            name: user.fullName,
+            role: user.role as any,
+            avatar: user.profilePhoto || undefined,
+          },
+          token,
+        })
+      );
+
+      // Redirect to dashboard
+      const redirectPath = getRedirectPath(user.role);
+      router.push(redirectPath);
+    } catch (error: any) {
+      console.error("Google login error:", error);
+      setError(error?.data?.message || "Google login failed. Please try again.");
     }
   };
 
@@ -464,6 +514,8 @@ export default function UserAuth() {
                     {/* Social Sign Up */}
                     <div className="space-y-3">
                       <Button
+                        onClick={handleGoogleLogin}
+                        disabled={isGoogleLoading}
                         variant="outline"
                         className="w-full h-11 border-gray-300 hover:bg-gray-50"
                       >
@@ -485,7 +537,7 @@ export default function UserAuth() {
                             d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                           />
                         </svg>
-                        Sign Up with Google
+                        {isGoogleLoading ? "Signing in..." : "Sign Up with Google"}
                       </Button>
 
                       <Button

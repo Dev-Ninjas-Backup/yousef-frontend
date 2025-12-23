@@ -85,6 +85,20 @@ interface VerifyOtpResponse {
   };
 }
 
+interface GoogleLoginRequest {
+  idToken: string;
+}
+
+interface GoogleLoginResponse {
+  statusCode: number;
+  success: boolean;
+  message: string;
+  data: {
+    token: string;
+    user: User;
+  };
+}
+
 interface AuthResponse {
   user: {
     id: string;
@@ -118,6 +132,13 @@ export const authApi = apiSlice.injectEndpoints({
         body: otpData,
       }),
     }),
+    googleLogin: builder.mutation<GoogleLoginResponse, GoogleLoginRequest>({
+      query: (googleData) => ({
+        url: '/auth/google-login',
+        method: 'POST',
+        body: googleData,
+      }),
+    }),
     getProfile: builder.query<AuthResponse['user'], void>({
       query: () => '/auth/profile',
       providesTags: ['User'],
@@ -129,5 +150,6 @@ export const {
   useLoginMutation,
   useRegisterMutation,
   useVerifyOtpMutation,
+  useGoogleLoginMutation,
   useGetProfileQuery,
 } = authApi;
