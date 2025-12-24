@@ -89,7 +89,8 @@ interface VerifyOtpResponse {
   statusCode: number;
   success: boolean;
   message: string;
-  data: {
+  resetToken?: string; // For reset password flow
+  data?: {
     success: boolean;
     message: string;
     data: {
@@ -111,6 +112,24 @@ interface GoogleLoginResponse {
     token: string;
     user: User;
   };
+}
+
+interface ForgotPasswordRequest {
+  email: string;
+}
+
+interface ForgotPasswordResponse {
+  statusCode: number;
+  success: boolean;
+  message: string;
+  data: {
+    resetToken: string;
+  };
+}
+
+interface ResetPasswordRequest {
+  resetToken: string;
+  password: string;
 }
 
 interface AuthResponse {
@@ -160,6 +179,20 @@ export const authApi = apiSlice.injectEndpoints({
         body: googleData,
       }),
     }),
+    forgotPassword: builder.mutation<ForgotPasswordResponse, ForgotPasswordRequest>({
+      query: (emailData) => ({
+        url: '/auth/forget-password',
+        method: 'POST',
+        body: emailData,
+      }),
+    }),
+    resetPassword: builder.mutation<{ message: string }, ResetPasswordRequest>({
+      query: (resetData) => ({
+        url: '/auth/reset-password',
+        method: 'POST',
+        body: resetData,
+      }),
+    }),
     getProfile: builder.query<AuthResponse['user'], void>({
       query: () => '/auth/profile',
       providesTags: ['User'],
@@ -173,5 +206,7 @@ export const {
   useGarageRegisterMutation,
   useVerifyOtpMutation,
   useGoogleLoginMutation,
+  useForgotPasswordMutation,
+  useResetPasswordMutation,
   useGetProfileQuery,
 } = authApi;

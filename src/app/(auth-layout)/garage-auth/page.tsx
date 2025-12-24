@@ -20,7 +20,14 @@ import {
 import Image from "next/image";
 import loginbg from "@/assets/login/login_bg.jpg";
 import scroll_logo from "@/assets/navbar/sayarahub_fill.svg";
-import { useLoginMutation, useGarageRegisterMutation, useVerifyOtpMutation, useGoogleLoginMutation } from "@/store/api/authApi";
+import {
+  useLoginMutation,
+  useGarageRegisterMutation,
+  useVerifyOtpMutation,
+  useGoogleLoginMutation,
+  useForgotPasswordMutation,
+  useResetPasswordMutation,
+} from "@/store/api/authApi";
 import { useAppDispatch } from "@/store/hooks";
 import { setCredentials } from "@/store/slices/authSlice";
 import { getRedirectPath, storeAuthData } from "@/lib/auth";
@@ -30,13 +37,25 @@ export default function GarageAuth() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const [login, { isLoading }] = useLoginMutation();
-  const [garageRegister, { isLoading: isRegistering }] = useGarageRegisterMutation();
+  const [garageRegister, { isLoading: isRegistering }] =
+    useGarageRegisterMutation();
   const [verifyOtp, { isLoading: isVerifying }] = useVerifyOtpMutation();
-  const [googleLogin, { isLoading: isGoogleLoading }] = useGoogleLoginMutation();
+  const [googleLogin, { isLoading: isGoogleLoading }] =
+    useGoogleLoginMutation();
+  const [forgotPassword, { isLoading: isForgotLoading }] =
+    useForgotPasswordMutation();
+  const [resetPassword, { isLoading: isResetLoading }] =
+    useResetPasswordMutation();
   const [authMode, setAuthMode] = useState("signin");
   const [showOtpForm, setShowOtpForm] = useState(false);
+  const [showForgotForm, setShowForgotForm] = useState(false);
+  const [showResetForm, setShowResetForm] = useState(false);
   const [verifyToken, setVerifyToken] = useState("");
+  const [resetToken, setResetToken] = useState("");
   const [otp, setOtp] = useState("");
+  const [forgotEmail, setForgotEmail] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -137,7 +156,13 @@ export default function GarageAuth() {
 
   const handleSignUp = async () => {
     // Validation
-    if (!formData.fullName || !formData.email || !formData.phone || !formData.password || !formData.confirmPassword) {
+    if (
+      !formData.fullName ||
+      !formData.email ||
+      !formData.phone ||
+      !formData.password ||
+      !formData.confirmPassword
+    ) {
       setError("Please fill in all required fields");
       return;
     }
@@ -147,7 +172,12 @@ export default function GarageAuth() {
       return;
     }
 
-    if (!formData.garageName || !formData.address || !formData.city || !formData.emirate) {
+    if (
+      !formData.garageName ||
+      !formData.address ||
+      !formData.city ||
+      !formData.emirate
+    ) {
       setError("Please fill in all garage information");
       return;
     }
@@ -165,24 +195,27 @@ export default function GarageAuth() {
     try {
       // Create FormData for file upload
       const formDataToSend = new FormData();
-      formDataToSend.append('fullName', formData.fullName);
-      formDataToSend.append('email', formData.email);
-      formDataToSend.append('phone', formData.phone);
-      formDataToSend.append('password', formData.password);
-      formDataToSend.append('confirmPassword', formData.confirmPassword);
-      formDataToSend.append('garageName', formData.garageName);
-      formDataToSend.append('address', formData.address);
-      formDataToSend.append('city', formData.city);
-      formDataToSend.append('emirate', formData.emirate);
-      formDataToSend.append('serviceCategories', JSON.stringify(formData.serviceCategories));
-      formDataToSend.append('role', 'GARAGE_OWNER');
+      formDataToSend.append("fullName", formData.fullName);
+      formDataToSend.append("email", formData.email);
+      formDataToSend.append("phone", formData.phone);
+      formDataToSend.append("password", formData.password);
+      formDataToSend.append("confirmPassword", formData.confirmPassword);
+      formDataToSend.append("garageName", formData.garageName);
+      formDataToSend.append("address", formData.address);
+      formDataToSend.append("city", formData.city);
+      formDataToSend.append("emirate", formData.emirate);
+      formDataToSend.append(
+        "serviceCategories",
+        JSON.stringify(formData.serviceCategories)
+      );
+      formDataToSend.append("role", "GARAGE_OWNER");
 
       // Add files if selected
       if (formData.garageLogo) {
-        formDataToSend.append('garageLogo', formData.garageLogo);
+        formDataToSend.append("garageLogo", formData.garageLogo);
       }
       if (formData.tradeLicense) {
-        formDataToSend.append('tradeLicense', formData.tradeLicense);
+        formDataToSend.append("tradeLicense", formData.tradeLicense);
       }
 
       const result = await garageRegister(formDataToSend).unwrap();
@@ -192,7 +225,68 @@ export default function GarageAuth() {
       setError("");
     } catch (error: any) {
       console.error("Registration error:", error);
-      setError(error?.data?.message || "Registration failed. Please try again.");
+      setError(
+        error?.data?.message || "Registration failed. Please try again."
+      );
+    }
+  };
+
+  const handleForgotPassword = async () => {
+    if (!forgotEmail) {
+      setError("Please enter your email address");
+      return;
+    }
+
+    try {
+      const result = await forgotPassword({ email: forgotEmail }).unwrap();
+      setResetToken(result.data.resetToken);
+      setShowResetForm(true);
+      setError("");
+    } catch (error: any) {
+      console.error("Forgot password error:", error);
+      setError(
+        error?.data?.message || "Failed to send reset email. Please try again."
+      );
+    }
+  };
+
+  const handleResetPassword = async () => {
+    if (!otp || otp.length !== 6) {
+      setError("Please enter the 6-digit OTP");
+      return;
+    }
+
+    if (!newPassword || newPassword.length < 6) {
+      setError("Password must be at least 6 characters");
+      return;
+    }
+
+    if (newPassword !== confirmNewPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
+    try {
+      await resetPassword({
+        resetToken: resetToken,
+        password: newPassword,
+      }).unwrap();
+
+      // Reset all states
+      setShowForgotForm(false);
+      setShowResetForm(false);
+      setOtp("");
+      setNewPassword("");
+      setConfirmNewPassword("");
+      setForgotEmail("");
+      setError("");
+
+      alert("Password reset successful! Please login with your new password.");
+    } catch (error: any) {
+      console.error("Reset password error:", error);
+      setError(
+        error?.data?.message || "Failed to reset password. Please try again."
+      );
     }
   };
 
@@ -204,11 +298,16 @@ export default function GarageAuth() {
 
     try {
       const result = await verifyOtp({
-        resetToken: verifyToken,
-        emailOtp: otp
+        resetToken: verifyToken || "",
+        emailOtp: otp,
       }).unwrap();
 
-      const { token, user } = result.data.data;
+      const { token, user } = result.data?.data || {};
+
+      if (!token || !user) {
+        setError("Invalid response from server. Please try again.");
+        return;
+      }
 
       // Store auth data
       storeAuthData(token, user);
@@ -230,7 +329,9 @@ export default function GarageAuth() {
       router.push(redirectPath);
     } catch (error: any) {
       console.error("OTP verification error:", error);
-      setError(error?.data?.message || "OTP verification failed. Please try again.");
+      setError(
+        error?.data?.message || "OTP verification failed. Please try again."
+      );
     }
   };
 
@@ -340,7 +441,7 @@ export default function GarageAuth() {
                 </div>
 
                 {/* Sign In Form */}
-                {authMode === "signin" && (
+                {authMode === "signin" && !showForgotForm && !showResetForm && (
                   <div className="space-y-4">
                     {error && (
                       <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
@@ -395,7 +496,13 @@ export default function GarageAuth() {
                     </div>
 
                     <div className="flex justify-end">
-                      <button className="text-sm text-blue-600 hover:text-blue-700 font-medium">
+                      <button
+                        onClick={() => {
+                          setShowForgotForm(true);
+                          setError("");
+                        }}
+                        className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                      >
                         Forgot Password?
                       </button>
                     </div>
@@ -403,9 +510,7 @@ export default function GarageAuth() {
                     <Button
                       onClick={handleSignIn}
                       disabled={
-                        isLoading ||
-                        !formData.email ||
-                        !formData.password
+                        isLoading || !formData.email || !formData.password
                       }
                       className="w-full bg-black hover:bg-gray-800 text-white h-11 font-medium disabled:opacity-50"
                     >
@@ -481,6 +586,176 @@ export default function GarageAuth() {
                         className="flex-1 bg-black hover:bg-gray-800 text-white h-11 font-medium disabled:opacity-50"
                       >
                         {isVerifying ? "Verifying..." : "Verify OTP"}
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Forgot Password Form */}
+                {authMode === "signin" && showForgotForm && !showResetForm && (
+                  <div className="space-y-4">
+                    <div className="text-center mb-6">
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                        Reset Your Password
+                      </h3>
+                      <p className="text-sm text-gray-600">
+                        Enter your email address and we'll send you a reset code
+                      </p>
+                    </div>
+
+                    {error && (
+                      <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+                        <p className="text-sm text-red-600">{error}</p>
+                      </div>
+                    )}
+
+                    <div className="space-y-2">
+                      <Label
+                        htmlFor="forgotEmail"
+                        className="text-sm font-medium text-gray-700"
+                      >
+                        Email Address
+                      </Label>
+                      <div className="relative">
+                        <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                        <Input
+                          id="forgotEmail"
+                          type="email"
+                          placeholder="Enter your email"
+                          value={forgotEmail}
+                          onChange={(e) => setForgotEmail(e.target.value)}
+                          className="pl-10 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex gap-3">
+                      <Button
+                        onClick={() => {
+                          setShowForgotForm(false);
+                          setForgotEmail("");
+                          setError("");
+                        }}
+                        variant="outline"
+                        className="flex-1 h-11"
+                      >
+                        Back
+                      </Button>
+                      <Button
+                        onClick={handleForgotPassword}
+                        disabled={!forgotEmail || isForgotLoading}
+                        className="flex-1 bg-black hover:bg-gray-800 text-white h-11 font-medium disabled:opacity-50"
+                      >
+                        {isForgotLoading ? "Sending..." : "Send Reset Code"}
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Reset Password Form */}
+                {authMode === "signin" && showResetForm && (
+                  <div className="space-y-4">
+                    <div className="text-center mb-6">
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                        Enter Reset Code & New Password
+                      </h3>
+                      <p className="text-sm text-gray-600">
+                        We've sent a 6-digit code to {forgotEmail}
+                      </p>
+                    </div>
+
+                    {error && (
+                      <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+                        <p className="text-sm text-red-600">{error}</p>
+                      </div>
+                    )}
+
+                    <div className="space-y-2">
+                      <Label
+                        htmlFor="resetOtp"
+                        className="text-sm font-medium text-gray-700"
+                      >
+                        Reset Code
+                      </Label>
+                      <Input
+                        id="resetOtp"
+                        type="text"
+                        placeholder="123456"
+                        value={otp}
+                        onChange={(e) => setOtp(e.target.value)}
+                        className="text-center text-lg tracking-widest border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                        maxLength={6}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label
+                        htmlFor="newPassword"
+                        className="text-sm font-medium text-gray-700"
+                      >
+                        New Password
+                      </Label>
+                      <div className="relative">
+                        <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                        <Input
+                          id="newPassword"
+                          type="password"
+                          placeholder="Enter new password"
+                          value={newPassword}
+                          onChange={(e) => setNewPassword(e.target.value)}
+                          className="pl-10 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label
+                        htmlFor="confirmNewPassword"
+                        className="text-sm font-medium text-gray-700"
+                      >
+                        Confirm New Password
+                      </Label>
+                      <div className="relative">
+                        <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                        <Input
+                          id="confirmNewPassword"
+                          type="password"
+                          placeholder="Confirm new password"
+                          value={confirmNewPassword}
+                          onChange={(e) =>
+                            setConfirmNewPassword(e.target.value)
+                          }
+                          className="pl-10 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex gap-3">
+                      <Button
+                        onClick={() => {
+                          setShowResetForm(false);
+                          setShowForgotForm(true);
+                          setOtp("");
+                          setNewPassword("");
+                          setConfirmNewPassword("");
+                          setError("");
+                        }}
+                        variant="outline"
+                        className="flex-1 h-11"
+                      >
+                        Back
+                      </Button>
+                      <Button
+                        onClick={handleResetPassword}
+                        disabled={
+                          !otp ||
+                          !newPassword ||
+                          !confirmNewPassword ||
+                          isResetLoading
+                        }
+                        className="flex-1 bg-black hover:bg-gray-800 text-white h-11 font-medium disabled:opacity-50"
+                      >
+                        {isResetLoading ? "Resetting..." : "Reset Password"}
                       </Button>
                     </div>
                   </div>
