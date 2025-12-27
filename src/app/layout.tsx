@@ -5,6 +5,7 @@ import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
 import { ReduxProvider } from "@/providers/ReduxProvider";
 import { SocketProvider } from "@/context/SocketContext";
+import { Toaster } from "@/components/ui/sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -40,6 +41,7 @@ export default function RootLayout({
             <SocketProvider>{children}</SocketProvider>
           </AuthProvider>
         </ReduxProvider>
+        <Toaster />
       </body>
     </html>
   );
