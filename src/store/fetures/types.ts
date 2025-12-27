@@ -31,3 +31,38 @@ export interface GarageQueryParams {
   name?: string;
   status?: string;
 }
+
+
+
+export interface User {
+  id: string;
+  role: 'GARAGE_OWNER' | 'USER' | 'SUPER_ADMIN';
+  fullName: string;
+  phone: string | null;
+  profilePhoto: string | null;
+  bio: string | null;
+  email: string;
+  isActive: boolean;
+  garageStatus: string;
+  isGarageVerified: boolean;
+  createdAt: string;
+  updatedAt: string;
+  isVerified: boolean;
+  isDeleted: boolean;
+  _count: {
+    garages: number;
+  };
+  vehicles: number;
+}
+
+export interface AllUsersResponse {
+  success: boolean;
+  message: string;
+  data: User[];
+}
+
+export interface SingleUserResponse {
+  success: boolean;
+  message: string;
+  data: User;
+}
