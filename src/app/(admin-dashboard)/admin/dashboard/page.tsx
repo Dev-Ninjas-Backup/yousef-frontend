@@ -16,6 +16,7 @@ import StatGridsSection from "./_components/StatGridsSection";
 import PartsByCategories from "./_components/PartsByCategories";
 import RecentActivity from "./_components/RecentActivity";
 import RevenueTrends from "./_components/RevenueTrends";
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 // Register ChartJS components
 ChartJS.register(
@@ -29,7 +30,7 @@ ChartJS.register(
   ArcElement
 );
 
-const AdminDashboard = () => {
+function AdminDashboardContent() {
   return (
     <div className="w-full space-y-4 sm:space-y-6">
       {/* Header */}
@@ -57,6 +58,17 @@ const AdminDashboard = () => {
       {/* Recent Activity */}
       <RecentActivity />
     </div>
+  );
+}
+
+const AdminDashboard = () => {
+  return (
+    <ProtectedRoute 
+      requiredRole={['SUPER_ADMIN']} 
+      redirectTo="/admin-auth"
+    >
+      <AdminDashboardContent />
+    </ProtectedRoute>
   );
 };
 

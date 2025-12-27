@@ -1,8 +1,9 @@
 // User roles
 export enum UserRole {
-  ADMIN = "admin",
-  SELLER = "seller",
-  USER = "user",
+  CAR_OWNER = 'CAR_OWNER',
+  GARAGE_OWNER = 'GARAGE_OWNER',
+  SUPER_ADMIN = 'SUPER_ADMIN',
+  MEMBER = 'MEMBER',
 }
 
 // User type

@@ -1,60 +1,75 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { useEffect, ReactNode } from "react";
 import { useRouter } from "next/navigation";
-import { User, UserRole, AuthContextType } from "@/types/auth";
-
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+import Cookies from "js-cookie";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { setCredentials, setLoading, logout } from "@/store/slices/authSlice";
+import { User, UserRole } from "@/types/auth";
+import { useLoginMutation } from "@/store/api/authApi";
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const dispatch = useAppDispatch();
   const router = useRouter();
 
   // Check if user is logged in on mount
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
+    const storedUser = Cookies.get("user");
+    const token = Cookies.get("token");
+    if (storedUser && token) {
+      try {
+        const user = JSON.parse(storedUser);
+        dispatch(setCredentials({ user, token }));
+      } catch (error) {
+        Cookies.remove("user");
+        Cookies.remove("token");
+      }
     }
-    setIsLoading(false);
-  }, []);
+    dispatch(setLoading(false));
+  }, [dispatch]);
+
+  return <>{children}</>;
+};
+
+// Custom hook for auth operations
+export const useAuth = () => {
+  const dispatch = useAppDispatch();
+  const { user, isAuthenticated, isLoading } = useAppSelector(
+    (state) => state.auth
+  );
+  const router = useRouter();
+
+  const [loginMutation] = useLoginMutation();
 
   const login = async (email: string, password: string) => {
-    setIsLoading(true);
+    dispatch(setLoading(true));
     try {
-      // TODO: Replace with your actual API call
-      // const response = await fetch("/api/auth/login", {
-      //   method: "POST",
-      //   body: JSON.stringify({ email, password }),
-      // });
-      // const data = await response.json();
+      const response = await loginMutation({ email, password }).unwrap();
+      const { token, user: apiUser } = response.result.data;
 
-      // Mock login - replace with real API call
-      const mockUser: User = {
-        id: "1",
-        name: "John Doe",
-        email: email,
-        // Determine role based on email for demo
-        role: email.includes("admin")
-          ? UserRole.ADMIN
-          : email.includes("seller")
-          ? UserRole.SELLER
-          : UserRole.USER,
+      const user: User = {
+        id: apiUser.id,
+        name: apiUser.fullName,
+        email: apiUser.email,
+        role: apiUser.role as UserRole,
       };
 
-      setUser(mockUser);
-      localStorage.setItem("user", JSON.stringify(mockUser));
+      dispatch(setCredentials({ user, token }));
+      Cookies.set("user", JSON.stringify(user), { expires: 7 });
+      Cookies.set("token", token, { expires: 7 });
 
       // Redirect based on role
-      switch (mockUser.role) {
-        case UserRole.ADMIN:
+      switch (user.role) {
+        case UserRole.SUPER_ADMIN:
           router.push("/admin/dashboard");
           break;
-        case UserRole.SELLER:
-          router.push("/seller/dashboard");
+        case UserRole.GARAGE_OWNER:
+          router.push("/garage-admin/dashboard");
           break;
-        case UserRole.USER:
+        case UserRole.CAR_OWNER:
+          router.push("/user/dashboard");
+          break;
+        case UserRole.MEMBER:
           router.push("/user/dashboard");
           break;
         default:
@@ -64,35 +79,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       console.error("Login error:", error);
       throw error;
     } finally {
-      setIsLoading(false);
+      dispatch(setLoading(false));
     }
   };
 
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem("user");
-    router.push("/login");
+  const handleLogout = () => {
+    dispatch(logout());
+    Cookies.remove("user");
+    Cookies.remove("token");
+    router.push("/");
   };
 
-  return (
-    <AuthContext.Provider
-      value={{
-        user,
-        isAuthenticated: !!user,
-        login,
-        logout,
-        isLoading,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
-};
-
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
+  return {
+    user,
+    isAuthenticated,
+    login,
+    logout: handleLogout,
+    isLoading,
+  };
 };
