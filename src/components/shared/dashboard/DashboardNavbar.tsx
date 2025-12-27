@@ -10,7 +10,7 @@
 // const DashboardNavbar = () => {
 //   const { user, logout } = useAuth();
 //   const pathname = usePathname();
-  
+
 //   const isAdmin = pathname.startsWith("/admin");
 
 //   return (
@@ -86,8 +86,8 @@ interface DashboardNavbarProps {
 const DashboardNavbar = ({ onMenuToggle }: DashboardNavbarProps) => {
   const { user, logout } = useAuth();
   const pathname = usePathname();
-  
-  const isAdmin = pathname.startsWith("/admin");
+
+  const isAdmin = user?.role === "SUPER_ADMIN";
 
   return (
     <header className="fixed top-0 left-0 right-0 z-40 bg-white border-b border-gray-200 h-16">
@@ -101,8 +101,14 @@ const DashboardNavbar = ({ onMenuToggle }: DashboardNavbarProps) => {
             <Menu className="w-5 h-5 text-gray-600" />
           </button>
 
-          <Image src={logoImg} alt="SayaraHub" width={120} height={40} className="h-7 lg:h-8 w-auto" />
-          
+          <Image
+            src={logoImg}
+            alt="SayaraHub"
+            width={120}
+            height={40}
+            className="h-7 lg:h-8 w-auto"
+          />
+
           <div className="hidden sm:flex items-center border-l border-gray-300 pl-3">
             <div>
               <p className="text-sm font-semibold text-gray-900">

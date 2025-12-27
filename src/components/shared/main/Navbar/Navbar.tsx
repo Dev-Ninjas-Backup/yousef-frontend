@@ -1,12 +1,13 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
-import { UserCircle, Globe, ChevronDown } from "lucide-react";
+import { UserCircle, Globe, ChevronDown, LogOut } from "lucide-react";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
+import { UserRole } from "@/types/auth";
 import scroll_logo from "@/assets/navbar/sayarahub_fill.svg";
 
-const showMyAccount = true;
 export const menuItems = [
   { label: "Home", href: "/" },
   { label: "Service", href: "/service" },
@@ -19,8 +20,31 @@ export const menuItems = [
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLangMenuOpen, setIsLangMenuOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [selectedLang, setSelectedLang] = useState("English");
   const pathname = usePathname();
+
+  const { user, isAuthenticated, logout } = useAuth();
+
+  const getDashboardLink = () => {
+    if (!user) return "/";
+    switch (user.role) {
+      case UserRole.CAR_OWNER:
+      case UserRole.MEMBER:
+        return "/user/dashboard";
+      case UserRole.GARAGE_OWNER:
+        return "/garage-admin/dashboard";
+      case UserRole.SUPER_ADMIN:
+        return "/admin/dashboard";
+      default:
+        return "/";
+    }
+  };
+
+  const handleLogout = () => {
+    logout();
+    setIsUserMenuOpen(false);
+  };
 
   const handleLanguageChange = (lang: string) => {
     setSelectedLang(lang);
@@ -33,17 +57,19 @@ const Navbar = () => {
       if (!target.closest(".language-dropdown")) {
         setIsLangMenuOpen(false);
       }
+      if (!target.closest(".user-dropdown")) {
+        setIsUserMenuOpen(false);
+      }
     };
 
-    if (isLangMenuOpen) {
+    if (isLangMenuOpen || isUserMenuOpen) {
       document.addEventListener("click", handleClickOutside);
     }
 
     return () => {
       document.removeEventListener("click", handleClickOutside);
     };
-  }, [isLangMenuOpen]);
-
+  }, [isLangMenuOpen, isUserMenuOpen]);
 
   return (
     <nav className="fixed z-50 w-full py-4 px-4 md:mt-4 md:px-8 bg-white/70 backdrop-blur-md md:bg-transparent md:backdrop-blur-none">
@@ -125,16 +151,43 @@ const Navbar = () => {
             )}
           </div>
 
-          {/* My Account */}
-          {showMyAccount && (
+          {/* Login/User Menu */}
+          {isAuthenticated ? (
+            <div className="hidden md:block relative user-dropdown">
+              <button
+                onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                className="flex items-center gap-2 text-white hover:text-[#0A84FF] py-2 px-4 rounded-full bg-black/40 shadow-[0_0_15px_rgba(255,255,255,0.1)] transition-all duration-300"
+              >
+                <span className="text-sm text-white/80">{user?.name}</span>
+                <UserCircle className="w-5 h-5 text-white/80" />
+                <ChevronDown className="w-4 h-4 text-white/80" />
+              </button>
+              {isUserMenuOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-black/90 backdrop-blur-md rounded-lg shadow-lg border border-white/20 overflow-hidden">
+                  <Link
+                    href={getDashboardLink()}
+                    onClick={() => setIsUserMenuOpen(false)}
+                    className="block w-full text-left px-4 py-3 text-white/80 hover:bg-white/10 transition-colors"
+                  >
+                    Dashboard
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="w-full text-left px-4 py-3 text-white/80 hover:bg-white/10 transition-colors flex items-center gap-2"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
             <Link
-              href="/"
-              className="hidden md:flex items-center gap-2 text-white hover:text-[#0A84FF] py-2 px-4 rounded-full bg-black/40  shadow-[0_0_15px_rgba(255,255,255,0.1)] transition-all duration-300"
+              href="/user-auth"
+              className="hidden md:flex items-center gap-2 text-white hover:text-[#0A84FF] py-2 px-4 rounded-full bg-black/40 shadow-[0_0_15px_rgba(255,255,255,0.1)] transition-all duration-300"
             >
-              <span className="text-sm md:hidden lg:flex text-white/80 ">
-                My Account
-              </span>
-              <UserCircle className="w-5 h-5 md:w-6 md:h-6 text-white/80" />
+              <span className="text-sm text-white/80">Login</span>
+              <UserCircle className="w-5 h-5 text-white/80" />
             </Link>
           )}
         </div>
@@ -208,16 +261,43 @@ const Navbar = () => {
               </button>
             </div>
 
-            {showMyAccount && (
-              <Link
-                href="/account"
-                className="flex items-center gap-2 text-white hover:text-[#0A84FF] transition-colors px-4 py-2 rounded-lg hover:bg-white/5 mt-2 border-t border-white/10 pt-4"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                <span>My Account</span>
-                <UserCircle className="w-5 h-5" />
-              </Link>
-            )}
+            {/* Mobile Login/User Menu */}
+            <div className="border-t border-white/10 pt-4 mt-2">
+              {isAuthenticated ? (
+                <>
+                  <div className="px-4 py-2 text-white/60 text-sm font-semibold">
+                    {user?.name}
+                  </div>
+                  <Link
+                    href={getDashboardLink()}
+                    className="flex items-center gap-2 text-white/80 hover:text-[#0A84FF] transition-colors px-4 py-2 rounded-lg hover:bg-white/5"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <UserCircle className="w-4 h-4" />
+                    <span>Dashboard</span>
+                  </Link>
+                  <button
+                    onClick={() => {
+                      handleLogout();
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className="w-full text-left flex items-center gap-2 text-white/80 hover:text-[#0A84FF] transition-colors px-4 py-2 rounded-lg hover:bg-white/5"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    <span>Logout</span>
+                  </button>
+                </>
+              ) : (
+                <Link
+                  href="/user-auth"
+                  className="flex items-center gap-2 text-white hover:text-[#0A84FF] transition-colors px-4 py-2 rounded-lg hover:bg-white/5"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <UserCircle className="w-5 h-5" />
+                  <span>Login</span>
+                </Link>
+              )}
+            </div>
           </div>
         </div>
       )}

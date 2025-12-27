@@ -16,7 +16,9 @@ import { PerformanceSummary } from "@/app/(garage-admin-dashboard)/garage-admin/
 import { RecentActivity } from "@/app/(garage-admin-dashboard)/garage-admin/dashboard/_components/RecentActivity";
 import { RecentListings } from "@/app/(garage-admin-dashboard)/garage-admin/dashboard/_components/RecentListings";
 
-export default function GarageAdminDashboard() {
+import ProtectedRoute from "@/components/ProtectedRoute";
+
+function GarageAdminDashboardContent() {
   return (
     <div className="space-y-6 p-6 bg-gray-50">
       {/* Header */}
@@ -91,5 +93,16 @@ export default function GarageAdminDashboard() {
         <RecentListings />
       </div>
     </div>
+  );
+}
+
+export default function GarageAdminDashboard() {
+  return (
+    <ProtectedRoute 
+      requiredRole={['GARAGE_OWNER']} 
+      redirectTo="/garage-auth"
+    >
+      <GarageAdminDashboardContent />
+    </ProtectedRoute>
   );
 }
