@@ -73,7 +73,7 @@
 "use client";
 
 import Image from "next/image";
-import { Bell, LogOut, Menu } from "lucide-react";
+import { Bell, HardDrive, LogOut, Menu } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { usePathname } from "next/navigation";
 import logoImg from "@/assets/logo.png";
@@ -90,6 +90,8 @@ const DashboardNavbar = ({ onMenuToggle }: DashboardNavbarProps) => {
   const isAdmin = user?.role === "SUPER_ADMIN";
 
   return (
+    <>
+   
     <header className="fixed top-0 left-0 right-0 z-40 bg-white border-b border-gray-200 h-16">
       <div className="flex items-center justify-between h-full px-4 lg:px-6">
         <div className="flex items-center gap-2 lg:gap-3">
@@ -158,6 +160,7 @@ const DashboardNavbar = ({ onMenuToggle }: DashboardNavbarProps) => {
         </div>
       </div>
     </header>
+    </>
   );
 };
 
