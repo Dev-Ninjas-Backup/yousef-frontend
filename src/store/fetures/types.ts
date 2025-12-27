@@ -66,3 +66,49 @@ export interface SingleUserResponse {
   message: string;
   data: User;
 }
+
+
+
+
+
+export interface Product {
+  id: string;
+  partName: string;
+  brand: string;
+  condition: string;
+  price: string;
+  quantity: number;
+  description: string;
+  photos: string[];
+  status: 'PENDING' | 'APPROVED' | 'REJECTED';
+  isPromoted: boolean;
+  views: number;
+  inquiries: number;
+  createdAt: string;
+  seller: {
+    name: string;
+    email: string;
+    phoneNumber: string;
+  };
+  category: {
+    name: string;
+  };
+}
+
+export interface ProductResponse {
+  data: Product[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
+export interface ProductQueryParams {
+  search?: string;
+  category?: string;
+  condition?: string;
+  limit?: number;
+  page?: number;
+}
