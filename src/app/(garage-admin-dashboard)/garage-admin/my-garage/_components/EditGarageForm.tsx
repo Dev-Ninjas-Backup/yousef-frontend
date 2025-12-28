@@ -14,7 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Upload, LocateFixed, X, Plus } from "lucide-react";
-import { useCreateGarageMutation, useUpdateGarageMutation } from "@/store/api/garageAdminApis/garageApi";
+import { useUpdateGarageMutation } from "@/store/api/garageAdminApis/garageApi";
 import {
   useGetMyServicesQuery,
   useCreateServiceMutation,
@@ -23,18 +23,14 @@ import { toast } from "sonner";
 import Image from "next/image";
 import { Spinner } from "@/components/ui/spinner";
 
-interface GarageFormProps {
+interface EditGarageFormProps {
   onCancel: () => void;
   onSave: (data: any) => void;
-  initialData?: any;
-  isEditMode?: boolean;
+  garage: any;
 }
 
-export function GarageForm({ onCancel, onSave, initialData, isEditMode: isEditModeProp }: GarageFormProps) {
-  const [createGarage, { isLoading: creating }] = useCreateGarageMutation();
-  const [updateGarage, { isLoading: updating }] = useUpdateGarageMutation();
-  const isLoading = creating || updating;
-  const isEditMode = isEditModeProp ?? !!initialData?.id;
+export function EditGarageForm({ onCancel, onSave, garage }: EditGarageFormProps) {
+  const [updateGarage, { isLoading }] = useUpdateGarageMutation();
   const { data: servicesData, isLoading: servicesLoading } =
     useGetMyServicesQuery();
   const [createService, { isLoading: creatingService }] =
@@ -42,32 +38,30 @@ export function GarageForm({ onCancel, onSave, initialData, isEditMode: isEditMo
   const [newServiceName, setNewServiceName] = useState("");
   const [showAddService, setShowAddService] = useState(false);
 
-  const [formData, setFormData] = useState(
-    initialData || {
-      name: "",
-      address: "",
-      street: "",
-      city: "Dubai",
-      emirate: "Dubai",
-      phone: "",
-      email: "",
-      weekdaysHours: "8:00 AM - 8:00 PM",
-      weekendsHours: "9:00 AM - 6:00 PM",
-      services: [],
-      description: "",
-      certifications: "",
-      brandExpertise: "",
-      garageLat: 0,
-      garageLng: 0,
-      formattedAddress: "",
-      placeId: "",
-    }
-  );
+  const [formData, setFormData] = useState(garage || {
+    name: "",
+    address: "",
+    street: "",
+    city: "Dubai",
+    emirate: "Dubai",
+    phone: "",
+    email: "",
+    weekdaysHours: "8:00 AM - 8:00 PM",
+    weekendsHours: "9:00 AM - 6:00 PM",
+    services: [],
+    description: "",
+    certifications: "",
+    brandExpertise: "",
+    garageLat: 0,
+    garageLng: 0,
+    formattedAddress: "",
+    placeId: "",
+  });
 
   const [coverPhoto, setCoverPhoto] = useState<File | null>(null);
   const [profileImage, setProfileImage] = useState<File | null>(null);
-  const [coverPreview, setCoverPreview] = useState<string>(initialData?.coverPhoto || "");
-  const [profilePreview, setProfilePreview] = useState<string>(initialData?.profileImage || "");
+  const [coverPreview, setCoverPreview] = useState<string>(garage?.coverPhoto || "");
+  const [profilePreview, setProfilePreview] = useState<string>(garage?.profileImage || "");
 
   const toggleService = (serviceName: string) => {
     setFormData((prev: any) => ({
@@ -112,11 +106,6 @@ export function GarageForm({ onCancel, onSave, initialData, isEditMode: isEditMo
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!isEditMode && (!coverPhoto || !profileImage)) {
-      toast.error("Please upload both cover photo and profile image");
-      return;
-    }
-
     const apiFormData = new FormData();
 
     apiFormData.append("name", formData.name);
@@ -143,17 +132,12 @@ export function GarageForm({ onCancel, onSave, initialData, isEditMode: isEditMo
     if (profileImage) apiFormData.append("profileImage", profileImage);
 
     try {
-      if (isEditMode) {
-        await updateGarage({ id: initialData.id, formData: apiFormData }).unwrap();
-        toast.success("Garage updated successfully!");
-      } else {
-        await createGarage(apiFormData).unwrap();
-        toast.success("Garage created successfully!");
-      }
+      await updateGarage({ id: garage.id, formData: apiFormData }).unwrap();
+      toast.success("Garage updated successfully!");
       onSave(null);
     } catch (error: any) {
       toast.error(
-        error?.data?.message || `Failed to ${isEditMode ? 'update' : 'create'} garage. Please try again.`
+        error?.data?.message || "Failed to update garage. Please try again."
       );
     }
   };
@@ -166,7 +150,7 @@ export function GarageForm({ onCancel, onSave, initialData, isEditMode: isEditMo
           </CardHeader>
           <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <Label className="mb-4">Cover Photo {!isEditMode && '*'}</Label>
+              <Label className="mb-4">Cover Photo</Label>
               <input
                 type="file"
                 id="coverPhoto"
@@ -210,7 +194,7 @@ export function GarageForm({ onCancel, onSave, initialData, isEditMode: isEditMo
               </label>
             </div>
             <div>
-              <Label className="mb-4">Profile Image {!isEditMode && '*'}</Label>
+              <Label className="mb-4">Profile Image</Label>
               <input
                 type="file"
                 id="profileImage"
@@ -505,7 +489,7 @@ export function GarageForm({ onCancel, onSave, initialData, isEditMode: isEditMo
             className="bg-blue-600 hover:bg-blue-700"
             disabled={isLoading}
           >
-            {isLoading ? (isEditMode ? "Updating..." : "Creating...") : (isEditMode ? "Update Garage" : "Add Garage")}
+            {isLoading ? "Updating..." : "Update Garage"}
           </Button>
         </div>
       </form>
