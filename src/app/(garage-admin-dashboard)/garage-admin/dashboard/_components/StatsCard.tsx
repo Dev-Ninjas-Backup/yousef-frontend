@@ -10,9 +10,15 @@ interface StatsCardProps {
   trend?: { icon: LucideIcon; color: string };
 }
 
-export function StatsCard({ icon: Icon, value, label, iconColor, bgColor, trend }: StatsCardProps) {
+export function StatsCard({
+  icon: Icon,
+  value,
+  label,
+  bgColor,
+  trend,
+}: StatsCardProps) {
   const TrendIcon = trend?.icon;
-  
+
   const cardBgMap: Record<string, string> = {
     "bg-blue-50": "bg-blue-50",
     "bg-green-50": "bg-green-50",
@@ -33,15 +39,21 @@ export function StatsCard({ icon: Icon, value, label, iconColor, bgColor, trend 
     "bg-yellow-50": "text-yellow-600",
     "bg-purple-50": "text-purple-600",
   };
-  
+
   return (
-    <Card className={`p-6 relative overflow-hidden ${cardBgMap[bgColor] || bgColor}`}>
+    <Card
+      className={`p-6 relative overflow-hidden ${
+        cardBgMap[bgColor] || bgColor
+      }`}
+    >
       <div className="flex items-start justify-between">
         <div className={`${iconBgMap[bgColor] || bgColor} p-3 rounded-lg`}>
           <Icon className="text-white w-6 h-6" />
         </div>
         {TrendIcon && (
-          <TrendIcon className={`${trendIconMap[bgColor] || trend.color} w-5 h-5`} />
+          <TrendIcon
+            className={`${trendIconMap[bgColor] || trend.color} w-5 h-5`}
+          />
         )}
       </div>
       <div className="mt-4">

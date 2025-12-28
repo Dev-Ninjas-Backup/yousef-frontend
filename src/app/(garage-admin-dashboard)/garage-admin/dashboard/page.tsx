@@ -17,6 +17,7 @@ import { RecentActivity } from "@/app/(garage-admin-dashboard)/garage-admin/dash
 import { RecentListings } from "@/app/(garage-admin-dashboard)/garage-admin/dashboard/_components/RecentListings";
 
 import ProtectedRoute from "@/components/ProtectedRoute";
+import StatsCardGrid from "./_components/StatsCardGrid";
 
 function GarageAdminDashboardContent() {
   return (
@@ -44,7 +45,7 @@ function GarageAdminDashboardContent() {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatsCard
           icon={Package}
           value={8}
@@ -76,7 +77,8 @@ function GarageAdminDashboardContent() {
           bgColor="bg-purple-50"
           trend={{ icon: TrendingUp, color: "text-purple-600" }}
         />
-      </div>
+      </div> */}
+      <StatsCardGrid />
 
       {/* Quick Actions & Performance Summary */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -98,10 +100,7 @@ function GarageAdminDashboardContent() {
 
 export default function GarageAdminDashboard() {
   return (
-    <ProtectedRoute 
-      requiredRole={['GARAGE_OWNER']} 
-      redirectTo="/garage-auth"
-    >
+    <ProtectedRoute requiredRole={["GARAGE_OWNER"]} redirectTo="/garage-auth">
       <GarageAdminDashboardContent />
     </ProtectedRoute>
   );

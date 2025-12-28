@@ -1,5 +1,13 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'prince-adel.s3.ap-southeast-2.amazonaws.com',
+      },
+    ],
+  },
   async rewrites() {
     return [
       // API proxy to backend

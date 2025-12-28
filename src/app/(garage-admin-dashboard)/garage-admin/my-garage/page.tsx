@@ -1,48 +1,53 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useGetUserProfileQuery } from "@/store/api/garageAdminApis/userProfileApi";
 import { EmptyGarageState } from "./_components/EmptyGarageState";
-import { GarageForm } from "./_components/GarageForm";
-import { GarageDetailsView } from "./_components/GarageDetailsView";
+import { GarageList } from "./_components/GarageList";
+import { LoadingState } from "./_components/LoadingState";
+import { ErrorState } from "./_components/ErrorState";
+import { AddGarageModal } from "./_components/AddGarageModal";
 
 export default function MyGaragePage() {
-  const [view, setView] = useState<"empty" | "form" | "details">("empty");
-  const [garageData, setGarageData] = useState<any>(null);
+  const { data, isLoading, error } = useGetUserProfileQuery();
+  const router = useRouter();
+  const [showAddDialog, setShowAddDialog] = useState(false);
+
+  const garages = data?.data?.garages || [];
 
   const handleAddGarage = () => {
-    setView("form");
+    setShowAddDialog(true);
   };
 
-  const handleSaveGarage = (data: any) => {
-    setGarageData(data);
-    setView("details");
+  const handleViewGarage = (garage: any) => {
+    router.push(`/garage-admin/my-garage/${garage.id}`);
   };
 
-  const handleEditGarage = () => {
-    setView("form");
+  const handleSaveGarage = () => {
+    setShowAddDialog(false);
   };
 
-  const handleCancelForm = () => {
-    if (garageData) {
-      setView("details");
-    } else {
-      setView("empty");
-    }
-  };
+  if (isLoading) return <LoadingState />;
+  if (error) return <ErrorState />;
 
   return (
-    <div>
-      {view === "empty" && <EmptyGarageState onAddGarage={handleAddGarage} />}
-      {view === "form" && (
-        <GarageForm
-          onCancel={handleCancelForm}
-          onSave={handleSaveGarage}
-          initialData={garageData}
+    <>
+      {garages.length === 0 ? (
+        <EmptyGarageState onAddGarage={handleAddGarage} />
+      ) : (
+        <GarageList
+          garages={garages}
+          onAddGarage={handleAddGarage}
+          onViewGarage={handleViewGarage}
         />
       )}
-      {view === "details" && garageData && (
-        <GarageDetailsView garage={garageData} onEdit={handleEditGarage} />
-      )}
-    </div>
+
+      <AddGarageModal
+        open={showAddDialog}
+        onOpenChange={setShowAddDialog}
+        onSuccess={handleSaveGarage}
+      />
+    </>
   );
 }

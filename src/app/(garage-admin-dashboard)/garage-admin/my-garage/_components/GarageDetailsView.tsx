@@ -4,7 +4,6 @@ import { Badge } from "@/components/ui/badge";
 import {
   Phone,
   Mail,
-  MessageCircle,
   CircleCheckBig,
   Clock,
   FileText,
@@ -13,33 +12,37 @@ import {
   Eye,
   Edit,
 } from "lucide-react";
-import MyGarageProfile from "@/assets/garage-admin/my-garage/my_garage_profile.jpg";
-import MyGarageProfileCover from "@/assets/garage-admin/my-garage/my_garage_profile_cover.jpg";
-import Image from "next/image";
 
 interface GarageDetailsViewProps {
   garage: any;
   onEdit: () => void;
+  onBack: () => void;
 }
 
-export function GarageDetailsView({ garage, onEdit }: GarageDetailsViewProps) {
-  const services = [
-    { id: "carWash", label: "Car Wash" },
-    { id: "generalRepair", label: "General Repair" },
-    { id: "maintenance", label: "Maintenance" },
-    { id: "acService", label: "AC Service" },
-  ];
-
-  const certifications = ["ASE Certified", "ISO 9001:2015", "RTA Approved"];
-  const brands = ["BMW", "Mercedes-Benz", "Audi", "Toyota", "Honda", "Nissan"];
+export function GarageDetailsView({ garage, onEdit, onBack }: GarageDetailsViewProps) {
+  const getStatusBadge = () => {
+    switch (garage.status) {
+      case "APPROVE":
+        return "bg-green-600 text-white hover:bg-green-600";
+      case "PENDING":
+        return "bg-yellow-600 text-white hover:bg-yellow-600";
+      case "REJECTED":
+        return "bg-red-600 text-white hover:bg-red-600";
+      default:
+        return "bg-gray-600 text-white hover:bg-gray-600";
+    }
+  };
 
   return (
     <div className="space-y-6 p-6">
       {/* Header */}
-      <div className="flex items-center justify-end">
+      <div className="flex items-center justify-between">
+        <Button variant="outline" onClick={onBack}>
+          ← Back to List
+        </Button>
         <div className="flex items-center gap-3">
-          <Badge className="bg-green-600 text-white hover:bg-green-600 px-4 py-1.5 rounded-md">
-            Approved
+          <Badge className={`${getStatusBadge()} px-4 py-1.5 rounded-md`}>
+            {garage.status}
           </Badge>
           <Button
             variant="outline"
@@ -54,43 +57,42 @@ export function GarageDetailsView({ garage, onEdit }: GarageDetailsViewProps) {
       </div>
 
       {/* Success Alert */}
-      <Card className="border border-gray-200 p-0">
-        <CardContent className="p-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
-              <CircleCheckBig className="w-6 h-6 text-green-600" />
+      {garage.status === "APPROVE" && (
+        <Card className="border border-gray-200 p-0">
+          <CardContent className="p-4 flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <CircleCheckBig className="w-6 h-6 text-green-600" />
+              </div>
+              <p className="text-base text-gray-900">
+                Your Garage is Live! It's now visible to customers on the platform.
+              </p>
             </div>
-            <p className="text-base text-gray-900">
-              Your Garage is Live! It's now visible to customers on the
-              platform.
-            </p>
-          </div>
-          <Button variant="outline" size="sm" className="gap-2">
-            <Eye className="w-4 h-4" />
-            Public View
-          </Button>
-        </CardContent>
-      </Card>
+            <Button variant="outline" size="sm" className="gap-2">
+              <Eye className="w-4 h-4" />
+              Public View
+            </Button>
+          </CardContent>
+        </Card>
+      )}
 
       <Card>
         <CardContent>
           {/* Cover & Profile Images */}
           <div className="relative">
             <div className="h-48 sm:h-64 bg-gray-200 rounded-lg overflow-hidden">
-              {/* <div className="w-full h-full bg-gradient-to-r from-blue-400 to-cyan-400"></div> */}
-              <Image
-                src={MyGarageProfileCover}
-                alt="Garage Profile Cover"
+              <img
+                src={garage.coverPhoto}
+                alt={garage.name}
                 className="w-full h-full object-cover"
               />
             </div>
             <div className="absolute -bottom-12 left-6">
               <div className="w-24 h-24 bg-white rounded-lg shadow-lg p-2">
-                {/* <div className="w-full h-full bg-orange-400 rounded"></div> */}
-                <Image
-                  src={MyGarageProfile}
-                  alt="Garage Profile"
-                  className="w-full h-full object-cover"
+                <img
+                  src={garage.profileImage}
+                  alt={garage.name}
+                  className="w-full h-full object-cover rounded"
                 />
               </div>
             </div>
@@ -99,7 +101,7 @@ export function GarageDetailsView({ garage, onEdit }: GarageDetailsViewProps) {
           {/* Garage Info */}
           <div className="pt-14">
             <h1 className="text-2xl font-bold text-gray-900 mb-2">
-              Premium Auto Care Center
+              {garage.name}
             </h1>
             <p className="text-gray-600 flex items-center gap-2 mb-4">
               <svg
@@ -121,16 +123,12 @@ export function GarageDetailsView({ garage, onEdit }: GarageDetailsViewProps) {
                   d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
                 />
               </svg>
-              Sheikh Zayed Road, Al Quoz Industrial Area 3, Dubai
+              {garage.address}, {garage.city}, {garage.emirate}
             </p>
             <div className="flex flex-wrap gap-2">
-              {services.map((service) => (
-                <Badge
-                  key={service.id}
-                  variant="outline"
-                  className="bg-gray-50"
-                >
-                  {service.label}
+              {garage.services.map((service: string) => (
+                <Badge key={service} variant="outline" className="bg-gray-50">
+                  {service}
                 </Badge>
               ))}
             </div>
@@ -153,21 +151,14 @@ export function GarageDetailsView({ garage, onEdit }: GarageDetailsViewProps) {
                 <Phone className="w-4 h-4 text-gray-400" />
                 <div>
                   <p className="text-xs text-gray-500">Phone</p>
-                  <p className="text-sm font-medium">+971 50 123 4567</p>
+                  <p className="text-sm font-medium">{garage.garagePhone}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
                 <Mail className="w-4 h-4 text-gray-400" />
                 <div>
                   <p className="text-xs text-gray-500">Email</p>
-                  <p className="text-sm font-medium">info@premiumauto.ae</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <MessageCircle className="w-4 h-4 text-gray-400" />
-                <div>
-                  <p className="text-xs text-gray-500">WhatsApp</p>
-                  <p className="text-sm font-medium">+971 50 123 4567</p>
+                  <p className="text-sm font-medium">{garage.email}</p>
                 </div>
               </div>
             </div>
@@ -183,11 +174,11 @@ export function GarageDetailsView({ garage, onEdit }: GarageDetailsViewProps) {
             <div className="space-y-3">
               <div>
                 <p className="text-xs text-gray-500 mb-1">Weekdays</p>
-                <p className="text-sm font-medium">8:00 AM - 8:00 PM</p>
+                <p className="text-sm font-medium">{garage.weekdaysHours}</p>
               </div>
               <div>
                 <p className="text-xs text-gray-500 mb-1">Weekends</p>
-                <p className="text-sm font-medium">9:00 AM - 6:00 PM</p>
+                <p className="text-sm font-medium">{garage.weekendsHours}</p>
               </div>
             </div>
           </CardContent>
@@ -202,10 +193,7 @@ export function GarageDetailsView({ garage, onEdit }: GarageDetailsViewProps) {
             <h3 className="font-semibold text-gray-900">Description</h3>
           </div>
           <p className="text-sm text-gray-700 leading-relaxed">
-            Premium Auto Care Center offers comprehensive automotive services
-            with over 15 years of experience. We specialize in European and
-            Japanese vehicles, providing quality repairs and maintenance with
-             parts.
+            {garage.description || "No description provided."}
           </p>
         </CardContent>
       </Card>
@@ -219,26 +207,30 @@ export function GarageDetailsView({ garage, onEdit }: GarageDetailsViewProps) {
               <h3 className="font-semibold text-gray-900">Certifications</h3>
             </div>
             <div className="flex flex-wrap gap-2">
-              {certifications.map((cert) => (
-                <Badge
-                  key={cert}
-                  variant="outline"
-                  className="bg-green-50 text-green-700 border-green-200"
-                >
-                  <svg
-                    className="w-3 h-3 mr-1"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
+              {garage.certifications && garage.certifications.length > 0 ? (
+                garage.certifications.map((cert: string) => (
+                  <Badge
+                    key={cert}
+                    variant="outline"
+                    className="bg-green-50 text-green-700 border-green-200"
                   >
-                    <path
-                      fillRule="evenodd"
-                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  {cert}
-                </Badge>
-              ))}
+                    <svg
+                      className="w-3 h-3 mr-1"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    {cert}
+                  </Badge>
+                ))
+              ) : (
+                <p className="text-sm text-gray-500">No certifications added</p>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -250,11 +242,15 @@ export function GarageDetailsView({ garage, onEdit }: GarageDetailsViewProps) {
               <h3 className="font-semibold text-gray-900">Brand Expertise</h3>
             </div>
             <div className="flex flex-wrap gap-2">
-              {brands.map((brand) => (
-                <Badge key={brand} variant="outline" className="bg-gray-50">
-                  {brand}
-                </Badge>
-              ))}
+              {garage.brandExpertise && garage.brandExpertise.length > 0 ? (
+                garage.brandExpertise.map((brand: string) => (
+                  <Badge key={brand} variant="outline" className="bg-gray-50">
+                    {brand}
+                  </Badge>
+                ))
+              ) : (
+                <p className="text-sm text-gray-500">No brand expertise added</p>
+              )}
             </div>
           </CardContent>
         </Card>
