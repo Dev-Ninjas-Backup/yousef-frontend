@@ -51,6 +51,19 @@ export const overView = apiSlice.injectEndpoints({
       query: () => "/garage-admin-overview/performance-summary",
       providesTags: ["GarageAdminOverviewPerformanceSummary"],
     }),
+    // not used yet...........
+    getRecentActivity: builder.query<RecentActivityResponse, void>({
+        query: () => "/garage-admin-overview/recent-activity",  
+        providesTags: ["GarageAdminOverviewRecentActivity"],
+      }),
+      getRecentListings: builder.query<RecentListingsResponse, void>({
+        query: () => "/garage-admin-overview/recent-listings",
+        providesTags: ["GarageAdminOverviewRecentListings"],
+      }),
+      getAvailableListing: builder.query<AvailableListingResponse, void>({
+        query: () => "/garage-admin-overview/available-listing",
+        providesTags: ["GarageAdminOverviewAvailableListing"],
+      }),
   }),
 });
 

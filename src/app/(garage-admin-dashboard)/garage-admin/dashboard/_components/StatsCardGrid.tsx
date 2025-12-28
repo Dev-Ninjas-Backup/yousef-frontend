@@ -11,8 +11,7 @@ import { overView } from "@/store/api/garageAdminApis/dashboard/overview";
 import { StatsCardSkeleton } from "./loadings/StatsCardSkeleton";
 
 const StatsCardGrid = () => {
-  const { data, error, isLoading } = overView.useGetStatsQuery();
-  console.log(data, "stats card data................");
+  const { data, isLoading } = overView.useGetStatsQuery();
   if (isLoading) {
     return <StatsCardSkeleton />;
   }
