@@ -14,11 +14,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Upload, LocateFixed, X, Plus } from "lucide-react";
-import { useCreateGarageMutation, useUpdateGarageMutation } from "@/store/api/garageAdminApis/garageApi";
+import { useCreateGarageMutation, useUpdateGarageMutation } from "@/store/api/garageAdminApis/myGarage/garageApi";
 import {
   useGetMyServicesQuery,
   useCreateServiceMutation,
-} from "@/store/api/garageAdminApis/servicesApi";
+} from "@/store/api/garageAdminApis/myGarage/servicesApi";
 import { toast } from "sonner";
 import Image from "next/image";
 import { Spinner } from "@/components/ui/spinner";

@@ -29,6 +29,8 @@ export const apiSlice = createApi({
     "GarageAdminOverviewAvailableListing",
     "SubscriptionCurrentPlan",
     "SubscriptionTransactionHistory",
+    "GarageAdminNotificationSettings",
+    "PromotionalAd"
   ],
   endpoints: () => ({}),
 });

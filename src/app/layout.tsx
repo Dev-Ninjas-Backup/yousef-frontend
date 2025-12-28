@@ -41,7 +41,7 @@ export default function RootLayout({
             <SocketProvider>{children}</SocketProvider>
           </AuthProvider>
         </ReduxProvider>
-        <Toaster />
+        <Toaster position="top-right" />
       </body>
     </html>
   );

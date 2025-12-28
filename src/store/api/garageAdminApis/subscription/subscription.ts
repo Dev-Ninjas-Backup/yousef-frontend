@@ -11,10 +11,7 @@ message: string;
 }
 // 2. Create Subscription Interface
 interface CreateSubscriptionResponse {
-  checkoutUrl: string;
-  sessionId: string;
-  amount: number;
-  currency: string;
+  url: string;
 }
 // 3. Transaction Interface
 interface Transaction {

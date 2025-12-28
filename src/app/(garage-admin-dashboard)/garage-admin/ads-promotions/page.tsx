@@ -9,30 +9,7 @@ import PromotionsStat from "./_components/PromotionsStat/PromotionsStat";
 import CreatePromotionalModal from "./_components/CreatePromotionalModal/CreatePromotionalModal";
 import img1 from "@/assets/garage-admin/ads-promotions/promotions_img_1.jpg";
 import img2 from "@/assets/garage-admin/ads-promotions/promotions_img_2.jpg";
-
-const stats = [
-  {
-    title: "Free Listings Used",
-    value: "2 / 2",
-    subtitle: "0 remaining",
-    icon: Gift,
-    color: "text-blue-600",
-  },
-  {
-    title: "Active Ads",
-    value: "2",
-    subtitle: "Currently running",
-    icon: TrendingUp,
-    color: "text-green-600",
-  },
-  {
-    title: "Pending Approval",
-    value: "1",
-    subtitle: "Awaiting review",
-    icon: Clock,
-    color: "text-[#D08700]",
-  },
-];
+import { promotionalAdApi } from "@/store/api/garageAdminApis/promotionalAd/promotionalAd";
 
 const promotionalAds = [
   {
@@ -62,11 +39,12 @@ const promotionalAds = [
 ];
 
 export default function AdsPromotionsPage() {
+ 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
     <div className="space-y-6">
-      <PromotionsStat stats={stats} />
+      <PromotionsStat />
 
       <Card className="bg-[#EFF6FF] border-[#BEDBFF] shadow-none">
         <CardContent className="">

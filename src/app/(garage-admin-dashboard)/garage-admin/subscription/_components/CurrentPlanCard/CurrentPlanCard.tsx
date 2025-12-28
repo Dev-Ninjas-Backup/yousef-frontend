@@ -6,7 +6,7 @@ import { CreditCard, Info, Sparkles } from "lucide-react";
 import { subscriptionApi } from "@/store/api/garageAdminApis/subscription/subscription";
 
 const CurrentPlanCard = () => {
-  const { data, isLoading } = subscriptionApi.useGetCurrentPlanQuery();
+  const { data } = subscriptionApi.useGetCurrentPlanQuery();
   const calculateProgress = () => {
     if (!data?.startDate || !data?.endDate) return 0;
 

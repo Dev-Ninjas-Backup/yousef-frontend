@@ -4,7 +4,7 @@ import { useState } from "react";
 import { InquiryCard } from "./_components/InquiryCard";
 import { EmptyInquiriesState } from "./_components/EmptyInquiriesState";
 import { ChatSidebar } from "./_components/ChatSidebar";
-import { useGetCustomInquiriesQuery } from "@/store/api/garageAdminApis/garageInquiryApi";
+import { useGetCustomInquiriesQuery } from "@/store/api/garageAdminApis/myGarage/garageInquiryApi";
 
 export default function InquiriesPage() {
   const { data, error, isLoading } = useGetCustomInquiriesQuery();

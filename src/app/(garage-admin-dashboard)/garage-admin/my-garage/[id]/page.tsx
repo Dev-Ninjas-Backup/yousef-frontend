@@ -4,7 +4,7 @@ import { useParams, useRouter } from "next/navigation";
 import {
   useGetSingleGarageQuery,
   useDeleteGarageMutation,
-} from "@/store/api/garageAdminApis/garageApi";
+} from "@/store/api/garageAdminApis/myGarage/garageApi";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Edit, Trash2, MapPin, Phone, Mail, Clock, Award, Wrench, Star } from "lucide-react";

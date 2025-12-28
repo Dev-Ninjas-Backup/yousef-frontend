@@ -13,7 +13,7 @@ interface EditGarageModalProps {
 export function EditGarageModal({ open, onOpenChange, garage, onSuccess }: EditGarageModalProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-6xl w-[95vw] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-4xl w-[95vw] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold">Edit Garage</DialogTitle>
         </DialogHeader>
