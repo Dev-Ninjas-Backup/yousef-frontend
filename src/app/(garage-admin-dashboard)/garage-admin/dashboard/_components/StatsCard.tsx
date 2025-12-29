@@ -57,7 +57,7 @@ export function StatsCard({
         )}
       </div>
       <div className="mt-4">
-        <p className="text-3xl font-bold text-gray-900">{value}</p>
+        <p className="text-3xl font-bold text-gray-900">{value || "..."}</p>
         <p className="text-sm text-gray-600 mt-1">{label}</p>
       </div>
     </Card>
