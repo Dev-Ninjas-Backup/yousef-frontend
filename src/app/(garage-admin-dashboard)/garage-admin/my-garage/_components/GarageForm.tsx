@@ -13,30 +13,40 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Upload, LocateFixed, X, Plus } from "lucide-react";
+import { useCreateGarageMutation, useUpdateGarageMutation } from "@/store/api/garageAdminApis/myGarage/garageApi";
 import {
-  MapPin,
-  Upload,
-  Droplet,
-  Wrench,
-  Settings,
-  Zap,
-  PaintBucket,
-  Stethoscope,
-  Wind,
-  LocateFixed,
-} from "lucide-react";
+  useGetMyServicesQuery,
+  useCreateServiceMutation,
+} from "@/store/api/garageAdminApis/myGarage/servicesApi";
+import { toast } from "sonner";
+import Image from "next/image";
+import { Spinner } from "@/components/ui/spinner";
 
 interface GarageFormProps {
   onCancel: () => void;
   onSave: (data: any) => void;
   initialData?: any;
+  isEditMode?: boolean;
 }
 
-export function GarageForm({ onCancel, onSave, initialData }: GarageFormProps) {
+export function GarageForm({ onCancel, onSave, initialData, isEditMode: isEditModeProp }: GarageFormProps) {
+  const [createGarage, { isLoading: creating }] = useCreateGarageMutation();
+  const [updateGarage, { isLoading: updating }] = useUpdateGarageMutation();
+  const isLoading = creating || updating;
+  const isEditMode = isEditModeProp ?? !!initialData?.id;
+  const { data: servicesData, isLoading: servicesLoading } =
+    useGetMyServicesQuery();
+  const [createService, { isLoading: creatingService }] =
+    useCreateServiceMutation();
+  const [newServiceName, setNewServiceName] = useState("");
+  const [showAddService, setShowAddService] = useState(false);
+
   const [formData, setFormData] = useState(
     initialData || {
-      garageName: "",
+      name: "",
       address: "",
+      street: "",
       city: "Dubai",
       emirate: "Dubai",
       phone: "",
@@ -47,66 +57,201 @@ export function GarageForm({ onCancel, onSave, initialData }: GarageFormProps) {
       description: "",
       certifications: "",
       brandExpertise: "",
+      garageLat: 0,
+      garageLng: 0,
+      formattedAddress: "",
+      placeId: "",
     }
   );
 
-  const services = [
-    { id: "carWash", label: "Car Wash", icon: Droplet },
-    { id: "towing", label: "Towing Service", icon: Wrench },
-    { id: "generalRepair", label: "General Repair", icon: Settings },
-    { id: "maintenance", label: "Maintenance", icon: Settings },
-    { id: "acService", label: "AC Service", icon: Wind },
-    { id: "electrical", label: "Electrical Systems", icon: Zap },
-    { id: "bodyPaint", label: "Body & Paint", icon: PaintBucket },
-    { id: "diagnostics", label: "Diagnostics", icon: Stethoscope },
-    { id: "onSite", label: "On Site Service", icon: MapPin },
-  ];
+  const [coverPhoto, setCoverPhoto] = useState<File | null>(null);
+  const [profileImage, setProfileImage] = useState<File | null>(null);
+  const [coverPreview, setCoverPreview] = useState<string>(initialData?.coverPhoto || "");
+  const [profilePreview, setProfilePreview] = useState<string>(initialData?.profileImage || "");
 
-  const toggleService = (serviceId: string) => {
+  const toggleService = (serviceName: string) => {
     setFormData((prev: any) => ({
       ...prev,
-      services: prev.services.includes(serviceId)
-        ? prev.services.filter((s: string) => s !== serviceId)
-        : [...prev.services, serviceId],
+      services: prev.services.includes(serviceName)
+        ? prev.services.filter((s: string) => s !== serviceName)
+        : [...prev.services, serviceName],
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleAddService = async () => {
+    if (!newServiceName.trim()) {
+      toast.error("Please enter a service name");
+      return;
+    }
+    try {
+      await createService({ serviceCategory: newServiceName }).unwrap();
+      toast.success("Service added successfully!");
+      setNewServiceName("");
+      setShowAddService(false);
+    } catch (error: any) {
+      toast.error(error?.data?.message || "Failed to add service");
+    }
+  };
+
+  const handleCoverPhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setCoverPhoto(file);
+      setCoverPreview(URL.createObjectURL(file));
+    }
+  };
+
+  const handleProfileImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setProfileImage(file);
+      setProfilePreview(URL.createObjectURL(file));
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onSave(formData);
+
+    if (!isEditMode && (!coverPhoto || !profileImage)) {
+      toast.error("Please upload both cover photo and profile image");
+      return;
+    }
+
+    const apiFormData = new FormData();
+
+    apiFormData.append("name", formData.name);
+    apiFormData.append("address", formData.address);
+    apiFormData.append("street", formData.street);
+    apiFormData.append("city", formData.city);
+    apiFormData.append("emirate", formData.emirate);
+    apiFormData.append("phone", formData.phone);
+    apiFormData.append("email", formData.email);
+    apiFormData.append("weekdaysHours", formData.weekdaysHours);
+    apiFormData.append("weekendsHours", formData.weekendsHours);
+    apiFormData.append("description", formData.description);
+    apiFormData.append("certifications", formData.certifications);
+    apiFormData.append("brandExpertise", formData.brandExpertise);
+    apiFormData.append("garageLat", formData.garageLat.toString());
+    apiFormData.append("garageLng", formData.garageLng.toString());
+    apiFormData.append(
+      "formattedAddress",
+      formData.formattedAddress || formData.address
+    );
+    apiFormData.append("placeId", formData.placeId || "");
+    apiFormData.append("services", JSON.stringify(formData.services));
+    if (coverPhoto) apiFormData.append("coverPhoto", coverPhoto);
+    if (profileImage) apiFormData.append("profileImage", profileImage);
+
+    try {
+      if (isEditMode) {
+        await updateGarage({ id: initialData.id, formData: apiFormData }).unwrap();
+        toast.success("Garage updated successfully!");
+      } else {
+        await createGarage(apiFormData).unwrap();
+        toast.success("Garage created successfully!");
+      }
+      onSave(null);
+    } catch (error: any) {
+      toast.error(
+        error?.data?.message || `Failed to ${isEditMode ? 'update' : 'create'} garage. Please try again.`
+      );
+    }
   };
 
   return (
-    <div className="p-6 border border-gray-200 rounded-lg shadow-sm bg-white my-8">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Add New Garage</h1>
-        <p className="text-sm text-gray-600 mt-1">
-          Fill in the details to list your garage on the platform
-        </p>
-      </div>
-      <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-6">
         <Card>
           <CardHeader>
             <CardTitle>Photos</CardTitle>
           </CardHeader>
           <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <Label className="mb-4">Cover Photo *</Label>
-              <div className="border-2 border-dashed rounded-lg p-8 text-center hover:border-blue-500 cursor-pointer">
-                <Upload className="w-8 h-8 mx-auto text-gray-400 mb-4" />
-                <p className="text-sm text-gray-600">
-                  Click to upload cover photo
-                </p>
-              </div>
+              <Label className="mb-4">Cover Photo {!isEditMode && '*'}</Label>
+              <input
+                type="file"
+                id="coverPhoto"
+                accept="image/*"
+                onChange={handleCoverPhotoChange}
+                className="hidden"
+              />
+              <label
+                htmlFor="coverPhoto"
+                className="border-2 border-dashed rounded-lg p-8 text-center hover:border-blue-500 cursor-pointer block"
+              >
+                {coverPreview ? (
+                  <div className="relative">
+                    <Image
+                      src={coverPreview}
+                      alt="Cover preview"
+                      width={200}
+                      height={100}
+                      className="mx-auto rounded"
+                    />
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setCoverPhoto(null);
+                        setCoverPreview("");
+                      }}
+                      className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <Upload className="w-8 h-8 mx-auto text-gray-400 mb-4" />
+                    <p className="text-sm text-gray-600">
+                      Click to upload cover photo
+                    </p>
+                  </>
+                )}
+              </label>
             </div>
             <div>
-              <Label className="mb-4">Profile Image *</Label>
-              <div className="border-2 border-dashed rounded-lg p-8 text-center hover:border-blue-500 cursor-pointer">
-                <Upload className="w-8 h-8 mx-auto text-gray-400 mb-4" />
-                <p className="text-sm text-gray-600">
-                  Click to upload profile image
-                </p>
-              </div>
+              <Label className="mb-4">Profile Image {!isEditMode && '*'}</Label>
+              <input
+                type="file"
+                id="profileImage"
+                accept="image/*"
+                onChange={handleProfileImageChange}
+                className="hidden"
+              />
+              <label
+                htmlFor="profileImage"
+                className="border-2 border-dashed rounded-lg p-8 text-center hover:border-blue-500 cursor-pointer block"
+              >
+                {profilePreview ? (
+                  <div className="relative">
+                    <Image
+                      src={profilePreview}
+                      alt="Profile preview"
+                      width={100}
+                      height={100}
+                      className="mx-auto rounded"
+                    />
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setProfileImage(null);
+                        setProfilePreview("");
+                      }}
+                      className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <Upload className="w-8 h-8 mx-auto text-gray-400 mb-4" />
+                    <p className="text-sm text-gray-600">
+                      Click to upload profile image
+                    </p>
+                  </>
+                )}
+              </label>
             </div>
           </CardContent>
         </Card>
@@ -117,61 +262,54 @@ export function GarageForm({ onCancel, onSave, initialData }: GarageFormProps) {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <Label htmlFor="garageName" className="mb-4">
-                Garage Name *
-              </Label>
+              <Label htmlFor="name">Garage Name *</Label>
               <Input
-                id="garageName"
-                value={formData.garageName}
+                id="name"
+                value={formData.name}
                 onChange={(e) =>
-                  setFormData({ ...formData, garageName: e.target.value })
+                  setFormData({ ...formData, name: e.target.value })
                 }
                 placeholder="Premium Auto Care Center"
-                className="border-0"
+                required
               />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
               <div className="md:col-span-4">
-                <Label htmlFor="address" className="mb-4">
-                  Address *
-                </Label>
-                <div className="flex items-center relative gap-2">
+                <Label htmlFor="address">Address *</Label>
+                <div className="flex items-center gap-2">
                   <Input
                     id="address"
                     value={formData.address}
                     onChange={(e) =>
                       setFormData({ ...formData, address: e.target.value })
                     }
-                    placeholder="Sheikh Zayed Road, Al Quoz Industrial Area 3"
-                    className="border-0"
+                    placeholder="Sheikh Zayed Road"
+                    required
                   />
-                  {/* <MapPin className="absolute right-3 top-3 w-4 h-4 text-gray-400" /> */}
-                  <LocateFixed className=" text-blue-500" />
+                  <LocateFixed className="text-blue-500" />
                 </div>
               </div>
               <div className="md:col-span-4">
-                <Label htmlFor="city" className="mb-4">
-                  City
-                </Label>
+                <Label htmlFor="city">City *</Label>
                 <Input
                   id="city"
                   value={formData.city}
-                  readOnly
-                  className="border-0"
+                  onChange={(e) =>
+                    setFormData({ ...formData, city: e.target.value })
+                  }
+                  required
                 />
               </div>
               <div className="md:col-span-4">
-                <Label htmlFor="emirate" className="mb-4">
-                  Emirate *
-                </Label>
+                <Label htmlFor="emirate">Emirate *</Label>
                 <Select
                   value={formData.emirate}
                   onValueChange={(value) =>
                     setFormData({ ...formData, emirate: value })
                   }
                 >
-                  <SelectTrigger className="w-full bg-gray-50">
-                    <SelectValue placeholder="Select emirate" />
+                  <SelectTrigger>
+                    <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="Dubai">Dubai</SelectItem>
@@ -196,9 +334,7 @@ export function GarageForm({ onCancel, onSave, initialData }: GarageFormProps) {
           </CardHeader>
           <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="phone" className="mb-4">
-                Phone Number *
-              </Label>
+              <Label htmlFor="phone">Phone Number *</Label>
               <Input
                 id="phone"
                 value={formData.phone}
@@ -206,13 +342,11 @@ export function GarageForm({ onCancel, onSave, initialData }: GarageFormProps) {
                   setFormData({ ...formData, phone: e.target.value })
                 }
                 placeholder="+971 50 123 4567"
-                className="border-0"
+                required
               />
             </div>
             <div>
-              <Label htmlFor="email" className="mb-4">
-                Email Address *
-              </Label>
+              <Label htmlFor="email">Email Address *</Label>
               <Input
                 id="email"
                 type="email"
@@ -221,7 +355,7 @@ export function GarageForm({ onCancel, onSave, initialData }: GarageFormProps) {
                   setFormData({ ...formData, email: e.target.value })
                 }
                 placeholder="info@premiumauto.ae"
-                className="border-0"
+                required
               />
             </div>
           </CardContent>
@@ -233,67 +367,79 @@ export function GarageForm({ onCancel, onSave, initialData }: GarageFormProps) {
           </CardHeader>
           <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="weekdays" className="mb-4">
-                Weekdays
-              </Label>
+              <Label htmlFor="weekdays">Weekdays</Label>
               <Input
                 id="weekdays"
                 value={formData.weekdaysHours}
                 onChange={(e) =>
                   setFormData({ ...formData, weekdaysHours: e.target.value })
                 }
-                className="border-0"
               />
             </div>
             <div>
-              <Label htmlFor="weekends" className="mb-4">
-                Weekends
-              </Label>
+              <Label htmlFor="weekends">Weekends</Label>
               <Input
                 id="weekends"
                 value={formData.weekendsHours}
                 onChange={(e) =>
                   setFormData({ ...formData, weekendsHours: e.target.value })
                 }
-                className="border-0"
               />
             </div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader>
-            <CardTitle>Service Types Offered*</CardTitle>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle>Service Types Offered *</CardTitle>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setShowAddService(!showAddService)}
+            >
+              <Plus className="w-4 h-4 mr-1" />
+              Add Service
+            </Button>
           </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              {services.map((service) => (
-                <button
-                  key={service.id}
+          <CardContent className="space-y-4">
+            {showAddService && (
+              <div className="flex gap-2">
+                <Input
+                  value={newServiceName}
+                  onChange={(e) => setNewServiceName(e.target.value)}
+                  placeholder="Enter service name"
+                  onKeyDown={(e) => e.key === "Enter" && handleAddService()}
+                />
+                <Button
                   type="button"
-                  onClick={() => toggleService(service.id)}
-                  className={`p-4 rounded-lg border-2 transition-all ${
-                    formData.services.includes(service.id)
-                      ? "border-blue-500 bg-blue-50 text-blue-700"
-                      : "border-gray-200 hover:border-gray-300"
-                  }`}
+                  onClick={handleAddService}
+                  disabled={creatingService}
                 >
-                  <service.icon className="w-6 h-6 mx-auto mb-4" />
-                  <p className="text-xs font-medium text-center">
-                    {service.label}
-                  </p>
-                </button>
-              ))}
-            </div>
-            <div className="flex justify-center">
-              {" "}
-              <Button
-                type="button"
-                className="mt-4 bg-blue-600 hover:bg-blue-700 text-white"
-              >
-                + Add more service
-              </Button>
-            </div>
+                  {creatingService ? "Adding..." : "Add"}
+                </Button>
+              </div>
+            )}
+            {servicesLoading ? (
+              <Spinner className="size-6 text-green-500" />
+            ) : (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {servicesData?.serviceCategories.map((service) => (
+                  <button
+                    key={service}
+                    type="button"
+                    onClick={() => toggleService(service)}
+                    className={`p-4 rounded-lg border-2 transition-all ${
+                      formData.services.includes(service)
+                        ? "border-blue-500 bg-blue-50 text-blue-700"
+                        : "border-gray-200 hover:border-gray-300"
+                    }`}
+                  >
+                    <p className="text-sm font-medium text-center">{service}</p>
+                  </button>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -303,19 +449,16 @@ export function GarageForm({ onCancel, onSave, initialData }: GarageFormProps) {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <Label htmlFor="description" className="mb-4">
-                About Your Garage
-              </Label>
+              <Label htmlFor="description">About Your Garage</Label>
               <Textarea
                 id="description"
                 value={formData.description}
                 onChange={(e) =>
                   setFormData({ ...formData, description: e.target.value })
                 }
-                placeholder="Describe your garage, services, and what makes you stand out..."
+                placeholder="Describe your garage..."
                 rows={4}
                 maxLength={210}
-                className="border-0 bg-gray-50"
               />
               <p className="text-xs text-gray-500 mt-1">
                 {formData.description.length}/210 characters
@@ -323,31 +466,25 @@ export function GarageForm({ onCancel, onSave, initialData }: GarageFormProps) {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="certifications" className="mb-4">
-                  Certifications
-                </Label>
+                <Label htmlFor="certifications">Certifications</Label>
                 <Input
                   id="certifications"
                   value={formData.certifications}
                   onChange={(e) =>
                     setFormData({ ...formData, certifications: e.target.value })
                   }
-                  placeholder="ASE Certified, ISO 9001:2015, RTA Approved"
-                  className="border-0"
+                  placeholder="ASE Certified, ISO 9001:2015"
                 />
               </div>
               <div>
-                <Label htmlFor="brandExpertise" className="mb-4">
-                  Brand Expertise
-                </Label>
+                <Label htmlFor="brandExpertise">Brand Expertise</Label>
                 <Input
                   id="brandExpertise"
                   value={formData.brandExpertise}
                   onChange={(e) =>
                     setFormData({ ...formData, brandExpertise: e.target.value })
                   }
-                  placeholder="BMW, Mercedes-Benz, Audi, Toyota, Honda, Nissan"
-                  className="border-0"
+                  placeholder="BMW, Mercedes-Benz, Audi"
                 />
               </div>
             </div>
@@ -359,18 +496,19 @@ export function GarageForm({ onCancel, onSave, initialData }: GarageFormProps) {
             type="button"
             variant="outline"
             onClick={onCancel}
-            className="text-red-600 border-red-600 hover:bg-red-50"
+            disabled={isLoading}
           >
             Cancel
           </Button>
-          <Button type="button" variant="outline">
-            Save as Draft
-          </Button>
-          <Button type="submit" className="bg-blue-600 hover:bg-blue-700">
-            Add garage
+          <Button
+            type="submit"
+            className="bg-blue-600 hover:bg-blue-700"
+            disabled={isLoading}
+          >
+            {isLoading ? (isEditMode ? "Updating..." : "Creating...") : (isEditMode ? "Update Garage" : "Add Garage")}
           </Button>
         </div>
       </form>
-    </div>
+  
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 import { useAuthGuard } from '@/hooks/useAuthGuard';
-import { ReactNode } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -15,7 +15,17 @@ export default function ProtectedRoute({
   redirectTo,
   fallback 
 }: ProtectedRouteProps) {
+  const [isMounted, setIsMounted] = useState(false);
   const { isAuthenticated } = useAuthGuard({ requiredRole, redirectTo });
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  // Return null on server and initial client render to prevent hydration mismatch
+  if (!isMounted) {
+    return null;
+  }
 
   if (!isAuthenticated) {
     return fallback || (
