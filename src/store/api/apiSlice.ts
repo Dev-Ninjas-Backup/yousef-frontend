@@ -30,7 +30,8 @@ export const apiSlice = createApi({
     "SubscriptionCurrentPlan",
     "SubscriptionTransactionHistory",
     "GarageAdminNotificationSettings",
-    "PromotionalAd"
+    "PromotionalAd",
+    "Product"
   ],
   endpoints: () => ({}),
 });

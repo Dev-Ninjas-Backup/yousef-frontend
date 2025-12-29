@@ -1,20 +1,26 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Eye, Edit, Trash2, CheckCircle, Clock } from "lucide-react";
+import { Eye, Edit, Trash2, CheckCircle, Clock, Star } from "lucide-react";
 import ProductImage from "@/assets/garage-admin/my-products/product.jpg";
 import Image from "next/image";
 
 interface Product {
   id: string;
-  name: string;
-  brand: string;
-  category: string;
-  price: number;
-  stock: number;
-  status: "Approved" | "Pending";
+  partName: string;
+  brand?: string;
+  categoryId: string;
+  condition: string;
+  price: string;
+  quantity: number;
+  description?: string;
+  photos: string[];
+  status: "DRAFT" | "PENDING" | "APPROVED" | "REJECTED";
+  isPromoted: boolean;
+  promoCost: string | null;
   views: number;
   inquiries: number;
-  image: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 interface ProductsTableProps {
@@ -30,6 +36,26 @@ export function ProductsTable({
   onEdit,
   onDelete,
 }: ProductsTableProps) {
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "APPROVED":
+        return "bg-green-100 text-green-700";
+      case "PENDING":
+        return "bg-yellow-100 text-yellow-700";
+      case "REJECTED":
+        return "bg-red-100 text-red-700";
+      default:
+        return "bg-gray-100 text-gray-700";
+    }
+  };
+
+  const getStatusIcon = (status: string) => {
+    return status === "APPROVED" ? (
+      <CheckCircle className="w-3.5 h-3.5 mr-1" />
+    ) : (
+      <Clock className="w-3.5 h-3.5 mr-1" />
+    );
+  };
   return (
     <div className="bg-white rounded-lg border overflow-hidden">
       {/* Desktop Table */}
@@ -41,7 +67,7 @@ export function ProductsTable({
                 Product
               </th>
               <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">
-                Category
+                Condition
               </th>
               <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">
                 Price (AED)
@@ -69,43 +95,41 @@ export function ProductsTable({
                 <td className="py-3 px-4">
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
-                      {/* <div className="w-10 h-10 bg-gray-300 rounded"></div> */}
                       <Image
-                        src={ProductImage}
-                        alt={product.name}
+                        src={product.photos[0] || ProductImage}
+                        alt={product.partName}
+                        width={48}
+                        height={48}
                         className="w-full h-full object-cover"
                       />
                     </div>
                     <div>
-                      <p className="font-medium text-gray-900 text-sm">
-                        {product.name}
+                      <div className="flex items-center gap-2">
+                        <p className="font-medium text-gray-900 text-sm">
+                          {product.partName}
+                        </p>
+                        {product.isPromoted && (
+                          <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
+                        )}
+                      </div>
+                      <p className="text-xs text-gray-500">
+                        {product.brand || "N/A"}
                       </p>
-                      <p className="text-xs text-gray-500">{product.brand}</p>
                     </div>
                   </div>
                 </td>
                 <td className="py-3 px-4 text-sm text-gray-700">
-                  {product.category}
+                  {product.condition}
                 </td>
                 <td className="py-3 px-4 text-sm font-medium text-gray-900">
                   {product.price}
                 </td>
                 <td className="py-3 px-4 text-sm text-gray-700">
-                  {product.stock}
+                  {product.quantity}
                 </td>
                 <td className="py-3 px-4">
-                  <Badge
-                    className={
-                      product.status === "Approved"
-                        ? "bg-green-100 text-green-700"
-                        : "bg-yellow-100 text-yellow-700"
-                    }
-                  >
-                    {product.status === "Approved" ? (
-                      <CheckCircle className="w-3.5 h-3.5 mr-1" />
-                    ) : (
-                      <Clock className="w-3.5 h-3.5 mr-1" />
-                    )}
+                  <Badge className={getStatusColor(product.status)}>
+                    {getStatusIcon(product.status)}
                     {product.status}
                   </Badge>
                 </td>
@@ -153,38 +177,36 @@ export function ProductsTable({
           <div key={product.id} className="p-4 space-y-3">
             <div className="flex items-start gap-3">
               <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
-                {/* <div className="w-14 h-14 bg-gray-300 rounded"></div> */}
                 <Image
-                  src={ProductImage}
-                  alt={product.name}
+                  src={product.photos[0] || ProductImage}
+                  alt={product.partName}
+                  width={64}
+                  height={64}
                   className="w-full h-full object-cover"
                 />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="font-medium text-gray-900 text-sm">
-                  {product.name}
-                </p>
-                <p className="text-xs text-gray-500">{product.brand}</p>
-                <Badge
-                  className={`mt-2 ${
-                    product.status === "Approved"
-                      ? "bg-green-100 text-green-700"
-                      : "bg-yellow-100 text-yellow-700"
-                  }`}
-                >
-                  {product.status === "Approved" ? (
-                    <CheckCircle className="w-3.5 h-3.5 mr-1" />
-                  ) : (
-                    <Clock className="w-3.5 h-3.5 mr-1" />
+                <div className="flex items-center gap-2">
+                  <p className="font-medium text-gray-900 text-sm">
+                    {product.partName}
+                  </p>
+                  {product.isPromoted && (
+                    <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
                   )}
+                </div>
+                <p className="text-xs text-gray-500">
+                  {product.brand || "N/A"}
+                </p>
+                <Badge className={`mt-2 ${getStatusColor(product.status)}`}>
+                  {getStatusIcon(product.status)}
                   {product.status}
                 </Badge>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-2 text-sm">
               <div>
-                <span className="text-gray-500">Category:</span>
-                <span className="ml-1 text-gray-900">{product.category}</span>
+                <span className="text-gray-500">Condition:</span>
+                <span className="ml-1 text-gray-900">{product.condition}</span>
               </div>
               <div>
                 <span className="text-gray-500">Price:</span>
@@ -194,7 +216,7 @@ export function ProductsTable({
               </div>
               <div>
                 <span className="text-gray-500">Stock:</span>
-                <span className="ml-1 text-gray-900">{product.stock}</span>
+                <span className="ml-1 text-gray-900">{product.quantity}</span>
               </div>
               <div>
                 <span className="text-gray-500">Views:</span>
