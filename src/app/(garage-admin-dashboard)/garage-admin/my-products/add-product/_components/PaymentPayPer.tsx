@@ -1,18 +1,18 @@
 import { Button } from "@/components/ui/button";
-import { useCreateMonthlyPaymentMutation } from "@/store/api/garageAdminApis/products/products";
+import { useCreatePayPerPaymentMutation } from "@/store/api/garageAdminApis/products/products";
 import { toast } from "sonner";
 
-interface PaymentMonthlyProps {
+interface PaymentPayPerProps {
   formData: any;
 }
 
-const PaymentMonthly = ({ formData }: PaymentMonthlyProps) => {
-  const [createMonthlyPayment, { isLoading: isMonthlyPaymentLoading }] =
-    useCreateMonthlyPaymentMutation();
+const PaymentPayPer = ({ formData }: PaymentPayPerProps) => {
+  const [createPayPerPayment, { isLoading: isPayPerPaymentLoading }] =
+    useCreatePayPerPaymentMutation();
   const handlePayment = async () => {
     localStorage.setItem("productFormData", JSON.stringify(formData));
     try {
-      const response = await createMonthlyPayment().unwrap();
+      const response = await createPayPerPayment().unwrap();
       window.location.href = response.url;
     } catch (error: any) {
       toast.error(error?.data?.message || "Failed to create payment session");
@@ -21,7 +21,7 @@ const PaymentMonthly = ({ formData }: PaymentMonthlyProps) => {
   return (
     <div className="border border-yellow-200 rounded-lg p-4 bg-yellow-50 mt-2">
       <p className="text-sm text-yellow-800 mb-3">
-        You need to subscribe to the Product Monthly plan to add products under
+        You need to subscribe to the Product Pay per plan to add products under
         this plan.
       </p>
       <Button
@@ -29,12 +29,10 @@ const PaymentMonthly = ({ formData }: PaymentMonthlyProps) => {
         type="button"
         className="bg-yellow-600 hover:bg-yellow-700"
       >
-        {isMonthlyPaymentLoading
-          ? "Processing..."
-          : "Subscribe to Monthly Plan"}
+        {isPayPerPaymentLoading ? "Processing..." : "Subscribe to Pay per Plan"}
       </Button>
     </div>
   );
 };
 
-export default PaymentMonthly;
+export default PaymentPayPer;

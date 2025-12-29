@@ -3,44 +3,27 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Gift, TrendingUp, Clock, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import PromotionalAdCard from "./_components/PromotionalAdCard/PromotionalAdCard";
 import PromotionsStat from "./_components/PromotionsStat/PromotionsStat";
 import CreatePromotionalModal from "./_components/CreatePromotionalModal/CreatePromotionalModal";
-import img1 from "@/assets/garage-admin/ads-promotions/promotions_img_1.jpg";
-import img2 from "@/assets/garage-admin/ads-promotions/promotions_img_2.jpg";
+import PreviewModal from "./_components/PreviewModal/PreviewModal";
 import { promotionalAdApi } from "@/store/api/garageAdminApis/promotionalAd/promotionalAd";
 
-const promotionalAds = [
-  {
-    id: 1,
-    title: "SpeedPro Garage Dubai - Brake Service Special",
-    image: img1,
-    status: "Active" as const,
-    category: "Garage Service",
-    isFree: true,
-    description:
-      "Get 20% off on brake pad replacement at SpeedPro Garage! Expert mechanics, parts, same-day service.",
-    location: "Dubai Marina",
-    dateRange: "25/10/2025 - 15/11/2025",
-  },
-  {
-    id: 2,
-    title: "SpeedPro Garage Dubai - Brake Service Special",
-    image: img2,
-    status: "Active" as const,
-    category: "Garage Service",
-    isFree: true,
-    description:
-      "Get 20% off on brake pad replacement at SpeedPro Garage! Expert mechanics, parts, same-day service.",
-    location: "Dubai Marina",
-    dateRange: "25/10/2025 - 15/11/2025",
-  },
-];
-
 export default function AdsPromotionsPage() {
- 
+  const { data: promotionalProducts, isLoading: promotionalProductsLoading } =
+    promotionalAdApi.useGetPromotionalProductsQuery();
+
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [previewProduct, setPreviewProduct] = useState<any>(null);
+
+  if (promotionalProductsLoading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <p className="text-gray-600">Loading promotional ads...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -65,24 +48,35 @@ export default function AdsPromotionsPage() {
             Manage your featured promotions and special offers
           </p>
         </div>
-        <Button
-          className="bg-blue-600 hover:bg-blue-700 gap-2 text-white"
-          onClick={() => setIsModalOpen(true)}
-        >
-          <Plus className="w-4 h-4" />
-          Create New Ad
-        </Button>
       </div>
 
       <div className="space-y-4">
-        {promotionalAds.map((ad) => (
-          <PromotionalAdCard key={ad.id} {...ad} />
-        ))}
+        {promotionalProducts && promotionalProducts.length > 0 ? (
+          promotionalProducts.map((product) => (
+            <PromotionalAdCard
+              key={product.id}
+              product={product}
+              onPreview={() => setPreviewProduct(product)}
+            />
+          ))
+        ) : (
+          <Card className="shadow-none">
+            <CardContent className="p-12 text-center">
+              <p className="text-gray-600">No promotional ads found</p>
+            </CardContent>
+          </Card>
+        )}
       </div>
 
       <CreatePromotionalModal
         open={isModalOpen}
         onOpenChange={setIsModalOpen}
+      />
+
+      <PreviewModal
+        open={!!previewProduct}
+        onOpenChange={(open) => !open && setPreviewProduct(null)}
+        product={previewProduct}
       />
     </div>
   );

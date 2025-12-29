@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,10 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  useCreateMonthlyPaymentMutation,
-  useCreatePayPerPaymentMutation,
   useCreateProductMutation,
-  useCreatePromotionPaymentMutation,
   useGetUserLimitQuery,
 } from "@/store/api/garageAdminApis/products/products";
 import { useGetCategoriesQuery } from "@/store/api/garageAdminApis/categoryApi";
@@ -27,15 +24,13 @@ import Image from "next/image";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Spinner } from "@/components/ui/spinner";
 import PaymentMonthly from "./_components/PaymentMonthly";
+import PaymentPayPer from "./_components/PaymentPayPer";
+import PaymentPromotion from "./_components/PaymentPromotion";
 
 export default function AddProductPage() {
   const router = useRouter();
   const [createProduct, { isLoading }] = useCreateProductMutation();
-  const [createPromotionPayment, { isLoading: isPaymentLoading }] =
-    useCreatePromotionPaymentMutation();
 
-  const [createPayPerPayment, { isLoading: isPayPerPaymentLoading }] =
-    useCreatePayPerPaymentMutation();
   const { data: categoriesData, isLoading: categoriesLoading } =
     useGetCategoriesQuery();
   const { data: userLimit, isLoading: userLimitLoading } =
@@ -63,6 +58,14 @@ export default function AddProductPage() {
   const [photoPreviews, setPhotoPreviews] = useState<string[]>([]);
   const [verificationImage, setVerificationImage] = useState<File | null>(null);
   const [verificationPreview, setVerificationPreview] = useState<string>("");
+
+  useEffect(() => {
+    const savedData = localStorage.getItem("productFormData");
+    if (savedData) {
+      setFormData(JSON.parse(savedData));
+      localStorage.removeItem("productFormData");
+    }
+  }, []);
 
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -131,18 +134,10 @@ export default function AddProductPage() {
       }).unwrap();
 
       toast.success("Product created successfully!");
+      localStorage.removeItem("productFormData");
       router.push("/garage-admin/my-products");
     } catch (error: any) {
       toast.error(error?.data?.message || "Failed to create product");
-    }
-  };
-
-  const handleBuyPromotionCredit = async () => {
-    try {
-      const response = await createPromotionPayment().unwrap();
-      window.location.href = response.url;
-    } catch (error: any) {
-      toast.error(error?.data?.message || "Failed to create payment session");
     }
   };
 
@@ -151,7 +146,7 @@ export default function AddProductPage() {
   const needsPayment = formData.isPromoted && !hasPromotionCredit;
   console.log(needsPayment, "payment need ");
   const needsMonthlySubscription =
-    formData.plan === "MONTHLY" && userLimit?.hasProductMonthly;
+    formData.plan === "MONTHLY" && !userLimit?.hasProductMonthly;
   const needsPayPer =
     formData.plan === "PAY_PER" && userLimit?.productCredits! <= 0;
 
@@ -206,7 +201,7 @@ export default function AddProductPage() {
                 setFormData({ ...formData, categoryId: value })
               }
             >
-              <SelectTrigger>
+              <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select category" />
               </SelectTrigger>
               <SelectContent>
@@ -233,7 +228,7 @@ export default function AddProductPage() {
                 setFormData({ ...formData, condition: value })
               }
             >
-              <SelectTrigger>
+              <SelectTrigger className="w-full">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -318,7 +313,10 @@ export default function AddProductPage() {
                 You are subscribed to the Product Monthly plan.
               </div>
             )}
-            {needsMonthlySubscription && <PaymentMonthly />}
+            {needsMonthlySubscription && <PaymentMonthly formData={formData} />}
+            {needsPayPer && !userLimit?.hasProductMonthly && (
+              <PaymentPayPer formData={formData} />
+            )}
           </div>
         </div>
 
@@ -368,22 +366,7 @@ export default function AddProductPage() {
           </div>
         </div>
 
-        {needsPayment && (
-          <div className="border border-yellow-200 rounded-lg p-4 bg-yellow-50">
-            <p className="text-sm text-yellow-800 mb-3">
-              You don't have promotion credits. Please buy credits to promote
-              your product.
-            </p>
-            <Button
-              type="button"
-              onClick={handleBuyPromotionCredit}
-              disabled={isPaymentLoading}
-              className="bg-yellow-600 hover:bg-yellow-700"
-            >
-              {isPaymentLoading ? "Processing..." : "Buy Promotion Credit"}
-            </Button>
-          </div>
-        )}
+        {needsPayment && <PaymentPromotion formData={formData} />}
 
         <div className="border-t pt-6">
           <h3 className="font-semibold mb-4">Seller Information</h3>
