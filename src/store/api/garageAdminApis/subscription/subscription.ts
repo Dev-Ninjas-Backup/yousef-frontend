@@ -2,33 +2,48 @@ import { apiSlice } from "../../apiSlice";
 
 // 1. Current Plan Interface
 interface CurrentPlanResponse {
-planType: 'TRIAL' | 'PAID' | 'NONE';
-status: string;
-startDate: string;
-endDate: string;
-daysRemaining: number;
-message: string;
+  planType: "TRIAL" | "PAID" | "NONE";
+  status: string;
+  startDate: string;
+  endDate: string;
+  daysRemaining: number;
+  message: string;
 }
 // 2. Create Subscription Interface
 interface CreateSubscriptionResponse {
   url: string;
-}
-// 3. Transaction Interface
-interface Transaction {
-  id: string;
-  type: string;
-  amount: number;
-  status: string;
-  date: string;
-}
-interface TransactionHistoryResponse {
-  transactions: Transaction[];
 }
 // 4. Cancel Subscription Interface
 interface CancelSubscriptionResponse {
   message: string;
   effectiveDate: string;
 }
+
+// 5 Translation interface
+interface User {
+  id: string;
+  fullName: string;
+  email: string;
+  phone: string;
+  profilePhoto: string | null;
+}
+
+interface Transaction {
+  sessionId: string;
+  transactionId: string;
+  amount: number;
+  currency: string;
+  status: string;
+  paymentMethod: string;
+  paymentType: string;
+  createdAt: string;
+  userId: string;
+  user: User;
+}
+
+type TransactionHistoryResponse = Transaction[];
+
+
 
 export const subscriptionApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -62,6 +77,8 @@ export const subscriptionApi = apiSlice.injectEndpoints({
         "SubscriptionTransactionHistory",
       ],
     }),
+
+  
   }),
 });
 
