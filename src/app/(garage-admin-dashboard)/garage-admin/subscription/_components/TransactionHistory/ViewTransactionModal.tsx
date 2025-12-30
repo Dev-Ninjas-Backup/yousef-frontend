@@ -75,72 +75,65 @@ const ViewTransactionModal = ({
 
   const downloadInvoice = () => {
     const doc = new jsPDF();
+    const COLORS = { primary: [30, 64, 175] as const, white: [255, 255, 255] as const, black: [0, 0, 0] as const, gray: [243, 244, 246] as const };
+    const currency = transaction.currency.toUpperCase();
+    const amount = transaction.amount.toFixed(2);
     
-    // Header
-    doc.setFillColor(30, 64, 175);
+    doc.setFillColor(...COLORS.primary);
     doc.rect(0, 0, 210, 40, "F");
-    doc.setTextColor(255, 255, 255);
+    doc.setTextColor(...COLORS.white);
     doc.setFontSize(24);
     doc.text("Sayara Hub", 105, 20, { align: "center" });
     doc.setFontSize(12);
     doc.text("Payment Invoice", 105, 30, { align: "center" });
 
-    // Reset text color
-    doc.setTextColor(0, 0, 0);
-    
-    // Invoice To & Details
+    doc.setTextColor(...COLORS.black);
     doc.setFontSize(10);
-    doc.setFont(undefined, "bold");
+    doc.setFont("helvetica", "bold");
     doc.text("INVOICE TO:", 20, 55);
-    doc.setFont(undefined, "normal");
+    doc.setFont("helvetica", "normal");
     doc.text(transaction.user?.fullName || "N/A", 20, 62);
     doc.text(transaction.user?.email || "N/A", 20, 68);
     doc.text(transaction.user?.phone || "N/A", 20, 74);
 
-    doc.setFont(undefined, "bold");
+    doc.setFont("helvetica", "bold");
     doc.text("INVOICE DETAILS:", 130, 55);
-    doc.setFont(undefined, "normal");
+    doc.setFont("helvetica", "normal");
     doc.text(`Invoice #: ${transaction.transactionId}`, 130, 62);
     doc.text(`Date: ${new Date(transaction.createdAt).toLocaleDateString()}`, 130, 68);
     doc.text(`Status: ${transaction.status.toUpperCase()}`, 130, 74);
 
-    // Table Header
-    doc.setFillColor(243, 244, 246);
+    doc.setFillColor(...COLORS.gray);
     doc.rect(20, 90, 170, 10, "F");
-    doc.setFont(undefined, "bold");
+    doc.setFont("helvetica", "bold");
     doc.text("Description", 25, 96);
     doc.text("Payment Method", 90, 96);
     doc.text("Amount", 170, 96, { align: "right" });
 
-    // Table Row
-    doc.setFont(undefined, "normal");
+    doc.setFont("helvetica", "normal");
     doc.text(`${transaction.paymentType} Subscription`, 25, 106);
     doc.text(transaction.paymentMethod, 90, 106);
-    doc.text(`${transaction.currency.toUpperCase()} ${transaction.amount.toFixed(2)}`, 170, 106, { align: "right" });
-    
+    doc.text(`${currency} ${amount}`, 170, 106, { align: "right" });
     doc.line(20, 110, 190, 110);
 
-    // Total
     doc.setFontSize(12);
-    doc.setFont(undefined, "bold");
-    doc.text("Total Amount:", 130, 125);
+    doc.setFont("helvetica", "bold");
+    doc.text("Total Amount:", 120, 125);
     doc.setFontSize(16);
-    doc.setTextColor(30, 64, 175);
-    doc.text(`${transaction.currency.toUpperCase()} ${transaction.amount.toFixed(2)}`, 170, 125, { align: "right" });
+    doc.setTextColor(...COLORS.primary);
+    doc.text(`${currency} ${amount}`, 190, 125, { align: "right" });
 
-    // Session ID
-    doc.setTextColor(0, 0, 0);
+    doc.setTextColor(...COLORS.black);
     doc.setFontSize(9);
-    doc.setFont(undefined, "normal");
+    doc.setFont("helvetica", "normal");
     doc.text(`Session ID: ${transaction.sessionId}`, 20, 145);
 
-    // Footer
     doc.setFillColor(249, 250, 251);
     doc.rect(0, 260, 210, 37, "F");
     doc.setFontSize(10);
-    doc.setFont(undefined, "bold");
+    doc.setFont("helvetica", "bold");
     doc.text("Sayara Hub", 105, 270, { align: "center" });
-    doc.setFont(undefined, "normal");
+    doc.setFont("helvetica", "normal");
     doc.setFontSize(9);
     doc.text("Thank you for your business!", 105, 277, { align: "center" });
     doc.text("For any questions, please contact support@sayarahub.com", 105, 284, { align: "center" });

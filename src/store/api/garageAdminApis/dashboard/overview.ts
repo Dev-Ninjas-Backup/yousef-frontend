@@ -17,28 +17,40 @@ interface PerformanceSummaryResponse {
 }
 // 3. Recent Activity Interface
 interface Activity {
-  type: string;
-  productName: string;
-  timestamp: string;
-}
-interface RecentActivityResponse {
-  activities: Activity[];
-}
-// 4. Recent Listings Interface
-interface Listing {
   id: string;
   partName: string;
   status: string;
   createdAt: string;
 }
-interface RecentListingsResponse {
-  listings: Listing[];
+type RecentActivityResponse = Activity[];
+
+// Category interface
+interface Category {
+  id: string;
+  name: string;
 }
+
+// Main Activity interface
+interface Listing {
+  id: string;
+  partName: string;
+  photos: string[];
+  brand: string;
+  category: Category;
+  price: string;
+  status: "PENDING" | "APPROVED" | "REJECTED";
+}
+
+// If you need the array type
+type ListingsResponse = Listing[];
+
 // 5. Available Listing Interface
 interface AvailableListingResponse {
-  totalAllowed: number;
-  used: number;
-  remaining: number;
+  totalFreeProducts: number;
+  freeProductsUsed: number;
+  freeProductsRemaining: number;
+  remainingPercentage: number;
+  hasFreeProductsLeft: boolean;
 }
 
 export const overView = apiSlice.injectEndpoints({
@@ -53,18 +65,24 @@ export const overView = apiSlice.injectEndpoints({
     }),
     // not used yet...........
     getRecentActivity: builder.query<RecentActivityResponse, void>({
-        query: () => "/garage-admin-overview/recent-activity",  
-        providesTags: ["GarageAdminOverviewRecentActivity"],
-      }),
-      getRecentListings: builder.query<RecentListingsResponse, void>({
-        query: () => "/garage-admin-overview/recent-listings",
-        providesTags: ["GarageAdminOverviewRecentListings"],
-      }),
-      getAvailableListing: builder.query<AvailableListingResponse, void>({
-        query: () => "/garage-admin-overview/available-listing",
-        providesTags: ["GarageAdminOverviewAvailableListing"],
-      }),
+      query: () => "/garage-admin-overview/recent-activity",
+      providesTags: ["GarageAdminOverviewRecentActivity"],
+    }),
+    getRecentListings: builder.query<ListingsResponse, void>({
+      query: () => "/garage-admin-overview/recent-listings",
+      providesTags: ["GarageAdminOverviewRecentListings"],
+    }),
+    getAvailableListing: builder.query<AvailableListingResponse, void>({
+      query: () => "/garage-admin-overview/available-listing",
+      providesTags: ["GarageAdminOverviewAvailableListing"],
+    }),
   }),
 });
 
-export const { useGetStatsQuery, useGetPerformanceSummaryQuery } = overView;
+export const {
+  useGetStatsQuery,
+  useGetPerformanceSummaryQuery,
+  useGetRecentActivityQuery,
+  useGetRecentListingsQuery,
+  useGetAvailableListingQuery,
+} = overView;
