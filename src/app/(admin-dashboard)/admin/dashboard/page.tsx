@@ -18,7 +18,7 @@ import RecentActivity from "./_components/RecentActivity";
 import RevenueTrends from "./_components/RevenueTrends";
 import ProtectedRoute from "@/components/ProtectedRoute";
 
-// Register ChartJS components
+// Register ChartJS 
 ChartJS.register(
   CategoryScale,
   LinearScale,

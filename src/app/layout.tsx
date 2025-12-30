@@ -4,8 +4,10 @@ import Script from "next/script";
 import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
 import { ReduxProvider } from "@/providers/ReduxProvider";
+import {ToastContainer} from "react-toastify"
 import { SocketProvider } from "@/context/SocketContext";
 import { Toaster } from "@/components/ui/sonner";
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -37,6 +39,7 @@ export default function RootLayout({
           strategy="afterInteractive"
         />
         <ReduxProvider>
+          <ToastContainer />
           <AuthProvider>
             <SocketProvider>{children}</SocketProvider>
           </AuthProvider>

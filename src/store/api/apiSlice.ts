@@ -15,6 +15,7 @@ const baseQuery = fetchBaseQuery({
 export const apiSlice = createApi({
   reducerPath: "api",
   baseQuery,
+
   tagTypes: [
     "User",
     "Garage",
@@ -30,8 +31,13 @@ export const apiSlice = createApi({
     "SubscriptionCurrentPlan",
     "SubscriptionTransactionHistory",
     "GarageAdminNotificationSettings",
+
     "PromotionalAd",
-    "Product"
+    "PaymentConfig",
+    "Financials",
+    "AdminSetting",
+    "Admin",
+    "Product",
   ],
   endpoints: () => ({}),
 });
