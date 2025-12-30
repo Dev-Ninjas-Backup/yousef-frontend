@@ -13,8 +13,7 @@ interface DashboardNavbarProps {
 
 const DashboardNavbar = ({ onMenuToggle }: DashboardNavbarProps) => {
   const { user, logout, profile } = useAuth();
-  console.log(profile, "profile garage admin info...........");
-  const pathname = usePathname();
+  // const pathname = usePathname();
 
   const isAdmin = user?.role === "SUPER_ADMIN";
 
