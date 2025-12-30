@@ -31,7 +31,13 @@ export const apiSlice = createApi({
     "SubscriptionCurrentPlan",
     "SubscriptionTransactionHistory",
     "GarageAdminNotificationSettings",
-    "PromotionalAd", "PaymentConfig" , "Financials" , "AdminSetting" , "Admin" , "Product"
+
+    "PromotionalAd",
+    "PaymentConfig",
+    "Financials",
+    "AdminSetting",
+    "Admin",
+    "Product",
   ],
   endpoints: () => ({}),
 });

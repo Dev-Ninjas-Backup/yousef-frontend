@@ -2,7 +2,7 @@ export interface Garage {
   userId: string;
   ownerName: string;
   phone: string | null;
-  Garage_Name: string | null;
+  Garage_Name?: string | null;
   serviceCategories: string[];
   Contract: string | null;
   tradeLicense: string | null;
@@ -11,6 +11,9 @@ export interface Garage {
   createdAt: string;
   updatedAt: string;
   revenue: number;
+  garageName : string;
+  fullName?: string ;
+  email?: string
 }
 
 export interface GarageResponse {
@@ -22,6 +25,7 @@ export interface GarageResponse {
     limit: number;
     total: number;
     totalPage: number;
+    fullName: string;
   };
 }
 

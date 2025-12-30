@@ -1,78 +1,68 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { ProductsHeader } from "./_components/ProductsHeader";
 import { ProductsTable } from "./_components/ProductsTable";
 import { EmptyProductsState } from "./_components/EmptyProductsState";
-
-const mockProducts = [
-  {
-    id: "1",
-    name: "Brake Pad Set - Front",
-    brand: "Brembo",
-    category: "Brakes",
-    price: 450,
-    stock: 15,
-    status: "Approved" as const,
-    views: 45,
-    inquiries: 8,
-    image: "",
-  },
-  {
-    id: "2",
-    name: "Engine Oil Filter",
-    brand: "Mann",
-    category: "Engine",
-    price: 85,
-    stock: 30,
-    status: "Approved" as const,
-    views: 32,
-    inquiries: 5,
-    image: "",
-  },
-  {
-    id: "3",
-    name: "Air Suspension Compressor",
-    brand: "AMK",
-    category: "Suspension",
-    price: 1250,
-    stock: 3,
-    status: "Pending" as const,
-    views: 12,
-    inquiries: 2,
-    image: "",
-  },
-];
+import { EditProductModal } from "./_components/EditProductModal";
+import { DeleteProductModal } from "./_components/DeleteProductModal";
+import { useGetMyProductsQuery } from "@/store/api/garageAdminApis/products/products";
 
 export default function MyProductsPage() {
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
-  const [products] = useState(mockProducts);
+  const { data, isLoading } = useGetMyProductsQuery();
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<any>(null);
+
+  const products = data || [];
 
   const filteredProducts = products.filter((product) => {
     const matchesSearch =
-      product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      product.brand.toLowerCase().includes(searchQuery.toLowerCase());
+      product.partName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (product.brand?.toLowerCase() || "").includes(searchQuery.toLowerCase());
     const matchesStatus =
-      statusFilter === "all" || product.status.toLowerCase() === statusFilter;
+      statusFilter === "all" ||
+      product.status.toLowerCase() === statusFilter.toLowerCase();
     return matchesSearch && matchesStatus;
   });
 
   const handleAddProduct = () => {
-    console.log("Add product");
+    router.push("/garage-admin/my-products/add-product");
   };
 
   const handleView = (id: string) => {
-    console.log("View product:", id);
+    router.push(`/garage-admin/my-products/${id}`);
   };
 
   const handleEdit = (id: string) => {
-    console.log("Edit product:", id);
+    const product = products.find((p) => p.id === id);
+    if (product) {
+      setSelectedProduct(product);
+      setShowEditModal(true);
+    }
   };
 
   const handleDelete = (id: string) => {
-    console.log("Delete product:", id);
+    const product = products.find((p) => p.id === id);
+    if (product) {
+      setSelectedProduct(product);
+      setShowDeleteModal(true);
+    }
   };
+
+  if (isLoading) {
+    return (
+      <div className="p-6 space-y-6 bg-gray-50 rounded-md">
+        <div className="text-center py-12">
+          <p className="text-gray-600">Loading products...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 space-y-6 bg-gray-50 rounded-md">
@@ -98,6 +88,22 @@ export default function MyProductsPage() {
         </div>
       ) : (
         <EmptyProductsState onAddProduct={handleAddProduct} />
+      )}
+
+      {selectedProduct && (
+        <>
+          <EditProductModal
+            open={showEditModal}
+            onOpenChange={setShowEditModal}
+            product={selectedProduct}
+          />
+          <DeleteProductModal
+            open={showDeleteModal}
+            onOpenChange={setShowDeleteModal}
+            productId={selectedProduct.id}
+            productName={selectedProduct.partName}
+          />
+        </>
       )}
     </div>
   );

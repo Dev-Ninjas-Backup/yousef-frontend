@@ -1,13 +1,46 @@
 "use client";
 
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Download, CheckCircle, XCircle, Clock } from "lucide-react";
 import { useGetTransactionHistoryQuery } from "@/store/api/garageAdminApis/subscription/subscription";
+import ViewTransactionModal from "./ViewTransactionModal";
 
 const TransactionHistory = () => {
   const { data, isLoading } = useGetTransactionHistoryQuery();
   const transactions = data || [];
+  const [selectedTransaction, setSelectedTransaction] = useState<any>(null);
+
+  const exportToCSV = () => {
+    if (!transactions || transactions.length === 0) return;
+
+    const headers = ["Transaction ID", "Date", "Description", "Payment Method", "Amount", "Currency", "Status", "User Name", "User Email"];
+    const rows = transactions.map(t => [
+      t.transactionId,
+      new Date(t.createdAt).toLocaleDateString(),
+      `${t.paymentType} Subscription`,
+      t.paymentMethod,
+      t.amount.toFixed(2),
+      t.currency.toUpperCase(),
+      t.status,
+      t.user?.fullName || "N/A",
+      t.user?.email || "N/A"
+    ]);
+
+    const csvContent = [
+      headers.join(","),
+      ...rows.map(row => row.map(cell => `"${cell}"`).join(","))
+    ].join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv" });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `transactions_${new Date().toISOString().split("T")[0]}.csv`;
+    a.click();
+    window.URL.revokeObjectURL(url);
+  };
 
   const getStatusBadge = (status: string) => {
     switch (status.toLowerCase()) {
@@ -58,16 +91,6 @@ const TransactionHistory = () => {
     );
   }
 
-  // if (transactions.length === 0) {
-  //   return (
-  //     <div className="bg-white p-6 rounded-xl border w-full">
-  //       <h3 className="font-semibold text-lg text-gray-900 mb-2">
-  //         Transaction History
-  //       </h3>
-  //       <p className="text-center text-gray-500 py-8">No transactions yet</p>
-  //     </div>
-  //   );
-  // }
 
   return (
     <div className="bg-white p-3 sm:p-4 md:p-6 rounded-xl border w-full">
@@ -84,6 +107,8 @@ const TransactionHistory = () => {
           variant="outline"
           size="sm"
           className="gap-2 w-full sm:w-auto text-xs sm:text-sm"
+          onClick={exportToCSV}
+          disabled={!transactions || transactions.length === 0}
         >
           <Download className="w-4 h-4" />
           <span>Export All</span>
@@ -140,7 +165,12 @@ const TransactionHistory = () => {
                   {getStatusBadge(transaction.status)}
                 </td>
                 <td className="px-3 sm:px-4 py-3">
-                  <Button variant="ghost" size="sm" className="text-xs h-8">
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="text-xs h-8"
+                    onClick={() => setSelectedTransaction(transaction)}
+                  >
                     View
                   </Button>
                 </td>
@@ -234,13 +264,24 @@ const TransactionHistory = () => {
               <p className="text-xs text-gray-500">
                 Method: {transaction.paymentMethod}
               </p>
-              <Button variant="ghost" size="sm" className="text-xs h-8 px-2">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="text-xs h-8 px-2"
+                onClick={() => setSelectedTransaction(transaction)}
+              >
                 View
               </Button>
             </div>
           </div>
         ))}
       </div>
+
+      <ViewTransactionModal
+        open={!!selectedTransaction}
+        onOpenChange={(open) => !open && setSelectedTransaction(null)}
+        transaction={selectedTransaction}
+      />
     </div>
   );
 };
