@@ -11,11 +11,14 @@ import {
   LuCheck,
   LuX,
 } from "react-icons/lu";
+import ProductDetailsModal from "./ProductDetailsModal";
 
 export default function SparePartsManagementPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("All Categories");
   const [statusFilter, setStatusFilter] = useState("All Status");
+  const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
+
 
   const { data: response, isLoading, isFetching } = useGetProductsQuery({
     search: searchQuery || undefined,
@@ -61,9 +64,14 @@ const handleReject = async (id: string) => {
 };
 
 
-  const handleView = (id: string) => {
-    window.location.href = `/admin/products/${id}`;
-  };
+const handleView = (id: string) => {
+  const product = spareParts.find((item) => item.id === id);
+  if (product) {
+    setSelectedProduct(product);
+  }
+};
+
+
 
   const handleDelete = async (id: string) => {
     if (confirm("Are you sure you want to delete this spare part?")) {
@@ -256,6 +264,14 @@ const handleExportData = ()=> {
           ))}
         </div>
       </div>
+
+      {selectedProduct && (
+          <ProductDetailsModal
+            product={selectedProduct}
+            onClose={() => setSelectedProduct(null)}
+          />
+        )}  
+
     </div>
   );
 }
