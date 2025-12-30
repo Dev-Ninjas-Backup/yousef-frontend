@@ -1,31 +1,12 @@
 "use client";
 
-import { useState } from "react";
 import { InquiryCard } from "./_components/InquiryCard";
 import { EmptyInquiriesState } from "./_components/EmptyInquiriesState";
-import { ChatSidebar } from "./_components/ChatSidebar";
 import { useGetCustomInquiriesQuery } from "@/store/api/garageAdminApis/myGarage/garageInquiryApi";
 
 export default function InquiriesPage() {
   const { data, error, isLoading } = useGetCustomInquiriesQuery();
   const inquiries = data || [];
-
-  const [isChatOpen, setIsChatOpen] = useState(false);
-  const [selectedCustomer, setSelectedCustomer] = useState<{
-    id: string;
-    name: string;
-    email: string;
-  } | null>(null);
-
-  const handleReply = (inquiry: any) => {
-    // Use email as identifier since inquiry doesn't have customer user ID
-    setSelectedCustomer({
-      id: inquiry.email, // Use email as conversation ID
-      name: `${inquiry.FirstName} ${inquiry.LastName}`,
-      email: inquiry.email,
-    });
-    setIsChatOpen(true);
-  };
 
   const handleMarkClosed = (id: string) => {
     console.log("Mark as closed:", id);
@@ -75,22 +56,12 @@ export default function InquiriesPage() {
               <InquiryCard
                 key={inquiry.id}
                 inquiry={inquiry}
-                onReply={() => handleReply(inquiry)}
                 onMarkClosed={handleMarkClosed}
               />
             ))}
           </div>
         )}
       </div>
-
-      {selectedCustomer && (
-        <ChatSidebar
-          isOpen={isChatOpen}
-          onClose={() => setIsChatOpen(false)}
-          recipientId={selectedCustomer.id}
-          customerName={selectedCustomer.name}
-        />
-      )}
     </>
   );
 }

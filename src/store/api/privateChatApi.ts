@@ -1,37 +1,61 @@
-import { apiSlice } from "../../apiSlice";
+import { apiSlice } from "./apiSlice";
 
-interface ChatMessage {
+export interface User {
+  id: string;
+  fullName: string;
+  profilePhoto: string;
+}
+
+export interface Message {
   id: string;
   content: string;
   senderId: string;
-  recipientId: string;
-  fileUrl: string | null;
-  isRead: boolean;
   createdAt: string;
+  sender: User;
+  files?: string[];
 }
 
-interface Conversation {
-  conversationId: string;
-  recipientName: string;
-  lastMessage: string;
-  unreadCount: number;
+export interface Conversation {
+  type: "private";
+  chatId: string;
+  participant: User;
+  lastMessage: Message | null;
   updatedAt: string;
+}
+
+interface ConversationsResponse {
+  success: boolean;
+  data: Conversation[];
+  message: string;
+}
+
+interface ConversationMessagesResponse {
+  conversationId: string;
+  participants: Array<{
+    id: string;
+    fullName: string;
+    profilePhoto: string;
+  }>;
+  messages: Message[];
 }
 
 export const privateChatApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    getConversations: builder.query<{ conversations: Conversation[] }, void>({
+    getConversations: builder.query<Conversation[], void>({
       query: () => "/private-chat",
+      transformResponse: (response: ConversationsResponse) => response.data,
       providesTags: ["Message"],
     }),
 
-    getMessages: builder.query<{ messages: ChatMessage[] }, string>({
+    getMessages: builder.query<Message[], string>({
       query: (conversationId) => `/private-chat/${conversationId}`,
+      transformResponse: (response: ConversationMessagesResponse) =>
+        response.messages,
       providesTags: ["Message"],
     }),
 
     sendMessage: builder.mutation<
-      { message: string; messageId: string },
+      Message,
       { recipientId: string; formData: FormData }
     >({
       query: ({ recipientId, formData }) => ({
@@ -42,15 +66,14 @@ export const privateChatApi = apiSlice.injectEndpoints({
       invalidatesTags: ["Message"],
     }),
 
-    markAsRead: builder.mutation<{ message: string }, string>({
+    markAsRead: builder.mutation<void, string>({
       query: (messageId) => ({
         url: `/private-chat/make-private-message-read/${messageId}`,
         method: "POST",
       }),
-      invalidatesTags: ["Message"],
     }),
 
-    deleteConversation: builder.mutation<{ message: string }, string>({
+    deleteConversation: builder.mutation<void, string>({
       query: (conversationId) => ({
         url: `/private-chat/${conversationId}`,
         method: "DELETE",
