@@ -1,30 +1,112 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState, useRef } from "react";
 import Image from "next/image";
-import { LuPencil, LuMail, LuPhone, LuMapPin } from "react-icons/lu";
-import userimg from "@/assets/user.jpg";
+import { LuPencil, LuMail, LuPhone, LuMapPin, LuCamera } from "react-icons/lu";
+import {
+  useGetUserProfileQuery,
+  useUpdateProfileMutation,
+} from "@/store/api/userApi";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { toast } from "sonner";
+
+import Avatar from "@/assets/avatar/avatar.png";
 
 function UserDashboardContent() {
+  const { data: profileData, isLoading, error } = useGetUserProfileQuery();
+  const [updateProfile, { isLoading: isUpdating }] = useUpdateProfileMutation();
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const [formData, setFormData] = useState({
-    firstName: "John",
-    lastName: "Doe",
-    email: "john.doe@example.com",
-    phone: "(555) 123-4567",
-    streetAddress: "1234 Main Street",
+    fullName: "",
+    bio: "",
+    phoneNumber: "",
+    address: "",
     city: "",
     emirate: "",
+    userLat: "",
+    userLng: "",
   });
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+  // Update form data when profile loads
+  React.useEffect(() => {
+    if (profileData?.data) {
+      const user = profileData.data;
+      setFormData({
+        fullName: user.fullName || "",
+        bio: user.bio || "",
+        phoneNumber: user.phone || "",
+        address: user.address || "",
+        city: user.city || "",
+        emirate: user.emirate || "",
+        userLat: user.userLat || "",
+        userLng: user.userLng || "",
+      });
+    }
+  }, [profileData]);
+
+  const handleInputChange = (field: string, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+      const url = URL.createObjectURL(file);
+      setPreviewUrl(url);
+    }
+  };
+
+  const handleSave = async () => {
+    try {
+      const updateData = {
+        ...formData,
+        ...(selectedFile && { file: selectedFile }),
+      };
+
+      await updateProfile(updateData).unwrap();
+      toast.success("Profile updated successfully!");
+      setIsEditing(false);
+      setSelectedFile(null);
+      setPreviewUrl(null);
+    } catch (error: any) {
+      toast.error(error?.data?.message || "Failed to update profile");
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="w-full flex items-center justify-center py-12">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="w-full flex items-center justify-center py-12">
+        <div className="text-red-600">Failed to load profile</div>
+      </div>
+    );
+  }
+
+  const user = profileData?.data;
+  if (!user) return null;
 
   return (
     <div className="w-full">
@@ -37,216 +119,236 @@ function UserDashboardContent() {
               <div className="relative">
                 <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden bg-gray-200 border-2 border-gray-300">
                   <Image
-                    src={userimg}
+                    src={previewUrl || user.profilePhoto || Avatar}
                     alt="Profile Picture"
                     width={96}
                     height={96}
                     className="w-full h-full object-cover"
                     onError={(e) => {
                       const target = e.target as HTMLImageElement;
-                      target.src =
-                        "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96' viewBox='0 0 96 96'%3E%3Crect fill='%23E5E7EB' width='96' height='96'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='32' fill='%239CA3AF'%3EJD%3C/text%3E%3C/svg%3E";
+                      target.src = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96' viewBox='0 0 96 96'%3E%3Crect fill='%23E5E7EB' width='96' height='96'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='32' fill='%239CA3AF'%3E${
+                        user.fullName?.charAt(0) || "U"
+                      }%3C/text%3E%3C/svg%3E`;
                     }}
                   />
                 </div>
+                {isEditing && (
+                  <button
+                    onClick={() => fileInputRef.current?.click()}
+                    className="absolute -bottom-1 -right-1 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center hover:bg-blue-700 transition-colors"
+                  >
+                    <LuCamera className="w-4 h-4" />
+                  </button>
+                )}
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileSelect}
+                  className="hidden"
+                  aria-label="Upload profile picture"
+                  title="Upload profile picture"
+                />
               </div>
 
               {/* Name and Email */}
               <div>
                 <h2 className="text-xl sm:text-2xl font-semibold text-gray-900">
-                  John Doe
+                  {user.fullName || "User"}
                 </h2>
                 <p className="text-sm sm:text-base text-gray-600 mt-1">
-                  john.doe@example.com
+                  {user.email}
+                </p>
+                <p className="text-xs text-gray-500 mt-1 capitalize">
+                  {user.role?.toLowerCase().replace("_", " ")}
                 </p>
               </div>
             </div>
 
-            {/* Edit Profile Button */}
-            <button className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors">
-              <LuPencil className="w-4 h-4" />
-              Edit Profile
-            </button>
+            {/* Action Buttons */}
+            <div className="flex gap-2">
+              {!isEditing ? (
+                <Button
+                  onClick={() => setIsEditing(true)}
+                  className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-500"
+                >
+                  <LuPencil className="w-4 h-4" />
+                  Edit Profile
+                </Button>
+              ) : (
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setIsEditing(false);
+                      setSelectedFile(null);
+                      setPreviewUrl(null);
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handleSave}
+                    disabled={isUpdating}
+                    className="bg-blue-600 hover:bg-blue-500"
+                  >
+                    {isUpdating ? "Saving..." : "Save"}
+                  </Button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
         {/* Form Section */}
         <div className="p-6 sm:p-8">
           <div className="space-y-6">
-            {/* First Name & Last Name */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              <div>
-                <label
-                  htmlFor="firstName"
-                  className="block text-sm font-medium text-gray-900 mb-2"
-                >
-                  First Name
-                </label>
-                <input
-                  type="text"
-                  id="firstName"
-                  name="firstName"
-                  value={formData.firstName}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                  placeholder="John"
-                />
-              </div>
-
-              <div>
-                <label
-                  htmlFor="lastName"
-                  className="block text-sm font-medium text-gray-900 mb-2"
-                >
-                  Last Name
-                </label>
-                <input
-                  type="text"
-                  id="lastName"
-                  name="lastName"
-                  value={formData.lastName}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                  placeholder="Doe"
-                />
-              </div>
-            </div>
-
-            {/* Email Address & Phone Number */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              <div>
-                <label
-                  htmlFor="email"
-                  className="block text-sm font-medium text-gray-900 mb-2"
-                >
-                  Email Address
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                    <LuMail className="w-4 h-4 text-gray-400" />
-                  </div>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                    placeholder="john.doe@example.com"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label
-                  htmlFor="phone"
-                  className="block text-sm font-medium text-gray-900 mb-2"
-                >
-                  Phone Number
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                    <LuPhone className="w-4 h-4 text-gray-400" />
-                  </div>
-                  <input
-                    type="tel"
-                    id="phone"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleInputChange}
-                    className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                    placeholder="(555) 123-4567"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Street Address */}
+            {/* Full Name */}
             <div>
-              <label
-                htmlFor="streetAddress"
-                className="block text-sm font-medium text-gray-900 mb-2"
-              >
-                Street Address
-              </label>
+              <Label htmlFor="fullName">Full Name</Label>
+              <Input
+                id="fullName"
+                value={formData.fullName}
+                onChange={(e) => handleInputChange("fullName", e.target.value)}
+                disabled={!isEditing}
+                placeholder="Enter your full name"
+              />
+            </div>
+
+            {/* Bio */}
+            <div>
+              <Label htmlFor="bio">Bio</Label>
+              <Textarea
+                id="bio"
+                value={formData.bio}
+                onChange={(e) => handleInputChange("bio", e.target.value)}
+                disabled={!isEditing}
+                placeholder="Tell us about yourself"
+                rows={3}
+              />
+            </div>
+
+            {/* Email (Read-only) */}
+            <div>
+              <Label htmlFor="email">Email Address</Label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                  <LuMapPin className="w-4 h-4 text-gray-400" />
-                </div>
-                <input
-                  type="text"
-                  id="streetAddress"
-                  name="streetAddress"
-                  value={formData.streetAddress}
-                  onChange={handleInputChange}
-                  className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                <LuMail className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
+                <Input
+                  id="email"
+                  value={user.email}
+                  disabled
+                  className="pl-10 bg-gray-50"
+                />
+              </div>
+            </div>
+
+            {/* Phone Number */}
+            <div>
+              <Label htmlFor="phoneNumber">Phone Number</Label>
+              <div className="relative">
+                <LuPhone className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
+                <Input
+                  id="phoneNumber"
+                  value={formData.phoneNumber}
+                  onChange={(e) =>
+                    handleInputChange("phoneNumber", e.target.value)
+                  }
+                  disabled={!isEditing}
+                  placeholder="+971 50 123 4567"
+                  className="pl-10"
+                />
+              </div>
+            </div>
+
+            {/* Address */}
+            <div>
+              <Label htmlFor="address">Street Address</Label>
+              <div className="relative">
+                <LuMapPin className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
+                <Input
+                  id="address"
+                  value={formData.address}
+                  onChange={(e) => handleInputChange("address", e.target.value)}
+                  disabled={!isEditing}
                   placeholder="1234 Main Street"
+                  className="pl-10"
                 />
               </div>
             </div>
 
             {/* City & Emirate */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label
-                  htmlFor="city"
-                  className="block text-sm font-medium text-gray-900 mb-2"
-                >
-                  City
-                </label>
-                <select
-                  id="city"
-                  name="city"
+                <Label htmlFor="city">City</Label>
+                <Select
                   value={formData.city}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none cursor-pointer"
-                  style={{
-                    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236B7280' d='M6 9L1 4h10z'/%3E%3C/svg%3E")`,
-                    backgroundRepeat: "no-repeat",
-                    backgroundPosition: "right 1rem center",
-                  }}
+                  onValueChange={(value) => handleInputChange("city", value)}
+                  disabled={!isEditing}
                 >
-                  <option value="">Select city</option>
-                  <option value="dubai">Dubai</option>
-                  <option value="abu-dhabi">Abu Dhabi</option>
-                  <option value="sharjah">Sharjah</option>
-                  <option value="ajman">Ajman</option>
-                  <option value="rak">Ras Al Khaimah</option>
-                  <option value="fujairah">Fujairah</option>
-                  <option value="uaq">Umm Al Quwain</option>
-                </select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select city" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="dubai">Dubai</SelectItem>
+                    <SelectItem value="abu-dhabi">Abu Dhabi</SelectItem>
+                    <SelectItem value="sharjah">Sharjah</SelectItem>
+                    <SelectItem value="ajman">Ajman</SelectItem>
+                    <SelectItem value="rak">Ras Al Khaimah</SelectItem>
+                    <SelectItem value="fujairah">Fujairah</SelectItem>
+                    <SelectItem value="uaq">Umm Al Quwain</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
               <div>
-                <label
-                  htmlFor="emirate"
-                  className="block text-sm font-medium text-gray-900 mb-2"
-                >
-                  Emirate
-                </label>
-                <select
-                  id="emirate"
-                  name="emirate"
+                <Label htmlFor="emirate">Emirate</Label>
+                <Select
                   value={formData.emirate}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none cursor-pointer"
-                  style={{
-                    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236B7280' d='M6 9L1 4h10z'/%3E%3C/svg%3E")`,
-                    backgroundRepeat: "no-repeat",
-                    backgroundPosition: "right 1rem center",
-                  }}
+                  onValueChange={(value) => handleInputChange("emirate", value)}
+                  disabled={!isEditing}
                 >
-                  <option value="">Select emirate</option>
-                  <option value="dubai">Dubai</option>
-                  <option value="abu-dhabi">Abu Dhabi</option>
-                  <option value="sharjah">Sharjah</option>
-                  <option value="ajman">Ajman</option>
-                  <option value="ras-al-khaimah">Ras Al Khaimah</option>
-                  <option value="fujairah">Fujairah</option>
-                  <option value="umm-al-quwain">Umm Al Quwain</option>
-                </select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select emirate" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="dubai">Dubai</SelectItem>
+                    <SelectItem value="abu-dhabi">Abu Dhabi</SelectItem>
+                    <SelectItem value="sharjah">Sharjah</SelectItem>
+                    <SelectItem value="ajman">Ajman</SelectItem>
+                    <SelectItem value="ras-al-khaimah">
+                      Ras Al Khaimah
+                    </SelectItem>
+                    <SelectItem value="fujairah">Fujairah</SelectItem>
+                    <SelectItem value="umm-al-quwain">Umm Al Quwain</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
+
+            {/* Coordinates (Optional) */}
+            {/* <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="userLat">Latitude (Optional)</Label>
+                <Input
+                  id="userLat"
+                  value={formData.userLat}
+                  onChange={(e) => handleInputChange("userLat", e.target.value)}
+                  disabled={!isEditing}
+                  placeholder="25.2048"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="userLng">Longitude (Optional)</Label>
+                <Input
+                  id="userLng"
+                  value={formData.userLng}
+                  onChange={(e) => handleInputChange("userLng", e.target.value)}
+                  disabled={!isEditing}
+                  placeholder="55.2708"
+                />
+              </div>
+            </div> */}
           </div>
         </div>
       </div>
