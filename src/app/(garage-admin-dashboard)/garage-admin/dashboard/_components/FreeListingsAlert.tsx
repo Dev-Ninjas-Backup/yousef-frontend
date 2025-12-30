@@ -1,12 +1,15 @@
+"use client";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Package } from "lucide-react";
+import { overView } from "@/store/api/garageAdminApis/dashboard/overview";
 
 export function FreeListingsAlert() {
-  const used = 1;
-  const total = 2;
-  const remaining = total - used;
-  const progress = (used / total) * 100;
+  const { data, isLoading } = overView.useGetAvailableListingQuery();
+
+  if (isLoading || !data) return null;
+
+  const progress = ((data.freeProductsUsed / data.totalFreeProducts) * 100);
 
   return (
     <Card className="p-6 bg-blue-50 border-blue-200">
@@ -21,7 +24,7 @@ export function FreeListingsAlert() {
           <p className="text-sm text-gray-700 mb-3">
             You have{" "}
             <span className="font-semibold text-blue-700">
-              {used} out of {total} free listings
+              {data.freeProductsRemaining} out of {data.totalFreeProducts} free listings
             </span>{" "}
             remaining. After that, a fee of 20 AED will apply per listing.
           </p>

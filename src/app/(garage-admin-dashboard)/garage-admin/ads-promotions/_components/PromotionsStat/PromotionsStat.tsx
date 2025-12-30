@@ -13,26 +13,26 @@ interface PromotionsStatProps {
 }
 
 const PromotionsStat = () => {
-  const { data: promotinalStast, isLoading: promotionalStatsLoading } =
+  const { data: promotinalStats, isLoading: promotionalStatsLoading } =
     promotionalAdApi.useGetPromotionalAdStatsQuery();
   const stats = [
     {
       title: "Free Listings Used",
-      value: promotinalStast?.freeListingUsed,
+      value: promotinalStats?.freeListingUsed,
       subtitle: "0 remaining",
       icon: Gift,
       color: "text-blue-600",
     },
     {
       title: "Active Ads",
-      value: promotinalStast?.activeAds,
+      value: promotinalStats?.activeAds,
       subtitle: "Currently running",
       icon: TrendingUp,
       color: "text-green-600",
     },
     {
       title: "Pending Approval",
-      value: promotinalStast?.pendingApproval,
+      value: promotinalStats?.pendingApproval,
       subtitle: "Awaiting review",
       icon: Clock,
       color: "text-[#D08700]",
