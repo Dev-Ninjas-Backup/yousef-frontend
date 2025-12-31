@@ -7,7 +7,7 @@ export interface Product {
   price: number;
   condition: "new" | "used" | "refurbished";
   category: string;
-  images: string[];
+  photos: string[];
   seller: {
     id: string;
     name: string;
