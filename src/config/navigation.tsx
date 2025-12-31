@@ -79,19 +79,19 @@ export const garageAdminNavItems: NavItem[] = [
   {
     label: "My Products",
     path: "/garage-admin/my-products",
-    qty: 5,
+    // qty: 5,
     icon: <LuPackage className="text-lg" />,
   },
   {
     label: "Inquiries",
     path: "/garage-admin/inquiries",
-    qty: 2,
+    // qty: 2,
     icon: <LuShoppingCart className="text-lg" />,
   },
   {
-    label: "Messages",
+    label: "Notifications",
     path: "/garage-admin/messages",
-    qty: 2,
+    // qty: 2,
     icon: <LuMessageSquare className="text-lg" />,
   },
   {

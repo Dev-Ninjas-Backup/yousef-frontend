@@ -1,5 +1,11 @@
 import { apiSlice } from "../../apiSlice";
 
+interface InquiryMessage {
+  content: string;
+  isFromAdmin: boolean;
+  createdAt: string;
+}
+
 interface Inquiry {
   id: string;
   FirstName: string;
@@ -8,7 +14,9 @@ interface Inquiry {
   subject: "CAR_PARTS" | "CAR_SERVICE" | "OTHERS";
   message: string;
   createdAt: string;
-  messages: any[];
+  othersubject?: string;
+  makeasClosed: boolean;
+  messages: InquiryMessage[];
 }
 
 interface CreateInquiryRequest {
@@ -19,6 +27,11 @@ interface CreateInquiryRequest {
   message: string;
   othersubject?: string;
   garageOwnerId: string;
+}
+
+interface ReplyInquiryRequest {
+  contactId: string;
+  content: string;
 }
 
 interface CreateInquiryResponse {
@@ -45,8 +58,18 @@ export const garageInquiryApi = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["Inquiry"],
     }),
+
+    // POST reply to inquiry
+    replyInquiry: builder.mutation<any, ReplyInquiryRequest>({
+      query: (data) => ({
+        url: "/Garage-admin-inquiries/reply-inquiry-message",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["Inquiry"],
+    }),
   }),
 });
 
-export const { useGetCustomInquiriesQuery, useCreateCustomInquiryMutation } =
+export const { useGetCustomInquiriesQuery, useCreateCustomInquiryMutation, useReplyInquiryMutation } =
   garageInquiryApi;

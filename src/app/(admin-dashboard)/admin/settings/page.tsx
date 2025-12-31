@@ -4,6 +4,7 @@ import { useGetPaymentConfigQuery, useGetPlatformSettingQuery, useToggleAutoAppr
 import { useEffect, useState } from "react";
 import { LuPlus, LuPencil, LuTrash2, LuSave, LuRotateCcw } from "react-icons/lu";
 import { toast } from "react-toastify";
+import PartsCategorySection from "./PartsCategorySection";
 
 // Types
 interface PartsCategory {
@@ -183,7 +184,7 @@ useEffect(() => {
       </div>
 
       {/* RESTORED: Parts Categories Section */}
-      <div className="bg-white rounded-xl p-5 sm:p-6 shadow-sm border border-gray-100">
+      {/* <div className="bg-white rounded-xl p-5 sm:p-6 shadow-sm border border-gray-100">
         <div className="flex items-center justify-between mb-5">
           <h2 className="text-base sm:text-lg font-semibold text-gray-900">Parts Categories</h2>
           <button
@@ -219,7 +220,8 @@ useEffect(() => {
             </div>
           ))}
         </div>
-      </div>
+      </div> */}
+      <PartsCategorySection />
 
       {/* Manage Subscription (Payment Config) */}
       <div className="bg-white rounded-xl p-5 sm:p-6 shadow-sm border border-gray-100">

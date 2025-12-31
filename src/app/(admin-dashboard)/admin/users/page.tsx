@@ -4,11 +4,14 @@ import { useDeleteUserMutation, useGetAllUsersQuery } from "@/store/fetures/admi
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { LuSearch, LuDownload, LuEye, LuTrash2 } from "react-icons/lu";
+import UserDetailsModal from "./UserDetailsModal";
 // Import the hooks from your adminApiSlice
 
 
 export default function UserManagementPage() {
   const [searchQuery, setSearchQuery] = useState("");
+const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+
 
   // API Call: Fetching all users
   const { data: response, isLoading, isFetching } = useGetAllUsersQuery();
@@ -32,9 +35,11 @@ export default function UserManagementPage() {
     console.log("Exporting data...");
   };
 
-  const handleView = (id: string) => {
-    window.location.href = `/admin/users/${id}`;
-  };
+const handleView = (id: string) => {
+  setSelectedUserId(id);
+};
+
+
 
   const handleDelete = async (id: string) => {
     if (confirm("Are you sure you want to delete this user? This is a soft delete.")) {
@@ -188,6 +193,13 @@ export default function UserManagementPage() {
           <div className="py-12 text-center text-gray-500 text-sm">No users found</div>
         )}
       </div>
+{selectedUserId && (
+  <UserDetailsModal
+    userId={selectedUserId}
+    onClose={() => setSelectedUserId(null)}
+  />
+)}
+
     </div>
   );
 }

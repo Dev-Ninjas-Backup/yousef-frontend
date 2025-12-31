@@ -6,6 +6,10 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'prince-adel.s3.ap-southeast-2.amazonaws.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'yousef-server.s3.eu-north-1.amazonaws.com',
+      },
     ],
   },
   async rewrites() {

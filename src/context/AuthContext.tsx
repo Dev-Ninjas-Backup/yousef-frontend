@@ -6,7 +6,7 @@ import Cookies from "js-cookie";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { setCredentials, setLoading, logout } from "@/store/slices/authSlice";
 import { User, UserRole } from "@/types/auth";
-import { useLoginMutation } from "@/store/api/authApi";
+import { useGetProfileQuery, useLoginMutation } from "@/store/api/authApi";
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
@@ -37,6 +37,9 @@ export const useAuth = () => {
   const { user, isAuthenticated, isLoading } = useAppSelector(
     (state) => state.auth
   );
+    const { data: profile } = useGetProfileQuery(undefined, {
+    skip: !isAuthenticated, 
+  });
   const router = useRouter();
 
   const [loginMutation] = useLoginMutation();
@@ -92,6 +95,7 @@ export const useAuth = () => {
 
   return {
     user,
+    profile,
     isAuthenticated,
     login,
     logout: handleLogout,
