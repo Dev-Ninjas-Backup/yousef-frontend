@@ -14,7 +14,8 @@ const CustomerSupport = () => {
         </div>
 
         <p className="text-base text-gray-600">
-          Chat with our support team for help with listings, verification, or any other questions.
+          Chat with our support team for help with listings, verification, or
+          any other questions.
         </p>
 
         <Button className="w-full bg-blue-600 hover:bg-blue-700 gap-2 py-5 text-white">

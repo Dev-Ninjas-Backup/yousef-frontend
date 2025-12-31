@@ -12,6 +12,7 @@ interface User {
   phone: string;
   tradeLicense: string | null;
   garageLogo: string | null;
+  garageName: string | null;
   profilePhoto: string | null;
   city: string;
   emirate: string;
@@ -132,14 +133,10 @@ interface ResetPasswordRequest {
   password: string;
 }
 
-interface AuthResponse {
-  user: {
-    id: string;
-    email: string;
-    name: string;
-    role: 'CAR_OWNER' | 'GARAGE_OWNER' | 'SUPER_ADMIN' | 'MEMBER';
-  };
-  token: string;
+interface ProfileResponse {
+  message?: string;
+  success?: boolean;
+  data?: User;
 }
 
 export const authApi = apiSlice.injectEndpoints({
@@ -193,8 +190,8 @@ export const authApi = apiSlice.injectEndpoints({
         body: resetData,
       }),
     }),
-    getProfile: builder.query<AuthResponse['user'], void>({
-      query: () => '/auth/profile',
+    getProfile: builder.query<ProfileResponse, void>({
+      query: () => '/user/me/profile',
       providesTags: ['User'],
     }),
   }),

@@ -5,7 +5,6 @@ import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
 import { ReduxProvider } from "@/providers/ReduxProvider";
 import {ToastContainer} from "react-toastify"
-import { SocketProvider } from "@/context/SocketContext";
 import { Toaster } from "@/components/ui/sonner";
 
 
@@ -41,7 +40,7 @@ export default function RootLayout({
         <ReduxProvider>
           <ToastContainer />
           <AuthProvider>
-            <SocketProvider>{children}</SocketProvider>
+          {children}
           </AuthProvider>
         </ReduxProvider>
         <Toaster position="top-right" />
