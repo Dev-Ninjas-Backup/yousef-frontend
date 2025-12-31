@@ -5,6 +5,7 @@ import DashboardSidebar from "@/components/shared/DashboardSidebar";
 import DashboardNavbar from "@/components/shared/dashboard/DashboardNavbar";
 import { garageAdminNavItems } from "@/config/navigation";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import { FloatingChatWidget } from "@/components/chat/FloatingChatWidget";
 
 export default function GarageAdminLayout({
   children,
@@ -28,6 +29,7 @@ export default function GarageAdminLayout({
         <main className="flex-1 lg:ml-80 pt-16 p-4 sm:p-6 lg:p-8 md:mt-20 mt-5">
           <div className="max-w-7xl mx-auto">{children}</div>
         </main>
+        <FloatingChatWidget />
       </div>
     </ProtectedRoute>
   );

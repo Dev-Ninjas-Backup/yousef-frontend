@@ -145,6 +145,8 @@ export default function AddProductPage() {
     userLimit?.promotionCredits && userLimit.promotionCredits > 0;
   const needsPayment = formData.isPromoted && !hasPromotionCredit;
   console.log(needsPayment, "payment need ");
+  const freeProductsLeft = userLimit?.freeProductsRemaining || 0;
+  console.log(freeProductsLeft, "product left............");
   const needsMonthlySubscription =
     formData.plan === "MONTHLY" && !userLimit?.hasProductMonthly;
   const needsPayPer =
@@ -304,6 +306,8 @@ export default function AddProductPage() {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
+            
+                <SelectItem value="no plan">free</SelectItem>
                 <SelectItem value="MONTHLY">Monthly</SelectItem>
                 <SelectItem value="PAY_PER">Pay Per</SelectItem>
               </SelectContent>

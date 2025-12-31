@@ -13,6 +13,7 @@ export interface User {
   email: string;
   role: UserRole;
   avatar?: string;
+  isVerified?: boolean;
 }
 
 // Auth context type
