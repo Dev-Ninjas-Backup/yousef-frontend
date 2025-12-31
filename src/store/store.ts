@@ -3,6 +3,7 @@ import { setupListeners } from '@reduxjs/toolkit/query';
 import { apiSlice } from './api/apiSlice';
 import { userApi } from './api/userApi';
 import { accountSettingsApi } from './api/accountSettingsApi';
+import { sparePartsApi } from './api/sparePartsApi';
 import authSlice from './slices/authSlice';
 
 export const store = configureStore({
@@ -11,12 +12,14 @@ export const store = configureStore({
     [apiSlice.reducerPath]: apiSlice.reducer,
     [userApi.reducerPath]: userApi.reducer,
     [accountSettingsApi.reducerPath]: accountSettingsApi.reducer,
+    [sparePartsApi.reducerPath]: sparePartsApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
       apiSlice.middleware, 
       userApi.middleware,
-      accountSettingsApi.middleware
+      accountSettingsApi.middleware,
+      sparePartsApi.middleware
     ),
 });
 
