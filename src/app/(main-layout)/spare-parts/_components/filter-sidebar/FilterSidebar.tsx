@@ -3,28 +3,39 @@
 import { Funnel, ChevronDown } from "lucide-react";
 import { useState } from "react";
 
+interface FilterSidebarProps {
+  currentCategory: string;
+  currentCondition: string;
+  onCategoryChange: (category: string) => void;
+  onConditionChange: (condition: string) => void;
+  onClearFilters: () => void;
+}
+
 const categories = [
-  "All Parts",
-  "Engine Parts",
-  "Brakes",
-  "Suspension",
-  "Electrical",
-  "Filters",
-  "Batteries",
-  "Belts & Hoses",
-  "Fluids",
+  { id: "engine", label: "Engine Parts" },
+  { id: "brakes", label: "Brakes" },
+  { id: "suspension", label: "Suspension" },
+  { id: "electrical", label: "Electrical" },
+  { id: "transmission", label: "Transmission" },
+  { id: "exhaust", label: "Exhaust" },
+  { id: "cooling", label: "Cooling System" },
 ];
 
-const conditions = ["New", "Used - Like New", "Used - Good", "Refurbished"];
+const conditions = [
+  { id: "new", label: "New" },
+  { id: "used", label: "Used" },
+  { id: "refurbished", label: "Refurbished" },
+];
 
-export default function FilterSidebar() {
-  const [selectedCategory, setSelectedCategory] = useState("All Parts");
+export default function FilterSidebar({
+  currentCategory,
+  currentCondition,
+  onCategoryChange,
+  onConditionChange,
+  onClearFilters,
+}: FilterSidebarProps) {
   const [isOpen, setIsOpen] = useState(false);
-
-  const handleCategorySelect = (category: string) => {
-    setSelectedCategory(category);
-    setIsOpen(false);
-  };
+  const hasActiveFilters = currentCategory !== "all" || currentCondition !== "all";
 
   return (
     <>
@@ -44,26 +55,39 @@ export default function FilterSidebar() {
       <aside className={`w-full lg:w-64 bg-white rounded-lg p-6 shadow-sm h-fit lg:sticky lg:top-4 ${
         isOpen ? "block" : "hidden lg:block"
       }`}>
-        <div className="hidden lg:flex items-center gap-2 mb-4">
-          <Funnel className="h-5 w-5 text-gray-700" />
-          <h3 className="font-semibold text-lg text-gray-900">Filters</h3>
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <Funnel className="h-5 w-5 text-gray-700" />
+            <h3 className="font-semibold text-lg text-gray-900">Filters</h3>
+          </div>
+          {hasActiveFilters && (
+            <button
+              onClick={onClearFilters}
+              className="text-xs text-blue-600 hover:text-blue-700"
+            >
+              Clear All
+            </button>
+          )}
         </div>
-        <hr className="hidden lg:block my-2" />
+        <hr className="my-2" />
         <div className="space-y-6">
           <div>
             <h4 className="font-semibold mb-3 text-gray-900">Category</h4>
             <div className="space-y-1">
               {categories.map((category) => (
                 <button
-                  key={category}
-                  onClick={() => handleCategorySelect(category)}
+                  key={category.id}
+                  onClick={() => {
+                    console.log("Category clicked:", category.id);
+                    onCategoryChange(category.id);
+                  }}
                   className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors ${
-                    selectedCategory === category
+                    currentCategory === category.id
                       ? "bg-blue-50 text-blue-600 font-medium"
                       : "text-gray-700 hover:bg-gray-50"
                   }`}
                 >
-                  {category}
+                  {category.label}
                 </button>
               ))}
             </div>
@@ -75,11 +99,18 @@ export default function FilterSidebar() {
             <div className="space-y-1">
               {conditions.map((condition) => (
                 <button
-                  key={condition}
-                  onClick={() => setIsOpen(false)}
-                  className="w-full text-left px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                  key={condition.id}
+                  onClick={() => {
+                    console.log("Condition clicked:", condition.id);
+                    onConditionChange(condition.id);
+                  }}
+                  className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors ${
+                    currentCondition === condition.id
+                      ? "bg-blue-50 text-blue-600 font-medium"
+                      : "text-gray-700 hover:bg-gray-50"
+                  }`}
                 >
-                  {condition}
+                  {condition.label}
                 </button>
               ))}
             </div>

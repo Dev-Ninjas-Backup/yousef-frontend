@@ -6,130 +6,115 @@ import SearchSection from "./_components/search-section/SearchSection";
 import ProductCard from "./_components/product-card/ProductCard";
 import SellCTA from "./_components/sell-cta/SellCTA";
 import FilterSidebar from "./_components/filter-sidebar/FilterSidebar";
+import Pagination from "./_components/pagination/Pagination";
+import LoadingSpinner from "./_components/loading/LoadingSpinner";
+import ErrorMessage from "./_components/error/ErrorMessage";
 import SellPartsForm from "./_components/sell-parts/SellPartsForm";
 import PaymentDialog from "./_components/sell-parts/PaymentDialog";
 import DuplicateDialog from "./_components/sell-parts/DuplicateDialog";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import ProductImage from "@/assets/spareparts/product/productImage.jpg";
-
-const products = [
-  {
-    id: 1,
-    image: ProductImage,
-    title: "Serpentine Belt Kit with Tensioner",
-    price: 45.99,
-    condition: "New" as const,
-    category: "Gates",
-    seller: "Engine Parts Pro",
-    isNew: true,
-  },
-  {
-    id: 2,
-    image: ProductImage,
-    title: "Serpentine Belt Kit with Tensioner",
-    price: 45.99,
-    condition: "Used" as const,
-    category: "Gates",
-    seller: "Engine Parts Pro",
-    isNew: false,
-  },
-  {
-    id: 3,
-    image: ProductImage,
-    title: "Serpentine Belt Kit with Tensioner",
-    price: 45.99,
-    condition: "New" as const,
-    category: "Gates",
-    seller: "Engine Parts Pro",
-    isNew: true,
-  },
-  {
-    id: 4,
-    image: ProductImage,
-    title: "Serpentine Belt Kit with Tensioner",
-    price: 45.99,
-    condition: "New" as const,
-    category: "Gates",
-    seller: "Engine Parts Pro",
-    isNew: false,
-  },
-  {
-    id: 5,
-    image: ProductImage,
-    title: "Serpentine Belt Kit with Tensioner",
-    price: 45.99,
-    condition: "Used" as const,
-    category: "Gates",
-    seller: "Engine Parts Pro",
-    isNew: false,
-  },
-  {
-    id: 6,
-    image: ProductImage,
-    title: "Serpentine Belt Kit with Tensioner",
-    price: 45.99,
-    condition: "New" as const,
-    category: "Gates",
-    seller: "Engine Parts Pro",
-    isNew: true,
-  },
-  {
-    id: 7,
-    image: ProductImage,
-    title: "Serpentine Belt Kit with Tensioner",
-    price: 45.99,
-    condition: "New" as const,
-    category: "Gates",
-    seller: "Engine Parts Pro",
-    isNew: false,
-  },
-  {
-    id: 8,
-    image: ProductImage,
-    title: "Serpentine Belt Kit with Tensioner",
-    price: 45.99,
-    condition: "Used" as const,
-    category: "Gates",
-    seller: "Engine Parts Pro",
-    isNew: false,
-  },
-  {
-    id: 9,
-    image: ProductImage,
-    title: "Serpentine Belt Kit with Tensioner",
-    price: 45.99,
-    condition: "New" as const,
-    category: "Gates",
-    seller: "Engine Parts Pro",
-    isNew: true,
-  },
-];
+import { useSparePartsManagement } from "./_components/useSparePartsManagement";
 
 export default function SparePartsPage() {
   const [sellFormOpen, setSellFormOpen] = useState(false);
   const [paymentOpen, setPaymentOpen] = useState(false);
   const [duplicateOpen, setDuplicateOpen] = useState(false);
 
+  const {
+    products,
+    pagination,
+    isLoading,
+    error,
+    filters,
+    handleSearch,
+    handleCategoryFilter,
+    handleConditionFilter,
+    handlePageChange,
+    clearFilters,
+  } = useSparePartsManagement();
+
+  console.log("Page.tsx - Current filters:", filters);
+  console.log("Page.tsx - Products count:", products.length);
+
   return (
     <div className="min-h-screen">
       <SparePartsHero onSellClick={() => setSellFormOpen(true)} />
-      <SearchSection />
+      
+      <SearchSection
+        onSearch={(searchTerm) => {
+          console.log("Page.tsx - Search called with:", searchTerm);
+          handleSearch(searchTerm);
+        }}
+        onCategoryChange={(category) => {
+          console.log("Page.tsx - Category change called with:", category);
+          handleCategoryFilter(category);
+        }}
+        onConditionChange={(condition) => {
+          console.log("Page.tsx - Condition change called with:", condition);
+          handleConditionFilter(condition);
+        }}
+        currentSearch={filters.search || ""}
+        currentCategory={filters.category || ""}
+        currentCondition={filters.condition || ""}
+      />
 
       <section className="md:py-12">
         <div className="container mx-auto px-4">
           <div className="flex flex-col lg:flex-row gap-8">
-            <FilterSidebar />
+            <FilterSidebar
+              currentCategory={filters.category || ""}
+              currentCondition={filters.condition || ""}
+              onCategoryChange={handleCategoryFilter}
+              onConditionChange={handleConditionFilter}
+              onClearFilters={clearFilters}
+            />
 
             <div className="flex-1">
-              <div className="mb-6">
-                <p className="text-gray-600">9 products found</p>
-              </div>
+              {isLoading ? (
+                <LoadingSpinner />
+              ) : error ? (
+                <ErrorMessage />
+              ) : (
+                <>
+                  <div className="mb-6">
+                    <p className="text-gray-600">
+                      {pagination?.total || 0} products found
+                      {filters.search && (
+                        <span className="ml-2">
+                          for "{filters.search}"
+                        </span>
+                      )}
+                    </p>
+                  </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {products.map((product) => (
-                  <ProductCard key={product.id} {...product} />
-                ))}
-              </div>
+                  {products.length > 0 ? (
+                    <>
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {products.map((product) => (
+                          <ProductCard key={product.id} product={product} />
+                        ))}
+                      </div>
+
+                      {pagination && pagination.totalPages > 1 && (
+                        <Pagination
+                          currentPage={pagination.page}
+                          totalPages={pagination.totalPages}
+                          onPageChange={handlePageChange}
+                        />
+                      )}
+                    </>
+                  ) : (
+                    <div className="text-center py-12">
+                      <div className="text-gray-500 text-lg mb-2">
+                        No products found
+                      </div>
+                      <div className="text-gray-400">
+                        Try adjusting your search or filters
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -154,3 +139,5 @@ export default function SparePartsPage() {
     </div>
   );
 }
+
+
