@@ -1,5 +1,6 @@
 "use client";
 
+import GarageInformation from "./_components/GarageInformation/GarageInformation";
 import NotificationSettings from "./_components/NotificationSettings/NotificationSettings";
 
 export default function ProfileSettingsPage() {
@@ -14,7 +15,7 @@ export default function ProfileSettingsPage() {
         </p>
       </div>
 
-      {/* <GarageInformation /> */}
+      <GarageInformation />
       <NotificationSettings />
     </div>
   );
