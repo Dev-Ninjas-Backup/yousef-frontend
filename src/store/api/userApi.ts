@@ -5,8 +5,8 @@ const baseQueryWithAuth = fetchBaseQuery({
   baseUrl: process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000",
   prepareHeaders: (headers, { getState }) => {
     const token = (getState() as RootState).auth.token;
-    console.log('🔑 Auth Token:', token ? 'Present' : 'Missing');
-    console.log('🌍 API Base URL:', process.env.NEXT_PUBLIC_API_URL);
+    console.log("🔑 Auth Token:", token ? "Present" : "Missing");
+    console.log("🌍 API Base URL:", process.env.NEXT_PUBLIC_API_URL);
     if (token) {
       headers.set("authorization", `Bearer ${token}`);
     }
@@ -68,18 +68,18 @@ export const userApi = createApi({
       void
     >({
       query: () => {
-        console.log('🔍 Fetching user profile...');
+        console.log("🔍 Fetching user profile...");
         return {
           url: "/user/me/profile",
           method: "GET",
         };
       },
       transformErrorResponse: (response: any) => {
-        console.error('❌ Profile API Error:', response);
+        console.error("❌ Profile API Error:", response);
         return response;
       },
       transformResponse: (response: any) => {
-        console.log('✅ Profile API Success:', response);
+        console.log("✅ Profile API Success:", response);
         return response;
       },
       providesTags: ["Profile"],
@@ -115,8 +115,9 @@ export const userApi = createApi({
             ...response,
             data: {
               ...response.data,
-              message: "File upload service is temporarily unavailable. Please try again later or contact support."
-            }
+              message:
+                "File upload service is temporarily unavailable. Please try again later or contact support.",
+            },
           };
         }
         return response;
