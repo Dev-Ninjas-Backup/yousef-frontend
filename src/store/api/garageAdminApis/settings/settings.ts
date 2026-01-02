@@ -7,6 +7,8 @@ export interface NotificationSettingsResponse {
   productApprovalNotification: boolean;
 }
 
+
+
 enum NotificationToggleEndpoint {
   Email = "/garage-admin-settings/email-notification",
   CustomerInquiry = "/garage-admin-settings/customer-inquiry-alert",
