@@ -91,7 +91,10 @@ export default function SearchSection({
             </div>
 
             <div className="flex-1">
-              <Select value={currentCategory} onValueChange={handleCategoryChange}>
+              <Select
+                value={currentCategory}
+                onValueChange={handleCategoryChange}
+              >
                 <SelectTrigger className="h-12 border-gray-300">
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
@@ -106,7 +109,10 @@ export default function SearchSection({
             </div>
 
             <div className="flex-1">
-              <Select value={currentCondition} onValueChange={handleConditionChange}>
+              <Select
+                value={currentCondition}
+                onValueChange={handleConditionChange}
+              >
                 <SelectTrigger className="h-12 border-gray-300">
                   <SelectValue placeholder="Select condition" />
                 </SelectTrigger>
