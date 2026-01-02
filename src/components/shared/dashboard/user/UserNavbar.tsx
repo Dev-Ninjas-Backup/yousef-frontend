@@ -2,17 +2,27 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { LuArrowLeft, LuUser, LuSettings, LuWrench } from "react-icons/lu";
+import {
+  LuArrowLeft,
+  LuUser,
+  LuSettings,
+  LuWrench,
+  LuCreditCard,
+  LuPackage,
+} from "react-icons/lu";
 import path from "path";
 
-type TabType = "profile" | "settings" | "spare-parts";
+type TabType = "profile" | "settings" | "spare-parts" | "my-products";
 
 interface UserNavbarProps {
   activeTab?: TabType;
   onTabChange?: (tab: TabType) => void;
 }
 
-const UserNavbar = ({ activeTab = "profile", onTabChange }: UserNavbarProps) => {
+const UserNavbar = ({
+  activeTab = "profile",
+  onTabChange,
+}: UserNavbarProps) => {
   const [selectedTab, setSelectedTab] = useState<TabType>(activeTab);
 
   const handleTabClick = (tab: TabType) => {
@@ -38,6 +48,12 @@ const UserNavbar = ({ activeTab = "profile", onTabChange }: UserNavbarProps) => 
       label: "Spare Parts",
       icon: LuWrench,
       path: "/user/spare-parts",
+    },
+    {
+      id: "my-products" as TabType,
+      label: "My Products",
+      icon: LuPackage,
+      path: "/user/my-products",
     },
   ];
 
@@ -77,9 +93,7 @@ const UserNavbar = ({ activeTab = "profile", onTabChange }: UserNavbarProps) => 
                 key={tab.id}
                 onClick={() => handleTabClick(tab.id)}
                 className={`inline-flex items-center gap-2 px-4 py-3 text-sm font-medium whitespace-nowrap transition-all ${
-                  isActive
-                    ? "bg-white p-1 rounded-full"
-                    : "text-black"
+                  isActive ? "bg-white p-1 rounded-full" : "text-black"
                 }`}
               >
                 <Icon className="w-4 h-4" />

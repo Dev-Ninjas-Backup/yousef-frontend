@@ -37,7 +37,7 @@ export interface ProductsParams {
 export const sparePartsApi = createApi({
   reducerPath: "sparePartsApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: "/api",
+    baseUrl: process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000",
     prepareHeaders: (headers, { getState }) => {
       const token = (getState() as any).auth.token;
       if (token) {

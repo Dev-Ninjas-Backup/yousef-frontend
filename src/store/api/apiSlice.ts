@@ -31,7 +31,6 @@ export const apiSlice = createApi({
     "SubscriptionCurrentPlan",
     "SubscriptionTransactionHistory",
     "GarageAdminNotificationSettings",
-
     "PromotionalAd",
     "PaymentConfig",
     "Financials",
