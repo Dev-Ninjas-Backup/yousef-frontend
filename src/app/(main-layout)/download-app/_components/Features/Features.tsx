@@ -2,25 +2,28 @@
 import React from "react";
 import Image from "next/image";
 import feature_img from "@/assets/download-app/features/feature_img.png";
+import { useLanguage } from "@/context/LanguageContext";
+import { downloadAppTranslations } from "@/translations/downloadApp";
 
 const Features: React.FC = () => {
+  const { t } = useLanguage();
+  const trans = t(downloadAppTranslations);
+
   return (
     <section className="py-10 md:py-15 bg-white">
       <div className="container mx-auto px-4 max-w-7xl">
-        {/* Header */}
         <div className="text-center mb-12 space-y-4">
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900">
-            "Whatever Your <span className="text-blue-600">Car</span> Needs,
+            "{trans.features.title1} <span className="text-blue-600">{trans.features.titleHighlight1}</span> {trans.features.title2}
           </h2>
           <h3 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900">
-            We're <span className="text-blue-600">Here</span> to Make It Happen."
+            {trans.features.title3} <span className="text-blue-600">{trans.features.titleHighlight2}</span> {trans.features.title4}"
           </h3>
           
           <p className="text-gray-600 text-lg md:text-xl max-w-3xl mx-auto mt-6">
-            Sayarahub is a smart automotive platform designed for car owners and service providers across the UAE. It focuses on user convenience, trusted connections, and high-quality vehicle care — all in one place.
+            {trans.features.description}
           </p>
 
-          {/* App Store Buttons */}
           <div className="flex items-center justify-center gap-4 mt-8">
             <button className="h-12 md:h-14">
               <img 
@@ -39,7 +42,6 @@ const Features: React.FC = () => {
           </div>
         </div>
 
-        {/* Phone Mockups */}
         <div className="mt-12">
           <Image
             src={feature_img}

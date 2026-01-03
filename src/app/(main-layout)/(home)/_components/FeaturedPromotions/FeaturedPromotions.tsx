@@ -8,6 +8,8 @@ import bmwimg from "@/assets/home/FeaturedPromotions/featured-bmw-service.png";
 import marcedesimg from "@/assets/home/FeaturedPromotions/featured-marcedes.jpg";
 import spedoGarageimg from "@/assets/home/FeaturedPromotions/featured-spedogarage.jpg";
 import bmwbrakeimg from "@/assets/home/FeaturedPromotions/featured-garage-dubai.png";
+import { useLanguage } from "@/context/LanguageContext";
+import { featuredPromotionsTranslations } from "@/translations/featuredPromotions";
 
 const promotions = [
   {
@@ -58,6 +60,8 @@ const promotions = [
 ];
 
 const FeaturedPromotions: React.FC = () => {
+  const { t } = useLanguage();
+  const trans = t(featuredPromotionsTranslations);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [direction, setDirection] = useState<"left" | "right">("right");
 
@@ -88,13 +92,13 @@ const FeaturedPromotions: React.FC = () => {
       <div className="text-center mb-6 md:mb-8">
         <div className="inline-flex items-center gap-2 bg-[#0D6EFD] text-white px-4 py-2 rounded-md mb-4 text-sm md:text-base">
           <Tag className="w-4 h-4" />
-          <span className="font-semibold">Featured Coming Soon</span>
+          <span className="font-semibold">{trans.badge}</span>
         </div>
         <h2 className="text-base mb-2 text-[#101828]">
-          Exclusive Offers & Featured Services
+          {trans.title}
         </h2>
         <p className="text-base text-gray-600">
-          Discover top-rated garages and exclusive deals on spare parts
+          {trans.subtitle}
         </p>
       </div>
 
@@ -123,7 +127,7 @@ const FeaturedPromotions: React.FC = () => {
                       </span>
                       <span className="inline-flex items-center gap-1 bg-white text-black px-2 md:px-3 py-2 rounded-full text-xs md:text-sm">
                         <Clock className="w-3 h-3" />
-                        Valid until {promo.validUntil}
+                        {trans.validUntil} {promo.validUntil}
                       </span>
                     </div>
                     <h3 className=" font-bold mb-2 md:mb-3">{promo.title}</h3>
@@ -131,7 +135,7 @@ const FeaturedPromotions: React.FC = () => {
                       {promo.description}
                     </p>
                     <Button className="bg-blue-600 hover:bg-blue-700 w-fit px-6 md:px-8 py-4 md:py-6 rounded-lg text-sm ">
-                      Show Details
+                      {trans.showDetails}
                     </Button>
                   </div>
                 </div>
@@ -203,7 +207,7 @@ const FeaturedPromotions: React.FC = () => {
                   ))}
                 </div>
                 <span className="text-[9px] md:text-xs text-gray-500">
-                  (4.61 89 reviews)
+                  (4.61 89 {trans.reviews})
                 </span>
               </div>
             </div>

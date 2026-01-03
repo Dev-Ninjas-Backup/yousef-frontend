@@ -1,0 +1,36 @@
+export const serviceDetailsTranslations = {
+  en: {
+    seeLocation: "See location",
+    operatingHours: "Operating Hours",
+    open: "Open",
+    closed: "Closed",
+    servicesOffered: "Services Offered",
+    garageOverview: "Garage Overview",
+    locationMap: "Location & Map",
+    services: {
+      acService: "AC Service",
+      batteryReplacement: "Battery Replacement",
+      tires: "Tires",
+      engineDiagnostics: "Engine Diagnostics",
+      electrical: "Electrical",
+      spares: "Spares",
+    },
+  },
+  ar: {
+    seeLocation: "عرض الموقع",
+    operatingHours: "ساعات العمل",
+    open: "مفتوح",
+    closed: "مغلق",
+    servicesOffered: "الخدمات المقدمة",
+    garageOverview: "نظرة عامة على الورشة",
+    locationMap: "الموقع والخريطة",
+    services: {
+      acService: "خدمة التكييف",
+      batteryReplacement: "استبدال البطارية",
+      tires: "الإطارات",
+      engineDiagnostics: "تشخيص المحرك",
+      electrical: "الكهرباء",
+      spares: "قطع الغيار",
+    },
+  },
+};
