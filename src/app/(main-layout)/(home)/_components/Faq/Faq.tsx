@@ -23,7 +23,7 @@ const Faq: React.FC = () => {
           </div>
 
           <Accordion type="single" collapsible className="space-y-4  ">
-            {trans.faqs.map((faq, index) => (
+            {trans.faqs.map((faq: any, index: number) => (
               <FaqItem
                 key={`item-${index + 1}`}
                 id={`item-${index + 1}`}

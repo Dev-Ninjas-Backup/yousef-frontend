@@ -62,7 +62,7 @@ export default function StatsSection() {
               {trans.stats.title}
             </h2>
             <div className="space-y-4 text-gray-700 leading-relaxed mb-8">
-              {trans.stats.content.map((paragraph, index) => (
+              {trans.stats.content.map((paragraph: any, index: number) => (
                 <p key={index}>{paragraph}</p>
               ))}
             </div>

@@ -21,7 +21,7 @@ const HowItWorks: React.FC = () => {
 
         <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-16 md:gap-8 relative">
-            {trans.howItWorks.steps.map((step, index) => (
+            {trans.howItWorks.steps.map((step: any, index: number) => (
               <div
                 key={index}
                 className="flex flex-col items-center text-center relative"

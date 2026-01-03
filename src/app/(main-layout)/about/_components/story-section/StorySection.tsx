@@ -44,7 +44,7 @@ export default function StorySection() {
               {trans.story.ourStory}
             </h2>
             <div className="space-y-4 text-gray-700 text-sm md:text-xl leading-relaxed">
-              {trans.story.storyContent.map((paragraph, index) => (
+              {trans.story.storyContent.map((paragraph: any, index: number) => (
                 <p key={index}>{paragraph}</p>
               ))}
             </div>
@@ -76,9 +76,13 @@ export default function StorySection() {
               {trans.story.ourMission}
             </h2>
             <div className="text-gray-700 text-sm md:text-xl leading-relaxed">
-              {trans.story.missionContent.map((paragraph, index) => (
-                <p key={index} className={index > 0 ? "mt-4" : ""}>{paragraph}</p>
-              ))}
+              {trans.story.missionContent.map(
+                (paragraph: any, index: number) => (
+                  <p key={index} className={index > 0 ? "mt-4" : ""}>
+                    {paragraph}
+                  </p>
+                )
+              )}
             </div>
           </div>
         </div>
@@ -90,9 +94,11 @@ export default function StorySection() {
               {trans.story.ourVision}
             </h2>
             <div className="space-y-4 text-gray-700 text-sm md:text-xl leading-relaxed">
-              {trans.story.visionContent.map((paragraph, index) => (
-                <p key={index}>{paragraph}</p>
-              ))}
+              {trans.story.visionContent.map(
+                (paragraph: any, index: number) => (
+                  <p key={index}>{paragraph}</p>
+                )
+              )}
             </div>
           </div>
           <div className="rounded-lg overflow-hidden shadow-lg">
