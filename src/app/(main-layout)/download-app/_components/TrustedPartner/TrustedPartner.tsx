@@ -1,20 +1,24 @@
+"use client";
 import React from "react";
 import { Button } from "@/components/ui/button";
-import img1 from "@/assets/download-app/trustedpartner/trusted_1.svg";
-import img2 from "@/assets/download-app/trustedpartner/trusted_2.svg";
 import img3 from "@/assets/download-app/trustedpartner/top-img.png";
 import img4 from "@/assets/download-app/trustedpartner/bottom-img.png";
+import { useLanguage } from "@/context/LanguageContext";
+import { downloadAppTranslations } from "@/translations/downloadApp";
 
 const TrustedPartner: React.FC = () => {
+  const { t } = useLanguage();
+  const trans = t(downloadAppTranslations);
+
   return (
     <section className="py-12 md:py-16 lg:py-20">
       <div className="container mx-auto px-4 sm:px-6 max-w-7xl text-center md:text-start">
         <div className="text-center mb-8 md:mb-12 space-y-3">
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900">
-            Trusted Partner for Smarter Car Care
+            {trans.trustedPartner.title}
           </h2>
           <p className="text-gray-600 text-base sm:text-lg max-w-2xl mx-auto">
-            Discover garages, request towing, and book services, all from one powerful platform. Download SayaraHub today and simplify your drive.
+            {trans.trustedPartner.subtitle}
           </p>
         </div>
 
@@ -22,13 +26,13 @@ const TrustedPartner: React.FC = () => {
           <div className="grid lg:grid-cols-2 items-center h-full">
             <div className="text-white flex flex-col justify-center items-center md:items-start space-y-4 md:space-y-6 md:p-12 p-6 h-full">
               <h3 className="text-2xl md:text-3xl lg:text-4xl font-bold">
-                Download <span className="italic">SayaraHub</span>
+                {trans.trustedPartner.downloadTitle} <span className="italic">{trans.trustedPartner.downloadTitleItalic}</span>
               </h3>
               <p className="text-blue-50 text-sm md:text-base lg:text-lg leading-relaxed">
-                With SayaraHub, users can easily find nearby garages, book repair or maintenance services, request car pickup and towing, or buy and sell spare parts securely. Every feature is built to ensure reliability, transparency, and comfort for both car owners and service professionals.
+                {trans.trustedPartner.description}
               </p>
               <Button className="bg-gray-900 hover:bg-gray-800 max-w-[200px] text-white px-6 md:px-8 py-4 md:py-6 rounded-lg text-sm md:text-base w-full sm:w-auto">
-                Download Now
+                {trans.trustedPartner.downloadButton}
               </Button>
             </div>
 

@@ -2,6 +2,7 @@ import React from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { useLanguage, t } from "@/components/GoogleTranslationAPI";
 
 interface OtpFormProps {
   email: string;
@@ -22,14 +23,16 @@ export default function OtpForm({
   handleVerifyOtp,
   onBack,
 }: OtpFormProps) {
+  const lang = useLanguage();
+
   return (
     <div className="space-y-4">
       <div className="text-center mb-6">
         <h3 className="text-lg font-semibold text-gray-900 mb-2">
-          Verify Your Email
+          {t('Verify Your Email', lang)}
         </h3>
         <p className="text-sm text-gray-600">
-          We've sent a 6-digit code to {email}
+          {t("We've sent a 6-digit code to", lang)} {email}
         </p>
       </div>
 
@@ -41,7 +44,7 @@ export default function OtpForm({
 
       <div className="space-y-2">
         <Label htmlFor="otp" className="text-sm font-medium text-gray-700">
-          Enter OTP
+          {t('Enter OTP', lang)}
         </Label>
         <Input
           id="otp"
@@ -56,14 +59,14 @@ export default function OtpForm({
 
       <div className="flex gap-3">
         <Button onClick={onBack} variant="outline" className="flex-1 h-11">
-          Back
+          {t('Back', lang)}
         </Button>
         <Button
           onClick={handleVerifyOtp}
           disabled={!otp || otp.length !== 6 || isVerifying}
           className="flex-1 bg-black hover:bg-gray-800 text-white h-11 font-medium disabled:opacity-50"
         >
-          {isVerifying ? "Verifying..." : "Verify OTP"}
+          {isVerifying ? t('Verifying...', lang) : t('Verify OTP', lang)}
         </Button>
       </div>
     </div>

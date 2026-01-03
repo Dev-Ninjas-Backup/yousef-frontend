@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,44 +12,47 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Send } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
+import { contactTranslations } from "@/translations/contact";
 
 const GetInTouch: React.FC = () => {
+  const { t } = useLanguage();
+  const trans = t(contactTranslations);
+
   return (
     <section className="py-12 md:py-16 lg:py-20 bg-white">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
         <div className="text-center mb-10 md:mb-12 space-y-5">
           <h2 className="text-3xl sm:text-4xl md:text-6xl font-bold text-[#333333]">
-            Get in Touch
+            {trans.form.title}
           </h2>
           <p className="text-gray-600 text-base sm:text-xl max-w-2xl mx-auto">
-            Have questions or need assistance? Fill out the form below or reach
-            out to us directly, our team will get back to you as soon as
-            possible.
+            {trans.form.subtitle}
           </p>
         </div>
 
         <div className="max-w-xl mx-auto">
           <h3 className="text-xl font-bold text-[#333333] mb-6">
-            Send Us a Message
+            {trans.form.formTitle}
           </h3>
           <form className="space-y-6 border rounded-lg p-6">
             <div className="grid md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label htmlFor="firstName">First Name</Label>
+                <Label htmlFor="firstName">{trans.form.firstName}</Label>
                 <Input
                   id="firstName"
                   type="text"
-                  placeholder="First Name"
+                  placeholder={trans.form.firstName}
                   className="bg-[#F3F3F5]"
                   required
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="lastName">Last Name</Label>
+                <Label htmlFor="lastName">{trans.form.lastName}</Label>
                 <Input
                   id="lastName"
                   type="text"
-                  placeholder="Last Name"
+                  placeholder={trans.form.lastName}
                   className="bg-[#F3F3F5]"
                   required
                 />
@@ -56,35 +60,35 @@ const GetInTouch: React.FC = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{trans.form.email}</Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="john@example.com"
+                placeholder={trans.form.emailPlaceholder}
                 className="bg-[#F3F3F5]"
                 required
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="subject">Subject</Label>
+              <Label htmlFor="subject">{trans.form.subject}</Label>
               <Select>
                 <SelectTrigger id="subject" className="w-full bg-[#F3F3F5]">
-                  <SelectValue placeholder="Select a subject" />
+                  <SelectValue placeholder={trans.form.subjectPlaceholder} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="general">General Inquiry</SelectItem>
-                  <SelectItem value="support">Support</SelectItem>
-                  <SelectItem value="partnership">Partnership</SelectItem>
+                  <SelectItem value="general">{trans.form.subjects.general}</SelectItem>
+                  <SelectItem value="support">{trans.form.subjects.support}</SelectItem>
+                  <SelectItem value="partnership">{trans.form.subjects.partnership}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="message">Message</Label>
+              <Label htmlFor="message">{trans.form.message}</Label>
               <Textarea
                 id="message"
-                placeholder="Type your message here..."
+                placeholder={trans.form.messagePlaceholder}
                 className="bg-[#F3F3F5] min-h-[120px]"
                 required
               />
@@ -95,7 +99,7 @@ const GetInTouch: React.FC = () => {
               className="bg-blue-600 hover:bg-blue-700 text-white flex gap-3 justify-center items-center px-8 py-4 md:py-6 rounded-lg text-sm w-full "
             >
               <Send />
-              Send Message
+              {trans.form.sendButton}
             </Button>
           </form>
         </div>

@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Mail } from "lucide-react";
+import { useLanguage, t } from "@/components/GoogleTranslationAPI";
 
 interface ForgotPasswordFormProps {
   forgotEmail: string;
@@ -21,14 +22,16 @@ export default function ForgotPasswordForm({
   handleForgotPassword,
   onBack,
 }: ForgotPasswordFormProps) {
+  const lang = useLanguage();
+
   return (
     <div className="space-y-4">
       <div className="text-center mb-6">
         <h3 className="text-lg font-semibold text-gray-900 mb-2">
-          Reset Your Password
+          {t('Reset Your Password', lang)}
         </h3>
         <p className="text-sm text-gray-600">
-          Enter your email address and we'll send you a reset code
+          {t("Enter your email address and we'll send you a reset code", lang)}
         </p>
       </div>
 
@@ -40,14 +43,14 @@ export default function ForgotPasswordForm({
 
       <div className="space-y-2">
         <Label htmlFor="forgotEmail" className="text-sm font-medium text-gray-700">
-          Email Address
+          {t('Email Address', lang)}
         </Label>
         <div className="relative">
           <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
           <Input
             id="forgotEmail"
             type="email"
-            placeholder="Enter your email"
+            placeholder={t('Enter your email', lang)}
             value={forgotEmail}
             onChange={(e) => setForgotEmail(e.target.value)}
             className="pl-10 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
@@ -57,14 +60,14 @@ export default function ForgotPasswordForm({
 
       <div className="flex gap-3">
         <Button onClick={onBack} variant="outline" className="flex-1 h-11">
-          Back
+          {t('Back', lang)}
         </Button>
         <Button
           onClick={handleForgotPassword}
           disabled={!forgotEmail || isForgotLoading}
           className="flex-1 bg-black hover:bg-gray-800 text-white h-11 font-medium disabled:opacity-50"
         >
-          {isForgotLoading ? "Sending..." : "Send Reset Code"}
+          {isForgotLoading ? t('Sending...', lang) : t('Send Reset Code', lang)}
         </Button>
       </div>
     </div>

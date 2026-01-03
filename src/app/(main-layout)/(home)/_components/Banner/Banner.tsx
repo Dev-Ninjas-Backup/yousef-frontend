@@ -1,11 +1,17 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import applestore from "@/assets/home/banner/apple_store.svg";
 import playstore from "@/assets/home/banner/playstore.svg";
+import { useLanguage } from "@/context/LanguageContext";
+import { bannerTranslations } from "@/translations/banner";
 
 const HeroBanner: React.FC = () => {
+  const { t } = useLanguage();
+  const trans = t(bannerTranslations);
   return (
     <section className="relative w-full h-[500px]  md:h-[700px] lg:h-[900px] overflow-hidden pt-10 md:pt-0">
       <div className="absolute inset-0 z-0">
@@ -25,20 +31,19 @@ const HeroBanner: React.FC = () => {
       <div className="relative container mx-auto z-10 flex items-center h-full px-4">
         <div className="max-w-4xl">
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight">
-            Next-Generation
+            {trans.title1}
           </h2>
           <h3 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
-            <span className="text-blue-500">Automotive</span>
+            <span className="text-blue-500">{trans.title2}</span>
           </h3>
           <h3 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 md:mb-6 leading-tight">
-            Platform
+            {trans.title3}
           </h3>
 
           <p className="text-sm sm:text-base md:text-lg lg:text-2xl text-gray-200 mb-6 md:mb-8 leading-relaxed">
-            Transform your car care experience with{" "}
-            <span className="text-white font-semibold">SayaraHub</span>. Access
-            trusted garages, mobile mechanics, emergency services, and spare
-            parts marketplace, all in one powerful app.
+            {trans.description}{" "}
+            <span className="text-white font-semibold">{trans.appName}</span>
+            {trans.descriptionContinue}
           </p>
 
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 md:gap-6">
@@ -54,10 +59,10 @@ const HeroBanner: React.FC = () => {
                 />
                 <div className="text-left">
                   <div className="text-xs sm:text-sm text-gray-600">
-                    Download on the
+                    {trans.downloadOn}
                   </div>
                   <div className="text-lg sm:text-xl font-semibold">
-                    App Store
+                    {trans.appStore}
                   </div>
                 </div>
               </Link>
@@ -75,10 +80,10 @@ const HeroBanner: React.FC = () => {
                 />
                 <div className="text-left">
                   <div className="text-xs sm:text-sm text-gray-600">
-                    Download on the
+                    {trans.downloadOn}
                   </div>
                   <div className="text-lg sm:text-xl font-semibold">
-                    Play Store
+                    {trans.playStore}
                   </div>
                 </div>
               </Link>

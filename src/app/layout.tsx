@@ -6,6 +6,7 @@ import { AuthProvider } from "@/context/AuthContext";
 import { ReduxProvider } from "@/providers/ReduxProvider";
 import {ToastContainer} from "react-toastify"
 import { Toaster } from "@/components/ui/sonner";
+import GoogleTranslationAPI from "@/components/GoogleTranslationAPI";
 
 
 const geistSans = Geist({
@@ -37,6 +38,7 @@ export default function RootLayout({
           src="https://accounts.google.com/gsi/client"
           strategy="afterInteractive"
         />
+        <GoogleTranslationAPI />
         <ReduxProvider>
           <ToastContainer />
           <AuthProvider>

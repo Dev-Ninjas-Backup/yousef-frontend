@@ -1,36 +1,39 @@
+"use client";
 import Image from "next/image";
 import { ShieldCheck, Users, Wrench, Clock } from "lucide-react";
 import OurStory from "@/assets/about/story/our_story.jpg";
 import OurMission from "@/assets/about/story/our_mission.jpg";
 import OurVision from "@/assets/about/story/our_vision.jpg";
 import Empowering from "@/assets/about/story/empowering.jpg";
-
-const features = [
-  {
-    icon: ShieldCheck,
-    title: "Verified & Trusted",
-    description:
-      "Every garage on the platform is verified to ensure quality and reliability",
-  },
-  {
-    icon: Users,
-    title: "User-Centric",
-    description: "Transparent with user reviews and service providers in one",
-  },
-  {
-    icon: Wrench,
-    title: "Instant Connection",
-    description:
-      "Easily navigate between garages, spare parts and towing services",
-  },
-  {
-    icon: Clock,
-    title: "Transparency First",
-    description: "Honest reviews, real-time updates, and open communication",
-  },
-];
+import { useLanguage } from "@/context/LanguageContext";
+import { aboutTranslations } from "@/translations/about";
 
 export default function StorySection() {
+  const { t } = useLanguage();
+  const trans = t(aboutTranslations);
+
+  const features = [
+    {
+      icon: ShieldCheck,
+      title: trans.story.features.verified.title,
+      description: trans.story.features.verified.description,
+    },
+    {
+      icon: Users,
+      title: trans.story.features.userCentric.title,
+      description: trans.story.features.userCentric.description,
+    },
+    {
+      icon: Wrench,
+      title: trans.story.features.instant.title,
+      description: trans.story.features.instant.description,
+    },
+    {
+      icon: Clock,
+      title: trans.story.features.transparency.title,
+      description: trans.story.features.transparency.description,
+    },
+  ];
   return (
     <section className="py-16 px-4 bg-white">
       <div className="max-w-7xl mx-auto space-y-16">
@@ -38,28 +41,12 @@ export default function StorySection() {
         <div className="grid md:grid-cols-2 gap-8 items-center">
           <div>
             <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mb-4">
-              Our Story
+              {trans.story.ourStory}
             </h2>
             <div className="space-y-4 text-gray-700 text-sm md:text-xl leading-relaxed">
-              <p>
-                SayaraHub was founded in 2008 with a simple mission: to provide
-                honest, reliable, and high-quality automotive service to the Los
-                Angeles community. What started as a small two-bay garage has
-                grown into a full-service automotive center trusted by thousands
-                of customers.
-              </p>
-              <p>
-                Our founder, Michael Rodriguez, brought over 25 years of
-                automotive experience and a passion for customer service. He
-                built the business on principles of transparency, quality
-                workmanship, and treating every customer like family.
-              </p>
-              <p>
-                Today, we're proud to serve over 10,000 customers annually with
-                a team of ASE-certified master technicians, state-of-the-art
-                diagnostic equipment, and a commitment to staying at the
-                forefront of automotive technology.
-              </p>
+              {trans.story.storyContent.map((paragraph, index) => (
+                <p key={index}>{paragraph}</p>
+              ))}
             </div>
           </div>
           <div className="rounded-lg overflow-hidden shadow-lg">
@@ -86,24 +73,12 @@ export default function StorySection() {
           </div>
           <div className="order-1 md:order-2">
             <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mb-4">
-              Our Mission
+              {trans.story.ourMission}
             </h2>
             <div className="text-gray-700 text-sm md:text-xl leading-relaxed">
-              <p>
-                To revolutionize the way car owners experience automotive
-                services across the UAE. We aim to create a digital ecosystem
-                where every car owner can effortlessly find trusted garages,
-                certified mechanics, towing services, and spare parts
-                all in one place. Our mission is to eliminate the hassle,
-                uncertainty, and time loss that come with traditional car
-                maintenance.
-              </p>
-              <p className="mt-4">
-                Through real-time location tracking, verified service providers,
-                and transparent pricing, SayaraHub ensures that every customer
-                receives reliable, quick, and quality-driven automotive support,
-                anytime and anywhere.
-              </p>
+              {trans.story.missionContent.map((paragraph, index) => (
+                <p key={index} className={index > 0 ? "mt-4" : ""}>{paragraph}</p>
+              ))}
             </div>
           </div>
         </div>
@@ -112,21 +87,12 @@ export default function StorySection() {
         <div className="grid md:grid-cols-2 gap-8 items-center">
           <div>
             <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mb-4">
-              Our Vision
+              {trans.story.ourVision}
             </h2>
             <div className="space-y-4 text-gray-700 text-sm md:text-xl leading-relaxed">
-              <p>
-                To become the UAE's most trusted and comprehensive automotive
-                platform connecting car owners, garages, and suppliers under one
-                digital roof. We envision a future where every vehicle service,
-                repair, or part purchase is just a few clicks away, supported by
-                innovation, technology, and customer care.
-              </p>
-              <p>
-                Our goal is to empower both customers and service providers by
-                fostering a transparent, efficient, and customer-first
-                automotive community that drives the industry forward.
-              </p>
+              {trans.story.visionContent.map((paragraph, index) => (
+                <p key={index}>{paragraph}</p>
+              ))}
             </div>
           </div>
           <div className="rounded-lg overflow-hidden shadow-lg">
@@ -153,13 +119,10 @@ export default function StorySection() {
           </div>
           <div>
             <h2 className="text-xl font-semibold text-gray-900 mb-4">
-              Empowering Drivers and Garages Alike
+              {trans.story.empowering}
             </h2>
             <p className="text-gray-700 text-sm leading-relaxed mb-6">
-              We believe in supporting both sides of the journey. Drivers seek
-              fast quality service and going garages the digital ways they need
-              to grow. From secure communication to verified listings, every
-              feature is designed with integrity and trust at its core.
+              {trans.story.empoweringContent}
             </p>
             <div className="grid sm:grid-cols-2 gap-4">
               {features.map((feature, index) => (

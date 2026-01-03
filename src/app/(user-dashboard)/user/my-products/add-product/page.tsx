@@ -441,6 +441,7 @@ export default function AddProductPage() {
                       setVerificationPreview("");
                     }}
                     className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1"
+                    title="Remove verification image"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -490,6 +491,7 @@ export default function AddProductPage() {
                     type="button"
                     onClick={() => removePhoto(index)}
                     className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1"
+                    title="Remove photo"
                   >
                     <X className="w-4 h-4" />
                   </button>

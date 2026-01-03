@@ -19,7 +19,8 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { icons } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
+import { serviceTranslations } from "@/translations/service";
 
 const garagesData = [
   {
@@ -89,6 +90,8 @@ const garagesData = [
 ];
 
 export default function GarageList() {
+  const { t } = useLanguage();
+  const trans = t(serviceTranslations);
   const [showMap, setShowMap] = useState(true);
   const [sortBy, setSortBy] = useState("distance");
   const [currentPage, setCurrentPage] = useState(1);
@@ -99,26 +102,25 @@ export default function GarageList() {
         {/* Header */}
         <div className="mb-12 flex flex-col gap-8 md:flex-row md:items-center">
           <div>
-            <h2 className="text-2xl font-bold">23 Garages Found</h2>
-            <p className="text-sm text-gray-600">Near Dubai Marina</p>
+            <h2 className="text-2xl font-bold">23 {trans.list.garagesFound}</h2>
+            <p className="text-sm text-gray-600">{trans.list.near} Dubai Marina</p>
           </div>
 
           <div className="flex flex-wrap items-center gap-4">
             {/* Sort */}
             <Select value={sortBy} onValueChange={setSortBy}>
               <SelectTrigger className="w-[180px] bg-white">
-                <SelectValue placeholder="Sort by Distance" />
+                <SelectValue placeholder={trans.list.sortBy} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="distance">Sort by Distance</SelectItem>
-                <SelectItem value="rating">Sort by Rating</SelectItem>
-                <SelectItem value="price">Sort by Price</SelectItem>
+                <SelectItem value="distance">{trans.list.sortBy}</SelectItem>
+                <SelectItem value="rating">{trans.list.sortByRating}</SelectItem>
+                <SelectItem value="price">{trans.list.sortByPrice}</SelectItem>
               </SelectContent>
             </Select>
 
-            {/* Show Map Toggle */}
             <div className="flex items-center gap-2">
-              <span className="text-sm font-medium">Show Map</span>
+              <span className="text-sm font-medium">{trans.list.showMap}</span>
               <Switch
                 checked={showMap}
                 onCheckedChange={setShowMap}

@@ -11,8 +11,13 @@ import GarageSignupForm from "./_components/GarageSignupForm";
 import OtpForm from "../user-auth/_components/OtpForm";
 import ForgotPasswordForm from "../user-auth/_components/ForgotPasswordForm";
 import ResetPasswordForm from "../user-auth/_components/ResetPasswordForm";
+import { useLanguage } from "@/context/LanguageContext";
+import { authTranslations } from "@/translations/auth";
 
 export default function GarageAuth() {
+  const { t } = useLanguage();
+  const trans = t(authTranslations);
+  
   const {
     authMode,
     setAuthMode,
@@ -84,7 +89,7 @@ export default function GarageAuth() {
                 <div className="flex items-center justify-center gap-2 mb-4 bg-blue-100 text-blue-700 rounded-full px-4 py-2">
                   <Sparkles className="h-4 w-4" />
                   <span className="text-sm font-medium">
-                    Welcome to SayaraHub
+                    {trans.common.welcomeTo}
                   </span>
                 </div>
               </div>
@@ -92,11 +97,11 @@ export default function GarageAuth() {
               <div className="text-center mb-8 text-black space-y-4">
                 <h2 className="font-semibold text-3xl md:text-4xl">
                   {authMode === "signin"
-                    ? "Sign In to Your Account"
-                    : "Create Your Account"}
+                    ? trans.common.signInTitle
+                    : trans.common.signUpTitle}
                 </h2>
                 <p className="text-lg text-[#4A5565]">
-                  Connect with trusted automotive services across the UAE
+                  {trans.common.subtitle}
                 </p>
               </div>
 
@@ -113,14 +118,14 @@ export default function GarageAuth() {
                       className="flex items-center gap-2 data-[state=active]:bg-black data-[state=active]:text-white text-gray-700 rounded-full"
                     >
                       <User className="h-4 w-4" />
-                      Car Owner
+                      {trans.common.carOwner}
                     </TabsTrigger>
                     <TabsTrigger
                       value="garage-owner"
                       className="flex items-center gap-2 data-[state=active]:bg-black data-[state=active]:text-white text-gray-700 rounded-full"
                     >
                       <Store className="h-4 w-4" />
-                      Garage Owner
+                      {trans.common.garageOwner}
                     </TabsTrigger>
                   </TabsList>
                 </Tabs>
@@ -139,7 +144,7 @@ export default function GarageAuth() {
                           : "text-gray-500 hover:text-gray-700"
                       }`}
                     >
-                      Sign In
+                      {trans.common.signIn}
                     </button>
                     <button
                       onClick={() => setAuthMode("signup")}
@@ -149,7 +154,7 @@ export default function GarageAuth() {
                           : "text-gray-500 hover:text-gray-700"
                       }`}
                     >
-                      Sign Up
+                      {trans.common.signUp}
                     </button>
                   </div>
                 </div>
@@ -245,10 +250,10 @@ export default function GarageAuth() {
 
         {/* Footer */}
         <div className="py-6 flex justify-between items-center text-xs text-gray-600">
-          <p>© 2025 SayaraHub. All rights reserved.</p>
+          <p>{trans.common.copyright}</p>
           <div className="flex items-center gap-6">
-            <button className="hover:text-gray-800">Privacy Policy</button>
-            <button className="hover:text-gray-800">Terms & Conditions</button>
+            <button className="hover:text-gray-800">{trans.common.privacyPolicy}</button>
+            <button className="hover:text-gray-800">{trans.common.termsConditions}</button>
           </div>
         </div>
       </div>

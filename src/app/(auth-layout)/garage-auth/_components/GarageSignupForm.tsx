@@ -1,3 +1,4 @@
+"use client";
 import React from 'react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -5,6 +6,8 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { User, Mail, Phone, Lock, Building, MapPin, Upload } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
+import { authTranslations } from "@/translations/auth";
 
 interface GarageSignupFormProps {
   formData: any;
@@ -25,6 +28,9 @@ const GarageSignupForm: React.FC<GarageSignupFormProps> = ({
   isRegistering,
   error
 }) => {
+  const { t } = useLanguage();
+  const trans = t(authTranslations);
+
   const serviceOptions = [
     { id: "Oil Change", label: "Oil Change" },
     { id: "Brake Repair", label: "Brake Repair" },
@@ -48,17 +54,16 @@ const GarageSignupForm: React.FC<GarageSignupFormProps> = ({
         </div>
       )}
 
-      {/* Full Name */}
       <div className="space-y-2">
         <Label htmlFor="fullName" className="text-sm font-medium text-gray-700">
-          Full Name <span className="text-red-500">*</span>
+          {trans.garage.signUp.fullNameLabel} <span className="text-red-500">{trans.garage.signUp.required}</span>
         </Label>
         <div className="relative">
           <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
           <Input
             id="fullName"
             type="text"
-            placeholder="Your full name"
+            placeholder={trans.garage.signUp.fullNamePlaceholder}
             value={formData.fullName}
             onChange={(e) => handleInputChange("fullName", e.target.value)}
             className="pl-10 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
@@ -66,17 +71,16 @@ const GarageSignupForm: React.FC<GarageSignupFormProps> = ({
         </div>
       </div>
 
-      {/* Email */}
       <div className="space-y-2">
         <Label htmlFor="email" className="text-sm font-medium text-gray-700">
-          Email <span className="text-red-500">*</span>
+          {trans.garage.signUp.emailLabel} <span className="text-red-500">{trans.garage.signUp.required}</span>
         </Label>
         <div className="relative">
           <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
           <Input
             id="email"
             type="email"
-            placeholder="your@email.com"
+            placeholder={trans.garage.signUp.emailPlaceholder}
             value={formData.email}
             onChange={(e) => handleInputChange("email", e.target.value)}
             className="pl-10 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
@@ -84,17 +88,16 @@ const GarageSignupForm: React.FC<GarageSignupFormProps> = ({
         </div>
       </div>
 
-      {/* Phone */}
       <div className="space-y-2">
         <Label htmlFor="phone" className="text-sm font-medium text-gray-700">
-          Phone Number <span className="text-red-500">*</span>
+          {trans.garage.signUp.phoneLabel} <span className="text-red-500">{trans.garage.signUp.required}</span>
         </Label>
         <div className="relative">
           <Phone className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
           <Input
             id="phone"
             type="tel"
-            placeholder="+971 50 123 4567"
+            placeholder={trans.garage.signUp.phonePlaceholder}
             value={formData.phone}
             onChange={(e) => handleInputChange("phone", e.target.value)}
             className="pl-10 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
@@ -102,17 +105,16 @@ const GarageSignupForm: React.FC<GarageSignupFormProps> = ({
         </div>
       </div>
 
-      {/* Password */}
       <div className="space-y-2">
         <Label htmlFor="password" className="text-sm font-medium text-gray-700">
-          Password <span className="text-red-500">*</span>
+          {trans.garage.signUp.passwordLabel} <span className="text-red-500">{trans.garage.signUp.required}</span>
         </Label>
         <div className="relative">
           <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
           <Input
             id="password"
             type="password"
-            placeholder="Create a strong password"
+            placeholder={trans.garage.signUp.passwordPlaceholder}
             value={formData.password}
             onChange={(e) => handleInputChange("password", e.target.value)}
             className="pl-10 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
@@ -120,17 +122,16 @@ const GarageSignupForm: React.FC<GarageSignupFormProps> = ({
         </div>
       </div>
 
-      {/* Confirm Password */}
       <div className="space-y-2">
         <Label htmlFor="confirmPassword" className="text-sm font-medium text-gray-700">
-          Confirm Password <span className="text-red-500">*</span>
+          {trans.garage.signUp.confirmPasswordLabel} <span className="text-red-500">{trans.garage.signUp.required}</span>
         </Label>
         <div className="relative">
           <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
           <Input
             id="confirmPassword"
             type="password"
-            placeholder="Confirm your password"
+            placeholder={trans.garage.signUp.confirmPasswordPlaceholder}
             value={formData.confirmPassword}
             onChange={(e) => handleInputChange("confirmPassword", e.target.value)}
             className="pl-10 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
@@ -138,17 +139,16 @@ const GarageSignupForm: React.FC<GarageSignupFormProps> = ({
         </div>
       </div>
 
-      {/* Garage Name */}
       <div className="space-y-2">
         <Label htmlFor="garageName" className="text-sm font-medium text-gray-700">
-          Garage Name <span className="text-red-500">*</span>
+          {trans.garage.signUp.garageNameLabel} <span className="text-red-500">{trans.garage.signUp.required}</span>
         </Label>
         <div className="relative">
           <Building className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
           <Input
             id="garageName"
             type="text"
-            placeholder="Your garage name"
+            placeholder={trans.garage.signUp.garageNamePlaceholder}
             value={formData.garageName}
             onChange={(e) => handleInputChange("garageName", e.target.value)}
             className="pl-10 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
@@ -156,17 +156,16 @@ const GarageSignupForm: React.FC<GarageSignupFormProps> = ({
         </div>
       </div>
 
-      {/* Address */}
       <div className="space-y-2">
         <Label htmlFor="address" className="text-sm font-medium text-gray-700">
-          Address <span className="text-red-500">*</span>
+          {trans.garage.signUp.addressLabel} <span className="text-red-500">{trans.garage.signUp.required}</span>
         </Label>
         <div className="relative">
           <MapPin className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
           <Input
             id="address"
             type="text"
-            placeholder="Garage address"
+            placeholder={trans.garage.signUp.addressPlaceholder}
             value={formData.address}
             onChange={(e) => handleInputChange("address", e.target.value)}
             className="pl-10 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
@@ -174,16 +173,15 @@ const GarageSignupForm: React.FC<GarageSignupFormProps> = ({
         </div>
       </div>
 
-      {/* City & Emirate */}
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="city" className="text-sm font-medium text-gray-700">
-            City <span className="text-red-500">*</span>
+            {trans.garage.signUp.cityLabel} <span className="text-red-500">{trans.garage.signUp.required}</span>
           </Label>
           <Input
             id="city"
             type="text"
-            placeholder="City"
+            placeholder={trans.garage.signUp.cityPlaceholder}
             value={formData.city}
             onChange={(e) => handleInputChange("city", e.target.value)}
             className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
@@ -191,11 +189,11 @@ const GarageSignupForm: React.FC<GarageSignupFormProps> = ({
         </div>
         <div className="space-y-2">
           <Label htmlFor="emirate" className="text-sm font-medium text-gray-700">
-            Emirate <span className="text-red-500">*</span>
+            {trans.garage.signUp.emirateLabel} <span className="text-red-500">{trans.garage.signUp.required}</span>
           </Label>
           <Select value={formData.emirate} onValueChange={(value) => handleInputChange("emirate", value)}>
             <SelectTrigger className="border-gray-300 focus:border-blue-500 focus:ring-blue-500">
-              <SelectValue placeholder="Select emirate" />
+              <SelectValue placeholder={trans.garage.signUp.emiratePlaceholder} />
             </SelectTrigger>
             <SelectContent>
               {emirateOptions.map((emirate) => (
@@ -208,10 +206,9 @@ const GarageSignupForm: React.FC<GarageSignupFormProps> = ({
         </div>
       </div>
 
-      {/* Service Categories */}
       <div className="space-y-3">
         <Label className="text-sm font-medium text-gray-700">
-          Service Categories <span className="text-red-500">*</span>
+          {trans.garage.signUp.serviceCategoriesLabel} <span className="text-red-500">{trans.garage.signUp.required}</span>
         </Label>
         <div className="grid grid-cols-2 gap-3">
           {serviceOptions.map((service) => (
@@ -229,17 +226,15 @@ const GarageSignupForm: React.FC<GarageSignupFormProps> = ({
         </div>
       </div>
 
-      {/* File Uploads */}
       <div className="space-y-4">
-        {/* Garage Logo */}
         <div className="space-y-2">
           <Label className="text-sm font-medium text-gray-700">
-            Garage Logo (Optional)
+            {trans.garage.signUp.garageLogoLabel}
           </Label>
           <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-gray-400 transition-colors">
             <Upload className="mx-auto h-6 w-6 text-gray-400 mb-2" />
             <p className="text-xs text-gray-600 mb-2">
-              {formData.garageLogo ? formData.garageLogo.name : "Upload Logo (JPG, PNG)"}
+              {formData.garageLogo ? formData.garageLogo.name : trans.garage.signUp.garageLogoPlaceholder}
             </p>
             <input
               type="file"
@@ -256,20 +251,19 @@ const GarageSignupForm: React.FC<GarageSignupFormProps> = ({
               size="sm"
               onClick={() => document.getElementById("garageLogo")?.click()}
             >
-              Choose File
+              {trans.garage.signUp.chooseFile}
             </Button>
           </div>
         </div>
 
-        {/* Trade License */}
         <div className="space-y-2">
           <Label className="text-sm font-medium text-gray-700">
-            Trade License <span className="text-red-500">*</span>
+            {trans.garage.signUp.tradeLicenseLabel} <span className="text-red-500">{trans.garage.signUp.required}</span>
           </Label>
           <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-gray-400 transition-colors">
             <Upload className="mx-auto h-6 w-6 text-gray-400 mb-2" />
             <p className="text-xs text-gray-600 mb-2">
-              {formData.tradeLicense ? formData.tradeLicense.name : "Upload Trade License (PDF, JPG, PNG)"}
+              {formData.tradeLicense ? formData.tradeLicense.name : trans.garage.signUp.tradeLicensePlaceholder}
             </p>
             <input
               type="file"
@@ -286,13 +280,12 @@ const GarageSignupForm: React.FC<GarageSignupFormProps> = ({
               size="sm"
               onClick={() => document.getElementById("tradeLicense")?.click()}
             >
-              Choose File
+              {trans.garage.signUp.chooseFile}
             </Button>
           </div>
         </div>
       </div>
 
-      {/* Terms & Conditions */}
       <div className="flex items-start space-x-2">
         <Checkbox
           id="terms"
@@ -301,9 +294,9 @@ const GarageSignupForm: React.FC<GarageSignupFormProps> = ({
           className="mt-1"
         />
         <Label htmlFor="terms" className="text-sm text-gray-600 leading-relaxed">
-          I agree to the{" "}
+          {trans.garage.signUp.agreeTerms}{" "}
           <button className="text-blue-600 hover:text-blue-700 font-medium">
-            Terms & Conditions
+            {trans.garage.signUp.termsConditions}
           </button>
         </Label>
       </div>
@@ -313,7 +306,7 @@ const GarageSignupForm: React.FC<GarageSignupFormProps> = ({
         disabled={!formData.agreeToTerms || isRegistering}
         className="w-full bg-black hover:bg-gray-800 text-white h-11 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        {isRegistering ? "Creating Account..." : "Create Account"}
+        {isRegistering ? trans.garage.signUp.creatingAccount : trans.garage.signUp.createAccountButton}
       </Button>
     </div>
   );

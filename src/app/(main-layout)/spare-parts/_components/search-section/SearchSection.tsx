@@ -11,6 +11,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Search } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
+import { sparePartsPageTranslations } from "@/translations/spareParts";
 
 interface SearchSectionProps {
   onSearch: (searchTerm: string) => void;
@@ -21,24 +23,6 @@ interface SearchSectionProps {
   currentCondition: string;
 }
 
-const categories = [
-  { value: "all", label: "All Categories" },
-  { value: "engine", label: "Engine Parts" },
-  { value: "brakes", label: "Brakes" },
-  { value: "suspension", label: "Suspension" },
-  { value: "electrical", label: "Electrical" },
-  { value: "transmission", label: "Transmission" },
-  { value: "exhaust", label: "Exhaust" },
-  { value: "cooling", label: "Cooling System" },
-];
-
-const conditions = [
-  { value: "all", label: "All Conditions" },
-  { value: "new", label: "New" },
-  { value: "used", label: "Used" },
-  { value: "refurbished", label: "Refurbished" },
-];
-
 export default function SearchSection({
   onSearch,
   onCategoryChange,
@@ -47,7 +31,27 @@ export default function SearchSection({
   currentCategory,
   currentCondition,
 }: SearchSectionProps) {
+  const { t } = useLanguage();
+  const trans = t(sparePartsPageTranslations);
   const [searchInput, setSearchInput] = useState(currentSearch);
+
+  const categories = [
+    { value: "all", label: trans.search.categories.all },
+    { value: "engine", label: trans.search.categories.engine },
+    { value: "brakes", label: trans.search.categories.brakes },
+    { value: "suspension", label: trans.search.categories.suspension },
+    { value: "electrical", label: trans.search.categories.electrical },
+    { value: "transmission", label: trans.search.categories.transmission },
+    { value: "exhaust", label: trans.search.categories.exhaust },
+    { value: "cooling", label: trans.search.categories.cooling },
+  ];
+
+  const conditions = [
+    { value: "all", label: trans.search.conditions.all },
+    { value: "new", label: trans.search.conditions.new },
+    { value: "used", label: trans.search.conditions.used },
+    { value: "refurbished", label: trans.search.conditions.refurbished },
+  ];
 
   const handleSearchSubmit = () => {
     console.log("Search button clicked, searchInput:", searchInput);
@@ -76,13 +80,13 @@ export default function SearchSection({
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-md p-8">
           <h2 className="text-2xl font-bold mb-8 text-center text-gray-900">
-            Search Spare Parts
+            {trans.search.title}
           </h2>
 
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1">
               <Input
-                placeholder="Search parts by name or description..."
+                placeholder={trans.search.placeholder}
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
                 onKeyPress={handleKeyPress}
@@ -96,7 +100,7 @@ export default function SearchSection({
                 onValueChange={handleCategoryChange}
               >
                 <SelectTrigger className="h-12 border-gray-300">
-                  <SelectValue placeholder="Select category" />
+                  <SelectValue placeholder={trans.search.categoryPlaceholder} />
                 </SelectTrigger>
                 <SelectContent>
                   {categories.map((category) => (
@@ -114,7 +118,7 @@ export default function SearchSection({
                 onValueChange={handleConditionChange}
               >
                 <SelectTrigger className="h-12 border-gray-300">
-                  <SelectValue placeholder="Select condition" />
+                  <SelectValue placeholder={trans.search.conditionPlaceholder} />
                 </SelectTrigger>
                 <SelectContent>
                   {conditions.map((condition) => (
@@ -131,7 +135,7 @@ export default function SearchSection({
               className="bg-blue-600 hover:bg-blue-700 h-12 px-8"
             >
               <Search className="mr-2 h-5 w-5" />
-              Search
+              {trans.search.searchButton}
             </Button>
           </div>
         </div>
