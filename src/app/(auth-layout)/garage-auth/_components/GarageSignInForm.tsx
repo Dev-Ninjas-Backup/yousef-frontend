@@ -1,8 +1,11 @@
+"use client";
 import React from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Mail, Lock } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
+import { authTranslations } from "@/translations/auth";
 
 interface GarageSignInFormProps {
   formData: {
@@ -24,6 +27,9 @@ export default function GarageSignInForm({
   handleSignIn,
   onForgotPassword,
 }: GarageSignInFormProps) {
+  const { t } = useLanguage();
+  const trans = t(authTranslations);
+
   return (
     <div className="space-y-4">
       {error && (
@@ -34,14 +40,14 @@ export default function GarageSignInForm({
 
       <div className="space-y-2">
         <Label htmlFor="businessEmail" className="text-sm font-medium text-gray-700">
-          Business Email <span className="text-red-500">*</span>
+          {trans.garage.signIn.businessEmailLabel} <span className="text-red-500">*</span>
         </Label>
         <div className="relative">
           <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
           <Input
             id="businessEmail"
             type="email"
-            placeholder="garage@business.com"
+            placeholder={trans.garage.signIn.businessEmailPlaceholder}
             value={formData.email}
             onChange={(e) => handleInputChange("email", e.target.value)}
             className="pl-10 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
@@ -52,14 +58,14 @@ export default function GarageSignInForm({
 
       <div className="space-y-2">
         <Label htmlFor="password" className="text-sm font-medium text-gray-700">
-          Password
+          {trans.garage.signIn.passwordLabel}
         </Label>
         <div className="relative">
           <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
           <Input
             id="password"
             type="password"
-            placeholder="Enter your password"
+            placeholder={trans.garage.signIn.passwordPlaceholder}
             value={formData.password}
             onChange={(e) => handleInputChange("password", e.target.value)}
             className="pl-10 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
@@ -73,7 +79,7 @@ export default function GarageSignInForm({
           onClick={onForgotPassword}
           className="text-sm text-blue-600 hover:text-blue-700 font-medium"
         >
-          Forgot Password?
+          {trans.garage.signIn.forgotPassword}
         </button>
       </div>
 
@@ -82,7 +88,7 @@ export default function GarageSignInForm({
         disabled={isLoading || !formData.email || !formData.password}
         className="w-full bg-black hover:bg-gray-800 text-white h-11 font-medium disabled:opacity-50"
       >
-        {isLoading ? "Signing In..." : "Sign In"}
+        {isLoading ? trans.garage.signIn.signingIn : trans.garage.signIn.signInButton}
       </Button>
     </div>
   );

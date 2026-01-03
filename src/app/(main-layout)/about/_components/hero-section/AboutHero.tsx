@@ -1,8 +1,15 @@
+"use client";
 import { Sparkles, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AboutBg from "@/assets/about/Banner/about_banner.jpg";
 import Image from "next/image";
+import { useLanguage } from "@/context/LanguageContext";
+import { aboutTranslations } from "@/translations/about";
+
 export default function AboutHero() {
+  const { t } = useLanguage();
+  const trans = t(aboutTranslations);
+
   return (
     <section className="relative h-screen w-full overflow-hidden md:mb-12">
       <div className="absolute inset-0">
@@ -19,34 +26,30 @@ export default function AboutHero() {
         <div className="flex items-center gap-2 mb-6 bg-black/30 px-4 py-2 rounded-full backdrop-blur-sm">
           <Sparkles className="w-5 h-5 text-yellow-400" />
           <span className="text-white text-sm font-medium">
-            Established 2025
+            {trans.hero.established}
           </span>
           <Sparkles className="w-5 h-5 text-yellow-400" />
         </div>
 
         <h1 className="mb-4 text-4xl md:text-6xl text-white leading-tight">
-          Redefining Automotive
+          {trans.hero.title1}
           <br />
-          Excellence
+          {trans.hero.title2}
         </h1>
 
         <p className="text-xl md:text-2xl text-gray-200 mb-6 font-light">
-          Driving Trust and Innovation in Every Mile
+          {trans.hero.subtitle}
         </p>
 
         <p className="max-w-3xl text-base md:text-lg text-gray-300 mb-8 leading-relaxed">
-          Established in 2025, our platform was created to transform the car
-          service experience across the UAE, connecting vehicle owners with
-          verified garages, towing services, and Parts listed here are provided
-          by third-party sellers. We do not supply or take responsibility for
-          their quality.
+          {trans.hero.description}
         </p>
 
         <Button
           size="lg"
           className="bg-blue-600 hover:bg-blue-700 text-white gap-2"
         >
-          Join Our Journey
+          {trans.hero.joinButton}
           <ArrowRight className="w-4 h-4" />
         </Button>
       </div>

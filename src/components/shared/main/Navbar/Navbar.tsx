@@ -7,24 +7,28 @@ import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { UserRole } from "@/types/auth";
 import scroll_logo from "@/assets/navbar/sayarahub_fill.svg";
-
-export const menuItems = [
-  { label: "Home", href: "/" },
-  { label: "Service", href: "/service" },
-  { label: "Spare Parts", href: "/spare-parts" },
-  { label: "Download App", href: "/download-app" },
-  { label: "About Us", href: "/about" },
-  { label: "Contact us", href: "/contact-us" },
-];
+import { useLanguage } from "@/context/LanguageContext";
+import { navbarTranslations } from "@/translations/navbar";
 
 const Navbar = () => {
+  const { language, setLanguage, t } = useLanguage();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLangMenuOpen, setIsLangMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-  const [selectedLang, setSelectedLang] = useState("English");
   const pathname = usePathname();
 
   const { user, isAuthenticated, logout } = useAuth();
+
+  const trans = t(navbarTranslations);
+
+  const menuItems = [
+    { label: trans.home, href: "/" },
+    { label: trans.service, href: "/service" },
+    { label: trans.spareParts, href: "/spare-parts" },
+    { label: trans.downloadApp, href: "/download-app" },
+    { label: trans.aboutUs, href: "/about" },
+    { label: trans.contactUs, href: "/contact-us" },
+  ];
 
   const getDashboardLink = () => {
     if (!user) return "/";
@@ -46,9 +50,9 @@ const Navbar = () => {
     setIsUserMenuOpen(false);
   };
 
-  const handleLanguageChange = (lang: string) => {
-    setSelectedLang(lang);
+  const handleLanguageChange = (lang: "en" | "ar") => {
     setIsLangMenuOpen(false);
+    setLanguage(lang);
   };
 
   useEffect(() => {
@@ -74,7 +78,6 @@ const Navbar = () => {
   return (
     <nav className="fixed z-50 w-full py-4 px-4 md:mt-4 md:px-8 bg-white/70 backdrop-blur-md md:bg-transparent md:backdrop-blur-none">
       <div className="container mx-auto flex items-center justify-between gap-4">
-        {/* Logo */}
         <Link href="/" className="flex items-center">
           <div className="">
             <Image
@@ -120,11 +123,11 @@ const Navbar = () => {
         </div>
 
         <div className="flex items-center gap-2">
-          {/* Language Selector */}
           <div className="hidden md:block relative language-dropdown">
             <button
               onClick={() => setIsLangMenuOpen(!isLangMenuOpen)}
               className="flex items-center gap-2 text-white hover:text-[#0A84FF] py-2 px-4 rounded-full bg-black/40 shadow-[0_0_15px_rgba(255,255,255,0.1)] transition-all duration-300"
+              title="Select Language"
             >
               <Globe className="w-5 h-5 text-white/80" />
               <ChevronDown className="w-4 h-4 text-white/80" />
@@ -132,26 +135,25 @@ const Navbar = () => {
             {isLangMenuOpen && (
               <div className="absolute right-0 mt-2 w-40 bg-black/90 backdrop-blur-md rounded-lg shadow-lg border border-white/20 overflow-hidden">
                 <button
-                  onClick={() => handleLanguageChange("English")}
+                  onClick={() => handleLanguageChange("en")}
                   className={`w-full text-left px-4 py-3 text-white/80 hover:bg-white/10 transition-colors ${
-                    selectedLang === "English" ? "bg-white/5 font-semibold" : ""
+                    language === "en" ? "bg-white/5 font-semibold" : ""
                   }`}
                 >
-                  English
+                  {trans.english}
                 </button>
                 <button
-                  onClick={() => handleLanguageChange("Arabic")}
+                  onClick={() => handleLanguageChange("ar")}
                   className={`w-full text-left px-4 py-3 text-white/80 hover:bg-white/10 transition-colors ${
-                    selectedLang === "Arabic" ? "bg-white/5 font-semibold" : ""
+                    language === "ar" ? "bg-white/5 font-semibold" : ""
                   }`}
                 >
-                  عربي
+                  {trans.arabic}
                 </button>
               </div>
             )}
           </div>
 
-          {/* Login/User Menu */}
           {isAuthenticated ? (
             <div className="hidden md:block relative user-dropdown">
               <button
@@ -169,14 +171,14 @@ const Navbar = () => {
                     onClick={() => setIsUserMenuOpen(false)}
                     className="block w-full text-left px-4 py-3 text-white/80 hover:bg-white/10 transition-colors"
                   >
-                    Dashboard
+                    {trans.dashboard}
                   </Link>
                   <button
                     onClick={handleLogout}
                     className="w-full text-left px-4 py-3 text-white/80 hover:bg-white/10 transition-colors flex items-center gap-2"
                   >
                     <LogOut className="w-4 h-4" />
-                    Logout
+                    {trans.logout}
                   </button>
                 </div>
               )}
@@ -186,7 +188,7 @@ const Navbar = () => {
               href="/user-auth"
               className="hidden md:flex items-center gap-2 text-white hover:text-[#0A84FF] py-2 px-4 rounded-full bg-black/40 shadow-[0_0_15px_rgba(255,255,255,0.1)] transition-all duration-300"
             >
-              <span className="text-sm text-white/80">Login</span>
+              <span className="text-sm text-white/80">{trans.login}</span>
               <UserCircle className="w-5 h-5 text-white/80" />
             </Link>
           )}
@@ -195,6 +197,7 @@ const Navbar = () => {
         <button
           className="md:hidden text-white"
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          title={isMobileMenuOpen ? "Close menu" : "Open menu"}
         >
           <svg
             className="w-6 h-6"
@@ -221,7 +224,6 @@ const Navbar = () => {
         </button>
       </div>
 
-      {/* Mobile Menu */}
       {isMobileMenuOpen && (
         <div className="md:hidden mt-4 bg-black/60 backdrop-blur-md rounded-lg p-4 border border-white/20 shadow-[0_0_15px_rgba(255,255,255,0.1)]">
           <div className="flex flex-col gap-2">
@@ -236,32 +238,30 @@ const Navbar = () => {
               </Link>
             ))}
 
-            {/* Mobile Language Selector */}
             <div className="border-t border-white/10 pt-4 mt-2">
               <div className="px-4 py-2 text-white/60 text-sm font-semibold">
-                Language
+                {trans.language}
               </div>
               <button
-                onClick={() => handleLanguageChange("English")}
+                onClick={() => handleLanguageChange("en")}
                 className={`w-full text-left flex items-center gap-2 text-white/80 hover:text-[#0A84FF] transition-colors px-4 py-2 rounded-lg hover:bg-white/5 ${
-                  selectedLang === "English" ? "bg-white/5 font-semibold" : ""
+                  language === "en" ? "bg-white/5 font-semibold" : ""
                 }`}
               >
                 <Globe className="w-4 h-4" />
-                <span>English</span>
+                <span>{trans.english}</span>
               </button>
               <button
-                onClick={() => handleLanguageChange("Arabic")}
+                onClick={() => handleLanguageChange("ar")}
                 className={`w-full text-left flex items-center gap-2 text-white/80 hover:text-[#0A84FF] transition-colors px-4 py-2 rounded-lg hover:bg-white/5 ${
-                  selectedLang === "Arabic" ? "bg-white/5 font-semibold" : ""
+                  language === "ar" ? "bg-white/5 font-semibold" : ""
                 }`}
               >
                 <Globe className="w-4 h-4" />
-                <span>Arabic</span>
+                <span>{trans.arabic}</span>
               </button>
             </div>
 
-            {/* Mobile Login/User Menu */}
             <div className="border-t border-white/10 pt-4 mt-2">
               {isAuthenticated ? (
                 <>
@@ -274,7 +274,7 @@ const Navbar = () => {
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     <UserCircle className="w-4 h-4" />
-                    <span>Dashboard</span>
+                    <span>{trans.dashboard}</span>
                   </Link>
                   <button
                     onClick={() => {
@@ -284,7 +284,7 @@ const Navbar = () => {
                     className="w-full text-left flex items-center gap-2 text-white/80 hover:text-[#0A84FF] transition-colors px-4 py-2 rounded-lg hover:bg-white/5"
                   >
                     <LogOut className="w-4 h-4" />
-                    <span>Logout</span>
+                    <span>{trans.logout}</span>
                   </button>
                 </>
               ) : (
@@ -294,7 +294,7 @@ const Navbar = () => {
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   <UserCircle className="w-5 h-5" />
-                  <span>Login</span>
+                  <span>{trans.login}</span>
                 </Link>
               )}
             </div>

@@ -2,10 +2,8 @@
 import { Button } from "@/components/ui/button";
 import TestimonialCard from "./_components/TestimonialCard/TestimonialCard";
 import Marquee from "react-fast-marquee";
-import emanuel from "@/assets/home/Testimonials/emanuel-avater.svg";
-import sharif from "@/assets/home/Testimonials/polics-avater.svg";
-import polich from "@/assets/home/Testimonials/polics-avater.svg";
-import toha from "@/assets/home/Testimonials/mohammad.svg";
+import { useLanguage } from "@/context/LanguageContext";
+import { testimonialsTranslations } from "@/translations/testimonials";
 
 const testimonials = [
   {
@@ -49,20 +47,20 @@ const testimonials = [
     text: "The SayaraHub website is so easy to use and beautifully designed. I could explore all the key features before even...",
   },
 ];
+
 export default function TestimonialsSection() {
-  // Duplicate testimonials for infinite scroll effect
-  const duplicatedTestimonials = [...testimonials, ...testimonials];
+  const { t } = useLanguage();
+  const trans = t(testimonialsTranslations);
 
   return (
     <section className="py-20 px-4 bg-[#E8F1FD] overflow-hidden">
       <div className="">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-[40px] font-bold text-[#101010] mb-4">
-            What Our beloved Clients Says?
+            {trans.title}
           </h2>
           <p className="text-[#101010] max-w-2xl mx-auto text-xl">
-            Real stories from car owners and garage partners who've made their
-            car servicing journey smoother with our platform.
+            {trans.subtitle}
           </p>
         </div>
 
@@ -86,7 +84,7 @@ export default function TestimonialsSection() {
             size="lg"
             className="bg-[#0D6EFD] px-8 py-6 rounded-lg text-base font-semibold shadow-md "
           >
-            Find Nearest Garage
+            {trans.findGarage}
           </Button>
         </div>
       </div>

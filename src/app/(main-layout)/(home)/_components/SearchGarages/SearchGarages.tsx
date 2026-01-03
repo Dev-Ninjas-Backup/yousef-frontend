@@ -11,30 +11,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import search_garage_bg from "../../../../../assets/home/searchGarage/search_garage_bg.jpg";
-
-const locationItems = [
-  { value: "dubai", label: "Dubai" },
-  { value: "abu-dhabi", label: "Abu Dhabi" },
-  { value: "sharjah", label: "Sharjah" },
-  { value: "ajman", label: "Ajman" },
-  { value: "umm-al-quwain", label: "Umm Al Quwain" },
-  { value: "ras-al-khaimah", label: "Ras Al Khaimah" },
-  { value: "fujairah", label: "Fujairah" },
-];
-
-const serviceItems = [
-  { value: "maintenance", label: "General Maintenance" },
-  { value: "repair", label: "Repair Services" },
-  { value: "inspection", label: "Vehicle Inspection" },
-  { value: "oil-change", label: "Oil Change" },
-  { value: "tire-service", label: "Tire Service" },
-  { value: "battery", label: "Battery Service" },
-  { value: "ac-service", label: "AC Service" },
-  { value: "brake-service", label: "Brake Service" },
-  { value: "emergency", label: "Emergency Service" },
-];
+import { useLanguage } from "@/context/LanguageContext";
+import { searchGaragesTranslations } from "@/translations/searchGarages";
 
 const SearchGarages: React.FC = () => {
+  const { t } = useLanguage();
+  const trans = t(searchGaragesTranslations);
   const [emirate, setEmirate] = useState("");
   const [serviceType, setServiceType] = useState("");
 
@@ -50,17 +32,17 @@ const SearchGarages: React.FC = () => {
       <Card className="shadow-xl max-w-4xl w-full bg-white">
         <CardHeader className="pb-4 md:pb-6">
           <CardTitle className="text-xl md:text-2xl text-center font-bold">
-            Search Nearby Garages
+            {trans.title}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col sm:flex-row gap-3 md:gap-4 bg-white">
             <Select value={emirate} onValueChange={setEmirate}>
               <SelectTrigger className="w-full sm:flex-1 h-[50px] md:h-[58px] px-4 py-6 border-gray-300 rounded-lg bg-white text-gray-700">
-                <SelectValue placeholder="Select Emirate" />
+                <SelectValue placeholder={trans.selectEmirate} />
               </SelectTrigger>
               <SelectContent className="bg-white">
-                {locationItems.map((location) => (
+                {trans.locations.map((location) => (
                   <SelectItem
                     key={location.value}
                     value={location.value}
@@ -74,10 +56,10 @@ const SearchGarages: React.FC = () => {
 
             <Select value={serviceType} onValueChange={setServiceType}>
               <SelectTrigger className="w-full sm:flex-1 h-[50px] md:h-[58px] px-4 py-6 border-gray-300 rounded-lg bg-white text-gray-700">
-                <SelectValue placeholder="Service Type" />
+                <SelectValue placeholder={trans.serviceType} />
               </SelectTrigger>
               <SelectContent className="bg-white">
-                {serviceItems.map((service) => (
+                {trans.services.map((service) => (
                   <SelectItem
                     key={service.value}
                     value={service.value}
@@ -94,7 +76,7 @@ const SearchGarages: React.FC = () => {
               onClick={handleSearch}
             >
               <Search className="w-4 h-4 mr-2" />
-              Search
+              {trans.search}
             </Button>
           </div>
         </CardContent>

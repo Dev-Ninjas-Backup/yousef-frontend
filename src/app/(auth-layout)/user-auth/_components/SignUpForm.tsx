@@ -1,9 +1,12 @@
+"use client";
 import React from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Mail, Lock, User, Phone, Apple } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
+import { authTranslations } from "@/translations/auth";
 
 interface SignUpFormProps {
   formData: {
@@ -31,6 +34,9 @@ export default function SignUpForm({
   handleSignUp,
   handleGoogleLogin,
 }: SignUpFormProps) {
+  const { t } = useLanguage();
+  const trans = t(authTranslations);
+
   return (
     <div className="space-y-4">
       {error && (
@@ -41,14 +47,14 @@ export default function SignUpForm({
 
       <div className="space-y-2">
         <Label htmlFor="fullName" className="text-sm font-medium text-gray-700">
-          Full Name
+          {trans.user.signUp.fullNameLabel}
         </Label>
         <div className="relative">
           <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
           <Input
             id="fullName"
             type="text"
-            placeholder="Enter your name"
+            placeholder={trans.user.signUp.fullNamePlaceholder}
             value={formData.fullName}
             onChange={(e) => handleInputChange("fullName", e.target.value)}
             className="pl-10 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
@@ -58,14 +64,14 @@ export default function SignUpForm({
 
       <div className="space-y-2">
         <Label htmlFor="signupEmail" className="text-sm font-medium text-gray-700">
-          Email
+          {trans.user.signUp.emailLabel}
         </Label>
         <div className="relative">
           <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
           <Input
             id="signupEmail"
             type="email"
-            placeholder="your@email.com"
+            placeholder={trans.user.signUp.emailPlaceholder}
             value={formData.email}
             onChange={(e) => handleInputChange("email", e.target.value)}
             className="pl-10 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
@@ -75,14 +81,14 @@ export default function SignUpForm({
 
       <div className="space-y-2">
         <Label htmlFor="phoneNumber" className="text-sm font-medium text-gray-700">
-          Phone Number
+          {trans.user.signUp.phoneLabel}
         </Label>
         <div className="relative">
           <Phone className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
           <Input
             id="phoneNumber"
             type="tel"
-            placeholder="+971 50 123 4567"
+            placeholder={trans.user.signUp.phonePlaceholder}
             value={formData.phone}
             onChange={(e) => handleInputChange("phone", e.target.value)}
             className="pl-10 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
@@ -92,14 +98,14 @@ export default function SignUpForm({
 
       <div className="space-y-2">
         <Label htmlFor="signupPassword" className="text-sm font-medium text-gray-700">
-          Password
+          {trans.user.signUp.passwordLabel}
         </Label>
         <div className="relative">
           <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
           <Input
             id="signupPassword"
             type="password"
-            placeholder="Create a strong password"
+            placeholder={trans.user.signUp.passwordPlaceholder}
             value={formData.password}
             onChange={(e) => handleInputChange("password", e.target.value)}
             className="pl-10 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
@@ -109,14 +115,14 @@ export default function SignUpForm({
 
       <div className="space-y-2">
         <Label htmlFor="confirmPassword" className="text-sm font-medium text-gray-700">
-          Confirm Password
+          {trans.user.signUp.confirmPasswordLabel}
         </Label>
         <div className="relative">
           <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
           <Input
             id="confirmPassword"
             type="password"
-            placeholder="Confirm your password"
+            placeholder={trans.user.signUp.confirmPasswordPlaceholder}
             value={formData.confirmPassword}
             onChange={(e) => handleInputChange("confirmPassword", e.target.value)}
             className="pl-10 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
@@ -150,7 +156,7 @@ export default function SignUpForm({
               d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
             />
           </svg>
-          {isGoogleLoading ? "Signing in..." : "Sign Up with Google"}
+          {isGoogleLoading ? trans.user.signUp.signingIn : trans.user.signUp.signUpGoogle}
         </Button>
 
         <Button
@@ -158,7 +164,7 @@ export default function SignUpForm({
           className="w-full h-11 border-gray-300 hover:bg-gray-50"
         >
           <Apple className="w-5 h-5 mr-2" />
-          Sign Up with Apple
+          {trans.user.signUp.signUpApple}
         </Button>
       </div>
 
@@ -173,9 +179,9 @@ export default function SignUpForm({
           className="mt-1"
         />
         <Label htmlFor="terms" className="text-sm text-gray-600 leading-relaxed">
-          I agree to the{" "}
+          {trans.user.signUp.agreeTerms}{" "}
           <button className="text-blue-600 hover:text-blue-700 font-medium">
-            Terms & Conditions
+            {trans.user.signUp.termsConditions}
           </button>
         </Label>
       </div>
@@ -185,7 +191,7 @@ export default function SignUpForm({
         disabled={!formData.agreeToTerms || isRegistering}
         className="w-full bg-black hover:bg-gray-800 text-white h-11 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        {isRegistering ? "Creating Account..." : "Create Account"}
+        {isRegistering ? trans.user.signUp.creatingAccount : trans.user.signUp.createAccountButton}
       </Button>
     </div>
   );

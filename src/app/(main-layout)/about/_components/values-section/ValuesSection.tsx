@@ -1,41 +1,43 @@
+"use client";
 import { Heart, ThumbsUp, Clock } from "lucide-react";
-
-const values = [
-  {
-    icon: Heart,
-    title: "Customer Care",
-    description:
-      "We're committed to creating a smooth and reliable experience for every user and garage owner on the platform.",
-  },
-  {
-    icon: ThumbsUp,
-    title: "Honest Service",
-    description:
-      "We promote transparent communication between garages and customers, but all service quality, pricing, and work are managed directly by the garages themselves.",
-  },
-  {
-    icon: Clock,
-    title: "Reliability",
-    description:
-      "Our goal is to keep the platform stable, accessible, and efficient helping garages and customers stay connected anytime, anywhere.",
-  },
-];
+import { useLanguage } from "@/context/LanguageContext";
+import { aboutTranslations } from "@/translations/about";
 
 export default function ValuesSection() {
+  const { t } = useLanguage();
+  const trans = t(aboutTranslations);
+
+  const values = [
+    {
+      icon: Heart,
+      title: trans.values.customerCare.title,
+      description: trans.values.customerCare.description,
+    },
+    {
+      icon: ThumbsUp,
+      title: trans.values.honestService.title,
+      description: trans.values.honestService.description,
+    },
+    {
+      icon: Clock,
+      title: trans.values.reliability.title,
+      description: trans.values.reliability.description,
+    },
+  ];
+
   return (
     <section className="py-20 px-4 bg-gradient-to-b from-gray-900 to-gray-800 my-16">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12">
           <div className="inline-flex items-center gap-2 bg-gray-800 border border-gray-700 rounded-full px-4 py-2 mb-6">
             <Heart className="w-4 h-4 text-gray-400" />
-            <span className="text-gray-300 text-sm">Our Core Values</span>
+            <span className="text-gray-300 text-sm">{trans.values.title}</span>
           </div>
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-            Principles That Drive Us
+            {trans.values.subtitle}
           </h2>
           <p className="text-gray-400 max-w-2xl mx-auto">
-            These values shape how we connect garages and customers ensuring
-            trust, transparency, and convenience at every step.
+            {trans.values.description}
           </p>
         </div>
 

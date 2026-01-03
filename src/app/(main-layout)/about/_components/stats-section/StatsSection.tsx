@@ -1,34 +1,38 @@
-import { Lightbulb, Rocket, TrendingUp, Sparkles, Star } from "lucide-react";
+"use client";
+import { Sparkles, Star } from "lucide-react";
 import Image from "next/image";
 import AboutStats from "@/assets/about/stats/about_stats.jpg";
-
-const stats = [
-  { value: "500+", label: "Happy Customers" },
-  { value: "850+", label: "Parts Available" },
-  { value: "4.9", label: "Average Rating", icon: true },
-];
-
-const timeline = [
-  {
-    icon: Lightbulb,
-    title: "The Idea",
-    description:
-      "Identifying the gap in reliable automotive services across the UAE",
-  },
-  {
-    icon: Rocket,
-    title: "Launch 2025",
-    description:
-      "Platform goes live with verified garages and spare parts marketplace",
-  },
-  {
-    icon: TrendingUp,
-    title: "Growth & Expansion",
-    description: "Continuous innovation and expanding partnerships nationwide",
-  },
-];
+import { useLanguage } from "@/context/LanguageContext";
+import { aboutTranslations } from "@/translations/about";
+import { Lightbulb, Rocket, TrendingUp } from "lucide-react";
 
 export default function StatsSection() {
+  const { t } = useLanguage();
+  const trans = t(aboutTranslations);
+
+  const stats = [
+    { value: "500+", label: trans.stats.happyCustomers },
+    { value: "850+", label: trans.stats.partsAvailable },
+    { value: "4.9", label: trans.stats.averageRating, icon: true },
+  ];
+
+  const timeline = [
+    {
+      icon: Lightbulb,
+      title: trans.stats.timeline.idea.title,
+      description: trans.stats.timeline.idea.description,
+    },
+    {
+      icon: Rocket,
+      title: trans.stats.timeline.launch.title,
+      description: trans.stats.timeline.launch.description,
+    },
+    {
+      icon: TrendingUp,
+      title: trans.stats.timeline.growth.title,
+      description: trans.stats.timeline.growth.description,
+    },
+  ];
   return (
     <section className="py-16 px-4 md:my-16">
       <div className="max-w-7xl mx-auto">
@@ -45,37 +49,22 @@ export default function StatsSection() {
             </div>
             <div className="absolute -bottom-6 -right-6 bg-gradient-to-br from-blue-600 to-indigo-600  text-white rounded-2xl p-6 shadow-2xl drop-shadow-2xl">
               <div className="text-4xl font-bold">2025</div>
-              <div className="text-sm">Year Founded</div>
+              <div className="text-sm">{trans.stats.yearFounded}</div>
             </div>
           </div>
 
           <div>
             <div className="flex items-center gap-2 mb-4 bg-blue-100 rounded-full py-2 px-4 w-fit">
               <Sparkles className="w-5 h-5 text-blue-600" />
-              <span className="text-blue-600 font-medium">Our Story</span>
+              <span className="text-blue-600 font-medium">{trans.stats.ourStory}</span>
             </div>
             <h2 className="text-3xl md:text-4xl  text-gray-900 mb-6">
-              Where Innovation Meets Tradition
+              {trans.stats.title}
             </h2>
             <div className="space-y-4 text-gray-700 leading-relaxed mb-8">
-              <p>
-                In 2025, we embarked on a mission to transform the automotive
-                service industry. Recognizing the gap between car owners and
-                reliable service providers, we created a comprehensive platform
-                designed to simplify vehicle maintenance and parts procurement.
-              </p>
-              <p>
-                What started as a vision to bring transparency and convenience
-                to automotive services has evolved into a thriving marketplace.
-                We combine cutting-edge technology with time-tested expertise,
-                offering everything from routine maintenance to premium auto
-                parts all in one seamless platform.
-              </p>
-              <p>
-                Today, we&apos;re proud to serve a growing community of car
-                enthusiasts, daily commuters, and professional mechanics who
-                trust us for quality, reliability, and exceptional service.
-              </p>
+              {trans.stats.content.map((paragraph, index) => (
+                <p key={index}>{paragraph}</p>
+              ))}
             </div>
 
             <div className="grid grid-cols-3 gap-6">

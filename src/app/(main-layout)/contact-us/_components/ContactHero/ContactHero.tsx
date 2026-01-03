@@ -1,9 +1,15 @@
+"use client";
 import React from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import contactHeroimg from "@/assets/contactus/contactus-img.jpg";
+import { useLanguage } from "@/context/LanguageContext";
+import { contactTranslations } from "@/translations/contact";
 
 const ContactHero: React.FC = () => {
+  const { t } = useLanguage();
+  const trans = t(contactTranslations);
+
   return (
     <section className="relative w-full h-[450px] md:h-[500px] lg:h-[720px] overflow-hidden">
       <div className="absolute inset-0 z-0">
@@ -19,18 +25,15 @@ const ContactHero: React.FC = () => {
 
       <div className="mt-10 md:mt-1 relative container mx-auto z-10 flex flex-col items-center justify-center h-full px-4 text-center">
         <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 md:mb-6">
-          We're Here to Help You Anytime.
+          {trans.hero.title}
         </h1>
 
         <p className="text-sm sm:text-base md:text-3xl text-gray-200 mb-4 md:mb-6 max-w-4xl">
-          Whether you need support? Want to partner with us, or simply have a
-          question about our services our team is always ready to assist. Reach
-          out today and experience hassle-free support for all your automotive
-          needs.
+          {trans.hero.description}
         </p>
 
         <Button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 md:py-6 rounded-lg text-sm md:text-xl font-medium">
-          Contact Us
+          {trans.hero.button}
         </Button>
       </div>
     </section>
