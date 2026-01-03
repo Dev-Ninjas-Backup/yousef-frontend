@@ -42,7 +42,7 @@ const SearchGarages: React.FC = () => {
                 <SelectValue placeholder={trans.selectEmirate} />
               </SelectTrigger>
               <SelectContent className="bg-white">
-                {trans.locations.map((location) => (
+                {trans.locations.map((location: any) => (
                   <SelectItem
                     key={location.value}
                     value={location.value}
@@ -59,7 +59,7 @@ const SearchGarages: React.FC = () => {
                 <SelectValue placeholder={trans.serviceType} />
               </SelectTrigger>
               <SelectContent className="bg-white">
-                {trans.services.map((service) => (
+                {trans.services.map((service: any) => (
                   <SelectItem
                     key={service.value}
                     value={service.value}
