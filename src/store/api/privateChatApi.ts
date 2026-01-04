@@ -10,7 +10,12 @@ export interface Message {
   id: string;
   content: string;
   senderId: string;
+  recipientId: string;
   createdAt: string;
+  updatedAt: string;
+  isRead: boolean;
+  isEdited: boolean;
+  isDeleted: boolean;
   sender: User;
   files?: string[];
 }
@@ -20,7 +25,20 @@ export interface Conversation {
   chatId: string;
   participant: User;
   lastMessage: Message | null;
+  unreadCount: number;
   updatedAt: string;
+}
+
+export interface TypingUser {
+  userId: string;
+  fullName: string;
+  isTyping: boolean;
+}
+
+export interface UserStatus {
+  userId: string;
+  isOnline: boolean;
+  lastSeen?: string;
 }
 
 interface ConversationsResponse {
@@ -73,6 +91,26 @@ export const privateChatApi = apiSlice.injectEndpoints({
       }),
     }),
 
+    editMessage: builder.mutation<
+      Message,
+      { messageId: string; content: string }
+    >({
+      query: ({ messageId, content }) => ({
+        url: `/private-chat/edit-message/${messageId}`,
+        method: "PATCH",
+        body: { content },
+      }),
+      invalidatesTags: ["Message"],
+    }),
+
+    deleteMessage: builder.mutation<void, string>({
+      query: (messageId) => ({
+        url: `/private-chat/delete-message/${messageId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Message"],
+    }),
+
     deleteConversation: builder.mutation<void, string>({
       query: (conversationId) => ({
         url: `/private-chat/${conversationId}`,
@@ -88,5 +126,7 @@ export const {
   useGetMessagesQuery,
   useSendMessageMutation,
   useMarkAsReadMutation,
+  useEditMessageMutation,
+  useDeleteMessageMutation,
   useDeleteConversationMutation,
 } = privateChatApi;
