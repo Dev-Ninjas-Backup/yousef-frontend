@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { MessageCircle, X, Search, ArrowLeft, Send, Check } from "lucide-react";
+import { MessageCircle, X, Search, ArrowLeft, Send, Check, Paperclip, Image, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useGetConversationsQuery, Message } from "@/store/api/privateChatApi";
@@ -83,6 +83,8 @@ export function FloatingChatWidget() {
   const [messagesEndRef, setMessagesEndRef] = useState<HTMLDivElement | null>(
     null
   );
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [isUploading, setIsUploading] = useState(false);
   const typingUsers = getTypingUsers();
   const userStatus = selectedChat ? getUserStatus(selectedChat.id) : null;
 
@@ -152,36 +154,83 @@ export function FloatingChatWidget() {
     }
   }, [conversations]);
 
-  const handleSend = () => {
-    if (!message.trim() || !selectedChat) return;
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || []);
+    
+    // All files are now supported by backend
+    setSelectedFiles(prev => [...prev, ...files].slice(0, 5)); // Max 5 files
+  };
 
-    // Use REST API to send message with recipient ID
-    const formData = new FormData();
-    formData.append("content", message);
-    formData.append("recipientId", selectedChat.id); // Add recipientId to body
+  const removeFile = (index: number) => {
+    setSelectedFiles(prev => prev.filter((_, i) => i !== index));
+  };
 
-    fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/private-chat/send-message/${selectedChat.id}`,
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${
-            document.cookie.split("token=")[1]?.split(";")[0]
-          }`,
-        },
-        body: formData,
-      }
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("Message sent:", data);
-        if (data.success && data.message) {
-          setLocalMessages((prev) => [...prev, data.message]);
+  const handleSend = async () => {
+    if ((!message.trim() && selectedFiles.length === 0) || !selectedChat) return;
+    
+    setIsUploading(true);
+    
+    try {
+      let fileUrls: string[] = [];
+      
+      // Step 1: Upload files to AWS S3 if any
+      if (selectedFiles.length > 0) {
+        const uploadFormData = new FormData();
+        selectedFiles.forEach(file => {
+          uploadFormData.append('files', file);
+        });
+        
+        const uploadResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/aws-file-upload-additional-all/upload-s3-additional-multiple`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${document.cookie.split('token=')[1]?.split(';')[0]}`
+          },
+          body: uploadFormData
+        });
+        
+        const uploadData = await uploadResponse.json();
+        console.log('Files uploaded to S3:', uploadData);
+        
+        if (uploadData.files && uploadData.files.length > 0) {
+          fileUrls = uploadData.files;
         }
-      })
-      .catch((err) => console.error("Failed to send message:", err));
-
-    setMessage("");
+      }
+      
+      // Step 2: Send message with file URLs
+      const messageFormData = new FormData();
+      const contentToSend = message.trim() || (fileUrls.length > 0 ? 'File shared' : '');
+      messageFormData.append('content', contentToSend);
+      messageFormData.append('recipientId', selectedChat.id);
+      
+      // Add file URLs as individual array items (not JSON string)
+      if (fileUrls.length > 0) {
+        fileUrls.forEach(url => {
+          messageFormData.append('files[]', url);
+        });
+      }
+      
+      const messageResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/private-chat/send-message/${selectedChat.id}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${document.cookie.split('token=')[1]?.split(';')[0]}`
+        },
+        body: messageFormData
+      });
+      
+      const messageData = await messageResponse.json();
+      console.log('Message sent:', messageData);
+      
+      if (messageData.success && messageData.message) {
+        setLocalMessages(prev => [...prev, messageData.message]);
+      }
+      
+    } catch (err) {
+      console.error('Failed to send message:', err);
+    } finally {
+      setIsUploading(false);
+      setMessage("");
+      setSelectedFiles([]);
+    }
   };
 
   const handleMessageInput = (value: string) => {
@@ -375,9 +424,50 @@ export function FloatingChatWidget() {
                               : "bg-white text-gray-900 rounded-bl-sm shadow-sm"
                           }`}
                         >
-                          <p className="text-xs leading-relaxed break-words">
-                            {msg.content}
-                          </p>
+                          {msg.content && (
+                            <p className="text-xs leading-relaxed break-words">
+                              {msg.content}
+                            </p>
+                          )}
+                          
+                          {/* Display files if any */}
+                          {msg.files && msg.files.length > 0 && (
+                            <div className={`${msg.content ? 'mt-2' : ''} space-y-1`}>
+                              {msg.files.map((fileUrl: string, index: number) => {
+                                const fileName = fileUrl.split('/').pop() || 'file';
+                                const isImage = /\.(jpg|jpeg|png|gif|webp)$/i.test(fileName);
+                                
+                                return (
+                                  <div key={index}>
+                                    {isImage ? (
+                                      // Image with thumbnail
+                                      <div className="max-w-48 max-h-32 overflow-hidden rounded cursor-pointer">
+                                        <img 
+                                          src={fileUrl} 
+                                          alt={fileName}
+                                          className="w-full h-full object-cover"
+                                          onClick={() => window.open(fileUrl, '_blank')}
+                                        />
+                                      </div>
+                                    ) : (
+                                      // Document as clickable link
+                                      <a 
+                                        href={fileUrl} 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        className={`inline-flex items-center gap-2 p-2 rounded text-xs hover:opacity-80 transition-opacity ${
+                                          isMine ? 'bg-blue-600' : 'bg-gray-100 text-gray-700'
+                                        }`}
+                                      >
+                                        <FileText className="w-4 h-4" />
+                                        <span className="truncate max-w-32">{fileName}</span>
+                                      </a>
+                                    )}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          )}
                         </div>
                         <div
                           className={`flex items-center gap-0.5 mt-0.5 px-1 ${
@@ -435,21 +525,63 @@ export function FloatingChatWidget() {
           </div>
 
           <div className="bg-white border-t p-3">
+            {/* File preview */}
+            {selectedFiles.length > 0 && (
+              <div className="mb-2 flex flex-wrap gap-2">
+                {selectedFiles.map((file, index) => (
+                  <div key={index} className="relative bg-gray-100 rounded p-2 flex items-center gap-2">
+                    {file.type.startsWith('image/') ? (
+                      <Image className="w-4 h-4" />
+                    ) : (
+                      <FileText className="w-4 h-4" />
+                    )}
+                    <span className="text-xs truncate max-w-20">{file.name}</span>
+                    <button
+                      onClick={() => removeFile(index)}
+                      className="text-red-500 hover:text-red-700"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+            
             <div className="flex items-center gap-1.5">
+              {/* File attachment button */}
+              <input
+                type="file"
+                multiple
+                onChange={handleFileSelect}
+                className="hidden"
+                id="file-input"
+                aria-label="Attach files"
+              />
+              <label
+                htmlFor="file-input"
+                className="cursor-pointer p-2 hover:bg-gray-100 rounded-full transition-colors"
+              >
+                <Paperclip className="w-4 h-4 text-gray-500" />
+              </label>
+              
               <Input
                 value={message}
                 onChange={(e) => handleMessageInput(e.target.value)}
                 placeholder="Type message..."
                 onKeyPress={(e) => e.key === "Enter" && handleSend()}
-                disabled={!isConnected}
+                disabled={!isConnected || isUploading}
                 className="flex-1 h-9 rounded-full text-sm px-4"
               />
               <Button
                 onClick={handleSend}
-                disabled={!isConnected || !message.trim()}
+                disabled={!isConnected || isUploading || (!message.trim() && selectedFiles.length === 0)}
                 className="h-9 w-9 rounded-full bg-blue-500 hover:bg-blue-600 p-0"
               >
-                <Send className="w-4 h-4" />
+                {isUploading ? (
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <Send className="w-4 h-4" />
+                )}
               </Button>
             </div>
           </div>
