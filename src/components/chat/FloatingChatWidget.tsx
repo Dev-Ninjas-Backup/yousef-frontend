@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { MessageCircle, X, Search, ArrowLeft, Send, Check } from "lucide-react";
+import { MessageCircle, X, Search, ArrowLeft, Send, Check, Paperclip, Image, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useGetConversationsQuery, Message } from "@/store/api/privateChatApi";
@@ -27,17 +27,18 @@ export function FloatingChatWidget() {
     }
   );
 
-  const { 
-    messages, 
-    sendMessage, 
+  const {
+    messages,
+    sendMessage,
     markAsRead,
     handleTyping,
     isConnected,
     getUserStatus,
-    getTypingUsers 
+    getTypingUsers,
   } = usePrivateChat(
-    selectedChat ? 
-      conversations?.find(conv => conv.participant.id === selectedChat.id)?.chatId || null 
+    selectedChat
+      ? conversations?.find((conv) => conv.participant.id === selectedChat.id)
+          ?.chatId || null
       : null,
     selectedChat?.id // recipient ID for Socket.io
   );
@@ -47,59 +48,84 @@ export function FloatingChatWidget() {
     if (selectedChat?.id) {
       // Clear previous messages
       setLocalMessages([]);
-      
+
       // Find conversation ID from conversations list
-      const conversation = conversations?.find(conv => 
-        conv.participant.id === selectedChat.id
+      const conversation = conversations?.find(
+        (conv) => conv.participant.id === selectedChat.id
       );
-      
+
       if (conversation?.chatId) {
         // Load conversation history from REST API using conversation ID
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/private-chat/${conversation.chatId}`, {
-          headers: {
-            'Authorization': `Bearer ${document.cookie.split('token=')[1]?.split(';')[0]}`
+        fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/private-chat/${conversation.chatId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${
+                document.cookie.split("token=")[1]?.split(";")[0]
+              }`,
+            },
           }
-        })
-        .then(res => res.json())
-        .then(data => {
-          console.log('REST API Messages loaded:', data);
-          if (data.messages) {
-            setLocalMessages(data.messages);
-          }
-        })
-        .catch(err => console.error('Failed to load messages:', err));
+        )
+          .then((res) => res.json())
+          .then((data) => {
+            console.log("REST API Messages loaded:", data);
+            if (data.messages) {
+              setLocalMessages(data.messages);
+            }
+          })
+          .catch((err) => console.error("Failed to load messages:", err));
       }
     }
   }, [selectedChat?.id, conversations]);
 
   const [message, setMessage] = useState("");
   const [localMessages, setLocalMessages] = useState<Message[]>([]);
-  const [messagesEndRef, setMessagesEndRef] = useState<HTMLDivElement | null>(null);
+  const [messagesEndRef, setMessagesEndRef] = useState<HTMLDivElement | null>(
+    null
+  );
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [isUploading, setIsUploading] = useState(false);
   const typingUsers = getTypingUsers();
   const userStatus = selectedChat ? getUserStatus(selectedChat.id) : null;
-  
+
   // Combine REST API messages with real-time messages, avoiding duplicates
   const allMessages = React.useMemo(() => {
     const messageMap = new Map();
-    
+
     // Add REST API messages first (these are already filtered by conversation)
-    localMessages.forEach(msg => {
+    localMessages.forEach((msg) => {
       messageMap.set(msg.id, msg);
     });
-    
+
     // Add Socket.io messages, but ONLY for current conversation
-    const currentConversationId = selectedChat ? 
-      conversations?.find(conv => conv.participant.id === selectedChat.id)?.chatId 
+    const currentConversationId = selectedChat
+      ? conversations?.find((conv) => conv.participant.id === selectedChat.id)
+          ?.chatId
       : null;
-    
-    messages.forEach(msg => {
+
+    messages.forEach((msg) => {
       // Only add message if it belongs to current conversation
       // Check if message sender/recipient matches current chat
-      const belongsToCurrentChat = selectedChat && (
-        (msg.senderId === currentUserId && msg.recipientId === selectedChat.id) ||
-        (msg.senderId === selectedChat.id && msg.recipientId === currentUserId)
-      );
-      
+      const belongsToCurrentChat =
+        selectedChat &&
+        ((msg.senderId === currentUserId &&
+          msg.recipientId === selectedChat.id) ||
+          (msg.senderId === selectedChat.id &&
+            msg.recipientId === currentUserId) ||
+          // Also check if message is in current conversation (for REST API compatibility)
+          (msg as any).conversationId === currentConversationId);
+
+      console.log("Message check:", {
+        messageId: msg.id,
+        senderId: msg.senderId,
+        recipientId: msg.recipientId,
+        conversationId: (msg as any).conversationId,
+        currentConversationId,
+        currentUserId,
+        selectedChatId: selectedChat?.id,
+        belongsToCurrentChat,
+      });
+
       if (belongsToCurrentChat) {
         const existingMsg = messageMap.get(msg.id);
         if (!existingMsg || msg.isEdited || msg.isDeleted) {
@@ -107,16 +133,17 @@ export function FloatingChatWidget() {
         }
       }
     });
-    
-    return Array.from(messageMap.values()).sort((a, b) => 
-      new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+
+    return Array.from(messageMap.values()).sort(
+      (a, b) =>
+        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
     );
   }, [localMessages, messages, selectedChat, conversations, currentUserId]);
 
   // Auto scroll to bottom when messages change
   useEffect(() => {
     if (messagesEndRef) {
-      messagesEndRef.scrollIntoView({ behavior: 'smooth' });
+      messagesEndRef.scrollIntoView({ behavior: "smooth" });
     }
   }, [allMessages, messagesEndRef]);
 
@@ -127,31 +154,83 @@ export function FloatingChatWidget() {
     }
   }, [conversations]);
 
-  const handleSend = () => {
-    if (!message.trim() || !selectedChat) return;
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || []);
     
-    // Use REST API to send message with recipient ID
-    const formData = new FormData();
-    formData.append('content', message);
-    formData.append('recipientId', selectedChat.id); // Add recipientId to body
+    // All files are now supported by backend
+    setSelectedFiles(prev => [...prev, ...files].slice(0, 5)); // Max 5 files
+  };
+
+  const removeFile = (index: number) => {
+    setSelectedFiles(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleSend = async () => {
+    if ((!message.trim() && selectedFiles.length === 0) || !selectedChat) return;
     
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/private-chat/send-message/${selectedChat.id}`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${document.cookie.split('token=')[1]?.split(';')[0]}`
-      },
-      body: formData
-    })
-    .then(res => res.json())
-    .then(data => {
-      console.log('Message sent:', data);
-      if (data.success && data.message) {
-        setLocalMessages(prev => [...prev, data.message]);
+    setIsUploading(true);
+    
+    try {
+      let fileUrls: string[] = [];
+      
+      // Step 1: Upload files to AWS S3 if any
+      if (selectedFiles.length > 0) {
+        const uploadFormData = new FormData();
+        selectedFiles.forEach(file => {
+          uploadFormData.append('files', file);
+        });
+        
+        const uploadResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/aws-file-upload-additional-all/upload-s3-additional-multiple`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${document.cookie.split('token=')[1]?.split(';')[0]}`
+          },
+          body: uploadFormData
+        });
+        
+        const uploadData = await uploadResponse.json();
+        console.log('Files uploaded to S3:', uploadData);
+        
+        if (uploadData.files && uploadData.files.length > 0) {
+          fileUrls = uploadData.files;
+        }
       }
-    })
-    .catch(err => console.error('Failed to send message:', err));
-    
-    setMessage("");
+      
+      // Step 2: Send message with file URLs
+      const messageFormData = new FormData();
+      const contentToSend = message.trim() || (fileUrls.length > 0 ? 'File shared' : '');
+      messageFormData.append('content', contentToSend);
+      messageFormData.append('recipientId', selectedChat.id);
+      
+      // Add file URLs as individual array items (not JSON string)
+      if (fileUrls.length > 0) {
+        fileUrls.forEach(url => {
+          messageFormData.append('files[]', url);
+        });
+      }
+      
+      const messageResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/private-chat/send-message/${selectedChat.id}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${document.cookie.split('token=')[1]?.split(';')[0]}`
+        },
+        body: messageFormData
+      });
+      
+      const messageData = await messageResponse.json();
+      console.log('Message sent:', messageData);
+      
+      if (messageData.success && messageData.message) {
+        setLocalMessages(prev => [...prev, messageData.message]);
+      }
+      
+    } catch (err) {
+      console.error('Failed to send message:', err);
+    } finally {
+      setIsUploading(false);
+      setMessage("");
+      setSelectedFiles([]);
+    }
   };
 
   const handleMessageInput = (value: string) => {
@@ -215,39 +294,43 @@ export function FloatingChatWidget() {
             ) : (
               // Sort conversations by updatedAt (latest first)
               filteredConversations
-                ?.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
+                ?.sort(
+                  (a, b) =>
+                    new Date(b.updatedAt).getTime() -
+                    new Date(a.updatedAt).getTime()
+                )
                 ?.map((conv) => (
-                <button
-                  key={conv.chatId}
-                  onClick={() => {
-                    setSelectedChat({
-                      id: conv.participant.id,
-                      name: conv.participant.fullName,
-                    });
-                    setHasUnread(false);
-                  }}
-                  className="w-full p-3 hover:bg-gray-50 flex items-center gap-3 border-b transition-colors"
-                >
-                  <div className="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold flex-shrink-0">
-                    {conv.participant.fullName.charAt(0).toUpperCase()}
-                  </div>
+                  <button
+                    key={conv.chatId}
+                    onClick={() => {
+                      setSelectedChat({
+                        id: conv.participant.id,
+                        name: conv.participant.fullName,
+                      });
+                      setHasUnread(false);
+                    }}
+                    className="w-full p-3 hover:bg-gray-50 flex items-center gap-3 border-b transition-colors"
+                  >
+                    <div className="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold flex-shrink-0">
+                      {conv.participant.fullName.charAt(0).toUpperCase()}
+                    </div>
 
-                  <div className="flex-1 text-left min-w-0">
-                    <p className="font-semibold text-sm text-gray-900 truncate">
-                      {conv.participant.fullName}
-                    </p>
-                    <p className="text-xs text-gray-500 truncate">
-                      {conv.lastMessage?.content || "No messages yet"}
-                    </p>
-                  </div>
+                    <div className="flex-1 text-left min-w-0">
+                      <p className="font-semibold text-sm text-gray-900 truncate">
+                        {conv.participant.fullName}
+                      </p>
+                      <p className="text-xs text-gray-500 truncate">
+                        {conv.lastMessage?.content || "No messages yet"}
+                      </p>
+                    </div>
 
-                  {conv.lastMessage && (
-                    <span className="text-xs text-gray-400">
-                      {new Date(conv.updatedAt).toLocaleDateString()}
-                    </span>
-                  )}
-                </button>
-              ))
+                    {conv.lastMessage && (
+                      <span className="text-xs text-gray-400">
+                        {new Date(conv.updatedAt).toLocaleDateString()}
+                      </span>
+                    )}
+                  </button>
+                ))
             )}
           </div>
         </>
@@ -268,9 +351,11 @@ export function FloatingChatWidget() {
               <div>
                 <h3 className="font-semibold text-sm">{selectedChat.name}</h3>
                 <div className="flex items-center gap-1">
-                  <div className={`w-2 h-2 rounded-full ${
-                    isConnected ? 'bg-green-400' : 'bg-red-400'
-                  }`} />
+                  <div
+                    className={`w-2 h-2 rounded-full ${
+                      isConnected ? "bg-green-400" : "bg-red-400"
+                    }`}
+                  />
                   <p className="text-xs opacity-90">
                     {isConnected ? "Online" : "Connecting..."}
                     {typingUsers.length > 0 && (
@@ -339,9 +424,50 @@ export function FloatingChatWidget() {
                               : "bg-white text-gray-900 rounded-bl-sm shadow-sm"
                           }`}
                         >
-                          <p className="text-xs leading-relaxed break-words">
-                            {msg.content}
-                          </p>
+                          {msg.content && (
+                            <p className="text-xs leading-relaxed break-words">
+                              {msg.content}
+                            </p>
+                          )}
+                          
+                          {/* Display files if any */}
+                          {msg.files && msg.files.length > 0 && (
+                            <div className={`${msg.content ? 'mt-2' : ''} space-y-1`}>
+                              {msg.files.map((fileUrl: string, index: number) => {
+                                const fileName = fileUrl.split('/').pop() || 'file';
+                                const isImage = /\.(jpg|jpeg|png|gif|webp)$/i.test(fileName);
+                                
+                                return (
+                                  <div key={index}>
+                                    {isImage ? (
+                                      // Image with thumbnail
+                                      <div className="max-w-48 max-h-32 overflow-hidden rounded cursor-pointer">
+                                        <img 
+                                          src={fileUrl} 
+                                          alt={fileName}
+                                          className="w-full h-full object-cover"
+                                          onClick={() => window.open(fileUrl, '_blank')}
+                                        />
+                                      </div>
+                                    ) : (
+                                      // Document as clickable link
+                                      <a 
+                                        href={fileUrl} 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        className={`inline-flex items-center gap-2 p-2 rounded text-xs hover:opacity-80 transition-opacity ${
+                                          isMine ? 'bg-blue-600' : 'bg-gray-100 text-gray-700'
+                                        }`}
+                                      >
+                                        <FileText className="w-4 h-4" />
+                                        <span className="truncate max-w-32">{fileName}</span>
+                                      </a>
+                                    )}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          )}
                         </div>
                         <div
                           className={`flex items-center gap-0.5 mt-0.5 px-1 ${
@@ -351,9 +477,11 @@ export function FloatingChatWidget() {
                           <span className="text-xs text-gray-400">{time}</span>
                           {isMine && (
                             <div className="flex items-center">
-                              <Check className={`w-3 h-3 ${
-                                msg.isRead ? "text-blue-500" : "text-gray-400"
-                              }`} />
+                              <Check
+                                className={`w-3 h-3 ${
+                                  msg.isRead ? "text-blue-500" : "text-gray-400"
+                                }`}
+                              />
                               {msg.isRead && (
                                 <Check className="w-3 h-3 text-blue-500 -ml-1" />
                               )}
@@ -366,7 +494,7 @@ export function FloatingChatWidget() {
                 );
               })
             )}
-            
+
             {/* Typing indicator bubble */}
             {typingUsers.length > 0 && (
               <div className="flex justify-start mb-1">
@@ -378,34 +506,82 @@ export function FloatingChatWidget() {
                     <div className="flex items-center space-x-1">
                       <div className="flex space-x-1">
                         <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
-                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                        <div
+                          className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                          style={{ animationDelay: "0.1s" }}
+                        ></div>
+                        <div
+                          className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                          style={{ animationDelay: "0.2s" }}
+                        ></div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
             )}
-            
+
             <div ref={setMessagesEndRef} />
           </div>
 
           <div className="bg-white border-t p-3">
+            {/* File preview */}
+            {selectedFiles.length > 0 && (
+              <div className="mb-2 flex flex-wrap gap-2">
+                {selectedFiles.map((file, index) => (
+                  <div key={index} className="relative bg-gray-100 rounded p-2 flex items-center gap-2">
+                    {file.type.startsWith('image/') ? (
+                      <Image className="w-4 h-4" />
+                    ) : (
+                      <FileText className="w-4 h-4" />
+                    )}
+                    <span className="text-xs truncate max-w-20">{file.name}</span>
+                    <button
+                      onClick={() => removeFile(index)}
+                      className="text-red-500 hover:text-red-700"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+            
             <div className="flex items-center gap-1.5">
+              {/* File attachment button */}
+              <input
+                type="file"
+                multiple
+                onChange={handleFileSelect}
+                className="hidden"
+                id="file-input"
+                aria-label="Attach files"
+              />
+              <label
+                htmlFor="file-input"
+                className="cursor-pointer p-2 hover:bg-gray-100 rounded-full transition-colors"
+              >
+                <Paperclip className="w-4 h-4 text-gray-500" />
+              </label>
+              
               <Input
                 value={message}
                 onChange={(e) => handleMessageInput(e.target.value)}
                 placeholder="Type message..."
                 onKeyPress={(e) => e.key === "Enter" && handleSend()}
-                disabled={!isConnected}
+                disabled={!isConnected || isUploading}
                 className="flex-1 h-9 rounded-full text-sm px-4"
               />
               <Button
                 onClick={handleSend}
-                disabled={!isConnected || !message.trim()}
+                disabled={!isConnected || isUploading || (!message.trim() && selectedFiles.length === 0)}
                 className="h-9 w-9 rounded-full bg-blue-500 hover:bg-blue-600 p-0"
               >
-                <Send className="w-4 h-4" />
+                {isUploading ? (
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <Send className="w-4 h-4" />
+                )}
               </Button>
             </div>
           </div>
