@@ -3,6 +3,7 @@
 import { ReactNode } from "react";
 import UserNavbar from "@/components/shared/dashboard/user/UserNavbar";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import { FloatingChatWidget } from "@/components/chat/FloatingChatWidget";
 
 export default function UserLayout({ children }: { children: ReactNode }) {
   return (
@@ -12,6 +13,7 @@ export default function UserLayout({ children }: { children: ReactNode }) {
         <main className=" p-4 sm:p-6 lg:p-8">
           <div className="">{children}</div>
         </main>
+        <FloatingChatWidget />
       </div>
     </ProtectedRoute>
   );

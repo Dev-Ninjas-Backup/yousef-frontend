@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { MessageCircle, X, Search, ArrowLeft, Send, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useGetConversationsQuery } from "@/store/api/privateChatApi";
+import { useGetConversationsQuery, Message } from "@/store/api/privateChatApi";
 import { usePrivateChat } from "@/hooks/usePrivateChat";
 import { useAppSelector } from "@/store/hooks";
 
@@ -27,11 +27,98 @@ export function FloatingChatWidget() {
     }
   );
 
-  const { messages, sendMessage, isConnected } = usePrivateChat(
-    selectedChat?.id || null
+  const { 
+    messages, 
+    sendMessage, 
+    markAsRead,
+    handleTyping,
+    isConnected,
+    getUserStatus,
+    getTypingUsers 
+  } = usePrivateChat(
+    selectedChat ? 
+      conversations?.find(conv => conv.participant.id === selectedChat.id)?.chatId || null 
+      : null,
+    selectedChat?.id // recipient ID for Socket.io
   );
 
+  // Load messages from REST API first, then Socket for real-time
+  useEffect(() => {
+    if (selectedChat?.id) {
+      // Clear previous messages
+      setLocalMessages([]);
+      
+      // Find conversation ID from conversations list
+      const conversation = conversations?.find(conv => 
+        conv.participant.id === selectedChat.id
+      );
+      
+      if (conversation?.chatId) {
+        // Load conversation history from REST API using conversation ID
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/private-chat/${conversation.chatId}`, {
+          headers: {
+            'Authorization': `Bearer ${document.cookie.split('token=')[1]?.split(';')[0]}`
+          }
+        })
+        .then(res => res.json())
+        .then(data => {
+          console.log('REST API Messages loaded:', data);
+          if (data.messages) {
+            setLocalMessages(data.messages);
+          }
+        })
+        .catch(err => console.error('Failed to load messages:', err));
+      }
+    }
+  }, [selectedChat?.id, conversations]);
+
   const [message, setMessage] = useState("");
+  const [localMessages, setLocalMessages] = useState<Message[]>([]);
+  const [messagesEndRef, setMessagesEndRef] = useState<HTMLDivElement | null>(null);
+  const typingUsers = getTypingUsers();
+  const userStatus = selectedChat ? getUserStatus(selectedChat.id) : null;
+  
+  // Combine REST API messages with real-time messages, avoiding duplicates
+  const allMessages = React.useMemo(() => {
+    const messageMap = new Map();
+    
+    // Add REST API messages first (these are already filtered by conversation)
+    localMessages.forEach(msg => {
+      messageMap.set(msg.id, msg);
+    });
+    
+    // Add Socket.io messages, but ONLY for current conversation
+    const currentConversationId = selectedChat ? 
+      conversations?.find(conv => conv.participant.id === selectedChat.id)?.chatId 
+      : null;
+    
+    messages.forEach(msg => {
+      // Only add message if it belongs to current conversation
+      // Check if message sender/recipient matches current chat
+      const belongsToCurrentChat = selectedChat && (
+        (msg.senderId === currentUserId && msg.recipientId === selectedChat.id) ||
+        (msg.senderId === selectedChat.id && msg.recipientId === currentUserId)
+      );
+      
+      if (belongsToCurrentChat) {
+        const existingMsg = messageMap.get(msg.id);
+        if (!existingMsg || msg.isEdited || msg.isDeleted) {
+          messageMap.set(msg.id, msg);
+        }
+      }
+    });
+    
+    return Array.from(messageMap.values()).sort((a, b) => 
+      new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+    );
+  }, [localMessages, messages, selectedChat, conversations, currentUserId]);
+
+  // Auto scroll to bottom when messages change
+  useEffect(() => {
+    if (messagesEndRef) {
+      messagesEndRef.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [allMessages, messagesEndRef]);
 
   useEffect(() => {
     if (conversations && conversations.length > 0) {
@@ -41,9 +128,35 @@ export function FloatingChatWidget() {
   }, [conversations]);
 
   const handleSend = () => {
-    if (!message.trim()) return;
-    sendMessage(message);
+    if (!message.trim() || !selectedChat) return;
+    
+    // Use REST API to send message with recipient ID
+    const formData = new FormData();
+    formData.append('content', message);
+    formData.append('recipientId', selectedChat.id); // Add recipientId to body
+    
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/private-chat/send-message/${selectedChat.id}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${document.cookie.split('token=')[1]?.split(';')[0]}`
+      },
+      body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+      console.log('Message sent:', data);
+      if (data.success && data.message) {
+        setLocalMessages(prev => [...prev, data.message]);
+      }
+    })
+    .catch(err => console.error('Failed to send message:', err));
+    
     setMessage("");
+  };
+
+  const handleMessageInput = (value: string) => {
+    setMessage(value);
+    handleTyping(); // Enable typing indicator
   };
 
   const filteredConversations = conversations?.filter((conv) =>
@@ -100,7 +213,10 @@ export function FloatingChatWidget() {
                 No conversations yet
               </div>
             ) : (
-              filteredConversations?.map((conv) => (
+              // Sort conversations by updatedAt (latest first)
+              filteredConversations
+                ?.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
+                ?.map((conv) => (
                 <button
                   key={conv.chatId}
                   onClick={() => {
@@ -151,9 +267,24 @@ export function FloatingChatWidget() {
               </Button>
               <div>
                 <h3 className="font-semibold text-sm">{selectedChat.name}</h3>
-                <p className="text-xs opacity-90">
-                  {isConnected ? "Active" : "Offline"}
-                </p>
+                <div className="flex items-center gap-1">
+                  <div className={`w-2 h-2 rounded-full ${
+                    isConnected ? 'bg-green-400' : 'bg-red-400'
+                  }`} />
+                  <p className="text-xs opacity-90">
+                    {isConnected ? "Online" : "Connecting..."}
+                    {typingUsers.length > 0 && (
+                      <span className="inline-flex items-center ml-1">
+                        • Typing
+                        <span className="inline-flex ml-1">
+                          <span className="animate-bounce delay-0">.</span>
+                          <span className="animate-bounce delay-100">.</span>
+                          <span className="animate-bounce delay-200">.</span>
+                        </span>
+                      </span>
+                    )}
+                  </p>
+                </div>
               </div>
             </div>
             <Button
@@ -170,12 +301,12 @@ export function FloatingChatWidget() {
           </div>
 
           <div className="flex-1 overflow-y-auto bg-gray-50 p-3 space-y-2">
-            {messages.length === 0 ? (
+            {allMessages.length === 0 ? (
               <div className="flex items-center justify-center h-full text-gray-400 text-sm">
                 No messages yet. Start the conversation!
               </div>
             ) : (
-              messages.map((msg) => {
+              allMessages.map((msg) => {
                 const isMine = msg.senderId === currentUserId;
                 const time = new Date(msg.createdAt).toLocaleTimeString([], {
                   hour: "2-digit",
@@ -187,7 +318,7 @@ export function FloatingChatWidget() {
                     key={msg.id}
                     className={`flex ${
                       isMine ? "justify-end" : "justify-start"
-                    } mb-1`}
+                    } mb-1 group`}
                   >
                     <div
                       className={`flex items-end gap-1.5 max-w-[80%] ${
@@ -200,7 +331,7 @@ export function FloatingChatWidget() {
                         </div>
                       )}
 
-                      <div>
+                      <div className="relative">
                         <div
                           className={`rounded-xl px-3 py-1.5 ${
                             isMine
@@ -219,7 +350,14 @@ export function FloatingChatWidget() {
                         >
                           <span className="text-xs text-gray-400">{time}</span>
                           {isMine && (
-                            <Check className="w-3 h-3 text-blue-500" />
+                            <div className="flex items-center">
+                              <Check className={`w-3 h-3 ${
+                                msg.isRead ? "text-blue-500" : "text-gray-400"
+                              }`} />
+                              {msg.isRead && (
+                                <Check className="w-3 h-3 text-blue-500 -ml-1" />
+                              )}
+                            </div>
                           )}
                         </div>
                       </div>
@@ -228,13 +366,35 @@ export function FloatingChatWidget() {
                 );
               })
             )}
+            
+            {/* Typing indicator bubble */}
+            {typingUsers.length > 0 && (
+              <div className="flex justify-start mb-1">
+                <div className="flex items-end gap-1.5 max-w-[80%]">
+                  <div className="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs flex-shrink-0">
+                    {selectedChat.name.charAt(0).toUpperCase()}
+                  </div>
+                  <div className="bg-white rounded-xl px-3 py-2 shadow-sm rounded-bl-sm">
+                    <div className="flex items-center space-x-1">
+                      <div className="flex space-x-1">
+                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
+                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+            
+            <div ref={setMessagesEndRef} />
           </div>
 
           <div className="bg-white border-t p-3">
             <div className="flex items-center gap-1.5">
               <Input
                 value={message}
-                onChange={(e) => setMessage(e.target.value)}
+                onChange={(e) => handleMessageInput(e.target.value)}
                 placeholder="Type message..."
                 onKeyPress={(e) => e.key === "Enter" && handleSend()}
                 disabled={!isConnected}
