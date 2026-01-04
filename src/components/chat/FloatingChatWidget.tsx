@@ -27,17 +27,18 @@ export function FloatingChatWidget() {
     }
   );
 
-  const { 
-    messages, 
-    sendMessage, 
+  const {
+    messages,
+    sendMessage,
     markAsRead,
     handleTyping,
     isConnected,
     getUserStatus,
-    getTypingUsers 
+    getTypingUsers,
   } = usePrivateChat(
-    selectedChat ? 
-      conversations?.find(conv => conv.participant.id === selectedChat.id)?.chatId || null 
+    selectedChat
+      ? conversations?.find((conv) => conv.participant.id === selectedChat.id)
+          ?.chatId || null
       : null,
     selectedChat?.id // recipient ID for Socket.io
   );
@@ -47,59 +48,82 @@ export function FloatingChatWidget() {
     if (selectedChat?.id) {
       // Clear previous messages
       setLocalMessages([]);
-      
+
       // Find conversation ID from conversations list
-      const conversation = conversations?.find(conv => 
-        conv.participant.id === selectedChat.id
+      const conversation = conversations?.find(
+        (conv) => conv.participant.id === selectedChat.id
       );
-      
+
       if (conversation?.chatId) {
         // Load conversation history from REST API using conversation ID
-        fetch(`${process.env.NEXT_PUBLIC_API_URL}/private-chat/${conversation.chatId}`, {
-          headers: {
-            'Authorization': `Bearer ${document.cookie.split('token=')[1]?.split(';')[0]}`
+        fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/private-chat/${conversation.chatId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${
+                document.cookie.split("token=")[1]?.split(";")[0]
+              }`,
+            },
           }
-        })
-        .then(res => res.json())
-        .then(data => {
-          console.log('REST API Messages loaded:', data);
-          if (data.messages) {
-            setLocalMessages(data.messages);
-          }
-        })
-        .catch(err => console.error('Failed to load messages:', err));
+        )
+          .then((res) => res.json())
+          .then((data) => {
+            console.log("REST API Messages loaded:", data);
+            if (data.messages) {
+              setLocalMessages(data.messages);
+            }
+          })
+          .catch((err) => console.error("Failed to load messages:", err));
       }
     }
   }, [selectedChat?.id, conversations]);
 
   const [message, setMessage] = useState("");
   const [localMessages, setLocalMessages] = useState<Message[]>([]);
-  const [messagesEndRef, setMessagesEndRef] = useState<HTMLDivElement | null>(null);
+  const [messagesEndRef, setMessagesEndRef] = useState<HTMLDivElement | null>(
+    null
+  );
   const typingUsers = getTypingUsers();
   const userStatus = selectedChat ? getUserStatus(selectedChat.id) : null;
-  
+
   // Combine REST API messages with real-time messages, avoiding duplicates
   const allMessages = React.useMemo(() => {
     const messageMap = new Map();
-    
+
     // Add REST API messages first (these are already filtered by conversation)
-    localMessages.forEach(msg => {
+    localMessages.forEach((msg) => {
       messageMap.set(msg.id, msg);
     });
-    
+
     // Add Socket.io messages, but ONLY for current conversation
-    const currentConversationId = selectedChat ? 
-      conversations?.find(conv => conv.participant.id === selectedChat.id)?.chatId 
+    const currentConversationId = selectedChat
+      ? conversations?.find((conv) => conv.participant.id === selectedChat.id)
+          ?.chatId
       : null;
-    
-    messages.forEach(msg => {
+
+    messages.forEach((msg) => {
       // Only add message if it belongs to current conversation
       // Check if message sender/recipient matches current chat
-      const belongsToCurrentChat = selectedChat && (
-        (msg.senderId === currentUserId && msg.recipientId === selectedChat.id) ||
-        (msg.senderId === selectedChat.id && msg.recipientId === currentUserId)
-      );
-      
+      const belongsToCurrentChat =
+        selectedChat &&
+        ((msg.senderId === currentUserId &&
+          msg.recipientId === selectedChat.id) ||
+          (msg.senderId === selectedChat.id &&
+            msg.recipientId === currentUserId) ||
+          // Also check if message is in current conversation (for REST API compatibility)
+          (msg as any).conversationId === currentConversationId);
+
+      console.log("Message check:", {
+        messageId: msg.id,
+        senderId: msg.senderId,
+        recipientId: msg.recipientId,
+        conversationId: (msg as any).conversationId,
+        currentConversationId,
+        currentUserId,
+        selectedChatId: selectedChat?.id,
+        belongsToCurrentChat,
+      });
+
       if (belongsToCurrentChat) {
         const existingMsg = messageMap.get(msg.id);
         if (!existingMsg || msg.isEdited || msg.isDeleted) {
@@ -107,16 +131,17 @@ export function FloatingChatWidget() {
         }
       }
     });
-    
-    return Array.from(messageMap.values()).sort((a, b) => 
-      new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+
+    return Array.from(messageMap.values()).sort(
+      (a, b) =>
+        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
     );
   }, [localMessages, messages, selectedChat, conversations, currentUserId]);
 
   // Auto scroll to bottom when messages change
   useEffect(() => {
     if (messagesEndRef) {
-      messagesEndRef.scrollIntoView({ behavior: 'smooth' });
+      messagesEndRef.scrollIntoView({ behavior: "smooth" });
     }
   }, [allMessages, messagesEndRef]);
 
@@ -129,28 +154,33 @@ export function FloatingChatWidget() {
 
   const handleSend = () => {
     if (!message.trim() || !selectedChat) return;
-    
+
     // Use REST API to send message with recipient ID
     const formData = new FormData();
-    formData.append('content', message);
-    formData.append('recipientId', selectedChat.id); // Add recipientId to body
-    
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/private-chat/send-message/${selectedChat.id}`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${document.cookie.split('token=')[1]?.split(';')[0]}`
-      },
-      body: formData
-    })
-    .then(res => res.json())
-    .then(data => {
-      console.log('Message sent:', data);
-      if (data.success && data.message) {
-        setLocalMessages(prev => [...prev, data.message]);
+    formData.append("content", message);
+    formData.append("recipientId", selectedChat.id); // Add recipientId to body
+
+    fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/private-chat/send-message/${selectedChat.id}`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${
+            document.cookie.split("token=")[1]?.split(";")[0]
+          }`,
+        },
+        body: formData,
       }
-    })
-    .catch(err => console.error('Failed to send message:', err));
-    
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("Message sent:", data);
+        if (data.success && data.message) {
+          setLocalMessages((prev) => [...prev, data.message]);
+        }
+      })
+      .catch((err) => console.error("Failed to send message:", err));
+
     setMessage("");
   };
 
@@ -215,39 +245,43 @@ export function FloatingChatWidget() {
             ) : (
               // Sort conversations by updatedAt (latest first)
               filteredConversations
-                ?.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
+                ?.sort(
+                  (a, b) =>
+                    new Date(b.updatedAt).getTime() -
+                    new Date(a.updatedAt).getTime()
+                )
                 ?.map((conv) => (
-                <button
-                  key={conv.chatId}
-                  onClick={() => {
-                    setSelectedChat({
-                      id: conv.participant.id,
-                      name: conv.participant.fullName,
-                    });
-                    setHasUnread(false);
-                  }}
-                  className="w-full p-3 hover:bg-gray-50 flex items-center gap-3 border-b transition-colors"
-                >
-                  <div className="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold flex-shrink-0">
-                    {conv.participant.fullName.charAt(0).toUpperCase()}
-                  </div>
+                  <button
+                    key={conv.chatId}
+                    onClick={() => {
+                      setSelectedChat({
+                        id: conv.participant.id,
+                        name: conv.participant.fullName,
+                      });
+                      setHasUnread(false);
+                    }}
+                    className="w-full p-3 hover:bg-gray-50 flex items-center gap-3 border-b transition-colors"
+                  >
+                    <div className="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold flex-shrink-0">
+                      {conv.participant.fullName.charAt(0).toUpperCase()}
+                    </div>
 
-                  <div className="flex-1 text-left min-w-0">
-                    <p className="font-semibold text-sm text-gray-900 truncate">
-                      {conv.participant.fullName}
-                    </p>
-                    <p className="text-xs text-gray-500 truncate">
-                      {conv.lastMessage?.content || "No messages yet"}
-                    </p>
-                  </div>
+                    <div className="flex-1 text-left min-w-0">
+                      <p className="font-semibold text-sm text-gray-900 truncate">
+                        {conv.participant.fullName}
+                      </p>
+                      <p className="text-xs text-gray-500 truncate">
+                        {conv.lastMessage?.content || "No messages yet"}
+                      </p>
+                    </div>
 
-                  {conv.lastMessage && (
-                    <span className="text-xs text-gray-400">
-                      {new Date(conv.updatedAt).toLocaleDateString()}
-                    </span>
-                  )}
-                </button>
-              ))
+                    {conv.lastMessage && (
+                      <span className="text-xs text-gray-400">
+                        {new Date(conv.updatedAt).toLocaleDateString()}
+                      </span>
+                    )}
+                  </button>
+                ))
             )}
           </div>
         </>
@@ -268,9 +302,11 @@ export function FloatingChatWidget() {
               <div>
                 <h3 className="font-semibold text-sm">{selectedChat.name}</h3>
                 <div className="flex items-center gap-1">
-                  <div className={`w-2 h-2 rounded-full ${
-                    isConnected ? 'bg-green-400' : 'bg-red-400'
-                  }`} />
+                  <div
+                    className={`w-2 h-2 rounded-full ${
+                      isConnected ? "bg-green-400" : "bg-red-400"
+                    }`}
+                  />
                   <p className="text-xs opacity-90">
                     {isConnected ? "Online" : "Connecting..."}
                     {typingUsers.length > 0 && (
@@ -351,9 +387,11 @@ export function FloatingChatWidget() {
                           <span className="text-xs text-gray-400">{time}</span>
                           {isMine && (
                             <div className="flex items-center">
-                              <Check className={`w-3 h-3 ${
-                                msg.isRead ? "text-blue-500" : "text-gray-400"
-                              }`} />
+                              <Check
+                                className={`w-3 h-3 ${
+                                  msg.isRead ? "text-blue-500" : "text-gray-400"
+                                }`}
+                              />
                               {msg.isRead && (
                                 <Check className="w-3 h-3 text-blue-500 -ml-1" />
                               )}
@@ -366,7 +404,7 @@ export function FloatingChatWidget() {
                 );
               })
             )}
-            
+
             {/* Typing indicator bubble */}
             {typingUsers.length > 0 && (
               <div className="flex justify-start mb-1">
@@ -378,15 +416,21 @@ export function FloatingChatWidget() {
                     <div className="flex items-center space-x-1">
                       <div className="flex space-x-1">
                         <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
-                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                        <div
+                          className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                          style={{ animationDelay: "0.1s" }}
+                        ></div>
+                        <div
+                          className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                          style={{ animationDelay: "0.2s" }}
+                        ></div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
             )}
-            
+
             <div ref={setMessagesEndRef} />
           </div>
 
