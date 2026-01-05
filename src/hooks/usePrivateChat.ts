@@ -84,6 +84,12 @@ export function usePrivateChat(
       });
     });
 
+    socketInstance.on("private:user_stop_typing", (data: TypingUser) => {
+      setTypingUsers((prev) => 
+        prev.filter((user) => user.userId !== data.userId)
+      );
+    });
+
     // Status events
     socketInstance.on("private:user_status", (status: UserStatus) => {
       setUserStatuses((prev) => {
@@ -134,19 +140,30 @@ export function usePrivateChat(
     };
   }, [socket, recipientId]);
 
-  // Typing indicator
+  // Typing indicator with timeout
   const handleTyping = useCallback(() => {
     if (!socket || !recipientId) return;
 
     if (!isTyping) {
       setIsTyping(true);
-      socket.emit("private:typing_start", { recipientId });
+      socket.emit("private:typing_start", recipientId);
 
+      // Auto stop typing after 3 seconds
       setTimeout(() => {
-        setIsTyping(false);
-        socket.emit("private:typing_stop", { recipientId });
+        if (isTyping) {
+          setIsTyping(false);
+          socket.emit("private:typing_stop", recipientId);
+        }
       }, 3000);
     }
+  }, [socket, recipientId, isTyping]);
+
+  // Stop typing manually
+  const stopTyping = useCallback(() => {
+    if (!socket || !recipientId || !isTyping) return;
+    
+    setIsTyping(false);
+    socket.emit("private:typing_stop", recipientId);
   }, [socket, recipientId, isTyping]);
 
   // Send message
@@ -205,7 +222,7 @@ export function usePrivateChat(
 
   // Get typing users for current conversation
   const getTypingUsers = useCallback(() => {
-    return typingUsers.filter((user) => user.userId === recipientId);
+    return typingUsers.filter((user) => user.userId !== recipientId);
   }, [typingUsers, recipientId]);
 
   return {
@@ -215,6 +232,7 @@ export function usePrivateChat(
     deleteMessage,
     markAsRead,
     handleTyping,
+    stopTyping,
     isConnected,
     getUserStatus,
     getTypingUsers,

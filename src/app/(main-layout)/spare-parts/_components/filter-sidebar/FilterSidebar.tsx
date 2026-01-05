@@ -22,9 +22,9 @@ const categories = [
 ];
 
 const conditions = [
-  { id: "new", label: "New" },
-  { id: "used", label: "Used" },
-  { id: "refurbished", label: "Refurbished" },
+  { id: "New", label: "New" },
+  { id: "Used", label: "Used" },
+  { id: "Refurbished", label: "Refurbished" },
 ];
 
 export default function FilterSidebar({

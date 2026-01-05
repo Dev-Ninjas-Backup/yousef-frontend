@@ -2,13 +2,29 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export interface Product {
   id: string;
-  name: string;
+  partName: string;
   description: string;
   price: number;
-  condition: "new" | "used" | "refurbished";
-  category: string;
+  quantity: number;
+  condition: "NEW" | "USED" | "REFURBISHED";
+  brand: string;
   photos: string[];
+  status: "PENDING" | "APPROVED" | "REJECTED";
+  isPromoted: boolean;
+  views: number;
   seller: {
+    id: string;
+    name: string;
+    email: string;
+    phoneNumber: string;
+    sellerType: "INDIVIDUAL" | "VERIFIED_SUPPLIER";
+  };
+  createdBy: {
+    id: string;
+    email: string;
+    fullName: string;
+  };
+  category: {
     id: string;
     name: string;
   };
@@ -17,6 +33,8 @@ export interface Product {
 }
 
 export interface ProductsResponse {
+  success: boolean;
+  message: string;
   data: Product[];
   pagination: {
     page: number;
@@ -59,7 +77,15 @@ export const sparePartsApi = createApi({
       }),
       providesTags: ["Product"],
     }),
+    getMyProducts: builder.query<Product[], void>({
+      query: () => "/products/my-products",
+      providesTags: ["Product"],
+    }),
+    getProductById: builder.query<Product, string>({
+      query: (id) => `/products/${id}`,
+      providesTags: (result, error, id) => [{ type: "Product", id }],
+    }),
   }),
 });
 
-export const { useGetProductsQuery } = sparePartsApi;
+export const { useGetProductsQuery, useGetMyProductsQuery, useGetProductByIdQuery } = sparePartsApi;
