@@ -32,6 +32,7 @@ export function FloatingChatWidget() {
     sendMessage,
     markAsRead,
     handleTyping,
+    stopTyping,
     isConnected,
     getUserStatus,
     getTypingUsers,
@@ -230,6 +231,7 @@ export function FloatingChatWidget() {
       setIsUploading(false);
       setMessage("");
       setSelectedFiles([]);
+      stopTyping(); // Stop typing indicator when message is sent
     }
   };
 

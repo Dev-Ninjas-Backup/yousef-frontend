@@ -48,9 +48,9 @@ export default function SearchSection({
 
   const conditions = [
     { value: "all", label: trans.search.conditions.all },
-    { value: "new", label: trans.search.conditions.new },
-    { value: "used", label: trans.search.conditions.used },
-    { value: "refurbished", label: trans.search.conditions.refurbished },
+    { value: "New", label: trans.search.conditions.new },
+    { value: "Used", label: trans.search.conditions.used },
+    { value: "Refurbished", label: trans.search.conditions.refurbished },
   ];
 
   const handleSearchSubmit = () => {
