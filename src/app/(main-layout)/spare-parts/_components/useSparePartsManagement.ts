@@ -12,39 +12,59 @@ export function useSparePartsManagement() {
     page: 1,
   });
 
-  const { data, isLoading, error } = useGetProductsQuery(filters);
+  const { data, isLoading, error } = useGetProductsQuery({
+    ...filters,
+    // Remove empty/all values to avoid validation errors
+    search: filters.search || undefined,
+    category:
+      filters.category === "all" || !filters.category
+        ? undefined
+        : filters.category,
+    condition:
+      filters.condition === "all" || !filters.condition
+        ? undefined
+        : filters.condition,
+  });
 
-  console.log("API Call - Filters:", filters);
-  console.log("API Response - Data:", data);
-  console.log("API Response - Loading:", isLoading);
-  console.log("API Response - Error:", error);
-  console.log("API Response - Full Response:", JSON.stringify(data, null, 2));
+  const updateFilter = useCallback(
+    (key: keyof ProductsParams, value: string | number) => {
+      console.log(`Updating filter ${key}:`, value);
+      setFilters((prev) => ({
+        ...prev,
+        [key]: value === "all" ? "" : value,
+        page: key !== "page" ? 1 : (value as number), // Reset to page 1 when changing filters
+      }));
+    },
+    []
+  );
 
-  const updateFilter = useCallback((key: keyof ProductsParams, value: string | number) => {
-    const filterValue = typeof value === "string" && value === "all" ? "" : value;
-    console.log(`Updating filter ${key}:`, value, "-> Converted:", filterValue);
-    setFilters(prev => ({
-      ...prev,
-      [key]: filterValue,
-      page: key !== "page" ? 1 : (value as number), // Reset to page 1 when changing filters
-    }));
-  }, []);
+  const handleSearch = useCallback(
+    (searchTerm: string) => {
+      updateFilter("search", searchTerm);
+    },
+    [updateFilter]
+  );
 
-  const handleSearch = useCallback((searchTerm: string) => {
-    updateFilter("search", searchTerm);
-  }, [updateFilter]);
+  const handleCategoryFilter = useCallback(
+    (category: string) => {
+      updateFilter("category", category);
+    },
+    [updateFilter]
+  );
 
-  const handleCategoryFilter = useCallback((category: string) => {
-    updateFilter("category", category);
-  }, [updateFilter]);
+  const handleConditionFilter = useCallback(
+    (condition: string) => {
+      updateFilter("condition", condition);
+    },
+    [updateFilter]
+  );
 
-  const handleConditionFilter = useCallback((condition: string) => {
-    updateFilter("condition", condition);
-  }, [updateFilter]);
-
-  const handlePageChange = useCallback((page: number) => {
-    updateFilter("page", page);
-  }, [updateFilter]);
+  const handlePageChange = useCallback(
+    (page: number) => {
+      updateFilter("page", page);
+    },
+    [updateFilter]
+  );
 
   const clearFilters = useCallback(() => {
     setFilters({

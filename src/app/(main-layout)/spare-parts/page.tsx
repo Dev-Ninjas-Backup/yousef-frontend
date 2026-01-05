@@ -39,7 +39,7 @@ export default function SparePartsPage() {
   return (
     <div className="min-h-screen">
       <SparePartsHero onSellClick={() => setSellFormOpen(true)} />
-      
+
       <SearchSection
         onSearch={(searchTerm) => {
           console.log("Page.tsx - Search called with:", searchTerm);
@@ -80,9 +80,7 @@ export default function SparePartsPage() {
                     <p className="text-gray-600">
                       {pagination?.total || 0} products found
                       {filters.search && (
-                        <span className="ml-2">
-                          for "{filters.search}"
-                        </span>
+                        <span className="ml-2">for "{filters.search}"</span>
                       )}
                     </p>
                   </div>
@@ -139,5 +137,3 @@ export default function SparePartsPage() {
     </div>
   );
 }
-
-
