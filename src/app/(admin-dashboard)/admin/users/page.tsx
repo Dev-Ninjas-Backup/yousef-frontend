@@ -5,41 +5,74 @@ import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { LuSearch, LuDownload, LuEye, LuTrash2 } from "react-icons/lu";
 import UserDetailsModal from "./UserDetailsModal";
-// Import the hooks from your adminApiSlice
-
 
 export default function UserManagementPage() {
   const [searchQuery, setSearchQuery] = useState("");
-const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  const [roleFilter, setRoleFilter] = useState<string>("");
+  const [page, setPage] = useState(1);
+  const limit = 10;
 
-
-  // API Call: Fetching all users
-  const { data: response, isLoading, isFetching } = useGetAllUsersQuery();
+  // API Call: Fetching all users with search, pagination, and role filter
+  const { data: response, isLoading, isFetching } = useGetAllUsersQuery({
+    page,
+    limit,
+    search: searchQuery || undefined,
+    role: roleFilter || undefined,
+  });
   
   // API Call: Soft Delete Mutation
   const [deleteUser, { isLoading: isDeleting }] = useDeleteUserMutation();
 
-  const users = response?.data || [];
-
-  // Filter users based on search (Client-side filtering for the fetched list)
-  const filteredUsers = users.filter((user) => {
-    const matchesSearch =
-      user.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (user.phone && user.phone.includes(searchQuery));
-
-    return matchesSearch;
-  });
+  const users = response?.data?.data || [];
+  const pagination = response?.data?.pagination;
 
   const handleExportData = () => {
-    console.log("Exporting data...");
+    if (!users.length) {
+      alert("No data to export");
+      return;
+    }
+
+    const csvHeaders = [
+      "Name",
+      "Email", 
+      "Phone",
+      "Role",
+      "Status",
+      "Vehicles",
+      "Verified",
+      "Join Date"
+    ];
+
+    const csvData = users.map(user => [
+      user.fullName || "",
+      user.email || "",
+      user.phone || "",
+      user.role.replace('_', ' ') || "",
+      user.isActive ? "Active" : "Inactive",
+      (user.vehicles || 0).toString(),
+      user.isVerified ? "Yes" : "No",
+      new Date(user.createdAt).toLocaleDateString()
+    ]);
+
+    const csvContent = [csvHeaders, ...csvData]
+      .map(row => row.map(field => `"${field}"`).join(","))
+      .join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", `users-data-${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
-const handleView = (id: string) => {
-  setSelectedUserId(id);
-};
-
-
+  const handleView = (id: string) => {
+    setSelectedUserId(id);
+  };
 
   const handleDelete = async (id: string) => {
     if (confirm("Are you sure you want to delete this user? This is a soft delete.")) {
@@ -50,6 +83,16 @@ const handleView = (id: string) => {
         alert("Failed to delete user");
       }
     }
+  };
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    setPage(1); // Reset to first page when searching
+  };
+
+  const handleRoleChange = (role: string) => {
+    setRoleFilter(role);
+    setPage(1); // Reset to first page when filtering
   };
 
   return (
@@ -73,18 +116,33 @@ const handleView = (id: string) => {
         </button>
       </div>
 
-      {/* Search Section */}
+      {/* Search & Filter Section */}
       <div className="bg-white rounded-xl p-4 sm:p-5 shadow-sm border border-gray-100">
-        <div className="relative">
-          <LuSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-          <input
-            type="text"
-            placeholder="Search users by name, email or phone..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
-          />
-        </div>
+        <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-4">
+          <div className="flex-1 relative">
+            <LuSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search users by name, email or phone..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+            />
+          </div>
+          <select
+            value={roleFilter}
+            onChange={(e) => handleRoleChange(e.target.value)}
+            title="Filter users by role"
+            aria-label="Filter users by role"
+            className="px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">All Roles</option>
+            <option value="CAR_OWNER">Car Owner</option>
+            <option value="GARAGE_OWNER">Garage Owner</option>
+            <option value="SUPER_ADMIN">Super Admin</option>
+            <option value="MEMBER">Member</option>
+          </select>
+        </form>
       </div>
 
       {/* Table Section */}
@@ -110,11 +168,28 @@ const handleView = (id: string) => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {filteredUsers.map((user) => (
+              {users.map((user) => (
                 <tr key={user.id} className="hover:bg-gray-50 transition-colors">
                   <td className="py-4 px-5">
-                    <p className="text-sm font-medium text-gray-900">{user.fullName}</p>
-                    <p className="text-[10px] text-blue-600 font-bold uppercase">{user.role.replace('_', ' ')}</p>
+                    <div className="flex items-center gap-3">
+                      {user.profilePhoto ? (
+                        <img
+                          src={user.profilePhoto}
+                          alt={user.fullName}
+                          className="w-10 h-10 rounded-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                          <span className="text-blue-600 font-semibold text-sm">
+                            {user.fullName.charAt(0).toUpperCase()}
+                          </span>
+                        </div>
+                      )}
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">{user.fullName}</p>
+                        <p className="text-[10px] text-blue-600 font-bold uppercase">{user.role.replace('_', ' ')}</p>
+                      </div>
+                    </div>
                   </td>
                   <td className="py-4 px-5">
                     <div>
@@ -153,12 +228,27 @@ const handleView = (id: string) => {
 
         {/* Mobile View */}
         <div className="lg:hidden divide-y divide-gray-100">
-          {filteredUsers.map((user) => (
+          {users.map((user) => (
             <div key={user.id} className="p-4 sm:p-5 hover:bg-gray-50">
               <div className="flex items-start justify-between mb-3">
-                <div className="flex-1">
-                  <h3 className="text-base font-semibold text-gray-900">{user.fullName}</h3>
-                  <p className="text-xs text-gray-500 mt-1">Joined: {new Date(user.createdAt).toLocaleDateString()}</p>
+                <div className="flex items-center gap-3 flex-1">
+                  {user.profilePhoto ? (
+                    <img
+                      src={user.profilePhoto}
+                      alt={user.fullName}
+                      className="w-12 h-12 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
+                      <span className="text-blue-600 font-semibold">
+                        {user.fullName.charAt(0).toUpperCase()}
+                      </span>
+                    </div>
+                  )}
+                  <div className="flex-1">
+                    <h3 className="text-base font-semibold text-gray-900">{user.fullName}</h3>
+                    <p className="text-xs text-gray-500 mt-1">Joined: {new Date(user.createdAt).toLocaleDateString()}</p>
+                  </div>
                 </div>
                 <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${
                   user.isActive ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"
@@ -189,10 +279,40 @@ const handleView = (id: string) => {
         </div>
 
         {/* Empty State */}
-        {!isLoading && filteredUsers.length === 0 && (
+        {!isLoading && users.length === 0 && (
           <div className="py-12 text-center text-gray-500 text-sm">No users found</div>
         )}
       </div>
+
+      {/* Pagination */}
+      {pagination && pagination.totalPages > 1 && (
+        <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+          <div className="flex items-center justify-between">
+            <div className="text-sm text-gray-500">
+              Showing {((page - 1) * limit) + 1} to {Math.min(page * limit, pagination.total)} of {pagination.total} users
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setPage(page - 1)}
+                disabled={page === 1}
+                className="px-3 py-1 text-sm border rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+              >
+                Previous
+              </button>
+              <span className="px-3 py-1 text-sm bg-blue-50 text-blue-600 rounded-lg">
+                {page} of {pagination.totalPages}
+              </span>
+              <button
+                onClick={() => setPage(page + 1)}
+                disabled={page === pagination.totalPages}
+                className="px-3 py-1 text-sm border rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 {selectedUserId && (
   <UserDetailsModal
     userId={selectedUserId}
