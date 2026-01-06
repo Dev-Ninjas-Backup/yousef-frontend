@@ -1,16 +1,66 @@
 import { apiSlice } from "../api/apiSlice";
-import { AllUsersResponse, SingleUserResponse } from "./types";
+
+export interface User {
+  id: string;
+  role: string;
+  fullName: string;
+  phone: string;
+  profilePhoto: string;
+  bio: string;
+  email: string;
+  isActive: boolean;
+  garageStatus: string;
+  isGarageVerified: boolean;
+  createdAt: string;
+  updatedAt: string;
+  isVerified: boolean;
+  isDeleted: boolean;
+  vehicles: number;
+}
+
+export interface AllUsersResponse {
+  success: boolean;
+  message: string;
+  data: {
+    data: User[];
+    pagination: {
+      total: number;
+      page: number;
+      limit: number;
+      totalPages: number;
+    };
+  };
+}
+
+export interface SingleUserResponse {
+  success: boolean;
+  message: string;
+  data: User;
+}
+
+export interface UserSearchParams {
+  page?: number;
+  limit?: number;
+  search?: string;
+  role?: string;
+}
 
 export const adminApiSlice = apiSlice.enhanceEndpoints({ addTagTypes: ['Admin'] }).injectEndpoints({
   endpoints: (builder) => ({
- 
-
-    getAllUsers: builder.query<AllUsersResponse, void>({
-      query: () => '/user-management',
+    getAllUsers: builder.query<AllUsersResponse, UserSearchParams>({
+      query: (params = {}) => ({
+        url: '/user-management',
+        params: {
+          page: params.page || 1,
+          limit: params.limit || 10,
+          search: params.search || undefined,
+          role: params.role || undefined,
+        },
+      }),
       providesTags: (result) =>
         result
           ? [
-              ...result.data.map(({ id }) => ({ type: 'Admin' as const, id })),
+              ...result.data.data.map(({ id }) => ({ type: 'Admin' as const, id })),
               { type: 'Admin', id: 'USER_LIST' },
             ]
           : [{ type: 'Admin', id: 'USER_LIST' }],

@@ -44,7 +44,8 @@ export interface PartsCategoryStats {
   data: {
     totalProducts: number;
     categoryStatistics: {
-      category: string;
+      categoryId: string;
+      categoryName: string;
       productCount: number;
       percentage: number;
     }[];

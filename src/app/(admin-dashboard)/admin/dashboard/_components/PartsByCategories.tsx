@@ -56,7 +56,7 @@ const PartsByCategories = ({
 
   const chartData =
     data?.data.categoryStatistics.map((stat, index) => ({
-      name: stat.category,
+      name: stat.categoryName,
       value: stat.percentage,
       count: stat.productCount,
       color: COLORS[index % COLORS.length],
