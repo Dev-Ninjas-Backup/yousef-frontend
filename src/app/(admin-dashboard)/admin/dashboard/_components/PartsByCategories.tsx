@@ -1,16 +1,9 @@
 "use client";
 
+import { useGetPartsCategoryQuery } from "@/store/fetures/admin.dashboard.api";
 import { Cell, Pie, PieChart, PieLabelRenderProps } from "recharts";
 
-// Sample data
-const data = [
-  { name: "Engine Parts", value: 38, color: "#3B82F6" },
-  { name: "Brakes", value: 21, color: "#10B981" },
-  { name: "Suspension", value: 18, color: "#F59E0B" },
-  { name: "Electrical", value: 14, color: "#EF4444" },
-  { name: "Body Parts", value: 9, color: "#8B5CF6" },
-];
-
+const COLORS = ["#3B82F6", "#10B981", "#F59E0B", "#EF4444", "#8B5CF6", "#EC4899", "#14B8A6"];
 const RADIAN = Math.PI / 180;
 
 const renderCustomizedLabel = ({
@@ -21,7 +14,6 @@ const renderCustomizedLabel = ({
   outerRadius,
   percent,
 }: PieLabelRenderProps) => {
-  // Type assertions for recharts number types
   const centerX = cx as number;
   const centerY = cy as number;
   const angle = midAngle as number;
@@ -48,51 +40,67 @@ const renderCustomizedLabel = ({
 };
 
 const PartsByCategories = ({ isAnimationActive = true }: { isAnimationActive?: boolean }) => {
+  const { data, isLoading } = useGetPartsCategoryQuery();
+
+  const chartData = data?.data.categoryStatistics.map((stat, index) => ({
+    name: stat.category,
+    value: stat.percentage,
+    count: stat.productCount,
+    color: COLORS[index % COLORS.length],
+  })) || [];
+
   return (
     <div className="bg-white rounded-xl p-4 sm:p-5 lg:p-6 shadow-sm border border-gray-100">
       <h2 className="text-base sm:text-lg font-semibold text-gray-900 mb-4 sm:mb-6">
         Parts by Category
       </h2>
-      <div className="h-64 sm:h-72 lg:h-80 relative flex items-center justify-center">
-        <div className="w-full max-w-md relative">
-          {/* Chart Container */}
-          <div className="relative w-full aspect-square max-w-[280px] mx-auto">
-            <PieChart
-              style={{ width: "100%", maxWidth: "500px", maxHeight: "80vh", aspectRatio: 1 }}
-            >
-              <Pie
-                data={data}
-                labelLine={false}
-                label={renderCustomizedLabel}
-                fill="#8884d8"
-                dataKey="value"
-                isAnimationActive={isAnimationActive}
+      {isLoading ? (
+        <div className="h-64 sm:h-72 lg:h-80 flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        </div>
+      ) : chartData.length > 0 ? (
+        <div className="h-64 sm:h-72 lg:h-80 relative flex items-center justify-center">
+          <div className="w-full max-w-md relative">
+            <div className="relative w-full aspect-square max-w-[280px] mx-auto">
+              <PieChart
+                style={{ width: "100%", maxWidth: "500px", maxHeight: "80vh", aspectRatio: 1 }}
               >
-                {data.map((entry, index) => (
-                  <Cell key={`cell-${entry.name}`} fill={entry.color} />
-                ))}
-              </Pie>
-            </PieChart>
-          </div>
+                <Pie
+                  data={chartData}
+                  labelLine={false}
+                  label={renderCustomizedLabel}
+                  fill="#8884d8"
+                  dataKey="value"
+                  isAnimationActive={isAnimationActive}
+                >
+                  {chartData.map((entry, index) => (
+                    <Cell key={`cell-${entry.name}`} fill={entry.color} />
+                  ))}
+                </Pie>
+              </PieChart>
+            </div>
 
-          {/* Labels positioned around the chart */}
-          <div className="absolute top-2 right-0 text-xs sm:text-sm font-medium text-blue-600">
-            Engine Parts: 38%
-          </div>
-          <div className="absolute top-1/3 left-0 text-xs sm:text-sm font-medium text-green-600">
-            Brakes: 21%
-          </div>
-          <div className="absolute bottom-1/4 left-4 text-xs sm:text-sm font-medium text-yellow-600">
-            Suspension: 18%
-          </div>
-          <div className="absolute bottom-1/3 right-2 text-xs sm:text-sm font-medium text-red-600">
-            Electrical: 14%
-          </div>
-          <div className="absolute top-1/2 right-0 translate-x-2 text-xs sm:text-sm font-medium text-purple-600">
-            Body Parts: 9%
+            {/* Legend */}
+            <div className="mt-6 grid grid-cols-2 gap-2">
+              {chartData.map((entry) => (
+                <div key={entry.name} className="flex items-center gap-2">
+                  <div
+                    className="w-3 h-3 rounded-full"
+                    style={{ backgroundColor: entry.color }}
+                  />
+                  <span className="text-xs sm:text-sm text-gray-700">
+                    {entry.name}: {entry.value.toFixed(1)}%
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
-      </div>
+      ) : (
+        <div className="h-64 flex items-center justify-center text-gray-500">
+          No category data available
+        </div>
+      )}
     </div>
   );
 };
