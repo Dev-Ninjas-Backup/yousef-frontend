@@ -3,7 +3,15 @@
 import { useGetPartsCategoryQuery } from "@/store/fetures/admin.dashboard.api";
 import { Cell, Pie, PieChart, PieLabelRenderProps } from "recharts";
 
-const COLORS = ["#3B82F6", "#10B981", "#F59E0B", "#EF4444", "#8B5CF6", "#EC4899", "#14B8A6"];
+const COLORS = [
+  "#3B82F6",
+  "#10B981",
+  "#F59E0B",
+  "#EF4444",
+  "#8B5CF6",
+  "#EC4899",
+  "#14B8A6",
+];
 const RADIAN = Math.PI / 180;
 
 const renderCustomizedLabel = ({
@@ -39,15 +47,20 @@ const renderCustomizedLabel = ({
   );
 };
 
-const PartsByCategories = ({ isAnimationActive = true }: { isAnimationActive?: boolean }) => {
+const PartsByCategories = ({
+  isAnimationActive = true,
+}: {
+  isAnimationActive?: boolean;
+}) => {
   const { data, isLoading } = useGetPartsCategoryQuery();
 
-  const chartData = data?.data.categoryStatistics.map((stat, index) => ({
-    name: stat.category,
-    value: stat.percentage,
-    count: stat.productCount,
-    color: COLORS[index % COLORS.length],
-  })) || [];
+  const chartData =
+    data?.data.categoryStatistics.map((stat, index) => ({
+      name: stat.category,
+      value: stat.percentage,
+      count: stat.productCount,
+      color: COLORS[index % COLORS.length],
+    })) || [];
 
   return (
     <div className="bg-white rounded-xl p-4 sm:p-5 lg:p-6 shadow-sm border border-gray-100">
@@ -63,7 +76,12 @@ const PartsByCategories = ({ isAnimationActive = true }: { isAnimationActive?: b
           <div className="w-full max-w-md relative">
             <div className="relative w-full aspect-square max-w-[280px] mx-auto">
               <PieChart
-                style={{ width: "100%", maxWidth: "500px", maxHeight: "80vh", aspectRatio: 1 }}
+                style={{
+                  width: "100%",
+                  maxWidth: "500px",
+                  maxHeight: "80vh",
+                  aspectRatio: 1,
+                }}
               >
                 <Pie
                   data={chartData}
