@@ -1,13 +1,16 @@
 import React from "react";
 import { Line } from "react-chartjs-2";
+import { useGetRevenueTrendsQuery } from "@/store/fetures/admin.dashboard.api";
 
 const RevenueTrends = () => {
+  const { data, isLoading } = useGetRevenueTrendsQuery();
+
   const revenueData = {
-    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+    labels: data?.map(item => item.month) || [],
     datasets: [
       {
-        label: "revenue",
-        data: [35000, 40000, 42000, 38000, 43000, 45000],
+        label: "Revenue",
+        data: data?.map(item => item.revenue) || [],
         borderColor: "#3B82F6",
         backgroundColor: "transparent",
         tension: 0.4,
@@ -23,6 +26,9 @@ const RevenueTrends = () => {
       },
     ],
   };
+
+  const maxRevenue = data ? Math.max(...data.map(item => item.revenue)) : 60000;
+  const chartMax = Math.ceil(maxRevenue * 1.2 / 10000) * 10000;
 
   const revenueOptions = {
     responsive: true,
@@ -56,7 +62,7 @@ const RevenueTrends = () => {
         displayColors: false,
         callbacks: {
           label: function (context: any) {
-            return context.parsed.y.toLocaleString();
+            return `$${context.parsed.y.toLocaleString()}`;
           },
         },
       },
@@ -99,11 +105,11 @@ const RevenueTrends = () => {
           },
           padding: 8,
           callback: function (value: any) {
-            return value >= 1000 ? value / 1000 + "000" : value;
+            return `$${value >= 1000 ? (value / 1000).toFixed(0) + 'k' : value}`;
           },
         },
         beginAtZero: true,
-        max: 60000,
+        max: chartMax,
       },
     },
     interaction: {
@@ -117,9 +123,19 @@ const RevenueTrends = () => {
       <h2 className="text-base sm:text-lg font-semibold text-gray-900 mb-4 sm:mb-6">
         Revenue Trends
       </h2>
-      <div className="h-64 sm:h-72 lg:h-80">
-        <Line data={revenueData} options={revenueOptions} />
-      </div>
+      {isLoading ? (
+        <div className="h-64 sm:h-72 lg:h-80 flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        </div>
+      ) : data && data.length > 0 ? (
+        <div className="h-64 sm:h-72 lg:h-80">
+          <Line data={revenueData} options={revenueOptions} />
+        </div>
+      ) : (
+        <div className="h-64 flex items-center justify-center text-gray-500">
+          No revenue data available
+        </div>
+      )}
     </div>
   );
 };
