@@ -6,11 +6,13 @@ import { Tag, Clock, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { featuredPromotionsTranslations } from "@/translations/featuredPromotions";
 import { useGetPromotionalProductsQuery } from "@/store/api/promotionalApi";
+import { useRouter } from "next/navigation";
 import Toyotaimg from "@/assets/home/FeaturedPromotions/ImageWithFallback.png";
 
 const FeaturedPromotions: React.FC = () => {
   const { t } = useLanguage();
   const trans = t(featuredPromotionsTranslations);
+  const router = useRouter();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [direction, setDirection] = useState<"left" | "right">("right");
   const [cardScrollPosition, setCardScrollPosition] = useState(0);
@@ -55,6 +57,10 @@ const FeaturedPromotions: React.FC = () => {
   const goToSlide = (index: number) => {
     setDirection(index > currentSlide ? "right" : "left");
     setCurrentSlide(index);
+  };
+
+  const handleShowDetails = (productId: string) => {
+    router.push(`/spare-parts/product/${productId}`);
   };
 
   const nextSlide = () => {
@@ -149,7 +155,10 @@ const FeaturedPromotions: React.FC = () => {
                     <p className="text-sm mb-4 md:mb-6 max-w-2xl line-clamp-2">
                       {promo.description}
                     </p>
-                    <Button className="bg-blue-600 hover:bg-blue-700 w-fit px-6 md:px-8 py-4 md:py-6 rounded-lg text-sm ">
+                    <Button
+                      onClick={() => handleShowDetails(promo.id)}
+                      className="bg-blue-600 hover:bg-blue-700 w-fit px-6 md:px-8 py-4 md:py-6 rounded-lg text-sm "
+                    >
                       {trans.showDetails}
                     </Button>
                   </div>
@@ -196,7 +205,7 @@ const FeaturedPromotions: React.FC = () => {
             {promotions.map((promo, idx) => (
               <button
                 key={promo.id}
-                onClick={() => goToSlide(idx)}
+                onClick={() => handleShowDetails(promo.id)}
                 className={`bg-white rounded-lg md:rounded-xl shadow-xs overflow-hidden hover:shadow-lg transition-all text-left flex-shrink-0 w-48 md:w-52 border ${
                   idx === currentSlide ? "shadow-md ring-2 ring-blue-500" : ""
                 }`}
