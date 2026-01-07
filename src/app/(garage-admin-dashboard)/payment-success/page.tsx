@@ -15,6 +15,15 @@ export default function SuccessPayment() {
   useEffect(() => {
     if (sessionId) {
       console.log("Payment successful, session:", sessionId);
+      
+      // Auto close tab after 3 seconds if opened in new tab
+      const timer = setTimeout(() => {
+        if (window.opener) {
+          window.close();
+        }
+      }, 3000);
+      
+      return () => clearTimeout(timer);
     }
   }, [sessionId]);
 
@@ -47,10 +56,16 @@ export default function SuccessPayment() {
           )}
 
           <Button
-            onClick={() => router.back()}
+            onClick={() => {
+              if (window.opener) {
+                window.close();
+              } else {
+                router.back();
+              }
+            }}
             className="w-full bg-blue-600 hover:bg-blue-700"
           >
-            Go Back
+            {window.opener ? 'Close' : 'Go Back'}
           </Button>
         </CardContent>
       </Card>

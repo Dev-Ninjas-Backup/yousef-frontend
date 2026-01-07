@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -7,6 +8,17 @@ import { Card, CardContent } from "@/components/ui/card";
 
 export default function PaymentCancel() {
   const router = useRouter();
+
+  useEffect(() => {
+    // Auto close tab after 2 seconds if opened in new tab
+    const timer = setTimeout(() => {
+      if (window.opener) {
+        window.close();
+      }
+    }, 2000);
+    
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <div className="flex items-center justify-center min-h-screen p-6 bg-[#F9FAFB]">
@@ -27,17 +39,29 @@ export default function PaymentCancel() {
 
           <div className="space-y-3">
             <Button 
-              onClick={() => router.push("/garage-admin/subscription")}
+              onClick={() => {
+                if (window.opener) {
+                  window.close();
+                } else {
+                  router.push("/garage-admin/subscription");
+                }
+              }}
               className="w-full bg-blue-600 hover:bg-blue-700"
             >
-              Back to Subscription
+              {window.opener ? 'Close' : 'Back to Subscription'}
             </Button>
             <Button 
-              onClick={() => router.back()}
+              onClick={() => {
+                if (window.opener) {
+                  window.close();
+                } else {
+                  router.back();
+                }
+              }}
               variant="outline"
               className="w-full"
             >
-              Try Again
+              {window.opener ? 'Close' : 'Try Again'}
             </Button>
           </div>
         </CardContent>
