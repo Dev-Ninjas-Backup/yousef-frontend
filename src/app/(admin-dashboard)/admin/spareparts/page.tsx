@@ -18,12 +18,14 @@ export default function SparePartsManagementPage() {
   const [categoryFilter, setCategoryFilter] = useState("All Categories");
   const [statusFilter, setStatusFilter] = useState("All Status");
   const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
-
+  const [page, setPage] = useState(1);
+  const limit = 10;
 
   const { data: response, isLoading, isFetching } = useGetProductsQuery({
     search: searchQuery || undefined,
     category: categoryFilter === "All Categories" ? undefined : categoryFilter,
-    limit: 50,
+    page,
+    limit,
   });
 
   const [approveProduct, { isLoading: isApproving }] = useApproveProductMutation();
@@ -84,9 +86,75 @@ const handleView = (id: string) => {
     }
   };
 
-const handleExportData = ()=> {
-  // 
+const handleExportData = () => {
+  if (!spareParts.length) {
+    alert("No data to export");
+    return;
+  }
+
+  const csvHeaders = [
+    "Part Name",
+    "Brand",
+    "Category",
+    "Price",
+    "Condition",
+    "Quantity",
+    "Status",
+    "Seller Name",
+    "Seller Email",
+    "Seller Phone",
+    "Views",
+    "Inquiries",
+    "Promoted",
+    "Submitted Date"
+  ];
+
+  const csvData = spareParts.map(part => [
+    part.partName || "",
+    part.brand || "",
+    part.category?.name || "",
+    part.price || "",
+    part.condition || "",
+    (part.quantity || 0).toString(),
+    part.status || "",
+    part.seller?.name || "",
+    part.seller?.email || "",
+    part.seller?.phoneNumber || "",
+    (part.views || 0).toString(),
+    (part.inquiries || 0).toString(),
+    part.isPromoted ? "Yes" : "No",
+    new Date(part.createdAt).toLocaleDateString()
+  ]);
+
+  const csvContent = [csvHeaders, ...csvData]
+    .map(row => row.map(field => `"${field}"`).join(","))
+    .join("\n");
+
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const link = document.createElement("a");
+  const url = URL.createObjectURL(blob);
+  link.setAttribute("href", url);
+  link.setAttribute("download", `spare-parts-data-${new Date().toISOString().split('T')[0]}.csv`);
+  link.style.visibility = "hidden";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 }
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    setPage(1);
+  };
+
+  const handleCategoryChange = (category: string) => {
+    setCategoryFilter(category);
+    setPage(1);
+  };
+
+  const handleStatusChange = (status: string) => {
+    setStatusFilter(status);
+    setPage(1);
+  };
 
   return (
     <div className="w-full space-y-5 sm:space-y-6">
@@ -112,7 +180,7 @@ const handleExportData = ()=> {
 
       {/* Search and Filter Section */}
       <div className="bg-white rounded-xl p-4 sm:p-5 shadow-sm border border-gray-100">
-        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+        <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-3 sm:gap-4">
           <div className="flex-1 relative">
             <LuSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
@@ -127,20 +195,21 @@ const handleExportData = ()=> {
           <div className="relative sm:w-48">
             <select
               value={categoryFilter}
-              onChange={(e) => setCategoryFilter(e.target.value)}
+              onChange={(e) => handleCategoryChange(e.target.value)}
+              title="Filter by category"
               className="w-full appearance-none px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-700 focus:outline-none cursor-pointer"
             >
               <option>All Categories</option>
-              <option>Engine Parts fdg</option>
+              <option>Engine Parts</option>
               <option>Brakes</option>
-              {/* Categories should ideally be fetched from an API */}
             </select>
           </div>
 
           <div className="relative sm:w-48">
             <select
               value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
+              onChange={(e) => handleStatusChange(e.target.value)}
+              title="Filter by status"
               className="w-full appearance-none px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-700 focus:outline-none cursor-pointer"
             >
               <option>All Status</option>
@@ -149,7 +218,7 @@ const handleExportData = ()=> {
               <option value="REJECTED">Rejected</option>
             </select>
           </div>
-        </div>
+        </form>
       </div>
 
 

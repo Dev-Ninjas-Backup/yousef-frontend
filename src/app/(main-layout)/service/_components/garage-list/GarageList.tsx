@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Loader2 } from "lucide-react";
 import GarageCard from "../garage-card/GarageCard";
 import MapSection from "../map-section/MapSection";
 import {
@@ -21,80 +22,101 @@ import {
 } from "@/components/ui/pagination";
 import { useLanguage } from "@/context/LanguageContext";
 import { serviceTranslations } from "@/translations/service";
+import { useGetGaragesQuery } from "@/store/api/garageApi";
 
-const garagesData = [
-  {
-    id: "1",
-    name: "Al Futtaim Auto Service",
-    rating: 4.8,
-    reviews: 1142,
-    distance: "2.3 km away",
-    location: "Dubai Marina",
-    services: ["Car Repair", "Oil Change", "Towing", "Emergency"],
-    description:
-      "Professional auto repair services with certified mechanics. Specializing in all car brands with parts.",
-    priceRange: "AED 150-300",
-    status: "Open 24/7",
-    position: { lat: 25.0772, lng: 55.1398 },
-    icon: "wrench",
-    iconColor: "red",
-  },
-  {
-    id: "2",
-    name: "Emirates Towing Service",
-    rating: 4.5,
-    reviews: 892,
-    distance: "1.8 km away",
-    location: "JBR",
-    services: ["Towing", "Roadside Assist", "Battery Jump", "Lockout"],
-    description:
-      "Fast and reliable towing service available 24/7. Professional drivers with modern equipment for safe transport.",
-    priceRange: "AED 200-400",
-    status: "Emergency",
-    position: { lat: 25.0818, lng: 55.1364 },
-    icon: "truck",
-    iconColor: "red",
-  },
-  {
-    id: "3",
-    name: "Dubai Quick Fix",
-    rating: 4.9,
-    reviews: 1523,
-    distance: "3.1 km away",
-    location: "Business Bay",
-    services: ["Battery Service", "Tire Change", "AC Repair", "Diagnostics"],
-    description:
-      "Expert automotive services focusing on electrical systems and air conditioning repairs.",
-    priceRange: "AED 100-250",
-    status: "Open Now",
-    position: { lat: 25.1872, lng: 55.2631 },
-    icon: "zap",
-    iconColor: "purple",
-  },
-  {
-    id: "4",
-    name: "Speed Oil Change Center",
-    rating: 4.5,
-    reviews: 687,
-    distance: "4.2 km away",
-    location: "Sheikh Zayed Road",
-    services: ["Oil Change", "Filter Replace", "Car Wash", "Inspection"],
-    description:
-      "Quick oil change service with premium oils. Complete vehicle inspection and maintenance packages available.",
-    priceRange: "AED 80-180",
-    status: "Closes 10 PM",
-    position: { lat: 25.1124, lng: 55.1979 },
-    icon: "droplet",
-    iconColor: "orange",
-  },
-];
+interface GarageListProps {
+  searchParams: {
+    emirate: string;
+    serviceName: string;
+  };
+}
 
-export default function GarageList() {
+export default function GarageList({ searchParams }: GarageListProps) {
   const { t } = useLanguage();
   const trans = t(serviceTranslations);
   const [showMap, setShowMap] = useState(true);
   const [sortBy, setSortBy] = useState("distance");
   const [currentPage, setCurrentPage] = useState(1);
+  const limit = 4;
+
+  // API call with search parameters
+  const {
+    data: garagesResponse,
+    isLoading,
+    error,
+  } = useGetGaragesQuery({
+    page: currentPage,
+    limit,
+    emirate: searchParams.emirate || undefined,
+    serviceName: searchParams.serviceName || undefined,
+  });
+
+  // Reset to first page when search params change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchParams]);
+
+  // Transform API data for components
+  const garages =
+    (Array.isArray(garagesResponse?.data?.data)
+      ? garagesResponse.data.data
+      : []
+    )?.map((garage: any) => ({
+      id: garage.id,
+      name: garage.name,
+      rating: garage.averageRating || 4.5,
+      reviews: garage.totalReviews || 0,
+      distance: "2.5 km away",
+      location: `${garage.city}, ${garage.emirate}`,
+      services: garage.services || [],
+      description: garage.description || "Professional automotive services",
+      priceRange: "AED 150-300",
+      status: "Open Now",
+      position: { lat: garage.garageLat, lng: garage.garageLng },
+      icon: "wrench",
+      iconColor: "red",
+      phone: garage.garagePhone,
+      email: garage.email,
+      address: garage.formattedAddress,
+      hours: {
+        weekdays: garage.weekdaysHours,
+        weekends: garage.weekendsHours,
+      },
+    })) || [];
+
+  const pagination = garagesResponse?.data?.pagination;
+  const totalGarages = pagination?.total || 0;
+  const totalPages = pagination?.totalPages || 1;
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  if (isLoading) {
+    return (
+      <section className="relative py-8">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-center h-64">
+            <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section className="relative py-8">
+        <div className="container mx-auto px-4">
+          <div className="text-center py-12">
+            <p className="text-red-600">
+              Failed to load garages. Please try again.
+            </p>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="relative py-8">
@@ -102,8 +124,13 @@ export default function GarageList() {
         {/* Header */}
         <div className="mb-12 flex flex-col gap-8 md:flex-row md:items-center">
           <div>
-            <h2 className="text-2xl font-bold">23 {trans.list.garagesFound}</h2>
-            <p className="text-sm text-gray-600">{trans.list.near} Dubai Marina</p>
+            <h2 className="text-2xl font-bold">
+              {totalGarages} {trans.list.garagesFound}
+            </h2>
+            <p className="text-sm text-gray-600">
+              {searchParams.emirate && `in ${searchParams.emirate}`}
+              {searchParams.serviceName && ` for ${searchParams.serviceName}`}
+            </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-4">
@@ -114,7 +141,9 @@ export default function GarageList() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="distance">{trans.list.sortBy}</SelectItem>
-                <SelectItem value="rating">{trans.list.sortByRating}</SelectItem>
+                <SelectItem value="rating">
+                  {trans.list.sortByRating}
+                </SelectItem>
                 <SelectItem value="price">{trans.list.sortByPrice}</SelectItem>
               </SelectContent>
             </Select>
@@ -139,7 +168,7 @@ export default function GarageList() {
           {/* Map - Below on mobile, Background on desktop */}
           {showMap && (
             <div className="h-[400px] w-full overflow-hidden rounded-xl lg:absolute lg:inset-0 lg:h-full lg:z-0">
-              <MapSection garages={garagesData} />
+              <MapSection garages={garages} />
             </div>
           )}
 
@@ -151,54 +180,85 @@ export default function GarageList() {
                 : "md:grid md:grid-cols-2 md:gap-4 space-y-4 md:space-y-0"
             }`}
           >
-            {garagesData.map((garage) => (
-              <GarageCard key={garage.id} {...garage} />
-            ))}
+            {garages.length > 0 ? (
+              garages.map((garage: any) => (
+                <GarageCard key={garage.id} {...garage} />
+              ))
+            ) : (
+              <div className="col-span-full text-center py-12">
+                <p className="text-gray-500">
+                  No garages found matching your criteria.
+                </p>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Pagination - Below map and cards */}
-        <div className="mt-6 flex">
-          <Pagination className="justify-start">
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious
-                  href="#"
-                  className="bg-gray-300 text-gray-800 hover:bg-gray-400"
-                />
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink href="#" isActive>
-                  1
-                </PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink className="bg-gray-100" href="#">
-                  2
-                </PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink className="bg-gray-100" href="#">
-                  3
-                </PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <span className="px-4">...</span>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationLink className="bg-gray-100" href="#">
-                  28
-                </PaginationLink>
-              </PaginationItem>
-              <PaginationItem>
-                <PaginationNext
-                  href="#"
-                  className="bg-blue-600 text-white hover:bg-blue-800 hover:text-white"
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
-        </div>
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="mt-6 flex justify-center">
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    onClick={() =>
+                      handlePageChange(Math.max(1, currentPage - 1))
+                    }
+                    className={`cursor-pointer ${
+                      currentPage === 1
+                        ? "opacity-50 cursor-not-allowed"
+                        : "bg-gray-300 text-gray-800 hover:bg-gray-400"
+                    }`}
+                  />
+                </PaginationItem>
+
+                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                  const pageNum = i + 1;
+                  return (
+                    <PaginationItem key={pageNum}>
+                      <PaginationLink
+                        onClick={() => handlePageChange(pageNum)}
+                        isActive={currentPage === pageNum}
+                        className="cursor-pointer"
+                      >
+                        {pageNum}
+                      </PaginationLink>
+                    </PaginationItem>
+                  );
+                })}
+
+                {totalPages > 5 && (
+                  <>
+                    <PaginationItem>
+                      <span className="px-4">...</span>
+                    </PaginationItem>
+                    <PaginationItem>
+                      <PaginationLink
+                        onClick={() => handlePageChange(totalPages)}
+                        className="cursor-pointer bg-gray-100"
+                      >
+                        {totalPages}
+                      </PaginationLink>
+                    </PaginationItem>
+                  </>
+                )}
+
+                <PaginationItem>
+                  <PaginationNext
+                    onClick={() =>
+                      handlePageChange(Math.min(totalPages, currentPage + 1))
+                    }
+                    className={`cursor-pointer ${
+                      currentPage === totalPages
+                        ? "opacity-50 cursor-not-allowed"
+                        : "bg-blue-600 text-white hover:bg-blue-800"
+                    }`}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
+        )}
       </div>
     </section>
   );

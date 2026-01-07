@@ -130,13 +130,13 @@ export default function MessagesPage() {
             View and respond to messages from users and partners
           </p>
         </div>
-        <button
+        {/* <button
           onClick={handleNewMessage}
           className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-lg"
         >
           <LuPlus size={16} />
           New Message
-        </button>
+        </button> */}
       </div>
 
       {/* Layout */}
