@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { useCreatePayPerPaymentMutation } from "@/store/api/garageAdminApis/products/products";
 import { toast } from "sonner";
+import { openPaymentInNewTab } from "@/utils/paymentUtils";
 
 interface PaymentPayPerProps {
   formData: any;
@@ -13,7 +14,7 @@ const PaymentPayPer = ({ formData }: PaymentPayPerProps) => {
     localStorage.setItem("productFormData", JSON.stringify(formData));
     try {
       const response = await createPayPerPayment().unwrap();
-      window.location.href = response.url;
+      openPaymentInNewTab(response.url);
     } catch (error: any) {
       toast.error(error?.data?.message || "Failed to create payment session");
     }

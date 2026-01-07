@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { useCreateMonthlyPaymentMutation } from "@/store/api/garageAdminApis/products/products";
 import { toast } from "sonner";
+import { openPaymentInNewTab } from "@/utils/paymentUtils";
 
 interface PaymentMonthlyProps {
   formData: any;
@@ -13,7 +14,7 @@ const PaymentMonthly = ({ formData }: PaymentMonthlyProps) => {
     localStorage.setItem("productFormData", JSON.stringify(formData));
     try {
       const response = await createMonthlyPayment().unwrap();
-      window.location.href = response.url;
+      openPaymentInNewTab(response.url);
     } catch (error: any) {
       toast.error(error?.data?.message || "Failed to create payment session");
     }
