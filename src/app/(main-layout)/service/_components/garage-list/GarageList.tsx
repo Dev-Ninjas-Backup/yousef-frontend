@@ -82,6 +82,7 @@ export default function GarageList({ searchParams }: GarageListProps) {
         weekdays: garage.weekdaysHours,
         weekends: garage.weekendsHours,
       },
+      ownerId: garage.userId, // Add owner ID for chat
     })) || [];
 
   const pagination = garagesResponse?.data?.pagination;

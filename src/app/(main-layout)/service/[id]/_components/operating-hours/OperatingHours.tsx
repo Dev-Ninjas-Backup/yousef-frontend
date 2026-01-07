@@ -25,7 +25,10 @@ export default function OperatingHours({ hours }: OperatingHoursProps) {
         <div className="max-w-2xl space-y-2 md:space-y-6">
           {hours.map((hour, index) => (
             <div key={index} className="flex items-center justify-between">
-              <span className="text-lg text-gray-700">{hour.day}</span>
+              <div className="flex flex-col">
+                <span className="text-lg font-medium text-gray-900">{hour.day}</span>
+                <span className="text-sm text-gray-600">{hour.hours}</span>
+              </div>
               <Badge
                 variant="outline"
                 className={`${

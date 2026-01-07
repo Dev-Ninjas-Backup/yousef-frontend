@@ -48,6 +48,7 @@ export interface ProductsParams {
   search?: string;
   category?: string;
   condition?: string;
+  status?: string;
   limit?: number;
   page?: number;
 }

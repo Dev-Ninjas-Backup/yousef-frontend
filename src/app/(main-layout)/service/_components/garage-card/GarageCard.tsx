@@ -29,6 +29,8 @@ interface GarageCardProps {
     lat: number;
     lng: number;
   };
+  ownerId?: string;
+  phone?: string;
 }
 
 export default function GarageCard({
@@ -45,6 +47,8 @@ export default function GarageCard({
   icon = "wrench",
   iconColor = "blue",
   position,
+  ownerId,
+  phone,
 }: GarageCardProps) {
   const getStatusColor = () => {
     switch (status) {
@@ -122,6 +126,46 @@ export default function GarageCard({
         const googleMapsUrl = `https://www.google.com/maps/dir//${position.lat},${position.lng}`;
         window.open(googleMapsUrl, '_blank');
       }
+    }
+  };
+
+  const handleMessage = async () => {
+    if (!ownerId) return;
+    
+    try {
+      // Create or get existing conversation with garage owner
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/private-chat/send-message/${ownerId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${document.cookie.split('token=')[1]?.split(';')[0]}`
+        },
+        body: JSON.stringify({
+          content: `Hi! I'm interested in your garage services at ${name}. Can you provide more information?`,
+          recipientId: ownerId
+        })
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        // Trigger FloatingChatWidget to open with this conversation
+        const event = new CustomEvent('openChat', {
+          detail: {
+            userId: ownerId,
+            userName: name
+          }
+        });
+        window.dispatchEvent(event);
+      }
+    } catch (error) {
+      console.error('Failed to start conversation:', error);
+    }
+  };
+
+  const handleCall = () => {
+    if (phone) {
+      window.location.href = `tel:${phone}`;
     }
   };
   return (
@@ -219,6 +263,7 @@ export default function GarageCard({
               size="sm"
               variant="outline"
               className="border-green-600 bg-green-600 text-white  hover:bg-green-50"
+              onClick={handleMessage}
             >
               <MessageCircle className="h-4 w-4" />
             </Button>
@@ -226,6 +271,7 @@ export default function GarageCard({
               size="sm"
               variant="outline"
               className="border-green-600 bg-green-600 text-white hover:bg-green-50"
+              onClick={handleCall}
             >
               <Phone className="h-4 w-4" />
             </Button>

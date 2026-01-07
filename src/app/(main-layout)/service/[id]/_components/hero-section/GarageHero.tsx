@@ -22,6 +22,9 @@ interface GarageHeroProps {
     hours: string;
     status: "Open" | "Closed";
   }[];
+  coverPhoto?: string;
+  ownerId?: string;
+  phone?: string;
 }
 
 export default function GarageHero({
@@ -31,16 +34,69 @@ export default function GarageHero({
   distance,
   services,
   operatingHours,
+  coverPhoto,
+  ownerId,
+  phone,
 }: GarageHeroProps) {
   const { t } = useLanguage();
   const trans = t(serviceDetailsTranslations);
   const [chatOpen, setChatOpen] = useState(false);
 
+  const handleMessage = async () => {
+    if (!ownerId) return;
+    
+    try {
+      // Create or get existing conversation with garage owner
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/private-chat/send-message/${ownerId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${document.cookie.split('token=')[1]?.split(';')[0]}`
+        },
+        body: JSON.stringify({
+          content: `Hi! I'm interested in your garage services at ${name}. Can you provide more information?`,
+          recipientId: ownerId
+        })
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        // Trigger FloatingChatWidget to open with this conversation
+        const event = new CustomEvent('openChat', {
+          detail: {
+            userId: ownerId,
+            userName: name
+          }
+        });
+        window.dispatchEvent(event);
+      }
+    } catch (error) {
+      console.error('Failed to start conversation:', error);
+    }
+  };
+
+  const handleCall = () => {
+    if (phone) {
+      window.location.href = `tel:${phone}`;
+    }
+  };
+
+  const handleSeeLocationScroll = () => {
+    const locationSection = document.getElementById('location-map');
+    if (locationSection) {
+      locationSection.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+  };
+
   return (
     <section className="relative h-[400px] md:h-[720px] w-full mb-[150px] md:mb-[350px]">
       <div className="absolute inset-0">
         <Image
-          src={garageBg}
+          src={coverPhoto || garageBg}
           alt={name}
           fill
           className="object-cover"
@@ -65,6 +121,7 @@ export default function GarageHero({
                   variant="outline"
                   size="lg"
                   className="self-start rounded-md border px-6 border-blue-500 text-sm md:text-base"
+                  onClick={handleSeeLocationScroll}
                 >
                   <MapPin className="mr-2 h-5 w-5" />
                   {trans.seeLocation}
@@ -94,13 +151,14 @@ export default function GarageHero({
 
                 <div className="flex gap-3">
                   <Button
-                    onClick={() => setChatOpen(true)}
+                    onClick={handleMessage}
                     size="lg"
                     className="bg-blue-600 hover:bg-blue-700 rounded-xl w-10 h-10 md:w-12 md:h-12 p-0"
                   >
                     <MessageCircle className="h-5 w-5" />
                   </Button>
                   <Button
+                    onClick={handleCall}
                     size="lg"
                     className="bg-blue-600 hover:bg-blue-700 rounded-xl w-10 h-10 md:w-12 md:h-12 p-0"
                   >
@@ -118,9 +176,14 @@ export default function GarageHero({
             <div className="space-y-4">
               {operatingHours.map((hour, index) => (
                 <div key={index} className="flex items-center justify-between">
-                  <span className="text-sm md:text-lg text-gray-700">
-                    {hour.day}
-                  </span>
+                  <div className="flex flex-col">
+                    <span className="text-sm md:text-lg font-medium text-gray-900">
+                      {hour.day}
+                    </span>
+                    <span className="text-xs md:text-sm text-gray-600">
+                      {hour.hours}
+                    </span>
+                  </div>
                   <Badge
                     variant="outline"
                     className={`${
