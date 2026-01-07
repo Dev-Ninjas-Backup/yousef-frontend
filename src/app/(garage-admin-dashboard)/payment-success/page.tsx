@@ -47,10 +47,10 @@ export default function SuccessPayment() {
           )}
 
           <Button
-            onClick={() => router.push("/garage-admin/subscription")}
+            onClick={() => router.back()}
             className="w-full bg-blue-600 hover:bg-blue-700"
           >
-            Go to Subscription
+            Go Back
           </Button>
         </CardContent>
       </Card>
