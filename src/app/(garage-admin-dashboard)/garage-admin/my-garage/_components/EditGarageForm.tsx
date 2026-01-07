@@ -13,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Upload, LocateFixed, X, Plus } from "lucide-react";
+import { Upload, X, Plus } from "lucide-react";
 import { useUpdateGarageMutation } from "@/store/api/garageAdminApis/myGarage/garageApi";
 import {
   useGetMyServicesQuery,
@@ -21,7 +21,7 @@ import {
 } from "@/store/api/garageAdminApis/myGarage/servicesApi";
 import { toast } from "sonner";
 import Image from "next/image";
-import { Spinner } from "@/components/ui/spinner";
+import { LocationForm } from "@/components/LocationForm";
 
 interface EditGarageFormProps {
   onCancel: () => void;
@@ -38,24 +38,24 @@ export function EditGarageForm({ onCancel, onSave, garage }: EditGarageFormProps
   const [newServiceName, setNewServiceName] = useState("");
   const [showAddService, setShowAddService] = useState(false);
 
-  const [formData, setFormData] = useState(garage || {
-    name: "",
-    address: "",
-    street: "",
-    city: "Dubai",
-    emirate: "Dubai",
-    phone: "",
-    email: "",
-    weekdaysHours: "8:00 AM - 8:00 PM",
-    weekendsHours: "9:00 AM - 6:00 PM",
-    services: [],
-    description: "",
-    certifications: "",
-    brandExpertise: "",
-    garageLat: 0,
-    garageLng: 0,
-    formattedAddress: "",
-    placeId: "",
+  const [formData, setFormData] = useState({
+    name: garage?.name || "",
+    address: garage?.address || "",
+    street: garage?.street || "",
+    city: garage?.city || "Dubai",
+    emirate: garage?.emirate || "Dubai",
+    phone: garage?.phone || garage?.garagePhone || "",
+    email: garage?.email || "",
+    weekdaysHours: garage?.weekdaysHours || "8:00 AM - 8:00 PM",
+    weekendsHours: garage?.weekendsHours || "9:00 AM - 6:00 PM",
+    services: garage?.services || [],
+    description: garage?.description || "",
+    certifications: garage?.certifications || "",
+    brandExpertise: garage?.brandExpertise || "",
+    garageLat: garage?.garageLat || 0,
+    garageLng: garage?.garageLng || 0,
+    formattedAddress: garage?.formattedAddress || "",
+    placeId: garage?.placeId || "",
   });
 
   const [coverPhoto, setCoverPhoto] = useState<File | null>(null);
@@ -103,6 +103,20 @@ export function EditGarageForm({ onCancel, onSave, garage }: EditGarageFormProps
     }
   };
 
+  const handleLocationChange = (locationData: any) => {
+    setFormData((prev: any) => ({
+      ...prev,
+      address: locationData.address,
+      street: locationData.street,
+      city: locationData.city,
+      emirate: locationData.emirate,
+      formattedAddress: locationData.formattedAddress,
+      placeId: locationData.placeId,
+      garageLat: locationData.garageLat,
+      garageLng: locationData.garageLng,
+    }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -144,355 +158,321 @@ export function EditGarageForm({ onCancel, onSave, garage }: EditGarageFormProps
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Photos</CardTitle>
-          </CardHeader>
-          <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <Label className="mb-4">Cover Photo</Label>
-              <input
-                type="file"
-                id="coverPhoto"
-                accept="image/*"
-                onChange={handleCoverPhotoChange}
-                className="hidden"
-              />
-              <label
-                htmlFor="coverPhoto"
-                className="border-2 border-dashed rounded-lg p-8 text-center hover:border-blue-500 cursor-pointer block"
-              >
-                {coverPreview ? (
-                  <div className="relative">
-                    <Image
-                      src={coverPreview}
-                      alt="Cover preview"
-                      width={200}
-                      height={100}
-                      className="mx-auto rounded"
-                    />
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setCoverPhoto(null);
-                        setCoverPreview("");
-                      }}
-                      className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  </div>
-                ) : (
-                  <>
-                    <Upload className="w-8 h-8 mx-auto text-gray-400 mb-4" />
-                    <p className="text-sm text-gray-600">
-                      Click to upload cover photo
-                    </p>
-                  </>
-                )}
-              </label>
-            </div>
-            <div>
-              <Label className="mb-4">Profile Image</Label>
-              <input
-                type="file"
-                id="profileImage"
-                accept="image/*"
-                onChange={handleProfileImageChange}
-                className="hidden"
-              />
-              <label
-                htmlFor="profileImage"
-                className="border-2 border-dashed rounded-lg p-8 text-center hover:border-blue-500 cursor-pointer block"
-              >
-                {profilePreview ? (
-                  <div className="relative">
-                    <Image
-                      src={profilePreview}
-                      alt="Profile preview"
-                      width={100}
-                      height={100}
-                      className="mx-auto rounded"
-                    />
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setProfileImage(null);
-                        setProfilePreview("");
-                      }}
-                      className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  </div>
-                ) : (
-                  <>
-                    <Upload className="w-8 h-8 mx-auto text-gray-400 mb-4" />
-                    <p className="text-sm text-gray-600">
-                      Click to upload profile image
-                    </p>
-                  </>
-                )}
-              </label>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Basic Information</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <Label htmlFor="name">Garage Name *</Label>
-              <Input
-                id="name"
-                value={formData.name}
-                onChange={(e) =>
-                  setFormData({ ...formData, name: e.target.value })
-                }
-                placeholder="Premium Auto Care Center"
-                required
-              />
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
-              <div className="md:col-span-4">
-                <Label htmlFor="address">Address *</Label>
-                <div className="flex items-center gap-2">
-                  <Input
-                    id="address"
-                    value={formData.address}
-                    onChange={(e) =>
-                      setFormData({ ...formData, address: e.target.value })
-                    }
-                    placeholder="Sheikh Zayed Road"
-                    required
-                  />
-                  <LocateFixed className="text-blue-500" />
-                </div>
-              </div>
-              <div className="md:col-span-4">
-                <Label htmlFor="city">City *</Label>
-                <Input
-                  id="city"
-                  value={formData.city}
-                  onChange={(e) =>
-                    setFormData({ ...formData, city: e.target.value })
-                  }
-                  required
-                />
-              </div>
-              <div className="md:col-span-4">
-                <Label htmlFor="emirate">Emirate *</Label>
-                <Select
-                  value={formData.emirate}
-                  onValueChange={(value) =>
-                    setFormData({ ...formData, emirate: value })
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Dubai">Dubai</SelectItem>
-                    <SelectItem value="Abu Dhabi">Abu Dhabi</SelectItem>
-                    <SelectItem value="Sharjah">Sharjah</SelectItem>
-                    <SelectItem value="Ajman">Ajman</SelectItem>
-                    <SelectItem value="Ras Al Khaimah">
-                      Ras Al Khaimah
-                    </SelectItem>
-                    <SelectItem value="Fujairah">Fujairah</SelectItem>
-                    <SelectItem value="Umm Al Quwain">Umm Al Quwain</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Contact Information</CardTitle>
-          </CardHeader>
-          <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="phone">Phone Number *</Label>
-              <Input
-                id="phone"
-                value={formData.phone}
-                onChange={(e) =>
-                  setFormData({ ...formData, phone: e.target.value })
-                }
-                placeholder="+971 50 123 4567"
-                required
-              />
-            </div>
-            <div>
-              <Label htmlFor="email">Email Address *</Label>
-              <Input
-                id="email"
-                type="email"
-                value={formData.email}
-                onChange={(e) =>
-                  setFormData({ ...formData, email: e.target.value })
-                }
-                placeholder="info@premiumauto.ae"
-                required
-              />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Working Hours</CardTitle>
-          </CardHeader>
-          <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="weekdays">Weekdays</Label>
-              <Input
-                id="weekdays"
-                value={formData.weekdaysHours}
-                onChange={(e) =>
-                  setFormData({ ...formData, weekdaysHours: e.target.value })
-                }
-              />
-            </div>
-            <div>
-              <Label htmlFor="weekends">Weekends</Label>
-              <Input
-                id="weekends"
-                value={formData.weekendsHours}
-                onChange={(e) =>
-                  setFormData({ ...formData, weekendsHours: e.target.value })
-                }
-              />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>Service Types Offered *</CardTitle>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => setShowAddService(!showAddService)}
+      <Card>
+        <CardHeader>
+          <CardTitle>Photos</CardTitle>
+        </CardHeader>
+        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <Label className="mb-4">Cover Photo</Label>
+            <input
+              type="file"
+              id="coverPhoto"
+              accept="image/*"
+              onChange={handleCoverPhotoChange}
+              className="hidden"
+            />
+            <label
+              htmlFor="coverPhoto"
+              className="border-2 border-dashed rounded-lg p-8 text-center hover:border-blue-500 cursor-pointer block"
             >
-              <Plus className="w-4 h-4 mr-1" />
-              Add Service
-            </Button>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {showAddService && (
-              <div className="flex gap-2">
-                <Input
-                  value={newServiceName}
-                  onChange={(e) => setNewServiceName(e.target.value)}
-                  placeholder="Enter service name"
-                  onKeyDown={(e) => e.key === "Enter" && handleAddService()}
-                />
-                <Button
-                  type="button"
-                  onClick={handleAddService}
-                  disabled={creatingService}
-                >
-                  {creatingService ? "Adding..." : "Add"}
-                </Button>
-              </div>
-            )}
-            {servicesLoading ? (
-              <Spinner className="size-6 text-green-500" />
-            ) : (
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                {servicesData?.serviceCategories.map((service) => (
+              {coverPreview ? (
+                <div className="relative">
+                  <Image
+                    src={coverPreview}
+                    alt="Cover preview"
+                    width={200}
+                    height={100}
+                    className="mx-auto rounded"
+                  />
                   <button
-                    key={service}
                     type="button"
-                    onClick={() => toggleService(service)}
-                    className={`p-4 rounded-lg border-2 transition-all ${
-                      formData.services.includes(service)
-                        ? "border-blue-500 bg-blue-50 text-blue-700"
-                        : "border-gray-200 hover:border-gray-300"
-                    }`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setCoverPhoto(null);
+                      setCoverPreview("");
+                    }}
+                    className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1"
                   >
-                    <p className="text-sm font-medium text-center">{service}</p>
+                    <X className="w-4 h-4" />
                   </button>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                </div>
+              ) : (
+                <>
+                  <Upload className="w-8 h-8 mx-auto text-gray-400 mb-4" />
+                  <p className="text-sm text-gray-600">
+                    Click to upload cover photo
+                  </p>
+                </>
+              )}
+            </label>
+          </div>
+          <div>
+            <Label className="mb-4">Profile Image</Label>
+            <input
+              type="file"
+              id="profileImage"
+              accept="image/*"
+              onChange={handleProfileImageChange}
+              className="hidden"
+            />
+            <label
+              htmlFor="profileImage"
+              className="border-2 border-dashed rounded-lg p-8 text-center hover:border-blue-500 cursor-pointer block"
+            >
+              {profilePreview ? (
+                <div className="relative">
+                  <Image
+                    src={profilePreview}
+                    alt="Profile preview"
+                    width={100}
+                    height={100}
+                    className="mx-auto rounded"
+                  />
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setProfileImage(null);
+                      setProfilePreview("");
+                    }}
+                    className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <Upload className="w-8 h-8 mx-auto text-gray-400 mb-4" />
+                  <p className="text-sm text-gray-600">
+                    Click to upload profile image
+                  </p>
+                </>
+              )}
+            </label>
+          </div>
+        </CardContent>
+      </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Description</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <Label htmlFor="description">About Your Garage</Label>
-              <Textarea
-                id="description"
-                value={formData.description}
-                onChange={(e) =>
-                  setFormData({ ...formData, description: e.target.value })
-                }
-                placeholder="Describe your garage..."
-                rows={4}
-                maxLength={210}
+      <Card>
+        <CardHeader>
+          <CardTitle>Basic Information</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <Label htmlFor="name">Garage Name *</Label>
+            <Input
+              id="name"
+              value={formData.name}
+              onChange={(e) =>
+                setFormData({ ...formData, name: e.target.value })
+              }
+              placeholder="Premium Auto Care Center"
+              required
+            />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+            <div className="md:col-span-12">
+              <LocationForm
+                initialData={{
+                  address: formData.address,
+                  street: formData.street,
+                  city: formData.city,
+                  emirate: formData.emirate,
+                  formattedAddress: formData.formattedAddress,
+                  placeId: formData.placeId,
+                  garageLat: formData.garageLat,
+                  garageLng: formData.garageLng,
+                }}
+                onLocationChange={handleLocationChange}
               />
-              <p className="text-xs text-gray-500 mt-1">
-                {formData.description.length}/210 characters
-              </p>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="certifications">Certifications</Label>
-                <Input
-                  id="certifications"
-                  value={formData.certifications}
-                  onChange={(e) =>
-                    setFormData({ ...formData, certifications: e.target.value })
-                  }
-                  placeholder="ASE Certified, ISO 9001:2015"
-                />
-              </div>
-              <div>
-                <Label htmlFor="brandExpertise">Brand Expertise</Label>
-                <Input
-                  id="brandExpertise"
-                  value={formData.brandExpertise}
-                  onChange={(e) =>
-                    setFormData({ ...formData, brandExpertise: e.target.value })
-                  }
-                  placeholder="BMW, Mercedes-Benz, Audi"
-                />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+          </div>
+        </CardContent>
+      </Card>
 
-        <div className="flex justify-end gap-3">
+      <Card>
+        <CardHeader>
+          <CardTitle>Contact Information</CardTitle>
+        </CardHeader>
+        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <Label htmlFor="phone">Phone Number *</Label>
+            <Input
+              id="phone"
+              value={formData.phone}
+              onChange={(e) =>
+                setFormData({ ...formData, phone: e.target.value })
+              }
+              placeholder="+971 50 123 4567"
+              required
+            />
+          </div>
+          <div>
+            <Label htmlFor="email">Email Address *</Label>
+            <Input
+              id="email"
+              type="email"
+              value={formData.email}
+              onChange={(e) =>
+                setFormData({ ...formData, email: e.target.value })
+              }
+              placeholder="info@premiumauto.ae"
+              required
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Working Hours</CardTitle>
+        </CardHeader>
+        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <Label htmlFor="weekdays">Weekdays</Label>
+            <Input
+              id="weekdays"
+              value={formData.weekdaysHours}
+              onChange={(e) =>
+                setFormData({ ...formData, weekdaysHours: e.target.value })
+              }
+            />
+          </div>
+          <div>
+            <Label htmlFor="weekends">Weekends</Label>
+            <Input
+              id="weekends"
+              value={formData.weekendsHours}
+              onChange={(e) =>
+                setFormData({ ...formData, weekendsHours: e.target.value })
+              }
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle>Service Types Offered *</CardTitle>
           <Button
             type="button"
             variant="outline"
-            onClick={onCancel}
-            disabled={isLoading}
+            size="sm"
+            onClick={() => setShowAddService(!showAddService)}
           >
-            Cancel
+            <Plus className="w-4 h-4 mr-1" />
+            Add Service
           </Button>
-          <Button
-            type="submit"
-            className="bg-blue-600 hover:bg-blue-700"
-            disabled={isLoading}
-          >
-            {isLoading ? "Updating..." : "Update Garage"}
-          </Button>
-        </div>
-      </form>
-  
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {showAddService && (
+            <div className="flex gap-2">
+              <Input
+                value={newServiceName}
+                onChange={(e) => setNewServiceName(e.target.value)}
+                placeholder="Enter service name"
+                onKeyDown={(e) => e.key === "Enter" && handleAddService()}
+              />
+              <Button
+                type="button"
+                onClick={handleAddService}
+                disabled={creatingService}
+              >
+                {creatingService ? "Adding..." : "Add"}
+              </Button>
+            </div>
+          )}
+          {servicesLoading ? (
+            <div className="flex justify-center py-4">
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {servicesData?.serviceCategories.map((service) => (
+                <button
+                  key={service}
+                  type="button"
+                  onClick={() => toggleService(service)}
+                  className={`p-4 rounded-lg border-2 transition-all ${
+                    formData.services.includes(service)
+                      ? "border-blue-500 bg-blue-50 text-blue-700"
+                      : "border-gray-200 hover:border-gray-300"
+                  }`}
+                >
+                  <p className="text-sm font-medium text-center">{service}</p>
+                </button>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Description</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <Label htmlFor="description">About Your Garage</Label>
+            <Textarea
+              id="description"
+              value={formData.description}
+              onChange={(e) =>
+                setFormData({ ...formData, description: e.target.value })
+              }
+              placeholder="Describe your garage..."
+              rows={4}
+              maxLength={210}
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              {formData.description.length}/210 characters
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="certifications">Certifications</Label>
+              <Input
+                id="certifications"
+                value={formData.certifications}
+                onChange={(e) =>
+                  setFormData({ ...formData, certifications: e.target.value })
+                }
+                placeholder="ASE Certified, ISO 9001:2015"
+              />
+            </div>
+            <div>
+              <Label htmlFor="brandExpertise">Brand Expertise</Label>
+              <Input
+                id="brandExpertise"
+                value={formData.brandExpertise}
+                onChange={(e) =>
+                  setFormData({ ...formData, brandExpertise: e.target.value })
+                }
+                placeholder="BMW, Mercedes-Benz, Audi"
+              />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <div className="flex justify-end gap-3">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onCancel}
+          disabled={isLoading}
+        >
+          Cancel
+        </Button>
+        <Button
+          type="submit"
+          className="bg-blue-600 hover:bg-blue-700"
+          disabled={isLoading}
+        >
+          {isLoading ? "Updating..." : "Update Garage"}
+        </Button>
+      </div>
+    </form>
   );
 }
