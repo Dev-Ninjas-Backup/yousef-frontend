@@ -21,7 +21,7 @@ import {
 } from "@/store/api/garageAdminApis/myGarage/servicesApi";
 import { toast } from "sonner";
 import Image from "next/image";
-import { Spinner } from "@/components/ui/spinner";
+import { LocationForm } from "@/components/LocationForm";
 
 interface CreateGarageFormProps {
   onCancel: () => void;
@@ -112,6 +112,20 @@ export function CreateGarageForm({ onCancel, onSave }: CreateGarageFormProps) {
     }
   };
 
+  const handleLocationChange = (locationData: any) => {
+    setFormData(prev => ({
+      ...prev,
+      address: locationData.address,
+      street: locationData.street,
+      city: locationData.city,
+      emirate: locationData.emirate,
+      formattedAddress: locationData.formattedAddress,
+      placeId: locationData.placeId,
+      garageLat: locationData.garageLat,
+      garageLng: locationData.garageLng,
+    }));
+  };
+
   const handleProfileImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -119,12 +133,16 @@ export function CreateGarageForm({ onCancel, onSave }: CreateGarageFormProps) {
       setProfilePreview(URL.createObjectURL(file));
     }
   };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!coverPhoto || !profileImage) {
       toast.error("Please upload both cover photo and profile image");
+      return;
+    }
+
+    if (!formData.garageLat || !formData.garageLng) {
+      toast.error("Please select a valid address from Google Places");
       return;
     }
 
@@ -280,55 +298,20 @@ export function CreateGarageForm({ onCancel, onSave }: CreateGarageFormProps) {
               />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
-              <div className="md:col-span-4">
-                <Label htmlFor="address">Address *</Label>
-                <div className="flex items-center gap-2">
-                  <Input
-                    id="address"
-                    value={formData.address}
-                    onChange={(e) =>
-                      setFormData({ ...formData, address: e.target.value })
-                    }
-                    placeholder="Sheikh Zayed Road"
-                    required
-                  />
-                  <LocateFixed className="text-blue-500" />
-                </div>
-              </div>
-              <div className="md:col-span-4">
-                <Label htmlFor="city">City *</Label>
-                <Input
-                  id="city"
-                  value={formData.city}
-                  onChange={(e) =>
-                    setFormData({ ...formData, city: e.target.value })
-                  }
-                  required
+              <div className="md:col-span-12">
+                <LocationForm
+                  initialData={{
+                    address: formData.address,
+                    street: formData.street,
+                    city: formData.city,
+                    emirate: formData.emirate,
+                    formattedAddress: formData.formattedAddress,
+                    placeId: formData.placeId,
+                    garageLat: formData.garageLat,
+                    garageLng: formData.garageLng,
+                  }}
+                  onLocationChange={handleLocationChange}
                 />
-              </div>
-              <div className="md:col-span-4">
-                <Label htmlFor="emirate">Emirate *</Label>
-                <Select
-                  value={formData.emirate}
-                  onValueChange={(value) =>
-                    setFormData({ ...formData, emirate: value })
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Dubai">Dubai</SelectItem>
-                    <SelectItem value="Abu Dhabi">Abu Dhabi</SelectItem>
-                    <SelectItem value="Sharjah">Sharjah</SelectItem>
-                    <SelectItem value="Ajman">Ajman</SelectItem>
-                    <SelectItem value="Ras Al Khaimah">
-                      Ras Al Khaimah
-                    </SelectItem>
-                    <SelectItem value="Fujairah">Fujairah</SelectItem>
-                    <SelectItem value="Umm Al Quwain">Umm Al Quwain</SelectItem>
-                  </SelectContent>
-                </Select>
               </div>
             </div>
           </CardContent>
@@ -427,7 +410,9 @@ export function CreateGarageForm({ onCancel, onSave }: CreateGarageFormProps) {
               </div>
             )}
             {servicesLoading ? (
-              <Spinner className="size-6 text-green-500" />
+              <div className="flex justify-center py-4">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+              </div>
             ) : (
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 {servicesData?.serviceCategories.map((service) => (
