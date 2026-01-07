@@ -2,68 +2,55 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { Tag, Clock, ChevronLeft, ChevronRight } from "lucide-react";
-import Toyotaimg from "@/assets/home/FeaturedPromotions/ImageWithFallback.png";
-import bmwimg from "@/assets/home/FeaturedPromotions/featured-bmw-service.png";
-import marcedesimg from "@/assets/home/FeaturedPromotions/featured-marcedes.jpg";
-import spedoGarageimg from "@/assets/home/FeaturedPromotions/featured-spedogarage.jpg";
-import bmwbrakeimg from "@/assets/home/FeaturedPromotions/featured-garage-dubai.png";
+import { Tag, Clock, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { featuredPromotionsTranslations } from "@/translations/featuredPromotions";
-
-const promotions = [
-  {
-    id: 1,
-    title: "Original Toyota Parts Sale",
-    description:
-      "Exclusive offer: Toyota parts now available! parts with warranty. Up to 30% off on selected items.",
-    image: Toyotaimg,
-    badge: "Featured Parts",
-    validUntil: "Oct 30, 2025",
-  },
-  {
-    id: 2,
-    title: "BMW Service Special",
-    description:
-      "Premium BMW service packages now available! Expert technicians. Save up to 25% on maintenance.",
-    image: bmwimg,
-    badge: "Featured Service",
-    validUntil: "Nov 15, 2025",
-  },
-  {
-    id: 3,
-    title: "Mercedes Parts Collection",
-    description:
-      "Mercedes parts in stock! OEM quality with warranty coverage. Limited time offer - 20% discount.",
-    image: marcedesimg,
-    badge: "Featured Parts",
-    validUntil: "Dec 01, 2025",
-  },
-  {
-    id: 4,
-    title: "SpeedPro Garage Dubai",
-    description:
-      "Top-rated garage services with certified mechanics. Complete car maintenance and repair solutions.",
-    image: spedoGarageimg,
-    badge: "Featured Garage",
-    validUntil: "Dec 15, 2025",
-  },
-  {
-    id: 5,
-    title: "BMW Brake System Parts",
-    description:
-      "Premium BMW brake components available now! High-performance parts with manufacturer warranty.",
-    image: bmwbrakeimg,
-    badge: "Premium Parts",
-    validUntil: "Jan 01, 2026",
-  },
-];
+import { useGetPromotionalProductsQuery } from "@/store/api/promotionalApi";
+import Toyotaimg from "@/assets/home/FeaturedPromotions/ImageWithFallback.png";
 
 const FeaturedPromotions: React.FC = () => {
   const { t } = useLanguage();
   const trans = t(featuredPromotionsTranslations);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [direction, setDirection] = useState<"left" | "right">("right");
+  const [cardScrollPosition, setCardScrollPosition] = useState(0);
+
+  const {
+    data: promotionalProducts,
+    isLoading,
+    error,
+  } = useGetPromotionalProductsQuery();
+
+  // Transform API data to match component structure
+  const promotions =
+    promotionalProducts?.map((product, index) => ({
+      id: product.id,
+      title: product.partName,
+      description:
+        product.description ||
+        `${product.brand} ${product.partName} - ${product.condition} condition. High quality parts with warranty.`,
+      image: product.photos?.[0] || Toyotaimg,
+      badge: "Featured Parts",
+      validUntil: new Date(
+        Date.now() + 30 * 24 * 60 * 60 * 1000
+      ).toLocaleDateString(), // 30 days from now
+      price: product.price,
+      brand: product.brand,
+      views: product.views,
+      inquiries: product.inquiries,
+    })) || [];
+
+  const scrollCards = (direction: "left" | "right") => {
+    const cardWidth = 200;
+    const scrollAmount = cardWidth * 2;
+
+    if (direction === "left") {
+      setCardScrollPosition((prev) => Math.max(0, prev - scrollAmount));
+    } else {
+      const maxScroll = (promotions.length - 3) * cardWidth;
+      setCardScrollPosition((prev) => Math.min(maxScroll, prev + scrollAmount));
+    }
+  };
 
   const goToSlide = (index: number) => {
     setDirection(index > currentSlide ? "right" : "left");
@@ -83,9 +70,33 @@ const FeaturedPromotions: React.FC = () => {
   };
 
   useEffect(() => {
-    const timer = setInterval(nextSlide, 5000);
-    return () => clearInterval(timer);
-  }, [currentSlide]);
+    if (promotions.length > 0) {
+      const timer = setInterval(nextSlide, 5000);
+      return () => clearInterval(timer);
+    }
+  }, [currentSlide, promotions.length]);
+
+  if (isLoading) {
+    return (
+      <section className="container mx-auto px-4 py-8 md:py-16">
+        <div className="flex items-center justify-center h-64">
+          <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+        </div>
+      </section>
+    );
+  }
+
+  if (error || !promotions.length) {
+    return (
+      <section className="container mx-auto px-4 py-8 md:py-16">
+        <div className="text-center">
+          <p className="text-gray-500">
+            No promotional products available at the moment.
+          </p>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="container mx-auto px-4 py-8 md:py-16">
@@ -94,12 +105,8 @@ const FeaturedPromotions: React.FC = () => {
           <Tag className="w-4 h-4" />
           <span className="font-semibold">{trans.badge}</span>
         </div>
-        <h2 className="text-base mb-2 text-[#101828]">
-          {trans.title}
-        </h2>
-        <p className="text-base text-gray-600">
-          {trans.subtitle}
-        </p>
+        <h2 className="text-base mb-2 text-[#101828]">{trans.title}</h2>
+        <p className="text-base text-gray-600">{trans.subtitle}</p>
       </div>
 
       <div className="relative mb-8 md:mb-6">
@@ -130,8 +137,16 @@ const FeaturedPromotions: React.FC = () => {
                         {trans.validUntil} {promo.validUntil}
                       </span>
                     </div>
-                    <h3 className=" font-bold mb-2 md:mb-3">{promo.title}</h3>
-                    <p className="text-base  mb-4 md:mb-6 max-w-2xl">
+                    <h3 className="font-bold mb-2 md:mb-3">{promo.title}</h3>
+                    <p className="text-base mb-2">
+                      <span className="text-yellow-400 font-bold">
+                        ${promo.price}
+                      </span>
+                      {promo.brand && (
+                        <span className="ml-2 text-sm">by {promo.brand}</span>
+                      )}
+                    </p>
+                    <p className="text-sm mb-4 md:mb-6 max-w-2xl line-clamp-2">
                       {promo.description}
                     </p>
                     <Button className="bg-blue-600 hover:bg-blue-700 w-fit px-6 md:px-8 py-4 md:py-6 rounded-lg text-sm ">
@@ -171,48 +186,78 @@ const FeaturedPromotions: React.FC = () => {
         ))}
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-4">
-        {promotions.map((promo, idx) => (
-          <button
-            key={promo.id}
-            onClick={() => goToSlide(idx)}
-            className={`bg-white rounded-lg md:rounded-xl shadow-xs overflow-hidden hover:shadow-lg transition-all text-left ${
-              idx === currentSlide ? "shadow-md" : ""
-            }`}
+      {/* Horizontal Scrollable Cards */}
+      <div className="relative">
+        <div className="overflow-hidden">
+          <div
+            className="flex gap-3 md:gap-4 transition-transform duration-300 ease-in-out my-4"
+            style={{ transform: `translateX(-${cardScrollPosition}px)` }}
           >
-            <div className="relative h-32 md:h-40">
-              <Image
-                src={promo.image}
-                alt={promo.title}
-                fill
-                className="object-cover"
-              />
-            </div>
-            <div className="p-3 md:p-4">
-              <h4 className="font-semibold text-xs md:text-sm mb-1 line-clamp-1">
-                {promo.title}
-              </h4>
-              <p className="text-[10px] md:text-xs text-gray-600 mb-2 border inline py-1 px-2 rounded-md">
-                {promo.badge}
-              </p>
-              <div className="flex items-center justify-between gap-1 mt-1 ">
-                <div className="flex">
-                  {[...Array(5)].map((_, i) => (
-                    <span
-                      key={i}
-                      className="text-xs md:text-sm text-yellow-400"
-                    >
-                      ★
-                    </span>
-                  ))}
+            {promotions.map((promo, idx) => (
+              <button
+                key={promo.id}
+                onClick={() => goToSlide(idx)}
+                className={`bg-white rounded-lg md:rounded-xl shadow-xs overflow-hidden hover:shadow-lg transition-all text-left flex-shrink-0 w-48 md:w-52 border ${
+                  idx === currentSlide ? "shadow-md ring-2 ring-blue-500" : ""
+                }`}
+              >
+                <div className="relative h-32 md:h-40">
+                  <Image
+                    src={promo.image}
+                    alt={promo.title}
+                    fill
+                    className="object-cover"
+                  />
                 </div>
-                <span className="text-[9px] md:text-xs text-gray-500">
-                  (4.61 89 {trans.reviews})
-                </span>
-              </div>
-            </div>
-          </button>
-        ))}
+                <div className="p-3 md:p-4">
+                  <h4 className="font-semibold text-xs md:text-sm mb-1 line-clamp-1">
+                    {promo.title}
+                  </h4>
+                  <p className="text-[10px] md:text-xs text-gray-600 mb-2 border inline py-1 px-2 rounded-md">
+                    {promo.badge}
+                  </p>
+                  <div className="flex items-center justify-between gap-1 mt-1">
+                    <div className="flex">
+                      {[...Array(5)].map((_, i) => (
+                        <span
+                          key={i}
+                          className="text-xs md:text-sm text-yellow-400"
+                        >
+                          ★
+                        </span>
+                      ))}
+                    </div>
+                    <span className="text-[9px] md:text-xs text-gray-500">
+                      (4.61 89 {trans.reviews})
+                    </span>
+                  </div>
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Scroll Buttons */}
+        {promotions.length > 3 && (
+          <>
+            <button
+              onClick={() => scrollCards("left")}
+              disabled={cardScrollPosition === 0}
+              className="absolute left-0 top-1/2 -translate-y-1/2 bg-white shadow-lg hover:shadow-xl p-2 rounded-full transition-all duration-300 z-10 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed"
+              aria-label="Scroll cards left"
+            >
+              <ChevronLeft className="w-5 h-5 text-gray-600" />
+            </button>
+            <button
+              onClick={() => scrollCards("right")}
+              disabled={cardScrollPosition >= (promotions.length - 3) * 200}
+              className="absolute right-0 top-1/2 -translate-y-1/2 bg-white shadow-lg hover:shadow-xl p-2 rounded-full transition-all duration-300 z-10 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed"
+              aria-label="Scroll cards right"
+            >
+              <ChevronRight className="w-5 h-5 text-gray-600" />
+            </button>
+          </>
+        )}
       </div>
     </section>
   );

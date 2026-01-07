@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import spareParts from "../../../../../assets/home/SpareParts/spare_parts.jpg";
 import { useLanguage } from "@/context/LanguageContext";
@@ -36,11 +37,15 @@ const SpareParts: React.FC = () => {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-3 md:gap-4 w-full max-w-xs sm:max-w-none sm:w-auto">
-            <Button className="bg-[#0D6EFD] hover:bg-blue-700 text-white px-6 sm:px-8 md:px-10 py-4 sm:py-5 md:py-6 text-sm sm:text-base md:text-lg rounded-lg w-full sm:w-auto whitespace-nowrap">
-              {trans.buyParts}
+            <Button asChild className="bg-[#0D6EFD] hover:bg-blue-700 text-white px-6 sm:px-8 md:px-10 py-4 sm:py-5 md:py-6 text-sm sm:text-base md:text-lg rounded-lg w-full sm:w-auto whitespace-nowrap">
+              <Link href="/spare-parts">
+                {trans.buyParts}
+              </Link>
             </Button>
-            <Button className="bg-[#0D6EFD] hover:bg-blue-700 text-white px-6 sm:px-8 md:px-10 py-4 sm:py-5 md:py-6 text-sm sm:text-base md:text-lg rounded-lg w-full sm:w-auto whitespace-nowrap">
-              {trans.sellParts}
+            <Button asChild className="bg-[#0D6EFD] hover:bg-blue-700 text-white px-6 sm:px-8 md:px-10 py-4 sm:py-5 md:py-6 text-sm sm:text-base md:text-lg rounded-lg w-full sm:w-auto whitespace-nowrap">
+              <Link href="/user/my-products">
+                {trans.sellParts}
+              </Link>
             </Button>
           </div>
         </div>

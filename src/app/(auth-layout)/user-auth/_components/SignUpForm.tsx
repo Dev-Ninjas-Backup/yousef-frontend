@@ -63,7 +63,10 @@ export default function SignUpForm({
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="signupEmail" className="text-sm font-medium text-gray-700">
+        <Label
+          htmlFor="signupEmail"
+          className="text-sm font-medium text-gray-700"
+        >
           {trans.user.signUp.emailLabel}
         </Label>
         <div className="relative">
@@ -80,7 +83,10 @@ export default function SignUpForm({
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="phoneNumber" className="text-sm font-medium text-gray-700">
+        <Label
+          htmlFor="phoneNumber"
+          className="text-sm font-medium text-gray-700"
+        >
           {trans.user.signUp.phoneLabel}
         </Label>
         <div className="relative">
@@ -97,7 +103,10 @@ export default function SignUpForm({
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="signupPassword" className="text-sm font-medium text-gray-700">
+        <Label
+          htmlFor="signupPassword"
+          className="text-sm font-medium text-gray-700"
+        >
           {trans.user.signUp.passwordLabel}
         </Label>
         <div className="relative">
@@ -114,7 +123,10 @@ export default function SignUpForm({
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="confirmPassword" className="text-sm font-medium text-gray-700">
+        <Label
+          htmlFor="confirmPassword"
+          className="text-sm font-medium text-gray-700"
+        >
           {trans.user.signUp.confirmPasswordLabel}
         </Label>
         <div className="relative">
@@ -124,14 +136,16 @@ export default function SignUpForm({
             type="password"
             placeholder={trans.user.signUp.confirmPasswordPlaceholder}
             value={formData.confirmPassword}
-            onChange={(e) => handleInputChange("confirmPassword", e.target.value)}
+            onChange={(e) =>
+              handleInputChange("confirmPassword", e.target.value)
+            }
             className="pl-10 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
           />
         </div>
       </div>
 
       {/* Social Sign Up */}
-      <div className="space-y-3">
+      {/* <div className="space-y-3">
         <Button
           onClick={handleGoogleLogin}
           disabled={isGoogleLoading}
@@ -166,7 +180,7 @@ export default function SignUpForm({
           <Apple className="w-5 h-5 mr-2" />
           {trans.user.signUp.signUpApple}
         </Button>
-      </div>
+      </div> */}
 
       {/* Terms & Conditions */}
       <div className="flex items-start space-x-2">
@@ -178,7 +192,10 @@ export default function SignUpForm({
           }
           className="mt-1"
         />
-        <Label htmlFor="terms" className="text-sm text-gray-600 leading-relaxed">
+        <Label
+          htmlFor="terms"
+          className="text-sm text-gray-600 leading-relaxed"
+        >
           {trans.user.signUp.agreeTerms}{" "}
           <button className="text-blue-600 hover:text-blue-700 font-medium">
             {trans.user.signUp.termsConditions}
@@ -191,7 +208,9 @@ export default function SignUpForm({
         disabled={!formData.agreeToTerms || isRegistering}
         className="w-full bg-black hover:bg-gray-800 text-white h-11 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        {isRegistering ? trans.user.signUp.creatingAccount : trans.user.signUp.createAccountButton}
+        {isRegistering
+          ? trans.user.signUp.creatingAccount
+          : trans.user.signUp.createAccountButton}
       </Button>
     </div>
   );
