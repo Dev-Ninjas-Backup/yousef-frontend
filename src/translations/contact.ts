@@ -19,10 +19,12 @@ export const contactTranslations = {
       messagePlaceholder: "Type your message here...",
       sendButton: "Send Message",
       subjects: {
-        general: "General Inquiry",
-        support: "Support",
-        partnership: "Partnership",
+        carParts: "Car Parts",
+        carService: "Car Service", 
+        others: "Others",
       },
+      otherSubject: "Other Subject",
+      otherSubjectPlaceholder: "Please specify your subject...",
     },
   },
   ar: {
@@ -45,10 +47,12 @@ export const contactTranslations = {
       messagePlaceholder: "اكتب رسالتك هنا...",
       sendButton: "إرسال الرسالة",
       subjects: {
-        general: "استفسار عام",
-        support: "الدعم",
-        partnership: "الشراكة",
+        carParts: "قطع غيار السيارات",
+        carService: "خدمة السيارات",
+        others: "أخرى",
       },
+      otherSubject: "موضوع آخر",
+      otherSubjectPlaceholder: "يرجى تحديد موضوعك...",
     },
   },
 };

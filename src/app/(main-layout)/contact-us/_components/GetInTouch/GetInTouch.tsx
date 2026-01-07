@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -11,13 +11,72 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Send } from "lucide-react";
+import { Send, Loader2 } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { contactTranslations } from "@/translations/contact";
+import { useCreateContactMutation, ContactFormData } from "@/store/api/contactApi";
+import { toast } from "sonner";
 
 const GetInTouch: React.FC = () => {
   const { t } = useLanguage();
   const trans = t(contactTranslations);
+  const [createContact, { isLoading }] = useCreateContactMutation();
+  
+  const [formData, setFormData] = useState<ContactFormData>({
+    FirstName: "",
+    LastName: "",
+    email: "",
+    subject: "CAR_PARTS",
+    message: "",
+    othersubject: ""
+  });
+  
+  const [showOtherSubject, setShowOtherSubject] = useState(false);
+
+  const handleInputChange = (field: keyof ContactFormData, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleSubjectChange = (value: string) => {
+    const subject = value as ContactFormData["subject"];
+    setFormData(prev => ({ ...prev, subject }));
+    setShowOtherSubject(subject === "OTHERS");
+    if (subject !== "OTHERS") {
+      setFormData(prev => ({ ...prev, othersubject: "" }));
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (formData.subject === "OTHERS" && !formData.othersubject?.trim()) {
+      toast.error("Please specify the other subject");
+      return;
+    }
+
+    try {
+      const submitData = { ...formData };
+      if (formData.subject !== "OTHERS") {
+        delete submitData.othersubject;
+      }
+      
+      await createContact(submitData).unwrap();
+      toast.success("Message sent successfully! We'll get back to you soon.");
+      
+      // Reset form
+      setFormData({
+        FirstName: "",
+        LastName: "",
+        email: "",
+        subject: "CAR_PARTS",
+        message: "",
+        othersubject: ""
+      });
+      setShowOtherSubject(false);
+    } catch (error: any) {
+      toast.error(error?.data?.message || "Failed to send message. Please try again.");
+    }
+  };
 
   return (
     <section className="py-12 md:py-16 lg:py-20 bg-white">
@@ -35,7 +94,7 @@ const GetInTouch: React.FC = () => {
           <h3 className="text-xl font-bold text-[#333333] mb-6">
             {trans.form.formTitle}
           </h3>
-          <form className="space-y-6 border rounded-lg p-6">
+          <form onSubmit={handleSubmit} className="space-y-6 border rounded-lg p-6">
             <div className="grid md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <Label htmlFor="firstName">{trans.form.firstName}</Label>
@@ -44,6 +103,8 @@ const GetInTouch: React.FC = () => {
                   type="text"
                   placeholder={trans.form.firstName}
                   className="bg-[#F3F3F5]"
+                  value={formData.FirstName}
+                  onChange={(e) => handleInputChange("FirstName", e.target.value)}
                   required
                 />
               </div>
@@ -54,6 +115,8 @@ const GetInTouch: React.FC = () => {
                   type="text"
                   placeholder={trans.form.lastName}
                   className="bg-[#F3F3F5]"
+                  value={formData.LastName}
+                  onChange={(e) => handleInputChange("LastName", e.target.value)}
                   required
                 />
               </div>
@@ -66,23 +129,40 @@ const GetInTouch: React.FC = () => {
                 type="email"
                 placeholder={trans.form.emailPlaceholder}
                 className="bg-[#F3F3F5]"
+                value={formData.email}
+                onChange={(e) => handleInputChange("email", e.target.value)}
                 required
               />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="subject">{trans.form.subject}</Label>
-              <Select>
+              <Select value={formData.subject} onValueChange={handleSubjectChange}>
                 <SelectTrigger id="subject" className="w-full bg-[#F3F3F5]">
                   <SelectValue placeholder={trans.form.subjectPlaceholder} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="general">{trans.form.subjects.general}</SelectItem>
-                  <SelectItem value="support">{trans.form.subjects.support}</SelectItem>
-                  <SelectItem value="partnership">{trans.form.subjects.partnership}</SelectItem>
+                  <SelectItem value="CAR_PARTS">{trans.form.subjects.carParts}</SelectItem>
+                  <SelectItem value="CAR_SERVICE">{trans.form.subjects.carService}</SelectItem>
+                  <SelectItem value="OTHERS">{trans.form.subjects.others}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
+
+            {showOtherSubject && (
+              <div className="space-y-2">
+                <Label htmlFor="otherSubject">{trans.form.otherSubject}</Label>
+                <Input
+                  id="otherSubject"
+                  type="text"
+                  placeholder={trans.form.otherSubjectPlaceholder}
+                  className="bg-[#F3F3F5]"
+                  value={formData.othersubject}
+                  onChange={(e) => handleInputChange("othersubject", e.target.value)}
+                  required
+                />
+              </div>
+            )}
 
             <div className="space-y-2">
               <Label htmlFor="message">{trans.form.message}</Label>
@@ -90,16 +170,19 @@ const GetInTouch: React.FC = () => {
                 id="message"
                 placeholder={trans.form.messagePlaceholder}
                 className="bg-[#F3F3F5] min-h-[120px]"
+                value={formData.message}
+                onChange={(e) => handleInputChange("message", e.target.value)}
                 required
               />
             </div>
 
             <Button
               type="submit"
-              className="bg-blue-600 hover:bg-blue-700 text-white flex gap-3 justify-center items-center px-8 py-4 md:py-6 rounded-lg text-sm w-full "
+              disabled={isLoading}
+              className="bg-blue-600 hover:bg-blue-700 text-white flex gap-3 justify-center items-center px-8 py-4 md:py-6 rounded-lg text-sm w-full disabled:opacity-50"
             >
-              <Send />
-              {trans.form.sendButton}
+              {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+              {isLoading ? "Sending..." : trans.form.sendButton}
             </Button>
           </form>
         </div>

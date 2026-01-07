@@ -22,17 +22,44 @@ export default function ProductDetailsContent({
 }: ProductDetailsContentProps) {
   const currentUser = useAppSelector((state) => state.auth.user);
 
-  const handleContactSeller = () => {
+  const handleContactSeller = async () => {
     if (!product?.createdBy?.id) return;
     
-    // Open chat with seller
-    const chatEvent = new CustomEvent('openPrivateChat', {
-      detail: {
-        recipientId: product.createdBy.id,
-        recipientName: product.createdBy.fullName
+    try {
+      // Create or get existing conversation with seller
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/private-chat/send-message/${product.createdBy.id}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${document.cookie.split('token=')[1]?.split(';')[0]}`
+        },
+        body: JSON.stringify({
+          content: `Hi! I'm interested in your ${product.partName}. Is it still available?`,
+          recipientId: product.createdBy.id
+        })
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        // Trigger FloatingChatWidget to open with this conversation
+        const event = new CustomEvent('openChat', {
+          detail: {
+            userId: product.createdBy.id,
+            userName: product.createdBy.fullName
+          }
+        });
+        window.dispatchEvent(event);
       }
-    });
-    window.dispatchEvent(chatEvent);
+    } catch (error) {
+      console.error('Failed to start conversation:', error);
+    }
+  };
+
+  const handleCallSeller = () => {
+    if (product?.seller?.phoneNumber) {
+      window.location.href = `tel:${product.seller.phoneNumber}`;
+    }
   };
 
   if (isLoading) {
@@ -172,16 +199,25 @@ export default function ProductDetailsContent({
             </div>
           </div>
 
-          {/* Contact Button */}
+          {/* Contact Buttons */}
           {currentUser && currentUser.id !== product.createdBy.id && (
             <div className="border-t pt-6">
-              <Button 
-                onClick={handleContactSeller}
-                className="w-full bg-green-600 hover:bg-green-700 h-12 text-lg"
-              >
-                <MessageCircle className="mr-2 h-5 w-5" />
-                Contact Seller
-              </Button>
+              <div className="flex gap-3">
+                <Button 
+                  onClick={handleContactSeller}
+                  className="flex-1 bg-green-600 hover:bg-green-700 h-12 text-lg"
+                >
+                  <MessageCircle className="mr-2 h-5 w-5" />
+                  Chat with Seller
+                </Button>
+                <Button 
+                  onClick={handleCallSeller}
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 h-12 text-lg"
+                >
+                  <Phone className="mr-2 h-5 w-5" />
+                  Call Seller
+                </Button>
+              </div>
             </div>
           )}
 

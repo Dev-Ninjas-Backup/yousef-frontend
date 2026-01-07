@@ -104,9 +104,15 @@ export default function GarageDetailsPage({ params }: GarageDetailsPageProps) {
         distance={garageData.distance}
         services={garageData.services}
         operatingHours={garageData.operatingHours}
+        coverPhoto={garageData.coverPhoto}
+        ownerId={(garage as any).userId}
+        phone={garage.garagePhone}
       />
       <ServicesOffered />
-      <GarageOverview description={garageData.description} />
+      <GarageOverview 
+        description={garageData.description} 
+        image={garageData.profileImage}
+      />
       <OperatingHours hours={garageData.operatingHours} />
       <LocationMap
         address={garageData.address}
