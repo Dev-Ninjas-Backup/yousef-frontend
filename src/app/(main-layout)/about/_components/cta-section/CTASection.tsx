@@ -19,7 +19,7 @@ export default function CTASection() {
           {trans.cta.description}
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Link href="/contact">
+          <Link href="/contact-us">
             <Button
               size="lg"
               className="bg-white text-blue-600 hover:bg-gray-100 gap-2 px-6"

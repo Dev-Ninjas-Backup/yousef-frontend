@@ -19,6 +19,24 @@ export function FloatingChatWidget() {
 
   const currentUserId = useAppSelector((state) => state.auth.user?.id);
 
+  // Listen for custom openChat event
+  useEffect(() => {
+    const handleOpenChat = (event: CustomEvent) => {
+      const { userId, userName } = event.detail;
+      setIsOpen(true);
+      setSelectedChat({
+        id: userId,
+        name: userName
+      });
+    };
+
+    window.addEventListener('openChat', handleOpenChat as EventListener);
+    
+    return () => {
+      window.removeEventListener('openChat', handleOpenChat as EventListener);
+    };
+  }, []);
+
   const { data: conversations, isLoading } = useGetConversationsQuery(
     undefined,
     {

@@ -8,6 +8,7 @@ export function useSparePartsManagement() {
     search: "",
     category: "all",
     condition: "all",
+    status: "APPROVED",
     limit: 9,
     page: 1,
   });
@@ -24,6 +25,7 @@ export function useSparePartsManagement() {
       filters.condition === "all" || !filters.condition
         ? undefined
         : filters.condition,
+    status: "APPROVED", // Always filter for approved products
   });
 
   const updateFilter = useCallback(
@@ -71,6 +73,7 @@ export function useSparePartsManagement() {
       search: "",
       category: "all",
       condition: "all",
+      status: "APPROVED",
       limit: 9,
       page: 1,
     });
