@@ -14,6 +14,15 @@ export default function SubscriptionSuccess() {
   useEffect(() => {
     if (sessionId) {
       console.log("Payment successful, session:", sessionId);
+      
+      // Auto close tab after 3 seconds if opened in new tab
+      const timer = setTimeout(() => {
+        if (window.opener) {
+          window.close();
+        }
+      }, 3000);
+      
+      return () => clearTimeout(timer);
     }
   }, [sessionId]);
 
@@ -42,10 +51,16 @@ export default function SubscriptionSuccess() {
           )}
 
           <Button 
-            onClick={() => router.push("/garage-admin/subscription")}
+            onClick={() => {
+              if (window.opener) {
+                window.close();
+              } else {
+                router.push("/garage-admin/subscription");
+              }
+            }}
             className="w-full bg-blue-600 hover:bg-blue-700"
           >
-            Go to Subscription
+            {window.opener ? 'Close' : 'Go to Subscription'}
           </Button>
         </CardContent>
       </Card>

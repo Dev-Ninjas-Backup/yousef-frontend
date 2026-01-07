@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useCreateMonthlySubscriptionMutation } from "@/store/api/garageAdminApis/subscription/subscription";
 import { CircleCheckBig, CreditCard } from "lucide-react";
 import { toast } from "sonner";
+import { openPaymentInNewTab } from "@/utils/paymentUtils";
 
 const PlanCard = () => {
   const [createSubscription, { isLoading }] =
@@ -13,7 +14,7 @@ const PlanCard = () => {
     try {
       const response = await createSubscription().unwrap();
       console.log(response, "stripe response............");
-      window.location.href = response.url;
+      openPaymentInNewTab(response.url);
     } catch (error: any) {
       toast.error(error?.data?.message || "Failed to create subscription");
     }

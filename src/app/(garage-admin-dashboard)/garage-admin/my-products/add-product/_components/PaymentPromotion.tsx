@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { useCreatePromotionPaymentMutation } from "@/store/api/garageAdminApis/products/products";
 import { toast } from "sonner";
+import { openPaymentInNewTab } from "@/utils/paymentUtils";
 
 interface PaymentPromotionProps {
   formData: any;
@@ -15,7 +16,7 @@ const PaymentPromotion = ({ formData }: PaymentPromotionProps) => {
 
     try {
       const response = await createPromotionPayment().unwrap();
-      window.location.href = response.url;
+      openPaymentInNewTab(response.url);
     } catch (error: any) {
       toast.error(error?.data?.message || "Failed to create payment session");
     }
