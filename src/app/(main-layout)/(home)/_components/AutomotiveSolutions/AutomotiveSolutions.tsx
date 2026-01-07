@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import ServiceCard from "./_components/ServiceCard/ServiceCard";
 import location from "../../../../../assets/home/icons/location.svg";
@@ -54,10 +55,13 @@ const AutomotiveSolutions: React.FC = () => {
 
         <div className="flex justify-center">
           <Button
+            asChild
             className="bg-[#0D6EFD] hover:bg-blue-700 text-white px-8 md:px-10 py-5 md:py-6 rounded-lg text-base
            font-semibold"
           >
-            {trans.findGarage}
+            <Link href="/service">
+              {trans.findGarage}
+            </Link>
           </Button>
         </div>
       </div>

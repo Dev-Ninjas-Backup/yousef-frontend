@@ -14,12 +14,35 @@ import Image from "next/image";
 import garageBg from "@/assets/service/banner/section.png";
 import { useLanguage } from "@/context/LanguageContext";
 import { serviceTranslations } from "@/translations/service";
+import { useGetServiceCategoriesQuery } from "@/store/api/garageApi";
 
-export default function HeroSection() {
+interface HeroSectionProps {
+  onSearch: (emirate: string, serviceName: string) => void;
+}
+
+export default function HeroSection({ onSearch }: HeroSectionProps) {
   const { t } = useLanguage();
   const trans = t(serviceTranslations);
-  const [location, setLocation] = useState("");
-  const [serviceType, setServiceType] = useState("");
+  const [emirate, setEmirate] = useState("");
+  const [serviceName, setServiceName] = useState("");
+  
+  const { data: serviceCategories } = useGetServiceCategoriesQuery();
+  
+  const emirates = [
+    "Abu Dhabi",
+    "Dubai", 
+    "Sharjah",
+    "Ajman",
+    "Umm Al Quwain",
+    "Ras Al Khaimah",
+    "Fujairah"
+  ];
+  
+  const handleSearch = () => {
+    const selectedEmirate = emirate === "all-emirates" ? "" : emirate;
+    const selectedService = serviceName === "all-services" ? "" : serviceName;
+    onSearch(selectedEmirate, selectedService);
+  };
 
   return (
     <section className="relative h-[640px] md:h-[720px] w-full overflow-hidden md:mb-16 ">
@@ -48,36 +71,39 @@ export default function HeroSection() {
                 <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
                   {trans.hero.yourLocation}
                 </label>
-                <div className="flex items-center border border-gray-300 rounded-lg px-3 py-2">
-                  <MapPin size={18} className="text-gray-400 mr-2" />
-                  <input
-                    type="text"
-                    placeholder={trans.hero.locationPlaceholder}
-                    value={location}
-                    onChange={(e) => setLocation(e.target.value)}
-                    className="w-full outline-none text-gray-700"
-                  />
-                </div>
+                <Select value={emirate} onValueChange={setEmirate}>
+                  <SelectTrigger className="w-full border border-gray-300 rounded-lg px-3 py-5 appearance-none bg-white cursor-pointer text-gray-700">
+                    <SelectValue placeholder="Select Emirate" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all-emirates">All Emirates</SelectItem>
+                    {emirates.map((em) => (
+                      <SelectItem key={em} value={em}>{em}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div className="flex-1">
                 <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
                   {trans.hero.serviceType}
                 </label>
-                <Select value={serviceType} onValueChange={setServiceType}>
+                <Select value={serviceName} onValueChange={setServiceName}>
                   <SelectTrigger className="w-full border border-gray-300 rounded-lg px-3 py-5 appearance-none bg-white cursor-pointer text-gray-700">
                     <SelectValue placeholder={trans.hero.allServices} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">{trans.hero.services.all}</SelectItem>
-                    <SelectItem value="repair">{trans.hero.services.repair}</SelectItem>
-                    <SelectItem value="towing">{trans.hero.services.towing}</SelectItem>
-                    <SelectItem value="oil-change">{trans.hero.services.oilChange}</SelectItem>
-                    <SelectItem value="emergency">{trans.hero.services.emergency}</SelectItem>
+                    <SelectItem value="all-services">All Services</SelectItem>
+                    {serviceCategories?.serviceCategories.map((service) => (
+                      <SelectItem key={service} value={service}>{service}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
               <div className="flex items-end">
-                <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-lg py-5 flex items-center justify-center gap-2">
+                <Button 
+                  onClick={handleSearch}
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-lg py-5 flex items-center justify-center gap-2"
+                >
                   <Search size={18} />
                   {trans.hero.searchButton}
                 </Button>
