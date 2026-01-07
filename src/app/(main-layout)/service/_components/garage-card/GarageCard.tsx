@@ -25,6 +25,10 @@ interface GarageCardProps {
   status?: string;
   icon?: string;
   iconColor?: string;
+  position?: {
+    lat: number;
+    lng: number;
+  };
 }
 
 export default function GarageCard({
@@ -40,6 +44,7 @@ export default function GarageCard({
   status,
   icon = "wrench",
   iconColor = "blue",
+  position,
 }: GarageCardProps) {
   const getStatusColor = () => {
     switch (status) {
@@ -93,6 +98,30 @@ export default function GarageCard({
         return <FaOilCan className={iconClass} />;
       default:
         return <AiFillTool className={iconClass} />;
+    }
+  };
+
+  const handleDirections = () => {
+    if (position?.lat && position?.lng) {
+      // Get current location and navigate to Google Maps
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (currentPosition) => {
+            const { latitude, longitude } = currentPosition.coords;
+            const googleMapsUrl = `https://www.google.com/maps/dir/${latitude},${longitude}/${position.lat},${position.lng}`;
+            window.open(googleMapsUrl, '_blank');
+          },
+          (error) => {
+            // If location access denied, open Google Maps without current location
+            const googleMapsUrl = `https://www.google.com/maps/dir//${position.lat},${position.lng}`;
+            window.open(googleMapsUrl, '_blank');
+          }
+        );
+      } else {
+        // If geolocation not supported, open Google Maps without current location
+        const googleMapsUrl = `https://www.google.com/maps/dir//${position.lat},${position.lng}`;
+        window.open(googleMapsUrl, '_blank');
+      }
     }
   };
   return (
@@ -172,7 +201,11 @@ export default function GarageCard({
         {/* Footer */}
         <div className="flex items-center justify-between">
           <div className="flex gap-2">
-            <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
+            <Button 
+              size="sm" 
+              className="bg-blue-600 hover:bg-blue-700"
+              onClick={handleDirections}
+            >
               <Image
                 src={DirectionIcon}
                 alt="Direction"

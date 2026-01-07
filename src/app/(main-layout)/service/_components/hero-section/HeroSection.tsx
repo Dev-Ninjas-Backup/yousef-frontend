@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -18,15 +18,26 @@ import { useGetServiceCategoriesQuery } from "@/store/api/garageApi";
 
 interface HeroSectionProps {
   onSearch: (emirate: string, serviceName: string) => void;
+  initialValues?: {
+    emirate: string;
+    serviceName: string;
+  };
 }
 
-export default function HeroSection({ onSearch }: HeroSectionProps) {
+export default function HeroSection({ onSearch, initialValues }: HeroSectionProps) {
   const { t } = useLanguage();
   const trans = t(serviceTranslations);
   const [emirate, setEmirate] = useState("");
   const [serviceName, setServiceName] = useState("");
   
   const { data: serviceCategories } = useGetServiceCategoriesQuery();
+  
+  useEffect(() => {
+    if (initialValues) {
+      setEmirate(initialValues.emirate || "");
+      setServiceName(initialValues.serviceName || "");
+    }
+  }, [initialValues]);
   
   const emirates = [
     "Abu Dhabi",

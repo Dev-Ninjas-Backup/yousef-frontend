@@ -13,15 +13,43 @@ import {
 import search_garage_bg from "../../../../../assets/home/searchGarage/search_garage_bg.jpg";
 import { useLanguage } from "@/context/LanguageContext";
 import { searchGaragesTranslations } from "@/translations/searchGarages";
+import { useRouter } from "next/navigation";
+import { useGetServiceCategoriesQuery } from "@/store/api/garageApi";
 
 const SearchGarages: React.FC = () => {
   const { t } = useLanguage();
   const trans = t(searchGaragesTranslations);
+  const router = useRouter();
   const [emirate, setEmirate] = useState("");
   const [serviceType, setServiceType] = useState("");
+  
+  const { data: serviceCategories } = useGetServiceCategoriesQuery();
+  
+  const emirates = [
+    "Abu Dhabi",
+    "Dubai", 
+    "Sharjah",
+    "Ajman",
+    "Umm Al Quwain",
+    "Ras Al Khaimah",
+    "Fujairah"
+  ];
 
   const handleSearch = () => {
-    console.log("Searching for:", { emirate, serviceType });
+    const params = new URLSearchParams();
+    
+    if (emirate && emirate !== "all-emirates") {
+      params.set('emirate', emirate);
+    }
+    
+    if (serviceType && serviceType !== "all-services") {
+      params.set('serviceName', serviceType);
+    }
+    
+    const queryString = params.toString();
+    const url = queryString ? `/service?${queryString}` : '/service';
+    
+    router.push(url);
   };
 
   return (
@@ -39,16 +67,19 @@ const SearchGarages: React.FC = () => {
           <div className="flex flex-col sm:flex-row gap-3 md:gap-4 bg-white">
             <Select value={emirate} onValueChange={setEmirate}>
               <SelectTrigger className="w-full sm:flex-1 h-[50px] md:h-[58px] px-4 py-6 border-gray-300 rounded-lg bg-white text-gray-700">
-                <SelectValue placeholder={trans.selectEmirate} />
+                <SelectValue placeholder="Select Emirate" />
               </SelectTrigger>
               <SelectContent className="bg-white">
-                {trans.locations.map((location: any) => (
+                <SelectItem value="all-emirates" className="hover:bg-gray-100 border-0">
+                  All Emirates
+                </SelectItem>
+                {emirates.map((em) => (
                   <SelectItem
-                    key={location.value}
-                    value={location.value}
+                    key={em}
+                    value={em}
                     className="hover:bg-gray-100 border-0"
                   >
-                    {location.label}
+                    {em}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -56,16 +87,19 @@ const SearchGarages: React.FC = () => {
 
             <Select value={serviceType} onValueChange={setServiceType}>
               <SelectTrigger className="w-full sm:flex-1 h-[50px] md:h-[58px] px-4 py-6 border-gray-300 rounded-lg bg-white text-gray-700">
-                <SelectValue placeholder={trans.serviceType} />
+                <SelectValue placeholder="Select Service Type" />
               </SelectTrigger>
               <SelectContent className="bg-white">
-                {trans.services.map((service: any) => (
+                <SelectItem value="all-services" className="hover:bg-gray-100">
+                  All Services
+                </SelectItem>
+                {serviceCategories?.serviceCategories.map((service) => (
                   <SelectItem
-                    key={service.value}
-                    value={service.value}
+                    key={service}
+                    value={service}
                     className="hover:bg-gray-100"
                   >
-                    {service.label}
+                    {service}
                   </SelectItem>
                 ))}
               </SelectContent>
