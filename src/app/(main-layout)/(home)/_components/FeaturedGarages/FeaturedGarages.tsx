@@ -23,7 +23,10 @@ const FeaturedGarages: React.FC = () => {
     totalReviews: garage.totalReviews,
     services: garage.services,
     phone: garage.garagePhone,
-    email: garage.email
+    email: garage.email,
+    latitude: garage.garageLat,
+    longitude: garage.garageLng,
+    garageOwnerId: garage.user?.id
   })) || [];
 
   if (isLoading) {
@@ -61,10 +64,14 @@ const FeaturedGarages: React.FC = () => {
           {garages.map((garage) => (
             <GarageCard
               key={garage.id}
+              id={garage.id}
               name={garage.name}
               location={garage.location}
               rating={garage.rating}
               image={garage.image}
+              latitude={garage.latitude}
+              longitude={garage.longitude}
+              garageOwnerId={garage.garageOwnerId}
             />
           ))}
         </div>

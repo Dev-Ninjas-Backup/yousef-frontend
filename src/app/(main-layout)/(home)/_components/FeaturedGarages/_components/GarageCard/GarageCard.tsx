@@ -5,13 +5,62 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
 interface GarageCardProps {
+  id?: string;
   name: string;
   location: string;
   rating: number;
   image: string;
+  latitude?: number;
+  longitude?: number;
+  garageOwnerId?: string;
 }
 
-const GarageCard: React.FC<GarageCardProps> = ({ name, location, rating, image }) => {
+const GarageCard: React.FC<GarageCardProps> = ({ 
+  id,
+  name, 
+  location, 
+  rating, 
+  image, 
+  latitude, 
+  longitude,
+  garageOwnerId 
+}) => {
+  
+  const handleGetDirections = () => {
+    if (latitude && longitude) {
+      // Open Google Maps with directions
+      const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${latitude},${longitude}&travelmode=driving`;
+      window.open(googleMapsUrl, '_blank');
+    } else {
+      // Fallback to search by name and location
+      const searchQuery = encodeURIComponent(`${name} ${location}`);
+      const googleMapsUrl = `https://www.google.com/maps/search/${searchQuery}`;
+      window.open(googleMapsUrl, '_blank');
+    }
+  };
+
+  const handleMessage = () => {
+    if (garageOwnerId) {
+      // Dispatch custom event to open FloatingChat with garage owner
+      const chatEvent = new CustomEvent('openChat', {
+        detail: {
+          recipientId: garageOwnerId,
+          recipientName: name,
+          initialMessage: `Hi! I'm interested in your garage services at ${location}. Could you please provide more information?`
+        }
+      });
+      window.dispatchEvent(chatEvent);
+    } else {
+      // Fallback - just open the chat widget
+      const chatEvent = new CustomEvent('openChat', {
+        detail: {
+          initialMessage: `Hi! I'm interested in ${name} garage services. Could you please provide more information?`
+        }
+      });
+      window.dispatchEvent(chatEvent);
+    }
+  };
+
   return (
     <Card className="overflow-hidden hover:shadow-xl transition-shadow p-0 max-w-[390px]">
       <div className="relative h-40 md:h-48 w-full">
@@ -38,6 +87,7 @@ const GarageCard: React.FC<GarageCardProps> = ({ name, location, rating, image }
         <div className="flex flex-col sm:flex-row gap-2">
           <Button 
             size="sm" 
+            onClick={handleGetDirections}
             className="w-full sm:flex-1 bg-[#2563EB] hover:bg-blue-50 hover:text-[#333333] text-[#E5E7EB] text-xs sm:text-sm md:text-base py-3 sm:py-4 md:py-5 rounded-md"
           >
             <MapPin className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
@@ -46,6 +96,7 @@ const GarageCard: React.FC<GarageCardProps> = ({ name, location, rating, image }
           <Button 
             size="sm" 
             variant="outline" 
+            onClick={handleMessage}
             className="w-full sm:flex-1 bg-[#16A34A] text-[#E5E7EB] hover:bg-green-50 hover:text-[#333333] border-0 text-xs sm:text-sm md:text-base py-3 sm:py-4 md:py-5 rounded-md"
           >
             <MessageCircle className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
