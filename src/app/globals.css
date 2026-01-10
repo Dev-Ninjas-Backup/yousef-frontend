@@ -94,4 +94,13 @@
   .aspect-4\/3 {
     aspect-ratio: 4 / 3;
   }
+
+  /* Custom animations for error pages */
+  .animate-spin-slow {
+    animation: spin 3s linear infinite;
+  }
+  
+  .animate-spin-reverse {
+    animation: spin 2s linear infinite reverse;
+  }
 }

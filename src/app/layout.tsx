@@ -4,6 +4,7 @@ import Script from "next/script";
 import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
 import { ReduxProvider } from "@/providers/ReduxProvider";
+import { TranslationProvider } from "@/context/LanguageContext";
 import {ToastContainer} from "react-toastify"
 import { Toaster } from "@/components/ui/sonner";
 import GoogleTranslationAPI from "@/components/GoogleTranslationAPI";
@@ -41,9 +42,11 @@ export default function RootLayout({
         <GoogleTranslationAPI />
         <ReduxProvider>
           <ToastContainer />
-          <AuthProvider>
-          {children}
-          </AuthProvider>
+          <TranslationProvider>
+            <AuthProvider>
+            {children}
+            </AuthProvider>
+          </TranslationProvider>
         </ReduxProvider>
         <Toaster position="top-right" />
       </body>

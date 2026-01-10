@@ -66,7 +66,7 @@ const GarageCard: React.FC<GarageCardProps> = ({
       <div className="relative h-40 md:h-48 w-full">
         <Image 
           src={image} 
-          alt={name} 
+          alt={name || 'Garage image'} 
           fill 
           className="object-cover"
           sizes="(max-width: 200px) 100vw, (max-width: 390px) 50vw, 33vw"
