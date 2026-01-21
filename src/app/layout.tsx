@@ -5,6 +5,8 @@ import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
 import { ReduxProvider } from "@/providers/ReduxProvider";
 import { TranslationProvider } from "@/context/LanguageContext";
+import { AutoTranslate } from "@/components/shared/AutoTranslate";
+import { GoogleMapsProvider } from "@/providers/GoogleMapsProvider";
 import {ToastContainer} from "react-toastify"
 import { Toaster } from "@/components/ui/sonner";
 import GoogleTranslationAPI from "@/components/GoogleTranslationAPI";
@@ -43,9 +45,13 @@ export default function RootLayout({
         <ReduxProvider>
           <ToastContainer />
           <TranslationProvider>
-            <AuthProvider>
-            {children}
-            </AuthProvider>
+            <GoogleMapsProvider>
+              <AuthProvider>
+                <AutoTranslate>
+                  {children}
+                </AutoTranslate>
+              </AuthProvider>
+            </GoogleMapsProvider>
           </TranslationProvider>
         </ReduxProvider>
         <Toaster position="top-right" />

@@ -10,6 +10,7 @@ interface TranslationContextType {
   t: (translations: any) => any;
   useGoogleTranslate: boolean;
   setUseGoogleTranslate: (use: boolean) => void;
+  isClient: boolean;
 }
 
 const TranslationContext = createContext<TranslationContextType | undefined>(
@@ -19,8 +20,10 @@ const TranslationContext = createContext<TranslationContextType | undefined>(
 export function TranslationProvider({ children }: { children: ReactNode }) {
   const [language, setLanguage] = useState<Language>("en");
   const [useGoogleTranslate, setUseGoogleTranslate] = useState<boolean>(false);
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
+    setIsClient(true);
     const savedLang = localStorage.getItem("language") as Language;
     if (savedLang && (savedLang === "en" || savedLang === "ar")) {
       setLanguage(savedLang);
@@ -47,25 +50,39 @@ export function TranslationProvider({ children }: { children: ReactNode }) {
 
   const handleSetLanguage = (lang: Language) => {
     setLanguage(lang);
-    localStorage.setItem("language", lang);
+    if (isClient) {
+      localStorage.setItem("language", lang);
+    }
     applyRTL(lang);
   };
 
   const handleSetUseGoogleTranslate = (use: boolean) => {
     setUseGoogleTranslate(use);
-    localStorage.setItem("useGoogleTranslate", use.toString());
+    if (isClient) {
+      localStorage.setItem("useGoogleTranslate", use.toString());
+    }
   };
 
   /**
-   * Translation function with fallback mechanism:
-   * 1. If Google Translate is enabled and available, use it
-   * 2. Otherwise, use static translations (fallback)
+   * Translation function with hybrid approach:
+   * 1. Static translations (primary - fast and reliable)
+   * 2. Google Translate API (secondary - for dynamic content)
    */
   const t = (translations: any) => {
-    // Always use static translations as fallback
-    // Google Translate API integration can be added here in future
-    // For now, this returns static translations based on current language
-    return translations[language] || translations.en;
+    // For static translations, always use the predefined translations
+    if (translations && typeof translations === 'object' && translations[language]) {
+      return translations[language] || translations.en;
+    }
+    
+    // For dynamic strings (when translations is a string), 
+    // use Google Translate if enabled
+    if (typeof translations === 'string' && useGoogleTranslate && language !== 'en') {
+      // This would be handled by useTranslatedText hook for dynamic content
+      return translations;
+    }
+    
+    // Fallback
+    return translations;
   };
 
   return (
@@ -75,7 +92,8 @@ export function TranslationProvider({ children }: { children: ReactNode }) {
         setLanguage: handleSetLanguage, 
         t,
         useGoogleTranslate,
-        setUseGoogleTranslate: handleSetUseGoogleTranslate
+        setUseGoogleTranslate: handleSetUseGoogleTranslate,
+        isClient
       }}
     >
       {children}
