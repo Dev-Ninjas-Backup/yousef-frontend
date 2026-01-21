@@ -9,6 +9,7 @@ import { UserRole } from "@/types/auth";
 import scroll_logo from "@/assets/navbar/sayarahub_fill.svg";
 import { useLanguage } from "@/context/LanguageContext";
 import { navbarTranslations } from "@/translations/navbar";
+import { TranslationToggle } from "@/components/shared/TranslationToggle";
 
 const Navbar = () => {
   const { language, setLanguage, t } = useLanguage();
@@ -123,7 +124,10 @@ const Navbar = () => {
         </div>
 
         <div className="flex items-center gap-2">
-          <div className="hidden md:block relative language-dropdown">
+          {/* Translation Toggle */}
+          <TranslationToggle />
+
+          {/* <div className="hidden md:block relative language-dropdown">
             <button
               onClick={() => setIsLangMenuOpen(!isLangMenuOpen)}
               className="flex items-center gap-2 text-white hover:text-[#0A84FF] py-2 px-4 rounded-full bg-black/40 shadow-[0_0_15px_rgba(255,255,255,0.1)] transition-all duration-300"
@@ -152,7 +156,7 @@ const Navbar = () => {
                 </button>
               </div>
             )}
-          </div>
+          </div> */}
 
           {isAuthenticated ? (
             <div className="hidden md:block relative user-dropdown">
