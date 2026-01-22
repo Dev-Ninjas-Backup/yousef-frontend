@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 
-type Language = "en" | "ar";
+type Language = "en" | "ar" | "hi";
 
 interface TranslationContextType {
   language: Language;
@@ -25,7 +25,7 @@ export function TranslationProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     setIsClient(true);
     const savedLang = localStorage.getItem("language") as Language;
-    if (savedLang && (savedLang === "en" || savedLang === "ar")) {
+    if (savedLang && (savedLang === "en" || savedLang === "ar" || savedLang === "hi")) {
       setLanguage(savedLang);
       applyRTL(savedLang);
     }
@@ -41,6 +41,9 @@ export function TranslationProvider({ children }: { children: ReactNode }) {
       if (lang === "ar") {
         html.setAttribute("dir", "rtl");
         html.setAttribute("lang", "ar");
+      } else if (lang === "hi") {
+        html.setAttribute("dir", "ltr");
+        html.setAttribute("lang", "hi");
       } else {
         html.setAttribute("dir", "ltr");
         html.setAttribute("lang", "en");
@@ -67,11 +70,17 @@ export function TranslationProvider({ children }: { children: ReactNode }) {
    * Translation function with hybrid approach:
    * 1. Static translations (primary - fast and reliable)
    * 2. Google Translate API (secondary - for dynamic content)
+   * 3. Fallback to English if translation not found
    */
   const t = (translations: any) => {
     // For static translations, always use the predefined translations
-    if (translations && typeof translations === 'object' && translations[language]) {
-      return translations[language] || translations.en;
+    if (translations && typeof translations === 'object') {
+      // Try to get translation for current language
+      if (translations[language]) {
+        return translations[language];
+      }
+      // Fallback to English if current language not available
+      return translations.en || translations;
     }
     
     // For dynamic strings (when translations is a string), 
