@@ -12,6 +12,7 @@ import { useAppDispatch } from "@/store/hooks";
 import { setCredentials } from "@/store/slices/authSlice";
 import { getRedirectPath, storeAuthData } from "@/lib/auth";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function AdminAuth() {
   const router = useRouter();
@@ -89,13 +90,15 @@ export default function AdminAuth() {
           {/* Header with Logo */}
           <div className="relative z-10 py-4 bg-black/20 backdrop-blur-sm border-b border-white/10">
             <div className="flex items-center justify-between px-10 md:px-20">
-              <Image
-                src={scroll_logo}
-                alt="SayaraHub"
-                width={150}
-                height={40}
-                className="h-8 md:h-10 w-auto brightness-0 invert"
-              />
+              <Link href="/">
+                <Image
+                  src={scroll_logo}
+                  alt="SayaraHub"
+                  width={150}
+                  height={40}
+                  className="h-8 md:h-10 w-auto brightness-0 invert cursor-pointer hover:opacity-80 transition-opacity"
+                />
+              </Link>
               <div className="flex items-center gap-2 text-white/80">
                 <Shield className="h-5 w-5" />
                 <span className="text-sm font-medium">Admin Portal</span>
