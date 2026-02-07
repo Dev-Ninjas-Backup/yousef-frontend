@@ -3,6 +3,7 @@ import React from "react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Sparkles, User, Store } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import loginbg from "@/assets/login/login_bg.jpg";
 import scroll_logo from "@/assets/navbar/sayarahub_fill.svg";
 import { useUserAuth } from "./_components/useUserAuth";
@@ -72,13 +73,15 @@ export default function UserAuth() {
 
           {/* Header with Logo */}
           <div className="relative z-10 py-3 bg-white/95 shadow-md">
-            <Image
-              src={scroll_logo}
-              alt="SayaraHub"
-              width={150}
-              height={40}
-              className="h-8 md:h-10 w-auto ml-10 md:ml-20"
-            />
+            <Link href="/">
+              <Image
+                src={scroll_logo}
+                alt="SayaraHub"
+                width={150}
+                height={40}
+                className="h-8 md:h-10 w-auto ml-10 md:ml-20 cursor-pointer hover:opacity-80 transition-opacity"
+              />
+            </Link>
           </div>
 
           {/* Main Content */}

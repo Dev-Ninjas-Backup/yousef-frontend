@@ -245,8 +245,68 @@ export function AutoTranslate({ children }: { children: React.ReactNode }) {
       characterData: true,
     });
 
+    // Also observe body for portal content (dropdowns, modals, etc.)
+    const bodyObserver = new MutationObserver((mutations) => {
+      const hasNewContent = mutations.some(mutation => 
+        mutation.addedNodes.length > 0 || 
+        (mutation.type === 'characterData' && mutation.target.textContent?.trim())
+      );
+
+      if (hasNewContent && !isTranslating) {
+        const timer = setTimeout(() => {
+          const translatePortalContent = async () => {
+            // Find all portal elements (usually have data-radix-portal or similar)
+            const portals = document.querySelectorAll('[data-radix-popper-content-wrapper], [role="dialog"], [role="menu"], [role="listbox"]');
+            
+            if (portals.length === 0) return;
+            
+            setIsTranslating(true);
+            try {
+              for (const portal of Array.from(portals)) {
+                const texts = collectTexts(portal as Node);
+                const uniqueTexts = [...new Set(texts)].filter(text => text.length > 2);
+
+                if (uniqueTexts.length === 0) continue;
+
+                const translationMap = new Map<string, string>();
+                const batchSize = 10;
+                
+                for (let i = 0; i < uniqueTexts.length; i += batchSize) {
+                  const batch = uniqueTexts.slice(i, i + batchSize);
+                  await Promise.all(
+                    batch.map(async (text) => {
+                      try {
+                        const translated = await translationService.translate(text, language);
+                        translationMap.set(text, translated);
+                      } catch (error) {
+                        translationMap.set(text, text);
+                      }
+                    })
+                  );
+                }
+
+                await applyTranslations(portal as Node, translationMap);
+              }
+            } finally {
+              setIsTranslating(false);
+            }
+          };
+          
+          translatePortalContent();
+        }, 300);
+
+        return () => clearTimeout(timer);
+      }
+    });
+
+    bodyObserver.observe(document.body, {
+      childList: true,
+      subtree: true,
+    });
+
     return () => {
       observer.disconnect();
+      bodyObserver.disconnect();
     };
   }, [isMounted, useGoogleTranslate, language, isTranslating]);
 
