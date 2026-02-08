@@ -4,7 +4,7 @@ export const authTranslations = {
       welcomeTo: "Welcome to SayaraHub",
       signInTitle: "Sign In to Your Account",
       signUpTitle: "Create Your Account",
-      subtitle: "Connect with trusted automotive services across the UAE",
+      subtitle: "Connect with automotive services across the UAE",
       carOwner: "Car Owner",
       garageOwner: "Garage Owner",
       signIn: "Sign In",

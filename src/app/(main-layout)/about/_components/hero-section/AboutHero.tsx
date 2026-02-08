@@ -45,13 +45,13 @@ export default function AboutHero() {
           {trans.hero.description}
         </p>
 
-        <Button
+        {/* <Button
           size="lg"
           className="bg-blue-600 hover:bg-blue-700 text-white gap-2"
         >
           {trans.hero.joinButton}
           <ArrowRight className="w-4 h-4" />
-        </Button>
+        </Button> */}
       </div>
     </section>
   );

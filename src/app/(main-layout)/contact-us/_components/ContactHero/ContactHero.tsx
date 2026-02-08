@@ -10,6 +10,10 @@ const ContactHero: React.FC = () => {
   const { t } = useLanguage();
   const trans = t(contactTranslations);
 
+  const scrollToGetInTouch = () => {
+    document.getElementById('get-in-touch')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   return (
     <section className="relative w-full h-[450px] md:h-[500px] lg:h-[720px] overflow-hidden">
       <div className="absolute inset-0 z-0">
@@ -32,7 +36,7 @@ const ContactHero: React.FC = () => {
           {trans.hero.description}
         </p>
 
-        <Button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 md:py-6 rounded-lg text-sm md:text-xl font-medium">
+        <Button onClick={scrollToGetInTouch} className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 md:py-6 rounded-lg text-sm md:text-xl font-medium">
           {trans.hero.button}
         </Button>
       </div>

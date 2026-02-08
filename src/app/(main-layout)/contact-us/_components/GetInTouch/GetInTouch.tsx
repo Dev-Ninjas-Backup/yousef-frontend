@@ -79,7 +79,7 @@ const GetInTouch: React.FC = () => {
   };
 
   return (
-    <section className="py-12 md:py-16 lg:py-20 bg-white">
+    <section id="get-in-touch" className="py-12 md:py-16 lg:py-20 bg-white">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
         <div className="text-center mb-10 md:mb-12 space-y-5">
           <h2 className="text-3xl sm:text-4xl md:text-6xl font-bold text-[#333333]">

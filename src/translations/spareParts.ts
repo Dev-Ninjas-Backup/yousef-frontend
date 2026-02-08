@@ -2,7 +2,8 @@ export const sparePartsPageTranslations = {
   en: {
     hero: {
       title: "Start Buying or Selling Today",
-      description: "Join the UAE's most reliable platform for spare parts trading. Transparent, simple, and secure, designed for everyone in the automotive ecosystem.",
+      description:
+        "Join the UAE's most reliable platform for spare parts trading. Transparent, simple, and secure, designed for everyone in the automotive ecosystem.",
       browseParts: "Browse Parts",
       sellNow: "Sell Now",
     },
@@ -33,7 +34,8 @@ export const sparePartsPageTranslations = {
   ar: {
     hero: {
       title: "ابدأ الشراء أو البيع اليوم",
-      description: "انضم إلى المنصة الأكثر موثوقية في الإمارات لتجارة قطع الغيار. شفافة وبسيطة وآمنة، مصممة للجميع في النظام البيئي للسيارات.",
+      description:
+        "انضم إلى المنصة الأكثر موثوقية في الإمارات لتجارة قطع الغيار. شفافة وبسيطة وآمنة، مصممة للجميع في النظام البيئي للسيارات.",
       browseParts: "تصفح القطع",
       sellNow: "بيع الآن",
     },
@@ -66,17 +68,21 @@ export const sparePartsPageTranslations = {
 export const sparePartsTranslations = {
   en: {
     title: "Buy or Sell Spare Parts All in One Place.",
-    description1: "Find spare parts for your car from verified garages and sellers.",
-    description2: "Have unused parts? List them on the platform and connect with real buyers",
-    description3: "instantly. From filters and brakes to accessories, everything is just a click away!",
+    description1: "Find spare parts for your car from garages and sellers.",
+    description2:
+      "Have unused parts? List them on the platform and connect with real buyers",
+    description3:
+      "instantly. From filters and brakes to accessories, everything is just a click away!",
     buyParts: "Buy Parts",
     sellParts: "Sell Your Parts",
   },
   ar: {
     title: "اشتري أو بع قطع الغيار في مكان واحد.",
     description1: "ابحث عن قطع غيار لسيارتك من الورش والبائعين المعتمدين.",
-    description2: "هل لديك قطع غيار غير مستخدمة؟ أدرجها على المنصة وتواصل مع المشترين الحقيقيين",
-    description3: "فوراً. من الفلاتر والفرامل إلى الإكسسوارات، كل شيء على بعد نقرة واحدة!",
+    description2:
+      "هل لديك قطع غيار غير مستخدمة؟ أدرجها على المنصة وتواصل مع المشترين الحقيقيين",
+    description3:
+      "فوراً. من الفلاتر والفرامل إلى الإكسسوارات، كل شيء على بعد نقرة واحدة!",
     buyParts: "شراء قطع الغيار",
     sellParts: "بيع قطع الغيار الخاصة بك",
   },
