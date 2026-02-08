@@ -12,7 +12,7 @@ import {
 } from "react-icons/lu";
 import path from "path";
 
-type TabType = "profile" | "settings" | "spare-parts" | "my-products";
+type TabType = "profile" | "settings" | "my-products";
 
 interface UserNavbarProps {
   activeTab?: TabType;
@@ -43,12 +43,12 @@ const UserNavbar = ({
       icon: LuSettings,
       path: "/user/settings",
     },
-    {
-      id: "spare-parts" as TabType,
-      label: "Spare Parts",
-      icon: LuWrench,
-      path: "/user/spare-parts",
-    },
+    // {
+    //   id: "spare-parts" as TabType,
+    //   label: "Spare Parts",
+    //   icon: LuWrench,
+    //   path: "/user/spare-parts",
+    // },
     {
       id: "my-products" as TabType,
       label: "My Products",

@@ -14,11 +14,6 @@ export default function StorySection() {
 
   const features = [
     {
-      icon: ShieldCheck,
-      title: trans.story.features.verified.title,
-      description: trans.story.features.verified.description,
-    },
-    {
       icon: Users,
       title: trans.story.features.userCentric.title,
       description: trans.story.features.userCentric.description,
@@ -38,7 +33,7 @@ export default function StorySection() {
     <section className="py-16 px-4 bg-white">
       <div className="max-w-7xl mx-auto space-y-16">
         {/* Our Story */}
-        <div className="grid md:grid-cols-2 gap-8 items-center">
+        <div className="grid md:grid-cols-2 gap-8">
           <div>
             <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mb-4">
               {trans.story.ourStory}
@@ -49,13 +44,13 @@ export default function StorySection() {
               ))}
             </div>
           </div>
-          <div className="rounded-lg overflow-hidden shadow-lg">
+          <div className="rounded-lg overflow-hidden shadow-lg h-[200px] md:h-[350px]">
             <Image
               src={OurStory}
               alt="Our Story - SayaraHub garage and team"
               width={600}
-              height={400}
-              className="w-full h-auto object-cover"
+              height={200}
+              className="w-full h-auto md:h-full object-cover"
             />
           </div>
         </div>
@@ -81,7 +76,7 @@ export default function StorySection() {
                   <p key={index} className={index > 0 ? "mt-4" : ""}>
                     {paragraph}
                   </p>
-                )
+                ),
               )}
             </div>
           </div>
@@ -97,7 +92,7 @@ export default function StorySection() {
               {trans.story.visionContent.map(
                 (paragraph: any, index: number) => (
                   <p key={index}>{paragraph}</p>
-                )
+                ),
               )}
             </div>
           </div>

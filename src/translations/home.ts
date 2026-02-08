@@ -3,7 +3,7 @@ export const homeTranslations = {
     // Banner Section
     banner: {
       title: "Find the Best Car Service Near You",
-      subtitle: "Book trusted garages and get your car serviced with ease",
+      subtitle: "Book garages and get your car serviced with ease",
       searchPlaceholder: "Search for services...",
       searchButton: "Search",
     },

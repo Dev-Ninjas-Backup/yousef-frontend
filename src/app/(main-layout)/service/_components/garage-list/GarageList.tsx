@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Loader2 } from "lucide-react";
 import GarageCard from "../garage-card/GarageCard";
 import MapSection from "../map-section/MapSection";
@@ -37,7 +37,11 @@ export default function GarageList({ searchParams }: GarageListProps) {
   const [showMap, setShowMap] = useState(true);
   const [sortBy, setSortBy] = useState("distance");
   const [currentPage, setCurrentPage] = useState(1);
-  const limit = 4;
+  const [allGarages, setAllGarages] = useState<any[]>([]);
+  const [hasMore, setHasMore] = useState(true);
+  const observerTarget = useRef(null);
+
+  const limit = showMap ? 10 : 10;
 
   // API call with search parameters
   const {
@@ -51,39 +55,82 @@ export default function GarageList({ searchParams }: GarageListProps) {
     serviceName: searchParams.serviceName || undefined,
   });
 
-  // Reset to first page when search params change
+  // Reset when showMap or search params change
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchParams]);
+    setAllGarages([]);
+    setHasMore(true);
+  }, [searchParams, showMap]);
 
-  // Transform API data for components
-  const garages =
-    (Array.isArray(garagesResponse?.data?.data)
-      ? garagesResponse.data.data
-      : []
-    )?.map((garage: any) => ({
-      id: garage.id,
-      name: garage.name,
-      rating: garage.averageRating || 4.5,
-      reviews: garage.totalReviews || 0,
-      distance: "2.5 km away",
-      location: `${garage.city}, ${garage.emirate}`,
-      services: garage.services || [],
-      description: garage.description || "Professional automotive services",
-      priceRange: "AED 150-300",
-      status: "Open Now",
-      position: { lat: garage.garageLat, lng: garage.garageLng },
-      icon: "wrench",
-      iconColor: "red",
-      phone: garage.garagePhone,
-      email: garage.email,
-      address: garage.formattedAddress,
-      hours: {
-        weekdays: garage.weekdaysHours,
-        weekends: garage.weekendsHours,
+  // Transform and accumulate garages for infinite scroll
+  useEffect(() => {
+    if (garagesResponse?.data?.data) {
+      const newGarages = garagesResponse.data.data.map((garage: any) => ({
+        id: garage.id,
+        name: garage.name,
+        rating: garage.averageRating || 4.5,
+        reviews: garage.totalReviews || 0,
+        distance: "2.5 km away",
+        location: `${garage.city}, ${garage.emirate}`,
+        services: garage.services || [],
+        description: garage.description || "Professional automotive services",
+        priceRange: "AED 150-300",
+        status: "Open Now",
+        position: { lat: garage.garageLat, lng: garage.garageLng },
+        icon: "wrench",
+        iconColor: "red",
+        phone: garage.garagePhone,
+        email: garage.email,
+        address: garage.formattedAddress,
+        hours: {
+          weekdays: garage.weekdaysHours,
+          weekends: garage.weekendsHours,
+        },
+        ownerId: garage.userId,
+      }));
+
+      if (showMap) {
+        // Infinite scroll: accumulate garages only if page > 1
+        if (currentPage === 1) {
+          setAllGarages(newGarages);
+        } else {
+          setAllGarages((prev) => {
+            const existingIds = new Set(prev.map((g) => g.id));
+            const uniqueNew = newGarages.filter(
+              (g: any) => !existingIds.has(g.id),
+            );
+            return [...prev, ...uniqueNew];
+          });
+        }
+        setHasMore(newGarages.length === limit);
+      } else {
+        // Pagination: replace garages
+        setAllGarages(newGarages);
+      }
+    }
+  }, [garagesResponse, showMap, limit, currentPage]);
+
+  // Infinite scroll observer
+  useEffect(() => {
+    if (!showMap || !hasMore || isLoading) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore) {
+          setCurrentPage((prev) => prev + 1);
+        }
       },
-      ownerId: garage.userId, // Add owner ID for chat
-    })) || [];
+      { threshold: 0.1 },
+    );
+
+    if (observerTarget.current) {
+      observer.observe(observerTarget.current);
+    }
+
+    return () => observer.disconnect();
+  }, [showMap, hasMore, isLoading]);
+
+  const garages = allGarages;
 
   const pagination = garagesResponse?.data?.pagination;
   const totalGarages = pagination?.total || 0;
@@ -93,7 +140,7 @@ export default function GarageList({ searchParams }: GarageListProps) {
     setCurrentPage(page);
   };
 
-  if (isLoading) {
+  if (isLoading && currentPage === 1) {
     return (
       <section className="relative py-8">
         <div className="container mx-auto px-4">
@@ -162,9 +209,7 @@ export default function GarageList({ searchParams }: GarageListProps) {
 
         {/* Desktop: Map Background + Cards Overlay | Mobile: Cards then Map */}
         <div
-          className={`space-y-4 ${
-            showMap ? "lg:relative lg:h-[1150px]" : "md:block"
-          }`}
+          className={`${showMap ? "lg:relative lg:h-[1150px]" : "md:block"}`}
         >
           {/* Map - Below on mobile, Background on desktop */}
           {showMap && (
@@ -177,26 +222,47 @@ export default function GarageList({ searchParams }: GarageListProps) {
           <div
             className={`${
               showMap
-                ? "space-y-4 flex flex-col lg:absolute lg:left-4 lg:top-4 lg:z-10 lg:w-full lg:max-w-xl"
-                : "md:grid md:grid-cols-2 md:gap-4 space-y-4 md:space-y-0"
+                ? "lg:absolute lg:left-4 lg:top-4 lg:z-10 lg:w-full lg:max-w-xl lg:max-h-[calc(100%-2rem)] lg:overflow-y-auto lg:pr-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+                : "md:grid md:grid-cols-2 md:gap-4"
             }`}
           >
-            {garages.length > 0 ? (
-              garages.map((garage: any) => (
-                <GarageCard key={garage.id} {...garage} />
-              ))
-            ) : (
-              <div className="col-span-full text-center py-12">
-                <p className="text-gray-500">
-                  No garages found matching your criteria.
-                </p>
-              </div>
-            )}
+            <div
+              className={
+                showMap ? "space-y-4" : "space-y-4 md:space-y-0 md:contents"
+              }
+            >
+              {garages.length > 0 ? (
+                <>
+                  {garages.map((garage: any) => (
+                    <GarageCard key={garage.id} {...garage} />
+                  ))}
+                  {/* Infinite scroll trigger */}
+                  {showMap && hasMore && (
+                    <div ref={observerTarget} className="py-6 text-center">
+                      {isLoading && (
+                        <div className="bg-white/90 backdrop-blur-sm rounded-lg p-4 shadow-md inline-flex items-center gap-3">
+                          <Loader2 className="w-5 h-5 animate-spin text-blue-600" />
+                          <span className="text-sm font-medium text-gray-700">
+                            Loading more garages...
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </>
+              ) : (
+                <div className="col-span-full text-center py-12">
+                  <p className="text-gray-500">
+                    No garages found matching your criteria.
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
-        {/* Pagination */}
-        {totalPages > 1 && (
+        {/* Pagination - Only show when map is OFF */}
+        {!showMap && totalPages > 1 && (
           <div className="mt-6 flex justify-center">
             <Pagination>
               <PaginationContent>

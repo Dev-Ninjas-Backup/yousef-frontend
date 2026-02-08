@@ -5,7 +5,7 @@ export const bannerTranslations = {
     title3: "Platform",
     description: "Transform your car care experience with",
     appName: "SayaraHub",
-    descriptionContinue: ". Access trusted garages, mobile mechanics, emergency services, and spare parts marketplace, all in one powerful app.",
+    descriptionContinue: ". Access garages, mobile mechanics, emergency services, and spare parts marketplace, all in one powerful app.",
     downloadOn: "Download on the",
     appStore: "App Store",
     playStore: "Play Store",

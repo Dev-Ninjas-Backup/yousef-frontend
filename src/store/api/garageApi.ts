@@ -8,6 +8,17 @@ export interface GarageSearchParams {
   search?: string;
 }
 
+export interface NearbyGarageParams {
+  lat: number;
+  lng: number;
+  radius?: number;
+}
+
+export interface NearbyGaragesResponse {
+  success: boolean;
+  garages: GarageData[];
+}
+
 export interface GarageData {
   id: string;
   name: string;
@@ -95,6 +106,17 @@ export const garageApi = apiSlice.injectEndpoints({
       query: () => '/services',
       providesTags: ['Service'],
     }),
+    getNearbyGarages: builder.query<NearbyGaragesResponse, NearbyGarageParams>({
+      query: (params) => ({
+        url: '/garages/nearby',
+        params: {
+          lat: params.lat,
+          lng: params.lng,
+          radius: params.radius || 10,
+        },
+      }),
+      providesTags: ['Garage'],
+    }),
   }),
 });
 
@@ -102,4 +124,6 @@ export const {
   useGetGaragesQuery,
   useGetGarageByIdQuery,
   useGetServiceCategoriesQuery,
+  useGetNearbyGaragesQuery,
+  useLazyGetNearbyGaragesQuery,
 } = garageApi;
