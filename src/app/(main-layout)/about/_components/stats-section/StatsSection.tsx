@@ -56,7 +56,9 @@ export default function StatsSection() {
           <div>
             <div className="flex items-center gap-2 mb-4 bg-blue-100 rounded-full py-2 px-4 w-fit">
               <Sparkles className="w-5 h-5 text-blue-600" />
-              <span className="text-blue-600 font-medium">{trans.stats.ourStory}</span>
+              <span className="text-blue-600 font-medium">
+                {trans.stats.ourStory}
+              </span>
             </div>
             <h2 className="text-3xl md:text-4xl  text-gray-900 mb-6">
               {trans.stats.title}
@@ -67,7 +69,7 @@ export default function StatsSection() {
               ))}
             </div>
 
-            <div className="grid grid-cols-3 gap-6">
+            {/* <div className="grid grid-cols-3 gap-6">
               {stats.map((stat, index) => (
                 <div key={index} className="text-center">
                   <div className="text-3xl md:text-4xl text-blue-600 mb-1 flex items-center justify-center gap-1">
@@ -77,7 +79,7 @@ export default function StatsSection() {
                   <div className="text-sm text-gray-600">{stat.label}</div>
                 </div>
               ))}
-            </div>
+            </div> */}
           </div>
         </div>
 

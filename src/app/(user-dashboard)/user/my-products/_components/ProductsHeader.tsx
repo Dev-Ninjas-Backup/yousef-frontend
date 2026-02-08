@@ -29,10 +29,12 @@ export function ProductsHeader({
       {/* Title & Add Button */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">My Products</h1>
-          <p className="text-sm text-gray-600 mt-1">
+          <h1 className="text-2xl font-bold text-gray-900">
+            Manage your products listings
+          </h1>
+          {/* <p className="text-sm text-gray-600 mt-1">
             Manage your spare parts listings
-          </p>
+          </p> */}
         </div>
         <Button
           onClick={onAddProduct}
