@@ -37,6 +37,20 @@ import Mini from "@/assets/home/CarBrands/mini-logo.svg";
 import Porsche from "@/assets/home/CarBrands/porsche.svg";
 import Skoda from "@/assets/home/CarBrands/skoda-auto.svg";
 import Volvo from "@/assets/home/CarBrands/volvo.svg";
+import Cadillac from "@/assets/home/CarBrands/cadillac.svg";
+import Tesla from "@/assets/home/CarBrands/tesla-9.svg";
+import Jetour from "@/assets/home/CarBrands/jetour.svg";
+import Haval from "@/assets/home/CarBrands/haval.svg";
+import JacMotors from "@/assets/home/CarBrands/jac-motors.svg";
+import Baic from "@/assets/home/CarBrands/baic.svg";
+import Exeed from "@/assets/home/CarBrands/exeed.svg";
+import Zeekr from "@/assets/home/CarBrands/zeekr.svg";
+import RollsRoyce from "@/assets/home/CarBrands/rolls-royce.svg";
+import Lamborghini from "@/assets/home/CarBrands/lamborghini.svg";
+import Ferrari from "@/assets/home/CarBrands/ferrari.svg";
+import Rox from "@/assets/home/CarBrands/rox.svg";
+import Avatar from "@/assets/home/CarBrands/avatr.svg";
+import Hongqi from "@/assets/home/CarBrands/Hongqi.svg";
 
 const brands = [
   { name: "Toyota", logo: Toyota },
@@ -74,6 +88,20 @@ const brands = [
   { name: "GAC", logo: GAC },
   { name: "Changan", logo: Changan },
   { name: "MG", logo: MG },
+  { name: "Cadillac", logo: Cadillac },
+  { name: "Tesla", logo: Tesla },
+  { name: "Jetour", logo: Jetour },
+  { name: "Haval", logo: Haval },
+  { name: "Jac Motors", logo: JacMotors },
+  { name: "Baic", logo: Baic },
+  { name: "Exeed", logo: Exeed },
+  { name: "Zeekr", logo: Zeekr },
+  { name: "Rolls Royce", logo: RollsRoyce },
+  { name: "Lamborghini", logo: Lamborghini },
+  { name: "Ferrari", logo: Ferrari },
+  { name: "Rox", logo: Rox },
+  { name: "Avatar", logo: Avatar },
+  { name: "Hongqi", logo: Hongqi },
 ];
 
 const CarBrands: React.FC = () => {
