@@ -80,6 +80,12 @@
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
   }
+  
+  /* Form Label Spacing - Global Fix */
+  label {
+    display: inline-block;
+    margin-bottom: 0.5rem; /* 8px spacing */
+  }
 }
 
 @layer utilities {

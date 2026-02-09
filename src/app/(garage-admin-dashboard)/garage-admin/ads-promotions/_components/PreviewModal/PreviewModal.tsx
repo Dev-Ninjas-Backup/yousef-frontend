@@ -33,7 +33,7 @@ const PreviewModal = ({ open, onOpenChange, product }: PreviewModalProps) => {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="!max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Star className="w-5 h-5 text-yellow-500 fill-yellow-500" />
@@ -47,7 +47,10 @@ const PreviewModal = ({ open, onOpenChange, product }: PreviewModalProps) => {
             {product.photos.length > 0 ? (
               <div className="grid grid-cols-3 gap-3">
                 {product.photos.map((photo: string, index: number) => (
-                  <div key={index} className="relative aspect-square rounded-lg overflow-hidden">
+                  <div
+                    key={index}
+                    className="relative aspect-square rounded-lg overflow-hidden"
+                  >
                     <Image
                       src={photo}
                       alt={`${product.partName} ${index + 1}`}
@@ -85,7 +88,9 @@ const PreviewModal = ({ open, onOpenChange, product }: PreviewModalProps) => {
           <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg">
             <div>
               <p className="text-sm text-gray-600">Price</p>
-              <p className="text-2xl font-bold text-blue-600">AED {product.price}</p>
+              <p className="text-2xl font-bold text-blue-600">
+                AED {product.price}
+              </p>
             </div>
             <div>
               <p className="text-sm text-gray-600">Condition</p>
