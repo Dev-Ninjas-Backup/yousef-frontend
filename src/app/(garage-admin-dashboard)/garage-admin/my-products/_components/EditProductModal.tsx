@@ -21,6 +21,8 @@ import {
 import { useUpdateProductMutation } from "@/store/api/garageAdminApis/products/products";
 import { useGetCategoriesQuery } from "@/store/api/garageAdminApis/categoryApi";
 import { toast } from "sonner";
+import { Upload, X } from "lucide-react";
+import Image from "next/image";
 
 interface EditProductModalProps {
   open: boolean;
@@ -47,6 +49,10 @@ export function EditProductModal({
     description: "",
   });
 
+  const [photos, setPhotos] = useState<File[]>([]);
+  const [photoPreviews, setPhotoPreviews] = useState<string[]>([]);
+  const [existingPhotos, setExistingPhotos] = useState<string[]>([]);
+
   useEffect(() => {
     if (product) {
       setFormData({
@@ -58,8 +64,42 @@ export function EditProductModal({
         brand: product.brand || "",
         description: product.description || "",
       });
+
+      // Reset states when product changes
+      setPhotos([]);
+      setPhotoPreviews([]);
+
+      // Set existing photos separately
+      if (product.photos && product.photos.length > 0) {
+        setExistingPhotos(product.photos);
+      } else {
+        setExistingPhotos([]);
+      }
     }
   }, [product]);
+
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    const totalPhotos = existingPhotos.length + photos.length + files.length;
+
+    if (totalPhotos > 5) {
+      toast.error("Maximum 5 photos allowed");
+      return;
+    }
+
+    setPhotos([...photos, ...files]);
+    const previews = files.map((file) => URL.createObjectURL(file));
+    setPhotoPreviews([...photoPreviews, ...previews]);
+  };
+
+  const removeExistingPhoto = (index: number) => {
+    setExistingPhotos(existingPhotos.filter((_, i) => i !== index));
+  };
+
+  const removeNewPhoto = (index: number) => {
+    setPhotos(photos.filter((_, i) => i !== index));
+    setPhotoPreviews(photoPreviews.filter((_, i) => i !== index));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -77,23 +117,51 @@ export function EditProductModal({
     }
 
     try {
+      // Build update data - only include changed fields
+      const updateData: any = {};
+
+      // Always include these if changed
+      if (formData.partName !== product.partName)
+        updateData.partName = formData.partName;
+      if (formData.categoryId !== product.categoryId)
+        updateData.categoryId = formData.categoryId;
+      if (formData.condition !== product.condition)
+        updateData.condition = formData.condition;
+      if (price !== Number(product.price)) updateData.price = price;
+      if (quantity !== product.quantity) updateData.quantity = quantity;
+
+      // Optional fields
+      if (formData.brand !== product.brand)
+        updateData.brand = formData.brand || "";
+      if (formData.description !== product.description)
+        updateData.description = formData.description || "";
+
+      // Photos - only if new photos added
+      if (photos.length > 0) {
+        updateData.photos = photos;
+      }
+
+      // If nothing changed
+      if (Object.keys(updateData).length === 0 && photos.length === 0) {
+        toast.info("No changes to update");
+        return;
+      }
+
+      console.log("Sending update data:", updateData);
+      console.log("Photos count:", photos.length);
+
       await updateProduct({
         id: product.id,
-        data: {
-          partName: formData.partName,
-          categoryId: formData.categoryId,
-          condition: formData.condition,
-          price,
-          quantity,
-          brand: formData.brand || undefined,
-          description: formData.description || undefined,
-        },
+        data: updateData,
       }).unwrap();
 
       toast.success("Product updated successfully!");
       onOpenChange(false);
     } catch (error: any) {
-      toast.error(error?.data?.message || "Failed to update product");
+      console.error("Update error:", error);
+      const errorMsg =
+        error?.data?.message || error?.message || "Failed to update product";
+      toast.error(errorMsg);
     }
   };
 
@@ -219,6 +287,88 @@ export function EditProductModal({
               }
               rows={3}
             />
+          </div>
+
+          <div>
+            <Label>Product Photos (Max 5)</Label>
+
+            {/* Existing Photos */}
+            {existingPhotos.length > 0 && (
+              <div className="mb-3">
+                <p className="text-sm text-gray-600 mb-2">Current Photos:</p>
+                <div className="grid grid-cols-5 gap-2">
+                  {existingPhotos.map((photo, index) => (
+                    <div key={`existing-${index}`} className="relative">
+                      <Image
+                        src={photo}
+                        alt={`Existing ${index + 1}`}
+                        width={100}
+                        height={100}
+                        className="rounded object-cover"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeExistingPhoto(index)}
+                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* New Photos Upload */}
+            <input
+              type="file"
+              id="photos"
+              accept="image/*"
+              multiple
+              onChange={handlePhotoChange}
+              className="hidden"
+            />
+            <label
+              htmlFor="photos"
+              className="border-2 border-dashed rounded-lg p-4 text-center hover:border-blue-500 cursor-pointer block"
+            >
+              <Upload className="w-8 h-8 mx-auto text-gray-400 mb-2" />
+              <p className="text-sm text-gray-600">
+                {existingPhotos.length > 0
+                  ? "Add more photos"
+                  : "Click to upload photos"}
+              </p>
+              <p className="text-xs text-gray-500 mt-1">
+                {existingPhotos.length + photos.length} / 5 photos
+              </p>
+            </label>
+
+            {/* New Photos Preview */}
+            {photoPreviews.length > 0 && (
+              <div className="mt-3">
+                <p className="text-sm text-gray-600 mb-2">New Photos to Upload:</p>
+                <div className="grid grid-cols-5 gap-2">
+                  {photoPreviews.map((preview, index) => (
+                    <div key={`new-${index}`} className="relative">
+                      <Image
+                        src={preview}
+                        alt={`New ${index + 1}`}
+                        width={100}
+                        height={100}
+                        className="rounded object-cover border-2 border-blue-500"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeNewPhoto(index)}
+                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="flex justify-end gap-3 pt-4">
