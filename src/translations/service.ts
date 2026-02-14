@@ -8,6 +8,16 @@ export const serviceTranslations = {
       serviceType: "Service Type",
       allServices: "All Services",
       searchButton: "Search Garages",
+      allEmirates: "All Emirates",
+      emirates: [
+        "Abu Dhabi",
+        "Dubai",
+        "Sharjah",
+        "Ajman",
+        "Umm Al Quwain",
+        "Ras Al Khaimah",
+        "Fujairah"
+      ],
       services: {
         all: "All Services",
         repair: "Car Repair",
@@ -24,6 +34,13 @@ export const serviceTranslations = {
       sortByPrice: "Sort by Price",
       showMap: "Show Map",
     },
+    map: {
+      enableLocation: "Enable Precise Location",
+      updateLocation: "Update Location",
+      gettingLocation: "Getting Location...",
+      locationError: "Unable to retrieve your location. Please enable location services.",
+      yourLocation: "Your Location",
+    },
   },
   ar: {
     hero: {
@@ -34,6 +51,16 @@ export const serviceTranslations = {
       serviceType: "نوع الخدمة",
       allServices: "جميع الخدمات",
       searchButton: "ابحث عن الورش",
+      allEmirates: "جميع الإمارات",
+      emirates: [
+        "أبو ظبي",
+        "دبي",
+        "الشارقة",
+        "عجمان",
+        "أم القيوين",
+        "رأس الخيمة",
+        "الفجيرة"
+      ],
       services: {
         all: "جميع الخدمات",
         repair: "إصلاح السيارات",
@@ -49,6 +76,13 @@ export const serviceTranslations = {
       sortByRating: "ترتيب حسب التقييم",
       sortByPrice: "ترتيب حسب السعر",
       showMap: "عرض الخريطة",
+    },
+    map: {
+      enableLocation: "تفعيل الموقع الدقيق",
+      updateLocation: "تحديث الموقع",
+      gettingLocation: "جاري الحصول على الموقع...",
+      locationError: "تعذر الحصول على موقعك. يرجى تفعيل خدمات الموقع.",
+      yourLocation: "موقعك",
     },
   },
 };

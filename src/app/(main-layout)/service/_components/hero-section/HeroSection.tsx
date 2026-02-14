@@ -39,16 +39,6 @@ export default function HeroSection({ onSearch, initialValues }: HeroSectionProp
     }
   }, [initialValues]);
   
-  const emirates = [
-    "Abu Dhabi",
-    "Dubai", 
-    "Sharjah",
-    "Ajman",
-    "Umm Al Quwain",
-    "Ras Al Khaimah",
-    "Fujairah"
-  ];
-  
   const handleSearch = () => {
     const selectedEmirate = emirate === "all-emirates" ? "" : emirate;
     const selectedService = serviceName === "all-services" ? "" : serviceName;
@@ -87,9 +77,9 @@ export default function HeroSection({ onSearch, initialValues }: HeroSectionProp
                     <SelectValue placeholder="Select Emirate" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all-emirates">All Emirates</SelectItem>
-                    {emirates.map((em) => (
-                      <SelectItem key={em} value={em}>{em}</SelectItem>
+                    <SelectItem value="all-emirates">{trans.hero.allEmirates}</SelectItem>
+                    {trans.hero.emirates.map((em: string, index: number) => (
+                      <SelectItem key={index} value={em}>{em}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>

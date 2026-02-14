@@ -46,7 +46,7 @@ export const downloadAppTranslations = {
     trustedPartner: {
       title: "Partner for Smarter Car Care",
       subtitle:
-        "Discover garages, request towing, and book services, all from one powerful platform. Download SayaraHub today and simplify your drive.",
+        "Discover garages, request towing, services, all from one powerful platform. Download SayaraHub today and simplify your drive.",
       downloadTitle: "Download",
       downloadTitleItalic: "SayaraHub",
       description:

@@ -63,19 +63,19 @@ const Footer: React.FC = () => {
               </div>
             </div>
             <div className="flex flex-wrap justify-center gap-6 text-sm text-[#7B7E86] mb-8">
-              <Link href="/privacy-policy" className="hover:text-blue-600">
+              <Link href="#" className="hover:text-blue-600">
                 {trans.bottomLinks.privacyPolicy}
               </Link>
-              <Link href="/terms" className="hover:text-blue-600">
+              <Link href="#" className="hover:text-blue-600">
                 {trans.bottomLinks.termsOfUse}
               </Link>
-              <Link href="/sales-refunds" className="hover:text-blue-600">
+              <Link href="#" className="hover:text-blue-600">
                 {trans.bottomLinks.salesRefunds}
               </Link>
-              <Link href="/legal" className="hover:text-blue-600">
+              <Link href="#" className="hover:text-blue-600">
                 {trans.bottomLinks.legal}
               </Link>
-              <Link href="/sitemap" className="hover:text-blue-600">
+              <Link href="#" className="hover:text-blue-600">
                 {trans.bottomLinks.siteMap}
               </Link>
             </div>
