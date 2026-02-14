@@ -12,7 +12,7 @@ export const aboutTranslations = {
     story: {
       ourStory: "Our Story",
       storyContent: [
-        "SayaraHub was founded in 2025 with a simple mission: to provide honest, reliable, and high-quality automotive service to the UAE community. What started as a small two-bay garage has grown into a full-service automotive center trusted by customers.",
+        "SayaraHub was founded in 2025 with a simple mission to provide honest, reliable, and high-quality automotive service to the UAE community. What started as a small idea has grown into a full-service automotive center trusted by customers.",
       ],
       ourMission: "Our Mission",
       missionContent: [
@@ -26,7 +26,7 @@ export const aboutTranslations = {
       ],
       empowering: "Empowering Drivers and Garages Alike",
       empoweringContent:
-        "We believe in supporting both sides of the journey. Drivers seek fast quality service and going garages the digital ways they need to grow. From secure communication to listings, every feature is designed with integrity and trust at its core.",
+        "We believe in supporting both sides of the journey. Drivers seek fast, quality service, and garages need the digital tools to grow. From secure communication to listings, every feature is designed with integrity and trust at its core.",
       features: {
         userCentric: {
           title: "User-Centric",
@@ -117,7 +117,7 @@ export const aboutTranslations = {
     story: {
       ourStory: "قصتنا",
       storyContent: [
-        "تأسست سيارة هب في عام 2025 بمهمة بسيطة: تقديم خدمة سيارات صادقة وموثوقة وعالية الجودة لمجتمع لوس أنجلوس. ما بدأ كورشة صغيرة من خليجين نما ليصبح مركز خدمة سيارات كامل موثوق به من قبل آلاف العملاء.",
+        "تأسست سيارة هب في عام 2025 بمهمة بسيطة: تقديم خدمة سيارات صادقة وموثوقة وعالية الجودة لمجتمع الإمارات. ما بدأ كفكرة صغيرة نما ليصبح مركز خدمة سيارات كامل موثوق به من قبل العملاء.",
       ],
       ourMission: "مهمتنا",
       missionContent: [
@@ -131,9 +131,8 @@ export const aboutTranslations = {
       ],
       empowering: "تمكين السائقين والورش على حد سواء",
       empoweringContent:
-        "نحن نؤمن بدعم كلا الجانبين من الرحلة. يبحث السائقون عن خدمة سريعة وجودة والورش تحتاج إلى الطرق الرقمية للنمو. من الاتصال الآمن إلى القوائم المعتمدة، كل ميزة مصممة بالنزاهة والثقة في جوهرها.",
+        "نحن نؤمن بدعم كلا الجانبين من الرحلة. يبحث السائقون عن خدمة سريعة وعالية الجودة، والورش تحتاج إلى الأدوات الرقمية للنمو. من الاتصال الآمن إلى القوائم، كل ميزة مصممة بالنزاهة والثقة في جوهرها.",
       features: {
-        
         userCentric: {
           title: "محوره المستخدم",
           description: "شفاف مع مراجعات المستخدمين ومقدمي الخدمات في واحد",
