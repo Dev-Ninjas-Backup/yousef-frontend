@@ -36,7 +36,7 @@ export default function StatsSection() {
   return (
     <section className="py-16 px-4 md:my-16">
       <div className="max-w-7xl mx-auto">
-        <div className="grid lg:grid-cols-2 gap-12 items-start mb-16">
+        <div className="grid lg:grid-cols-2 gap-12 items-start mb-16" dir="ltr">
           <div className="relative">
             <div className="relative rounded-2xl overflow-hidden shadow-lg">
               <Image
@@ -53,7 +53,7 @@ export default function StatsSection() {
             </div>
           </div>
 
-          <div>
+          <div dir="auto">
             <div className="flex items-center gap-2 mb-4 bg-blue-100 rounded-full py-2 px-4 w-fit">
               <Sparkles className="w-5 h-5 text-blue-600" />
               <span className="text-blue-600 font-medium">
@@ -83,7 +83,7 @@ export default function StatsSection() {
           </div>
         </div>
 
-        <div className="relative grid md:grid-cols-3 gap-2 md:gap-24">
+        <div className="relative grid md:grid-cols-3 gap-2 md:gap-24" dir="ltr">
           {timeline.map((item, index) => (
             <div key={index} className="relative">
               {/* Card */}

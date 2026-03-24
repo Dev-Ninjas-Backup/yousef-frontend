@@ -15,4 +15,12 @@ export const featuredPromotionsTranslations = {
     validUntil: "صالح حتى",
     reviews: "مراجعة",
   },
+  hi: {
+    badge: "जल्द आने वाला फीचर्ड",
+    title: "एक्सक्लूसिव ऑफर और फीचर्ड सेवाएं",
+    subtitle: "शीर्ष रेटेड गैरेज और स्पेयर पार्ट्स पर एक्सक्लूसिव डील खोजें",
+    showDetails: "विवरण देखें",
+    validUntil: "तक मान्य",
+    reviews: "समीक्षाएं",
+  },
 };

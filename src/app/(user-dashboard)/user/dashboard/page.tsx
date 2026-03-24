@@ -5,6 +5,7 @@ import ProfileForm from "./_components/ProfileForm";
 import LoadingSpinner from "./_components/LoadingSpinner";
 import ErrorMessage from "./_components/ErrorMessage";
 import { useProfileManagement } from "./_components/useProfileManagement";
+import ReviewForm from "./_components/ReviewForm";
 
 function UserDashboardContent() {
   const {
@@ -51,6 +52,7 @@ function UserDashboardContent() {
           isEditing={isEditing}
           onInputChange={handleInputChange}
         />
+        <ReviewForm />
 
       </div>
     </div>

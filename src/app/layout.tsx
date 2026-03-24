@@ -6,6 +6,7 @@ import { AuthProvider } from "@/context/AuthContext";
 import { ReduxProvider } from "@/providers/ReduxProvider";
 import { TranslationProvider } from "@/context/LanguageContext";
 import { AutoTranslate } from "@/components/shared/AutoTranslate";
+import { ScrollToTop } from "@/components/shared/ScrollToTop";
 import { GoogleMapsProvider } from "@/providers/GoogleMapsProvider";
 import {ToastContainer} from "react-toastify"
 import { Toaster } from "@/components/ui/sonner";
@@ -49,6 +50,7 @@ export default function RootLayout({
               <AuthProvider>
                 <AutoTranslate>
                   {children}
+                  <ScrollToTop />
                 </AutoTranslate>
               </AuthProvider>
             </GoogleMapsProvider>
