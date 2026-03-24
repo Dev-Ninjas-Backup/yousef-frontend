@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Eye, Trash2, Check, X, Plus, Minus } from "lucide-react";
+import { Loader2, Eye, Trash2, Check, X, Plus, Minus, Paperclip } from "lucide-react";
 import { GarageOwner, GarageInfo } from "@/store/api/garageManagement";
 import GarageSubTable from "./GarageSubTable";
 
@@ -68,6 +68,9 @@ export default function GarageOwnersTable({
                 Garages
               </th>
               <th className="text-left py-4 px-6 text-xs font-semibold text-gray-600 uppercase">
+                Attachments
+              </th>
+              <th className="text-left py-4 px-6 text-xs font-semibold text-gray-600 uppercase">
                 Actions
               </th>
             </tr>
@@ -124,6 +127,29 @@ export default function GarageOwnersTable({
                     </span>
                   </td>
                   <td className="py-4 px-6">
+                    <div className="flex items-center gap-1.5">
+                      {owner.tradeLicense && (
+                        <span
+                          title="Trade License"
+                          className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-50 text-blue-700 text-xs rounded-full border border-blue-200"
+                        >
+                          <Paperclip className="w-3 h-3" /> TL
+                        </span>
+                      )}
+                      {owner.garageLogo && (
+                        <span
+                          title="Garage Logo"
+                          className="inline-flex items-center gap-1 px-2 py-0.5 bg-purple-50 text-purple-700 text-xs rounded-full border border-purple-200"
+                        >
+                          <Paperclip className="w-3 h-3" /> GL
+                        </span>
+                      )}
+                      {!owner.tradeLicense && !owner.garageLogo && (
+                        <span className="text-xs text-gray-400">—</span>
+                      )}
+                    </div>
+                  </td>
+                  <td className="py-4 px-6">
                     <div className="flex items-center gap-2">
                       {!owner.isGarageVerified && (
                         <Button
@@ -157,7 +183,7 @@ export default function GarageOwnersTable({
                 {/* Expanded Garages Table */}
                 {expandedOwners.has(owner.userId) && (
                   <tr>
-                    <td colSpan={6} className="py-0 px-6">
+                    <td colSpan={7} className="py-0 px-6">
                       <GarageSubTable
                         garages={owner.garages}
                         onGarageApprove={onGarageApprove}
