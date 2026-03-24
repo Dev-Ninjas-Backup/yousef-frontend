@@ -106,22 +106,24 @@ const brands = [
 
 const CarBrands: React.FC = () => {
   return (
-    <section className="w-full py-3 h-[120px] my-12 overflow-hidden">
-      <div className="flex items-center h-full ">
-        <Marquee>
-          {[...brands, ...brands].map((brand, index) => (
-            <div key={`${brand.name}-${index}`} className="shrink-0 mx-8 ">
-              <Image
-                src={brand.logo}
-                alt={brand.name}
-                width={85}
-                height={85}
-                className="object-contain"
-              />
-            </div>
-          ))}
-        </Marquee>
-      </div>
+    <section className="w-full py-3 my-12 overflow-hidden">
+      <Marquee gradient={false} speed={40}>
+        {brands.map((brand, index) => (
+          <div
+            key={`${brand.name}-${index}`}
+            className="flex items-center justify-center mx-8 h-16 w-auto"
+          >
+            <Image
+              src={brand.logo}
+              alt={brand.name}
+              height={56}
+              width={0}
+              style={{ width: "auto", height: "56px", maxWidth: "120px" }}
+              className="object-contain"
+            />
+          </div>
+        ))}
+      </Marquee>
     </section>
   );
 };
