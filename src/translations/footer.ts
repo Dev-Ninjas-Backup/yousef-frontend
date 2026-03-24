@@ -45,4 +45,27 @@ export const footerTranslations = {
     },
     copyright: "© 2025 جميع الحقوق محفوظة",
   },
+  hi: {
+    contactUs: "संपर्क करें",
+    navigation: {
+      about: "हमारे बारे में",
+      service: "सेवा",
+      spareParts: "स्पेयर पार्ट्स",
+      downloadApp: "ऐप डाउनलोड करें",
+      contactUs: "संपर्क करें",
+    },
+    subscribe: {
+      title: "सब्स्क्राइब करें",
+      emailPlaceholder: "ईमेल",
+      button: "सब्स्क्राइब करें",
+    },
+    bottomLinks: {
+      privacyPolicy: "गोपनीयता नीति",
+      termsOfUse: "उपयोग की शर्तें",
+      salesRefunds: "बिक्री और वापसी",
+      legal: "कानूनी",
+      siteMap: "साइट मैप",
+    },
+    copyright: "© 2025 सर्वाधिकार सुरक्षित",
+  },
 };

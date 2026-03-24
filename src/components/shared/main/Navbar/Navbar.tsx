@@ -51,7 +51,7 @@ const Navbar = () => {
     setIsUserMenuOpen(false);
   };
 
-  const handleLanguageChange = (lang: "en" | "ar") => {
+  const handleLanguageChange = (lang: "en" | "ar" | "hi") => {
     setIsLangMenuOpen(false);
     setLanguage(lang);
   };
@@ -80,13 +80,13 @@ const Navbar = () => {
     <nav className="fixed z-50 w-full py-4 px-4 md:mt-4 md:px-8 bg-white/70 backdrop-blur-md md:bg-transparent md:backdrop-blur-none">
       <div className="container mx-auto flex items-center justify-between gap-4">
         <Link href="/" className="flex items-center">
-          <div className="">
+          <div className="bg-black/40 backdrop-blur-md rounded-full px-4 py-2 shadow-[0_0_15px_rgba(255,255,255,0.1)]">
             <Image
               src={scroll_logo}
               alt="SayaraHub"
               width={150}
               height={40}
-              className="h-8 md:h-10 w-auto"
+              className="h-8 md:h-10 w-auto drop-shadow-md"
             />
           </div>
         </Link>
@@ -199,7 +199,7 @@ const Navbar = () => {
         </div>
 
         <button
-          className="md:hidden text-white"
+          className="md:hidden flex items-center justify-center w-10 h-10 rounded-full bg-black/40 backdrop-blur-md shadow-[0_0_15px_rgba(255,255,255,0.1)] text-white"
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           title={isMobileMenuOpen ? "Close menu" : "Open menu"}
         >
@@ -253,7 +253,7 @@ const Navbar = () => {
                 }`}
               >
                 <Globe className="w-4 h-4" />
-                <span>{trans.english}</span>
+                <span>English</span>
               </button>
               <button
                 onClick={() => handleLanguageChange("ar")}
@@ -262,7 +262,16 @@ const Navbar = () => {
                 }`}
               >
                 <Globe className="w-4 h-4" />
-                <span>{trans.arabic}</span>
+                <span>العربية</span>
+              </button>
+              <button
+                onClick={() => handleLanguageChange("hi")}
+                className={`w-full text-left flex items-center gap-2 text-white/80 hover:text-[#0A84FF] transition-colors px-4 py-2 rounded-lg hover:bg-white/5 ${
+                  language === "hi" ? "bg-white/5 font-semibold" : ""
+                }`}
+              >
+                <Globe className="w-4 h-4" />
+                <span>हिन्दी</span>
               </button>
             </div>
 

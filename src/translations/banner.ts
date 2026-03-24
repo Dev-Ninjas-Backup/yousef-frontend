@@ -21,4 +21,15 @@ export const bannerTranslations = {
     appStore: "آب ستور",
     playStore: "بلاي ستور",
   },
+  hi: {
+    title1: "अगली पीढ़ी का",
+    title2: "ऑटोमोटिव",
+    title3: "प्लेटफॉर्म",
+    description: "अपने कार केयर अनुभव को बदलें",
+    appName: "SayaraHub",
+    descriptionContinue: ". गैरेज, मोबाइल मेकेनिक, इमरजेंसी सेवाएं, और स्पेयर पार्ट्स मार्केटप्लेस, सभी एक शक्तिशाली ऐप में.",
+    downloadOn: "डाउनलोड करें",
+    appStore: "ऐप स्टोर",
+    playStore: "प्ले स्टोर",
+  },
 };

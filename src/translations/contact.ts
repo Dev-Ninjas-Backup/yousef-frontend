@@ -55,4 +55,32 @@ export const contactTranslations = {
       otherSubjectPlaceholder: "يرجى تحديد موضوعك...",
     },
   },
+  hi: {
+    hero: {
+      title: "हम किसी भी समय आपकी मदद के लिए यहां हैं।",
+      description: "चाहे आपको सहायता चाहिए, हमारे साथ साझेदारी करनी हो, या हमारी सेवाओं के बारे में कोई प्रश्न हो, हमारी टीम हमेशा मदद के लिए तैयार है।",
+      button: "संपर्क करें",
+    },
+    form: {
+      title: "संपर्क करें",
+      subtitle: "कोई प्रश्न है या सहायता चाहिए? नीचे फॉर्म भरें या सीधे संपर्क करें।",
+      formTitle: "हमें संदेश भेजें",
+      firstName: "पहला नाम",
+      lastName: "अंतिम नाम",
+      email: "ईमेल",
+      emailPlaceholder: "john@example.com",
+      subject: "विषय",
+      subjectPlaceholder: "विषय चुनें",
+      message: "संदेश",
+      messagePlaceholder: "अपना संदेश यहां लिखें...",
+      sendButton: "संदेश भेजें",
+      subjects: {
+        carParts: "कार पार्ट्स",
+        carService: "कार सेवा",
+        others: "अन्य",
+      },
+      otherSubject: "अन्य विषय",
+      otherSubjectPlaceholder: "कृपया अपना विषय बताएं...",
+    },
+  },
 };

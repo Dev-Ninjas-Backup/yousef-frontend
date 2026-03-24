@@ -16,6 +16,7 @@ import {
   LuStore,
   LuBox,
   LuDollarSign,
+  LuStarHalf,
 } from "react-icons/lu";
 
 export interface NavItem {
@@ -56,6 +57,11 @@ export const adminNavItems: NavItem[] = [
     label: "Messages",
     path: "/admin/messages",
     icon: <LuMessageSquare className="text-lg" />,
+  },
+  {
+    label: "Reviews",
+    path: "/admin/reviews",
+    icon: <LuStar className="text-lg" />,
   },
   {
     label: "Settings",

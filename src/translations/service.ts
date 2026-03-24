@@ -2,7 +2,8 @@ export const serviceTranslations = {
   en: {
     hero: {
       title: "Find Car Service & Towing",
-      subtitle: "Locate nearby garages, get directions, and contact services instantly",
+      subtitle:
+        "Locate nearby garages, get directions, and contact services instantly",
       yourLocation: "Your Location",
       locationPlaceholder: "Enter your location",
       serviceType: "Service Type",
@@ -16,7 +17,7 @@ export const serviceTranslations = {
         "Ajman",
         "Umm Al Quwain",
         "Ras Al Khaimah",
-        "Fujairah"
+        "Fujairah",
       ],
       services: {
         all: "All Services",
@@ -38,14 +39,16 @@ export const serviceTranslations = {
       enableLocation: "Enable Precise Location",
       updateLocation: "Update Location",
       gettingLocation: "Getting Location...",
-      locationError: "Unable to retrieve your location. Please enable location services.",
+      locationError:
+        "Unable to retrieve your location. Please enable location services.",
       yourLocation: "Your Location",
     },
   },
   ar: {
     hero: {
       title: "ابحث عن خدمة السيارات والسحب",
-      subtitle: "حدد موقع الورش القريبة، واحصل على الاتجاهات، واتصل بالخدمات فوراً",
+      subtitle:
+        "حدد موقع الورش القريبة، واحصل على الاتجاهات، واتصل بالخدمات فوراً",
       yourLocation: "موقعك",
       locationPlaceholder: "أدخل موقعك",
       serviceType: "نوع الخدمة",
@@ -59,7 +62,7 @@ export const serviceTranslations = {
         "عجمان",
         "أم القيوين",
         "رأس الخيمة",
-        "الفجيرة"
+        "الفجيرة",
       ],
       services: {
         all: "جميع الخدمات",
@@ -83,6 +86,51 @@ export const serviceTranslations = {
       gettingLocation: "جاري الحصول على الموقع...",
       locationError: "تعذر الحصول على موقعك. يرجى تفعيل خدمات الموقع.",
       yourLocation: "موقعك",
+    },
+  },
+  hi: {
+    hero: {
+      title: "कार सेवा और टोइंग खोजें",
+      subtitle:
+        "नजदीकी गैरेज ढूंढें, दिशाएं पाएं, और तुरंत सेवाओं से संपर्क करें",
+      yourLocation: "आपका स्थान",
+      locationPlaceholder: "अपना स्थान दर्ज करें",
+      serviceType: "सेवा प्रकार",
+      allServices: "सभी सेवाएं",
+      searchButton: "गैरेज खोजें",
+      allEmirates: "सभी अमारात",
+      emirates: [
+        "अबू धाबी",
+        "दुबई",
+        "शारजाह",
+        "अजमान",
+        "उम्म अल-कुवैन",
+        "रास अल-खैमाह",
+        "फुजाइराह",
+      ],
+      services: {
+        all: "सभी सेवाएं",
+        repair: "कार रिपेयर",
+        towing: "टोइंग",
+        oilChange: "ऑयल चेंज",
+        emergency: "इमरजेंसी",
+      },
+    },
+    list: {
+      garagesFound: "गैरेज मिले",
+      near: "नजदीक",
+      sortBy: "दूरी से क्रमबद्ध करें",
+      sortByRating: "रेटिंग से क्रमबद्ध करें",
+      sortByPrice: "कीमत से क्रमबद्ध करें",
+      showMap: "मैप दिखाएं",
+    },
+    map: {
+      enableLocation: "सटीक स्थान सक्षम करें",
+      updateLocation: "स्थान अपडेट करें",
+      gettingLocation: "स्थान प्राप्त हो रहा है...",
+      locationError:
+        "आपका स्थान प्राप्त नहीं हो सका। कृपया लोकेशन सेवाएं सक्षम करें।",
+      yourLocation: "आपका स्थान",
     },
   },
 };

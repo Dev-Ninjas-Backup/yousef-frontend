@@ -33,4 +33,21 @@ export const serviceDetailsTranslations = {
       spares: "قطع الغيار",
     },
   },
+  hi: {
+    seeLocation: "स्थान देखें",
+    operatingHours: "कार्य समय",
+    open: "खुला है",
+    closed: "बंद है",
+    servicesOffered: "उपलब्ध सेवाएं",
+    garageOverview: "गैरेज ओवरव्यू",
+    locationMap: "स्थान और मैप",
+    services: {
+      acService: "एसी सेवा",
+      batteryReplacement: "बैटरी बदलना",
+      tires: "टायर",
+      engineDiagnostics: "इंजन डायग्नोस्टिक्स",
+      electrical: "इलेक्ट्रिकल",
+      spares: "स्पेयर पार्ट्स",
+    },
+  },
 };

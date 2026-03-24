@@ -13,6 +13,8 @@ const Footer: React.FC = () => {
   const { t } = useLanguage();
   const trans = t(footerTranslations);
 
+  const currentYear = new Date().getFullYear();
+
   return (
     <footer className="bg-white pt-16 pb-0 overflow-hidden mt-20">
       <div className="container mx-auto px-4">
@@ -22,9 +24,11 @@ const Footer: React.FC = () => {
               <div>
                 <Image src={sayarahublogo} alt="" className="w-full h-auto" />
               </div>
-              <Button className="bg-[#0A84FF] hover:bg-blue-700 text-white px-10 py-6 rounded-full mt-5">
-                {trans.contactUs}
-              </Button>
+              <Link href="/contact-us">
+                <Button className="bg-[#0A84FF] hover:bg-blue-700 text-white px-10 py-6 rounded-full mt-5">
+                  {trans.contactUs}
+                </Button>
+              </Link>
             </div>
 
             <div className="flex flex-col items-center md:items-start space-y-3 text-base text-gray-700">
@@ -94,7 +98,7 @@ const Footer: React.FC = () => {
 
         <div className="absolute inset-0 flex items-center justify-start w-full">
           <p className="text-white text-xs sm:text-sm md:text-base font-thin text-center px-4">
-            {trans.copyright}
+            {trans.copyright.replace("2025", currentYear.toString())}
           </p>
         </div>
       </div>

@@ -5,4 +5,7 @@ export const featuredGaragesTranslations = {
   ar: {
     title: "الورش المميزة بالقرب منك",
   },
+  hi: {
+    title: "आपके नजदीकी फीचर्ड गैरेज",
+  },
 };

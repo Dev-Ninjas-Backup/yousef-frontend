@@ -1,56 +1,71 @@
 "use client";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import TestimonialCard from "./_components/TestimonialCard/TestimonialCard";
 import Marquee from "react-fast-marquee";
 import { useLanguage } from "@/context/LanguageContext";
 import { testimonialsTranslations } from "@/translations/testimonials";
+import { useGetAllClientReviewsQuery } from "@/store/api/clientReviewApi";
 
-const testimonials = [
+const fallbackTestimonials = [
   {
-    id: 1,
+    id: "1",
     name: "Emanuel",
     role: "Supervisor",
-    avatar: "emanuel",
+    avatar: "",
     rating: 5,
-    text: "The SayaraHub website is so easy to use and beautifully designed. I could explore all the key features before even...",
+    text: "The SayaraHub website is so easy to use and beautifully designed. I could explore all the key features before even downloading the app!",
   },
   {
-    id: 2,
+    id: "2",
     name: "Ahamed Sharif",
     role: "Legacy Data Manager",
-    avatar: "/avatars/ahamed.jpg",
+    avatar: "",
     rating: 5,
     text: "موقع SayaraHub سهل الاستخدام للغاية وذو تصميم جميل. تمكنت من استكشاف جميع الميزات الرئيسية قبل تنزيل التطبيق. تجربة سلسة وموثوقة للغاية!",
   },
   {
-    id: 3,
+    id: "3",
     name: "Abu Toha Mohammad",
     role: "Administrator",
-    avatar: "/avatars/abu.jpg",
+    avatar: "",
     rating: 5,
     text: "موقع SayaraHub سهل الاستخدام للغاية وذو تصميم جميل. تمكنت من استكشاف جميع الميزات الرئيسية قبل تنزيل التطبيق. تجربة سلسة وموثوقة للغاية!",
   },
   {
-    id: 4,
+    id: "4",
     name: "Mohammad Kadir",
     role: "Legacy Data Manager",
-    avatar: "/avatars/mohammad.jpg",
+    avatar: "",
     rating: 4,
-    text: "The SayaraHub website is so easy to use and beautifully designed. I could explore all the key features before even...",
+    text: "The SayaraHub website is so easy to use and beautifully designed. I could explore all the key features before even downloading the app!",
   },
   {
-    id: 5,
-    name: "Harry ",
+    id: "5",
+    name: "Harry",
     role: "Legacy Data Manager",
-    avatar: "/avatars/mohammad2.jpg",
+    avatar: "",
     rating: 4,
-    text: "The SayaraHub website is so easy to use and beautifully designed. I could explore all the key features before even...",
+    text: "The SayaraHub website is so easy to use and beautifully designed. I could explore all the key features before even downloading the app!",
   },
 ];
 
 export default function TestimonialsSection() {
   const { t } = useLanguage();
   const trans = t(testimonialsTranslations);
+  const { data: apiReviews, isLoading } = useGetAllClientReviewsQuery();
+
+  const reviews =
+    apiReviews && apiReviews.length > 0
+      ? apiReviews.map((r) => ({
+          id: r.id,
+          name: r.user?.fullName || "Anonymous",
+          role: r.user?.role || "User",
+          avatar: r.user?.profilePhoto || "",
+          rating: Number(r.rating),
+          text: r.reviewText,
+        }))
+      : fallbackTestimonials;
 
   return (
     <section className="py-20 px-4 bg-[#E8F1FD] overflow-hidden">
@@ -66,26 +81,39 @@ export default function TestimonialsSection() {
 
         <div className="relative mb-10">
           <div className="overflow-hidden">
-            <Marquee className="flex gap-6 ">
-              <div className="flex gap-6 hover:paused">
-                {testimonials.map((testimonial, index) => (
-                  <TestimonialCard
-                    key={`row1-${testimonial.id}-${index}`}
-                    testimonial={testimonial}
+            {isLoading ? (
+              <div className="flex gap-6 px-4">
+                {[...Array(3)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="shrink-0 w-[380px] h-[180px] rounded-xl bg-blue-100 animate-pulse"
                   />
                 ))}
               </div>
-            </Marquee>
+            ) : (
+              <Marquee className="flex gap-6">
+                <div className="flex gap-6 hover:paused">
+                  {reviews.map((testimonial, index) => (
+                    <TestimonialCard
+                      key={`${testimonial.id}-${index}`}
+                      testimonial={testimonial}
+                    />
+                  ))}
+                </div>
+              </Marquee>
+            )}
           </div>
         </div>
 
         <div className="text-center">
-          <Button
-            size="lg"
-            className="bg-[#0D6EFD] px-8 py-6 rounded-lg text-base font-semibold shadow-md "
-          >
-            {trans.findGarage}
-          </Button>
+          <Link href="/service">
+            <Button
+              size="lg"
+              className="bg-[#0D6EFD] px-8 py-6 rounded-lg text-base font-semibold shadow-md"
+            >
+              {trans.findGarage}
+            </Button>
+          </Link>
         </div>
       </div>
     </section>
