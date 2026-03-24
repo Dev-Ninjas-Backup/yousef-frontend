@@ -15,13 +15,101 @@ import {
   Car,
   Star,
   Award,
+  Download,
+  ExternalLink,
 } from "lucide-react";
+import { useState } from "react";
+import Image from "next/image";
 import { GarageOwner } from "@/store/api/garageManagement";
 
 interface GarageOwnerDetailsModalProps {
   owner: GarageOwner | null;
   isOpen: boolean;
   onClose: () => void;
+}
+
+function isImage(url: string) {
+  return /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(url.split("?")[0]);
+}
+
+function DocumentCard({ label, url }: { label: string; url: string }) {
+  const [preview, setPreview] = useState(false);
+  const image = isImage(url);
+
+  return (
+    <div className="border border-gray-200 rounded-lg overflow-hidden">
+      {/* Thumbnail / Preview */}
+      {image ? (
+        <div
+          className="relative w-full h-36 bg-gray-100 cursor-pointer"
+          onClick={() => setPreview(!preview)}
+        >
+          <Image
+            src={url}
+            alt={label}
+            fill
+            className="object-contain"
+            unoptimized
+          />
+        </div>
+      ) : (
+        <div className="w-full h-20 bg-gray-50 flex items-center justify-center">
+          <span className="text-xs text-gray-400 uppercase">
+            {url.split(".").pop()?.split("?")[0] ?? "file"}
+          </span>
+        </div>
+      )}
+
+      {/* Footer */}
+      <div className="p-3 flex items-center justify-between">
+        <div>
+          <p className="text-sm font-medium text-gray-900">{label}</p>
+          <p className="text-xs text-green-600 mt-0.5">Available</p>
+        </div>
+        <div className="flex gap-2">
+          <a
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Open in new tab"
+            className="p-1.5 rounded hover:bg-gray-100 text-gray-500 hover:text-blue-600 transition-colors"
+          >
+            <ExternalLink className="w-4 h-4" />
+          </a>
+          <a
+            href={url}
+            download
+            title="Download"
+            className="p-1.5 rounded hover:bg-gray-100 text-gray-500 hover:text-blue-600 transition-colors"
+          >
+            <Download className="w-4 h-4" />
+          </a>
+        </div>
+      </div>
+
+      {/* Full preview toggle for images */}
+      {image && preview && (
+        <div
+          className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center"
+          onClick={() => setPreview(false)}
+        >
+          <div className="relative max-w-3xl max-h-[90vh] w-full mx-4">
+            <Image
+              src={url}
+              alt={label}
+              width={900}
+              height={600}
+              className="object-contain rounded-lg"
+              unoptimized
+            />
+            <p className="text-white text-center text-sm mt-2">
+              Click anywhere to close
+            </p>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default function GarageOwnerDetailsModal({
@@ -165,20 +253,16 @@ export default function GarageOwnerDetailsModal({
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {owner.tradeLicense && (
-                  <div className="p-3 border border-gray-200 rounded-lg">
-                    <p className="text-sm font-medium text-gray-900">
-                      Trade License
-                    </p>
-                    <p className="text-xs text-gray-500 mt-1">Available</p>
-                  </div>
+                  <DocumentCard
+                    label="Trade License"
+                    url={owner.tradeLicense}
+                  />
                 )}
                 {owner.garageLogo && (
-                  <div className="p-3 border border-gray-200 rounded-lg">
-                    <p className="text-sm font-medium text-gray-900">
-                      Garage Logo
-                    </p>
-                    <p className="text-xs text-gray-500 mt-1">Available</p>
-                  </div>
+                  <DocumentCard
+                    label="Garage Logo"
+                    url={owner.garageLogo}
+                  />
                 )}
               </div>
             </CardContent>
