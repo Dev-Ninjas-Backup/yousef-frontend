@@ -31,16 +31,10 @@ const HowItWorks: React.FC = () => {
                 </div>
 
                 {index < trans.howItWorks.steps.length - 1 && (
-                  <>
-                    <div
-                      className="hidden md:block absolute top-7 left-1/2 w-full h-0.5 border-t-2 border-dashed border-gray-300 -z-0"
-                      style={{
-                        left: "50%",
-                        right: "auto",
-                        width: "calc(100% + 2rem)",
-                      }}
-                    />
-                  </>
+                  <div
+                    className="hidden md:block absolute top-7 start-1/2 w-full h-0.5 border-t-2 border-dashed border-gray-300 -z-0"
+                    style={{ width: "calc(100% + 2rem)" }}
+                  />
                 )}
 
                 {index < trans.howItWorks.steps.length && (

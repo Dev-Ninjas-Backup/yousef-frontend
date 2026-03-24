@@ -111,7 +111,7 @@ const SearchGarages: React.FC = () => {
           {/* Nearby Search Section */}
           <div className="py-6">
             <div className="flex flex-col sm:flex-row gap-3 items-end">
-              <div className="flex-1">
+              <div className="w-full sm:flex-1">
                 <label className="text-sm font-medium text-gray-700 mb-2 block">
                   Search Radius
                 </label>
@@ -130,7 +130,7 @@ const SearchGarages: React.FC = () => {
               </div>
 
               {radius === "custom" && (
-                <div className="flex-1">
+                <div className="w-full sm:flex-1">
                   <label className="text-sm font-medium text-gray-700 mb-2 block">
                     Custom Radius (km)
                   </label>

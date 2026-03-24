@@ -16,6 +16,8 @@ export default function GarageOverview({
   const { t } = useLanguage();
   const trans = t(serviceDetailsTranslations);
 
+  const imageSrc = image && image !== "" ? image : garageOverviewBg;
+
   return (
     <section className="py-16 bg-white">
       <div className="container mx-auto px-4">
@@ -37,7 +39,7 @@ export default function GarageOverview({
           </div>
 
           <div className="relative h-[400px] lg:h-[500px] overflow-hidden rounded-2xl">
-            <Image src={image} alt="Garage" fill className="object-cover" />
+            <Image src={imageSrc} alt="Garage" fill className="object-cover" />
           </div>
         </div>
       </div>

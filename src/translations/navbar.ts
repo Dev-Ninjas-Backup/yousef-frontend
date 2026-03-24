@@ -27,4 +27,18 @@ export const navbarTranslations = {
     english: "الإنجليزية",
     arabic: "العربية",
   },
+  hi: {
+    home: "होम",
+    service: "सेवा",
+    spareParts: "स्पेयर पार्ट्स",
+    downloadApp: "ऐप डाउनलोड करें",
+    aboutUs: "हमारे बारे में",
+    contactUs: "संपर्क करें",
+    login: "लॉगिन",
+    dashboard: "डैशबोर्ड",
+    logout: "लॉगआउट",
+    language: "भाषा",
+    english: "अंग्रेज़ी",
+    arabic: "अरबी",
+  },
 };

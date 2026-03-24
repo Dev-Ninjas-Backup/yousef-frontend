@@ -63,6 +63,37 @@ export const sparePartsPageTranslations = {
       },
     },
   },
+  hi: {
+    hero: {
+      title: "आज ही खरीदना या बेचना शुरू करें",
+      description: "स्पेयर पार्ट्स ट्रेडिंग के लिए UAE के सबसे विश्वसनीय प्लेटफॉर्म से जुड़ें।",
+      browseParts: "पार्ट्स ब्राउज़ करें",
+      sellNow: "अभी बेचें",
+    },
+    search: {
+      title: "स्पेयर पार्ट्स खोजें",
+      placeholder: "नाम या विवरण से पार्ट्स खोजें...",
+      categoryPlaceholder: "कैटेगरी चुनें",
+      conditionPlaceholder: "कंडीशन चुनें",
+      searchButton: "खोजें",
+      categories: {
+        all: "सभी कैटेगरी",
+        engine: "इंजन पार्ट्स",
+        brakes: "ब्रेक",
+        suspension: "सस्पेंशन",
+        electrical: "इलेक्ट्रिकल",
+        transmission: "ट्रांसमिशन",
+        exhaust: "एग्ज़ॉस्ट",
+        cooling: "कूलिंग सिस्टम",
+      },
+      conditions: {
+        all: "सभी कंडीशन",
+        new: "नया",
+        used: "इस्तेमाल किया",
+        refurbished: "नवीनीकृत",
+      },
+    },
+  },
 };
 
 export const sparePartsTranslations = {
@@ -85,5 +116,13 @@ export const sparePartsTranslations = {
       "فوراً. من الفلاتر والفرامل إلى الإكسسوارات، كل شيء على بعد نقرة واحدة!",
     buyParts: "شراء قطع الغيار",
     sellParts: "بيع قطع الغيار الخاصة بك",
+  },
+  hi: {
+    title: "स्पेयर पार्ट्स एक जगह खरीदें या बेचें।",
+    description1: "गैरेज और विक्रेताओं से अपनी कार के स्पेयर पार्ट्स खोजें।",
+    description2: "अनुपयोगी पार्ट्स हैं? उन्हें प्लेटफॉर्म पर लिस्ट करें और वास्तविक खरीदारों से जुड़ें",
+    description3: "तुरंत। फ़िल्टर से ब्रेक तक, सब कुछ एक क्लिक दूर!",
+    buyParts: "पार्ट्स खरीदें",
+    sellParts: "अपने पार्ट्स बेचें",
   },
 };

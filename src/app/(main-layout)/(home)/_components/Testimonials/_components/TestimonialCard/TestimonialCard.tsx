@@ -2,7 +2,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import Rating from "../Rating/Rating";
 interface Testimonial {
-  id: number;
+  id: string | number;
   name: string;
   role: string;
   avatar: string;
