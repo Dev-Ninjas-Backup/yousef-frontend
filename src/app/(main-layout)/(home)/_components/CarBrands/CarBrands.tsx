@@ -111,14 +111,13 @@ const CarBrands: React.FC = () => {
         {brands.map((brand, index) => (
           <div
             key={`${brand.name}-${index}`}
-            className="flex items-center justify-center mx-8 h-16 w-auto"
+            className="relative flex items-center justify-center mx-4 sm:mx-8 w-24 h-14 sm:w-32 sm:h-20 shrink-0"
           >
             <Image
               src={brand.logo}
               alt={brand.name}
-              height={56}
-              width={0}
-              style={{ width: "auto", height: "56px", maxWidth: "120px" }}
+              fill
+              sizes="(max-width: 640px) 96px, 128px"
               className="object-contain"
             />
           </div>
