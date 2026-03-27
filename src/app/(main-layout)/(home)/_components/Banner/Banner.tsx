@@ -21,7 +21,6 @@ const HeroBanner: React.FC = () => {
           muted
           playsInline
           className="absolute inset-0 w-full h-full object-cover rounded-lg"
-          poster="/path-to-poster-image.jpg"
         >
           <source src="./banner.mp4" type="video/mp4" />
           Your browser does not support the video tag.
