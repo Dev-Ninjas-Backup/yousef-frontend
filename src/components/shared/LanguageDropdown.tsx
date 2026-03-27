@@ -60,11 +60,16 @@ export const LanguageDropdown = ({ onLanguageChange }: LanguageDropdownProps) =>
 
                 // Apply the saved language
                 setTimeout(() => {
-                    changeLanguage(foundLang.code).then(() => {
-                        updateRTL(foundLang.code);
-                    }).catch(err => {
-                        console.error('[LanguageDropdown] Failed to restore language:', err);
-                    });
+                    if (foundLang.code !== 'en') {
+                        changeLanguage(foundLang.code).then(() => {
+                            updateRTL(foundLang.code);
+                        }).catch(err => {
+                            console.error('[LanguageDropdown] Failed to restore language:', err);
+                        });
+                    } else {
+                        // Native DOM is already English, no need to trigger Google Translate
+                        updateRTL('en');
+                    }
                 }, 300);
             } catch (e) {
                 console.error('[LanguageDropdown] Failed to parse saved language:', e);
@@ -100,11 +105,20 @@ export const LanguageDropdown = ({ onLanguageChange }: LanguageDropdownProps) =>
         }
 
         try {
-            const success = await changeLanguage(language.code);
-            if (!success) {
-                console.error('[LanguageDropdown] Language change failed');
+            if (language.code === 'en') {
+                // To safely return to pure native English without Google Translates weird paraphrasing, 
+                // we clear the translation cookies and reload the page.
+                document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${window.location.hostname};`;
+                document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=." + window.location.hostname;
+                window.location.reload();
             } else {
-                updateRTL(language.code);
+                const success = await changeLanguage(language.code);
+                if (!success) {
+                    console.error('[LanguageDropdown] Language change failed');
+                } else {
+                    updateRTL(language.code);
+                }
             }
         } catch (error) {
             console.error('[LanguageDropdown] Error changing language:', error);
