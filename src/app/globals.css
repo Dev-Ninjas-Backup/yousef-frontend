@@ -110,3 +110,29 @@
     animation: spin 2s linear infinite reverse;
   }
 }
+
+/* =========================================
+   Google Translate Overrides
+   Hides the banner, tooltips, and body shift
+   ========================================= */
+body {
+  top: 0px !important;
+}
+
+/* Hide the top translation bar */
+.goog-te-banner-frame.skiptranslate,
+.skiptranslate > iframe {
+  display: none !important;
+}
+
+/* Disable hover tooltips that show original text */
+#goog-gt-tt, 
+.goog-te-balloon-frame {
+  display: none !important;
+}
+
+/* Remove highlight over translated texts */
+.goog-text-highlight {
+  background: none !important;
+  box-shadow: none !important;
+}

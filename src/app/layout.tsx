@@ -5,13 +5,11 @@ import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
 import { ReduxProvider } from "@/providers/ReduxProvider";
 import { TranslationProvider } from "@/context/LanguageContext";
-import { AutoTranslate } from "@/components/shared/AutoTranslate";
+import { GoogleTranslateWrapper } from "@/components/shared/GoogleTranslateWrapper";
 import { ScrollToTop } from "@/components/shared/ScrollToTop";
 import { GoogleMapsProvider } from "@/providers/GoogleMapsProvider";
 import {ToastContainer} from "react-toastify"
 import { Toaster } from "@/components/ui/sonner";
-import GoogleTranslationAPI from "@/components/GoogleTranslationAPI";
-
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -42,16 +40,15 @@ export default function RootLayout({
           src="https://accounts.google.com/gsi/client"
           strategy="afterInteractive"
         />
-        <GoogleTranslationAPI />
         <ReduxProvider>
           <ToastContainer />
           <TranslationProvider>
             <GoogleMapsProvider>
               <AuthProvider>
-                <AutoTranslate>
+                <GoogleTranslateWrapper>
                   {children}
                   <ScrollToTop />
-                </AutoTranslate>
+                </GoogleTranslateWrapper>
               </AuthProvider>
             </GoogleMapsProvider>
           </TranslationProvider>

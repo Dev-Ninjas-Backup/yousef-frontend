@@ -21,7 +21,7 @@ const GetInTouch: React.FC = () => {
   const { t } = useLanguage();
   const trans = t(contactTranslations);
   const [createContact, { isLoading }] = useCreateContactMutation();
-  
+
   const [formData, setFormData] = useState<ContactFormData>({
     FirstName: "",
     LastName: "",
@@ -30,7 +30,7 @@ const GetInTouch: React.FC = () => {
     message: "",
     othersubject: ""
   });
-  
+
   const [showOtherSubject, setShowOtherSubject] = useState(false);
 
   const handleInputChange = (field: keyof ContactFormData, value: string) => {
@@ -48,7 +48,7 @@ const GetInTouch: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (formData.subject === "OTHERS" && !formData.othersubject?.trim()) {
       toast.error("Please specify the other subject");
       return;
@@ -59,10 +59,10 @@ const GetInTouch: React.FC = () => {
       if (formData.subject !== "OTHERS") {
         delete submitData.othersubject;
       }
-      
+
       await createContact(submitData).unwrap();
       toast.success("Message sent successfully! We'll get back to you soon.");
-      
+
       // Reset form
       setFormData({
         FirstName: "",
@@ -142,9 +142,9 @@ const GetInTouch: React.FC = () => {
                   <SelectValue placeholder={trans.form.subjectPlaceholder} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="CAR_PARTS">{trans.form.subjects.carParts}</SelectItem>
-                  <SelectItem value="CAR_SERVICE">{trans.form.subjects.carService}</SelectItem>
-                  <SelectItem value="OTHERS">{trans.form.subjects.others}</SelectItem>
+                  <SelectItem value="CAR_PARTS"> <span>{trans.form.subjects.carParts}</span></SelectItem>
+                  <SelectItem value="CAR_SERVICE"> <span>{trans.form.subjects.carService}</span></SelectItem>
+                  <SelectItem value="OTHERS"> <span>{trans.form.subjects.others}</span></SelectItem>
                 </SelectContent>
               </Select>
             </div>

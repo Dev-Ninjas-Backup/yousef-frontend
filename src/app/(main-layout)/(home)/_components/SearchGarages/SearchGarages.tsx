@@ -120,11 +120,11 @@ const SearchGarages: React.FC = () => {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-white">
-                    <SelectItem value="5">5 km</SelectItem>
-                    <SelectItem value="10">10 km</SelectItem>
-                    <SelectItem value="20">20 km</SelectItem>
-                    <SelectItem value="50">50 km</SelectItem>
-                    <SelectItem value="custom">Custom</SelectItem>
+                    <SelectItem value="5"><span>5 km</span></SelectItem>
+                    <SelectItem value="10"><span>10 km</span></SelectItem>
+                    <SelectItem value="20"><span>20 km</span></SelectItem>
+                    <SelectItem value="50"><span>50 km</span></SelectItem>
+                    <SelectItem value="custom"><span>Custom</span></SelectItem>
                   </SelectContent>
                 </Select>
               </div>
