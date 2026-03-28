@@ -60,7 +60,7 @@ export default function StatsSection() {
                 {trans.stats.ourStory}
               </span>
             </div>
-            <h2 className="text-3xl md:text-4xl  text-gray-900 mb-6">
+            <h2 className="text-3xl md:text-4xl font-bold  text-gray-900 mb-6">
               {trans.stats.title}
             </h2>
             <div className="space-y-4 text-gray-700 leading-relaxed mb-8">

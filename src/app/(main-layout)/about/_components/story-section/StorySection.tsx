@@ -119,7 +119,7 @@ export default function StorySection() {
             />
           </div>
           <div>
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
               {trans.story.empowering}
             </h2>
             <p className="text-gray-700 text-sm leading-relaxed mb-6">
