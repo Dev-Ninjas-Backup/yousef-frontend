@@ -62,9 +62,9 @@ const brands = [
   { name: "Hyundai", logo: Hyundai },
   { name: "Mazda", logo: Mazda },
   { name: "Subaru", logo: Subaru },
-  { name: "Suzuki", logo: Suzuki },
+  { name: "Suzuki", logo: Suzuki, scale: 1.3 },
   { name: "Mitsubishi", logo: Mitsubishi },
-  { name: "Lexus", logo: Lexus },
+  { name: "Lexus", logo: Lexus, scale: 1.3 },
   { name: "Kia", logo: Kia },
   { name: "Ford", logo: Ford },
   { name: "Chevrolet", logo: Chevrolet },
@@ -86,7 +86,7 @@ const brands = [
   { name: "Geely", logo: Geely },
   { name: "GWM", logo: GWM },
   { name: "GAC", logo: GAC },
-  { name: "Changan", logo: Changan },
+  { name: "Changan", logo: Changan, scale: 1.3 },
   { name: "MG", logo: MG },
   { name: "Cadillac", logo: Cadillac },
   { name: "Tesla", logo: Tesla },
@@ -94,8 +94,8 @@ const brands = [
   { name: "Haval", logo: Haval },
   { name: "Jac Motors", logo: JacMotors },
   { name: "Baic", logo: Baic },
-  { name: "Exeed", logo: Exeed },
-  { name: "Zeekr", logo: Zeekr },
+  { name: "Exeed", logo: Exeed, scale: 1.3 },
+  { name: "Zeekr", logo: Zeekr, scale: 1.3 },
   { name: "Rolls Royce", logo: RollsRoyce },
   { name: "Lamborghini", logo: Lamborghini },
   { name: "Ferrari", logo: Ferrari },
@@ -112,6 +112,7 @@ const CarBrands: React.FC = () => {
           <div
             key={`${brand.name}-${index}`}
             className="relative flex items-center justify-center mx-4 sm:mx-8 w-24 h-14 sm:w-32 sm:h-20 shrink-0"
+            style={{ transform: 'scale' in brand ? `scale(${brand.scale})` : "none" }}
           >
             <Image
               src={brand.logo}
