@@ -1,6 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { motion } from "framer-motion";
 import { Eye, Store } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -12,6 +13,13 @@ interface ProductCardProps {
 
 export default function ProductCard({ product }: ProductCardProps) {
   return (
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-60px" }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      whileHover={{ y: -5, transition: { duration: 0.2 } }}
+    >
     <Card className="overflow-hidden hover:shadow-lg transition-shadow border border-gray-200 py-0">
       <div className="relative h-[280px] bg-gray-100">
         <Image
@@ -77,5 +85,6 @@ export default function ProductCard({ product }: ProductCardProps) {
         </Button>
       </div>
     </Card>
+    </motion.div>
   );
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -169,6 +170,13 @@ export default function GarageCard({
     }
   };
   return (
+    <motion.div
+      variants={{ hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5 } } }}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: "-60px" }}
+      whileHover={{ y: -4, transition: { duration: 0.2 } }}
+    >
     <Card className="cursor-pointer overflow-hidden bg-white shadow-md transition-shadow hover:shadow-2xl py-0 w-full">
       <div className="p-5">
         <Link href={`/service/${id}`}>
@@ -284,5 +292,6 @@ export default function GarageCard({
         </div>
       </div>
     </Card>
+    </motion.div>
   );
 }

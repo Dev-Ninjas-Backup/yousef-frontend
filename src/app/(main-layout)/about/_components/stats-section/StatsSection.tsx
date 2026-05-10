@@ -1,5 +1,6 @@
 "use client";
 import { Sparkles, Star } from "lucide-react";
+import { motion } from "framer-motion";
 import Image from "next/image";
 import AboutStats from "@/assets/about/stats/about_stats.jpg";
 import { useLanguage } from "@/context/LanguageContext";
@@ -36,7 +37,14 @@ export default function StatsSection() {
   return (
     <section className="py-16 px-4 md:my-16">
       <div className="max-w-7xl mx-auto">
-        <div className="grid lg:grid-cols-2 gap-12 items-start mb-16" dir="ltr">
+        <motion.div
+          className="grid lg:grid-cols-2 gap-12 items-start mb-16"
+          dir="ltr"
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.7, ease: "easeOut" }}
+        >
           <div className="relative">
             <div className="relative rounded-2xl overflow-hidden shadow-lg">
               <Image
@@ -81,11 +89,18 @@ export default function StatsSection() {
               ))}
             </div> */}
           </div>
-        </div>
+        </motion.div>
 
         <div className="relative grid md:grid-cols-3 gap-2 md:gap-24" dir="ltr">
           {timeline.map((item, index) => (
-            <div key={index} className="relative">
+            <motion.div
+              key={index}
+              className="relative"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{ duration: 0.6, delay: index * 0.15, ease: "easeOut" }}
+            >
               {/* Card */}
               <div className="relative bg-gradient-to-br from-blue-50/50 to-white p-6 pt-8 rounded-xl shadow-sm border border-blue-100">
                 {/* Icon at top center */}
@@ -113,7 +128,7 @@ export default function StatsSection() {
               {index < timeline.length - 1 && (
                 <div className="md:hidden mx-auto  w-0.5 h-16 bg-gradient-to-b from-blue-500 to-blue-400" />
               )}
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>

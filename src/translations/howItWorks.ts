@@ -7,7 +7,7 @@ export const howItWorksTranslations = {
     steps: {
       step1: {
         title: "Find Nearby Garages Instantly",
-        description: "Discover reliable garages around your area within seconds. Our smart location-based search helps you find the nearest workshops that match your car's exact needs, from general servicing to emergency towing. You can view details, check ratings, contact garages directly, or navigate using live directions.",
+        description: "Discover garages around your area within seconds. Our smart location-based search helps you find the nearest workshops that match your car's exact needs, from general servicing to emergency towing. You can view details, check ratings, contact garages directly, or navigate using live directions.",
       },
       step2: {
         title: "View Complete Garage Details",
@@ -27,7 +27,7 @@ export const howItWorksTranslations = {
     steps: {
       step1: {
         title: "ابحث عن الورش القريبة فوراً",
-        description: "اكتشف الورش الموثوقة حول منطقتك في ثوانٍ. يساعدك بحثنا الذكي القائم على الموقع في العثور على أقرب الورش التي تتناسب مع احتياجات سيارتك بالضبط، من الصيانة العامة إلى السحب الطارئ. يمكنك عرض التفاصيل، والتحقق من التقييمات، والاتصال بالورش مباشرة، أو التنقل باستخدام الاتجاهات المباشرة.",
+        description: "اكتشف الورش حول منطقتك في ثوانٍ. يساعدك بحثنا الذكي القائم على الموقع في العثور على أقرب الورش التي تتناسب مع احتياجات سيارتك بالضبط، من الصيانة العامة إلى السحب الطارئ. يمكنك عرض التفاصيل، والتحقق من التقييمات، والاتصال بالورش مباشرة، أو التنقل باستخدام الاتجاهات المباشرة.",
       },
       step2: {
         title: "عرض تفاصيل الورشة الكاملة",
@@ -47,7 +47,7 @@ export const howItWorksTranslations = {
     steps: {
       step1: {
         title: "नजदीकी गैरेज तुरंत खोजें",
-        description: "सेकंडों में अपने क्षेत्र के आसपास विश्वसनीय गैरेज खोजें। हमारी स्मार्ट लोकेशन-बेस्ड सर्च आपकी कार की ज़रूरत के अनुसार नजदीकी वर्कशॉप ढूंढने में मदद करती है।",
+        description: "सेकंडों में अपने क्षेत्र के आसपास गैरेज खोजें। हमारी स्मार्ट लोकेशन-बेस्ड सर्च आपकी कार की ज़रूरत के अनुसार नजदीकी वर्कशॉप ढूंढने में मदद करती है।",
       },
       step2: {
         title: "गैरेज की पूरी जानकारी देखें",
