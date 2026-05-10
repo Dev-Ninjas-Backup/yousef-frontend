@@ -1,6 +1,7 @@
 "use client";
 
 import { Product } from "@/store/api/sparePartsApi";
+import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Loader2, Eye, Calendar, Package, MapPin, User, Phone, Mail, MessageCircle } from "lucide-react";
@@ -80,9 +81,16 @@ export default function ProductDetailsContent({
 
   return (
     <div className={`${isModal ? 'p-6' : 'container mx-auto px-4 py-8'}`}>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <motion.div
+        className="grid grid-cols-1 lg:grid-cols-2 gap-8"
+        initial="hidden"
+        animate="visible"
+        variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.15 } } }}
+      >
         {/* Images */}
-        <div>
+        <motion.div
+          variants={{ hidden: { opacity: 0, x: -50 }, visible: { opacity: 1, x: 0, transition: { duration: 0.7 } } }}
+        >
           {product.photos && product.photos.length > 0 ? (
             <div className="space-y-4">
               <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
@@ -115,10 +123,13 @@ export default function ProductDetailsContent({
               <span className="text-gray-400">No images</span>
             </div>
           )}
-        </div>
+        </motion.div>
 
         {/* Product Info */}
-        <div className="space-y-6">
+        <motion.div
+          className="space-y-6"
+          variants={{ hidden: { opacity: 0, x: 50 }, visible: { opacity: 1, x: 0, transition: { duration: 0.7 } } }}
+        >
           {/* Title & Status */}
           <div>
             <div className="flex items-center gap-2 mb-2">
@@ -230,8 +241,8 @@ export default function ProductDetailsContent({
               </div>
             </div>
           </div>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </div>
   );
 }

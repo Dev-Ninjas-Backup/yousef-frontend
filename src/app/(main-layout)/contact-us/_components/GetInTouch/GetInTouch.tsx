@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -81,16 +82,28 @@ const GetInTouch: React.FC = () => {
   return (
     <section id="get-in-touch" className="py-12 md:py-16 lg:py-20 bg-white">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
-        <div className="text-center mb-10 md:mb-12 space-y-5">
+        <motion.div
+          className="text-center mb-10 md:mb-12 space-y-5"
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.7, ease: "easeOut" }}
+        >
           <h2 className="text-3xl sm:text-4xl md:text-6xl font-bold text-[#333333]">
             {trans.form.title}
           </h2>
           <p className="text-gray-600 text-base sm:text-xl max-w-2xl mx-auto">
             {trans.form.subtitle}
           </p>
-        </div>
+        </motion.div>
 
-        <div className="max-w-xl mx-auto">
+        <motion.div
+          className="max-w-xl mx-auto"
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.7, delay: 0.15, ease: "easeOut" }}
+        >
           <h3 className="text-xl font-bold text-[#333333] mb-6">
             {trans.form.formTitle}
           </h3>
@@ -185,7 +198,7 @@ const GetInTouch: React.FC = () => {
               {isLoading ? "Sending..." : trans.form.sendButton}
             </Button>
           </form>
-        </div>
+        </motion.div>
       </div>
     </section>
   );

@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import Image from "next/image";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import contactHeroimg from "@/assets/contactus/contactus-img.jpg";
 import { useLanguage } from "@/context/LanguageContext";
@@ -27,19 +28,34 @@ const ContactHero: React.FC = () => {
         <div className="absolute inset-0 bg-black/50 rounded-lg" />
       </div>
 
-      <div className="mt-10 md:mt-1 relative container mx-auto z-10 flex flex-col items-center justify-center h-full px-4 text-center">
-        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 md:mb-6">
+      <motion.div
+        className="mt-10 md:mt-1 relative container mx-auto z-10 flex flex-col items-center justify-center h-full px-4 text-center"
+        initial="hidden"
+        animate="visible"
+        variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.2 } } }}
+      >
+        <motion.h1
+          variants={{ hidden: { opacity: 0, y: 40 }, visible: { opacity: 1, y: 0, transition: { duration: 0.7 } } }}
+          className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 md:mb-6"
+        >
           {trans.hero.title}
-        </h1>
+        </motion.h1>
 
-        <p className="text-sm sm:text-base md:text-3xl text-gray-200 mb-4 md:mb-6 max-w-4xl">
+        <motion.p
+          variants={{ hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0, transition: { duration: 0.7 } } }}
+          className="text-sm sm:text-base md:text-3xl text-gray-200 mb-4 md:mb-6 max-w-4xl"
+        >
           {trans.hero.description}
-        </p>
+        </motion.p>
 
-        <Button onClick={scrollToGetInTouch} className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 md:py-6 rounded-lg text-sm md:text-xl font-medium">
-          {trans.hero.button}
-        </Button>
-      </div>
+        <motion.div
+          variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6 } } }}
+        >
+          <Button onClick={scrollToGetInTouch} className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 md:py-6 rounded-lg text-sm md:text-xl font-medium">
+            {trans.hero.button}
+          </Button>
+        </motion.div>
+      </motion.div>
     </section>
   );
 };

@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { Search, MapPin, Loader2 } from "lucide-react";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -102,7 +103,13 @@ const SearchGarages: React.FC = () => {
       className="w-full min-h-[400px] md:min-h-[500px] lg:min-h-[580px] flex items-center justify-center bg-cover bg-center bg-no-repeat px-4 py-8"
       style={{ backgroundImage: `url(${search_garage_bg.src})` }}
     >
-      <div className="shadow-xl max-w-4xl w-full bg-white p-4 md:p-8 rounded-lg">
+      <motion.div
+        className="shadow-xl max-w-4xl w-full bg-white p-4 md:p-8 rounded-lg"
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-80px" }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+      >
         <div className="text-xl md:text-2xl text-center font-bold">
           {trans.title}
         </div>
@@ -120,11 +127,21 @@ const SearchGarages: React.FC = () => {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-white">
-                    <SelectItem value="5"><span>5 km</span></SelectItem>
-                    <SelectItem value="10"><span>10 km</span></SelectItem>
-                    <SelectItem value="20"><span>20 km</span></SelectItem>
-                    <SelectItem value="50"><span>50 km</span></SelectItem>
-                    <SelectItem value="custom"><span>Custom</span></SelectItem>
+                    <SelectItem value="5">
+                      <span>5 km</span>
+                    </SelectItem>
+                    <SelectItem value="10">
+                      <span>10 km</span>
+                    </SelectItem>
+                    <SelectItem value="20">
+                      <span>20 km</span>
+                    </SelectItem>
+                    <SelectItem value="50">
+                      <span>50 km</span>
+                    </SelectItem>
+                    <SelectItem value="custom">
+                      <span>Custom</span>
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -257,7 +274,7 @@ const SearchGarages: React.FC = () => {
             </div>
           )}
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 };

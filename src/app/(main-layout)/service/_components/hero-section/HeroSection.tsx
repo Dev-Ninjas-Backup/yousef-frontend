@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -58,15 +59,29 @@ export default function HeroSection({ onSearch, initialValues }: HeroSectionProp
       </div>
 
       <div className="relative z-10 flex h-full flex-col items-center justify-end md:justify-center px-4 pb-12">
-        <div className="max-w-5xl text-center flex flex-col items-center">
-          <h1 className="mb-3 text-4xl font-bold leading-tight text-white md:text-6xl">
+        <motion.div
+          className="max-w-5xl text-center flex flex-col items-center"
+          initial="hidden"
+          animate="visible"
+          variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.2 } } }}
+        >
+          <motion.h1
+            variants={{ hidden: { opacity: 0, y: 40 }, visible: { opacity: 1, y: 0, transition: { duration: 0.7 } } }}
+            className="mb-3 text-4xl font-bold leading-tight text-white md:text-6xl"
+          >
             {trans.hero.title}
-          </h1>
-          <p className="mb-8 text-lg md:text-xl font-light text-gray-200">
+          </motion.h1>
+          <motion.p
+            variants={{ hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0, transition: { duration: 0.7 } } }}
+            className="mb-8 text-lg md:text-xl font-light text-gray-200"
+          >
             {trans.hero.subtitle}
-          </p>
+          </motion.p>
 
-          <div className="bg-white rounded-lg p-6 w-full max-w-3xl shadow-lg md:pb-18">
+          <motion.div
+            variants={{ hidden: { opacity: 0, y: 30, scale: 0.97 }, visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.6 } } }}
+            className="bg-white rounded-lg p-6 w-full max-w-3xl shadow-lg md:pb-18"
+          >
             <div className="flex flex-col md:flex-row gap-4">
               <div className="flex-1">
                 <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
@@ -110,8 +125,8 @@ export default function HeroSection({ onSearch, initialValues }: HeroSectionProp
                 </Button>
               </div>
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </div>
     </section>
   );

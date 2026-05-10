@@ -2,6 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
+import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useAppSelector } from "@/store/hooks";
 import sparePartsBg from "@/assets/spareparts/banner/spare_parts_banner.jpg";
@@ -49,15 +50,30 @@ export default function SparePartsHero({ onSellClick }: SparePartsHeroProps) {
       </div>
 
       <div className="relative z-10 container mx-auto px-4 h-full flex flex-col items-center justify-center text-center">
-        <h1 className="text-3xl md:text-6xl font-bold text-white mb-4">
+        <motion.h1
+          className="text-3xl md:text-6xl font-bold text-white mb-4"
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7 }}
+        >
           {trans.hero.title}
-        </h1>
-        <p className="text-gray-200 text-base md:text-lg max-w-2xl mb-8">
+        </motion.h1>
+        <motion.p
+          className="text-gray-200 text-base md:text-lg max-w-2xl mb-8"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.2 }}
+        >
           {trans.hero.description}
-        </p>
-        <div className="flex gap-4">
-          <Button 
-            size="lg" 
+        </motion.p>
+        <motion.div
+          className="flex gap-4"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+        >
+          <Button
+            size="lg"
             className="bg-blue-600 hover:bg-blue-700"
             onClick={handleBrowseParts}
           >
@@ -72,7 +88,7 @@ export default function SparePartsHero({ onSellClick }: SparePartsHeroProps) {
             {trans.hero.sellNow}
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
-        </div>
+        </motion.div>
       </div>
     </section>
   );
