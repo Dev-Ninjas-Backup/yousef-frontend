@@ -162,7 +162,8 @@ export const useUserAuth = () => {
       }));
 
       const redirectPath = getRedirectPath(user.role);
-      router.push(redirectPath);
+      // Hard redirect so AuthContext re-initializes from cookie with fresh token
+      window.location.href = redirectPath;
     } catch (error: any) {
       console.error("OTP verification error:", error);
       setError(error?.data?.message || "OTP verification failed. Please try again.");

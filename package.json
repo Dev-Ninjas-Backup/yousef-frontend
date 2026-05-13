@@ -7,7 +7,10 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "security:check": "node scripts/security-check.js check",
+    "security:fix": "node scripts/security-check.js fix",
+    "prepush": "npm run security:check"
   },
   "dependencies": {
     "@google-cloud/local-auth": "^3.0.1",

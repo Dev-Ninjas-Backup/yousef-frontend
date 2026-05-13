@@ -21,15 +21,18 @@ interface PartsCategory {
 export default function PartsCategorySection() {
   // API Hooks
   const { data: categoriesData, isLoading } = useGetPartsCategoriesQuery({ page: 1, limit: 50 });
-  const [createCategory] = useCreatePartsCategoryMutation();
-  const [updateCategory] = useUpdatePartsCategoryMutation();
-  const [deleteCategory] = useDeletePartsCategoryMutation();
+  const [createCategory, { isLoading: isCreating }] = useCreatePartsCategoryMutation();
+  const [updateCategory, { isLoading: isUpdating }] = useUpdatePartsCategoryMutation();
+  const [deleteCategory, { isLoading: isDeleting }] = useDeletePartsCategoryMutation();
 
   // Local state
   const [categories, setCategories] = useState<PartsCategory[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentCategory, setCurrentCategory] = useState<PartsCategory | null>(null);
   const [categoryName, setCategoryName] = useState("");
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  const isSaving = isCreating || isUpdating;
 
   useEffect(() => {
     if (categoriesData?.data?.data) {
@@ -80,11 +83,14 @@ export default function PartsCategorySection() {
 
   const handleDelete = async (id: string) => {
     if (confirm("Are you sure you want to delete this category?")) {
+      setDeletingId(id);
       try {
         await deleteCategory(id).unwrap();
         toast.success("Category deleted successfully!");
       } catch (error) {
         toast.error("Failed to delete category");
+      } finally {
+        setDeletingId(null);
       }
     }
   };
@@ -122,9 +128,14 @@ export default function PartsCategorySection() {
               </button>
               <button
                 onClick={() => handleDelete(category.id)}
-                className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                disabled={isDeleting && deletingId === category.id}
+                className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
               >
-                <LuTrash2 className="w-4 h-4" />
+                {isDeleting && deletingId === category.id ? (
+                  <span className="w-4 h-4 border-2 border-red-400 border-t-transparent rounded-full animate-spin inline-block" />
+                ) : (
+                  <LuTrash2 className="w-4 h-4" />
+                )}
               </button>
             </div>
           </div>
@@ -158,10 +169,20 @@ export default function PartsCategorySection() {
               </button>
               <button
                 onClick={handleSave}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                disabled={isSaving}
+                className="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                <LuSave className="inline w-4 h-4 mr-1" />
-                Save
+                {isSaving ? (
+                  <>
+                    <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    Saving...
+                  </>
+                ) : (
+                  <>
+                    <LuSave className="w-4 h-4" />
+                    Save
+                  </>
+                )}
               </button>
             </div>
           </div>
