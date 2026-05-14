@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import GarageCard from "../garage-card/GarageCard";
 import MapSection from "../map-section/MapSection";
@@ -170,7 +171,12 @@ export default function GarageList({ searchParams }: GarageListProps) {
     <section className="relative py-8">
       <div className="container mx-auto px-4">
         {/* Header */}
-        <div className="mb-12 flex flex-col gap-8 md:flex-row md:items-center">
+        <motion.div
+          className="mb-12 flex flex-col gap-8 md:flex-row md:items-center"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
           <div>
             <h2 className="text-2xl font-bold">
               {totalGarages} {trans.list.garagesFound}
@@ -205,7 +211,7 @@ export default function GarageList({ searchParams }: GarageListProps) {
               />
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Desktop: Map Background + Cards Overlay | Mobile: Cards then Map */}
         <div

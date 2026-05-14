@@ -1,7 +1,7 @@
 export const automotiveSolutionsTranslations = {
   en: {
     title: "Complete Automotive Solutions",
-    subtitle: "Six essential automotive services united in one powerful platform, designed to make car care effortless and reliable.",
+    subtitle: "Five essential automotive services united in one powerful platform, designed to make car care effortless and reliable.",
     findGarage: "Find garage",
     services: {
       garageDirectory: {
@@ -20,7 +20,7 @@ export const automotiveSolutionsTranslations = {
   },
   ar: {
     title: "حلول سيارات متكاملة",
-    subtitle: "ستة خدمات سيارات أساسية متحدة في منصة واحدة قوية، مصممة لجعل العناية بالسيارة سهلة وموثوقة.",
+    subtitle: "خمسة خدمات سيارات أساسية متحدة في منصة واحدة قوية، مصممة لجعل العناية بالسيارة سهلة وموثوقة.",
     findGarage: "ابحث عن ورشة",
     services: {
       garageDirectory: {
@@ -39,7 +39,7 @@ export const automotiveSolutionsTranslations = {
   },
   hi: {
     title: "संपूर्ण ऑटोमोटिव समाधान",
-    subtitle: "छह आवश्यक ऑटोमोटिव सेवाएं एक शक्तिशाली प्लेटफॉर्म में, कार केयर आसान और विश्वसनीय बनाने के लिए।",
+    subtitle: "पाँच आवश्यक ऑटोमोटिव सेवाएं एक शक्तिशाली प्लेटफॉर्म में, कार केयर आसान और विश्वसनीय बनाने के लिए।",
     findGarage: "गैरेज खोजें",
     services: {
       garageDirectory: {

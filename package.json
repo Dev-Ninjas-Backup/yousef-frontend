@@ -7,7 +7,10 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "security:check": "node scripts/security-check.js check",
+    "security:fix": "node scripts/security-check.js fix",
+    "prepush": "npm run security:check"
   },
   "dependencies": {
     "@google-cloud/local-auth": "^3.0.1",
@@ -32,6 +35,7 @@
     "clsx": "^2.1.1",
     "embla-carousel-autoplay": "^8.6.0",
     "embla-carousel-react": "^8.6.0",
+    "framer-motion": "^12.38.0",
     "google-auth-library": "^10.5.0",
     "js-cookie": "^3.0.5",
     "jspdf": "^3.0.4",

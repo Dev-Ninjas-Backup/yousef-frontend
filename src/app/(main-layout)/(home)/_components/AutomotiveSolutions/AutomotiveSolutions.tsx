@@ -8,6 +8,7 @@ import pickup_car from "../../../../../assets/home/icons/pickup_car.svg";
 import spare_parts from "../../../../../assets/home/icons/spare_parts.svg";
 import { useLanguage } from "@/context/LanguageContext";
 import { automotiveSolutionsTranslations } from "@/translations/automotiveSolutions";
+import { AnimateOnScroll, StaggerOnScroll, fadeUp, scaleIn } from "@/lib/animations";
 
 const AutomotiveSolutions: React.FC = () => {
   const { t } = useLanguage();
@@ -33,37 +34,37 @@ const AutomotiveSolutions: React.FC = () => {
   return (
     <section className="container mx-auto py-10 md:py-20 px-4">
       <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-8 md:mb-12">
+        <AnimateOnScroll variants={fadeUp} className="text-center mb-8 md:mb-12">
           <h2 className="text-2xl md:text-5xl font-bold text-[#333333] mb-3 md:mb-6">
             {trans.title}
           </h2>
           <p className="text-base md:text-2xl text-[#333333] max-w-3xl mx-auto">
             {trans.subtitle}
           </p>
-        </div>
+        </AnimateOnScroll>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-8">
+        <StaggerOnScroll className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-8">
           {services.map((service) => (
-            <ServiceCard
-              key={service.title}
-              icon={service.icon}
-              title={service.title}
-              description={service.description}
-            />
+            <AnimateOnScroll key={service.title} variants={scaleIn}>
+              <ServiceCard
+                icon={service.icon}
+                title={service.title}
+                description={service.description}
+              />
+            </AnimateOnScroll>
           ))}
-        </div>
+        </StaggerOnScroll>
 
-        <div className="flex justify-center">
+        <AnimateOnScroll variants={fadeUp} className="flex justify-center">
           <Button
             asChild
-            className="bg-[#0D6EFD] hover:bg-blue-700 text-white px-8 md:px-10 py-5 md:py-6 rounded-lg text-base
-           font-semibold"
+            className="bg-[#0D6EFD] hover:bg-blue-700 text-white px-8 md:px-10 py-5 md:py-6 rounded-lg text-base font-semibold"
           >
             <Link href="/service">
               {trans.findGarage}
             </Link>
           </Button>
-        </div>
+        </AnimateOnScroll>
       </div>
     </section>
   );

@@ -3,6 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import applestore from "@/assets/home/banner/apple_store.svg";
 import playstore from "@/assets/home/banner/playstore.svg";
@@ -28,24 +29,44 @@ const HeroBanner: React.FC = () => {
         <div className="absolute inset-0 bg-black/60 rounded-lg" />
       </div>
       <div className="relative container mx-auto z-10 flex items-center h-full px-4">
-        <div className="max-w-4xl">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight">
+        <motion.div
+          className="max-w-4xl"
+          initial="hidden"
+          animate="visible"
+          variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.2 } } }}
+        >
+          <motion.h2
+            variants={{ hidden: { opacity: 0, y: 40 }, visible: { opacity: 1, y: 0, transition: { duration: 0.7 } } }}
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight"
+          >
             {trans.title1}
-          </h2>
-          <h3 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
+          </motion.h2>
+          <motion.h3
+            variants={{ hidden: { opacity: 0, y: 40 }, visible: { opacity: 1, y: 0, transition: { duration: 0.7 } } }}
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight"
+          >
             <span className="text-blue-500">{trans.title2}</span>
-          </h3>
-          <h3 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 md:mb-6 leading-tight">
+          </motion.h3>
+          <motion.h3
+            variants={{ hidden: { opacity: 0, y: 40 }, visible: { opacity: 1, y: 0, transition: { duration: 0.7 } } }}
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 md:mb-6 leading-tight"
+          >
             {trans.title3}
-          </h3>
+          </motion.h3>
 
-          <p className="text-sm sm:text-base md:text-lg lg:text-2xl text-gray-200 mb-6 md:mb-8 leading-relaxed">
+          <motion.p
+            variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.7 } } }}
+            className="text-sm sm:text-base md:text-lg lg:text-2xl text-gray-200 mb-6 md:mb-8 leading-relaxed"
+          >
             {trans.description}{" "}
             <span className="text-white font-semibold notranslate" translate="no">{trans.appName}</span>
             {trans.descriptionContinue}
-          </p>
+          </motion.p>
 
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 md:gap-6">
+          <motion.div
+            variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.7 } } }}
+            className="flex flex-col sm:flex-row gap-3 sm:gap-4 md:gap-6"
+          >
             <Button
               asChild
               className="bg-white hover:bg-gray-100 text-black rounded-lg py-3 px-4 sm:py-4 sm:px-6 w-full sm:w-auto h-14 sm:h-16"
@@ -87,8 +108,8 @@ const HeroBanner: React.FC = () => {
                 </div>
               </Link>
             </Button>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </div>
     </section>
   );
