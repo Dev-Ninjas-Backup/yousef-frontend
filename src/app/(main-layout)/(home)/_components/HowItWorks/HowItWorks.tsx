@@ -6,6 +6,7 @@ import phoneImage2 from "@/assets/home/howItWorks/how-it-works-2.svg";
 import phoneImage3 from "@/assets/home/howItWorks/how-it-works-3.svg";
 import { useLanguage } from "@/context/LanguageContext";
 import { howItWorksTranslations } from "@/translations/howItWorks";
+import { AnimateOnScroll, fadeUp, fadeLeft, fadeRight } from "@/lib/animations";
 
 const HowItWorks: React.FC = () => {
   const { t } = useLanguage();
@@ -38,25 +39,29 @@ const HowItWorks: React.FC = () => {
   return (
     <section className="w-full py-12 md:py-16 px-4">
       <div className="container mx-auto">
-        <div className="text-center mb-12 md:mb-25">
+        <AnimateOnScroll variants={fadeUp} className="text-center mb-12 md:mb-25">
           <h2 className="text-3xl md:text-5xl font-bold text-[#333333] mb-8">
             {trans.title} <span className="text-[#0D6EFD]">{trans.titleHighlight}</span>{trans.titleEnd}
           </h2>
           <p className="text-base md:text-xl text-[#333333] max-w-2xl mx-auto">
             {trans.subtitle}
           </p>
-        </div>
+        </AnimateOnScroll>
 
         <div className="space-y-16 md:space-y-24">
           {stepsData.map((step) => (
-            <StepCard
+            <AnimateOnScroll
               key={step.id}
-              stepNumber={step.id}
-              title={step.title}
-              description={step.description}
-              imagePosition={step.imagePosition}
-              phoneImage={step.phoneImage.src}
-            />
+              variants={step.imagePosition === "right" ? fadeLeft : fadeRight}
+            >
+              <StepCard
+                stepNumber={step.id}
+                title={step.title}
+                description={step.description}
+                imagePosition={step.imagePosition}
+                phoneImage={step.phoneImage.src}
+              />
+            </AnimateOnScroll>
           ))}
         </div>
       </div>

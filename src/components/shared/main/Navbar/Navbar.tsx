@@ -77,8 +77,8 @@ const Navbar = () => {
   }, [isLangMenuOpen, isUserMenuOpen]);
 
   return (
-    <nav className="fixed z-50 w-full py-4 px-4 md:mt-4 md:px-8 bg-white/70 backdrop-blur-md md:bg-transparent md:backdrop-blur-none">
-      <div className="container mx-auto flex items-center justify-between gap-4">
+    <nav className="fixed z-50 w-full py-4 px-4 lg:mt-4 lg:px-8 bg-white/70 backdrop-blur-md lg:bg-transparent lg:backdrop-blur-none">
+      <div className="container mx-auto flex items-center justify-between gap-2 lg:gap-4">
         <Link href="/" className="flex items-center">
           <div className="bg-black/40 backdrop-blur-md rounded-full px-4 py-2 shadow-[0_0_15px_rgba(255,255,255,0.1)]">
             <Image
@@ -91,7 +91,7 @@ const Navbar = () => {
           </div>
         </Link>
 
-        <div className="hidden bg-black/40 md:flex  items-center gap-2 backdrop-blur-md rounded-full px-8 py-3 shadow-[0_0_15px_rgba(255,255,255,0.1)] transition-all duration-300 relative">
+        <div className="hidden bg-black/40 lg:flex items-center gap-1 xl:gap-2 backdrop-blur-md rounded-full px-4 xl:px-8 py-3 shadow-[0_0_15px_rgba(255,255,255,0.1)] transition-all duration-300 relative flex-1 mx-4 justify-center">
           <div
             className="absolute inset-0 rounded-full pointer-events-none"
             style={{
@@ -110,7 +110,7 @@ const Navbar = () => {
               <Link
                 key={index}
                 href={item.href}
-                className={`relative text-white/80 hover:text-white transition-colors px-4 py-2 rounded-full hover:bg-white/5 whitespace-nowrap ${
+                className={`relative text-white/80 hover:text-white transition-colors px-2 xl:px-4 py-2 rounded-full hover:bg-white/5 whitespace-nowrap text-sm xl:text-base ${
                   isActive ? "text-white font-semibold" : ""
                 }`}
               >
@@ -123,43 +123,13 @@ const Navbar = () => {
           })}
         </div>
 
-        <div className="flex items-center gap-2">
-          {/* Translation Toggle */}
+        <div className="flex items-center gap-2 flex-shrink-0">
+          {/* Translation Toggle - always visible, sits beside hamburger on mobile */}
           <TranslationToggle />
 
-          {/* <div className="hidden md:block relative language-dropdown">
-            <button
-              onClick={() => setIsLangMenuOpen(!isLangMenuOpen)}
-              className="flex items-center gap-2 text-white hover:text-[#0A84FF] py-2 px-4 rounded-full bg-black/40 shadow-[0_0_15px_rgba(255,255,255,0.1)] transition-all duration-300"
-              title="Select Language"
-            >
-              <Globe className="w-5 h-5 text-white/80" />
-              <ChevronDown className="w-4 h-4 text-white/80" />
-            </button>
-            {isLangMenuOpen && (
-              <div className="absolute right-0 mt-2 w-40 bg-black/90 backdrop-blur-md rounded-lg shadow-lg border border-white/20 overflow-hidden">
-                <button
-                  onClick={() => handleLanguageChange("en")}
-                  className={`w-full text-left px-4 py-3 text-white/80 hover:bg-white/10 transition-colors ${
-                    language === "en" ? "bg-white/5 font-semibold" : ""
-                  }`}
-                >
-                  {trans.english}
-                </button>
-                <button
-                  onClick={() => handleLanguageChange("ar")}
-                  className={`w-full text-left px-4 py-3 text-white/80 hover:bg-white/10 transition-colors ${
-                    language === "ar" ? "bg-white/5 font-semibold" : ""
-                  }`}
-                >
-                  {trans.arabic}
-                </button>
-              </div>
-            )}
-          </div> */}
-
+          {/* Auth buttons - desktop only */}
           {isAuthenticated ? (
-            <div className="hidden md:block relative user-dropdown">
+            <div className="hidden lg:block relative user-dropdown">
               <button
                 onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                 className="flex items-center gap-2 text-white hover:text-[#0A84FF] py-2 px-4 rounded-full bg-black/40 shadow-[0_0_15px_rgba(255,255,255,0.1)] transition-all duration-300"
@@ -190,46 +160,47 @@ const Navbar = () => {
           ) : (
             <Link
               href="/user-auth"
-              className="hidden md:flex items-center gap-2 text-white hover:text-[#0A84FF] py-2 px-4 rounded-full bg-black/40 shadow-[0_0_15px_rgba(255,255,255,0.1)] transition-all duration-300"
+              className="hidden lg:flex items-center gap-2 text-white hover:text-[#0A84FF] py-2 px-4 rounded-full bg-black/40 shadow-[0_0_15px_rgba(255,255,255,0.1)] transition-all duration-300"
             >
               <span className="text-sm text-white/80">{trans.login}</span>
               <UserCircle className="w-5 h-5 text-white/80" />
             </Link>
           )}
-        </div>
 
-        <button
-          className="md:hidden flex items-center justify-center w-10 h-10 rounded-full bg-black/40 backdrop-blur-md shadow-[0_0_15px_rgba(255,255,255,0.1)] text-white"
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          title={isMobileMenuOpen ? "Close menu" : "Open menu"}
-        >
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
+          {/* Hamburger button - grouped with language toggle on mobile */}
+          <button
+            className="lg:hidden flex items-center justify-center w-10 h-10 rounded-full bg-black/40 backdrop-blur-md shadow-[0_0_15px_rgba(255,255,255,0.1)] text-white"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            title={isMobileMenuOpen ? "Close menu" : "Open menu"}
           >
-            {isMobileMenuOpen ? (
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            ) : (
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4 6h16M4 12h16M4 18h16"
-              />
-            )}
-          </svg>
-        </button>
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              {isMobileMenuOpen ? (
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              ) : (
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              )}
+            </svg>
+          </button>
+        </div>
       </div>
 
       {isMobileMenuOpen && (
-        <div className="md:hidden mt-4 bg-black/60 backdrop-blur-md rounded-lg p-4 border border-white/20 shadow-[0_0_15px_rgba(255,255,255,0.1)]">
+        <div className="lg:hidden mt-4 bg-black/60 backdrop-blur-md rounded-lg p-4 border border-white/20 shadow-[0_0_15px_rgba(255,255,255,0.1)]">
           <div className="flex flex-col gap-2">
             {menuItems.map((item, index) => (
               <Link
@@ -245,6 +216,9 @@ const Navbar = () => {
             <div className="border-t border-white/10 pt-4 mt-2">
               <div className="px-4 py-2 text-white/60 text-sm font-semibold">
                 {trans.language}
+              </div>
+              <div className="px-4 py-2">
+                <TranslationToggle />
               </div>
               <button
                 onClick={() => handleLanguageChange("en")}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -78,7 +79,13 @@ export default function SearchSection({
   return (
     <section id="search-section" className="py-12">
       <div className="container mx-auto px-4">
-        <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-md p-8">
+        <motion.div
+          className="max-w-4xl mx-auto bg-white rounded-2xl shadow-md p-8"
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+        >
           <h2 className="text-2xl font-bold mb-8 text-center text-gray-900">
             {trans.search.title}
           </h2>
@@ -138,7 +145,7 @@ export default function SearchSection({
               {trans.search.searchButton}
             </Button>
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );

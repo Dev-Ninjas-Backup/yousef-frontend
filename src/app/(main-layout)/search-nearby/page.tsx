@@ -2,6 +2,7 @@
 
 import { useEffect, useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import { motion } from "framer-motion";
 import { Loader2, MapPin, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useGetNearbyGaragesQuery } from "@/store/api/garageApi";
@@ -60,36 +61,38 @@ function SearchNearbyContent() {
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container mx-auto px-4">
         {/* Header */}
-        <div className="mb-8">
-          <Button
-            variant="ghost"
-            onClick={() => router.back()}
-            className="mb-4"
-          >
+        <motion.div
+          className="mb-8"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+        >
+          <Button variant="ghost" onClick={() => router.back()} className="mb-4">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back
           </Button>
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">
-                Nearby Garages
-              </h1>
+              <h1 className="text-3xl font-bold text-gray-900">Nearby Garages</h1>
               <p className="text-gray-600 mt-2">
-                Found {garages?.length || 0} garages within {radius}km of your
-                location
+                Found {garages?.length || 0} garages within {radius}km of your location
               </p>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Garages Grid */}
         {garages && garages.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {garages.map((garage: any) => (
-              <div
+            {garages.map((garage: any, index: number) => (
+              <motion.div
                 key={garage.id}
                 onClick={() => handleGarageClick(garage.id)}
                 className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.08, ease: "easeOut" }}
+                whileHover={{ y: -5, transition: { duration: 0.2 } }}
               >
                 {/* Image */}
                 <div className="relative h-48 bg-gray-100">
@@ -167,7 +170,7 @@ function SearchNearbyContent() {
                     </p>
                   )}
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         ) : (

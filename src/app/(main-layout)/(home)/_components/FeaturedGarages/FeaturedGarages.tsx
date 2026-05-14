@@ -6,6 +6,7 @@ import { useLanguage } from "@/context/LanguageContext";
 import { featuredGaragesTranslations } from "@/translations/featuredGarages";
 import { useGetFeaturedGaragesQuery } from "@/store/api/promotionalApi";
 import dubaiCar from "@/assets/home/FeaturedGarages/featured-garage-dubai.png";
+import { AnimateOnScroll, StaggerOnScroll, fadeUp, scaleIn } from "@/lib/animations";
 
 const FeaturedGarages: React.FC = () => {
   const { t } = useLanguage();
@@ -56,25 +57,28 @@ const FeaturedGarages: React.FC = () => {
   return (
     <section className="w-full bg-white py-12 md:py-16 lg:py-20 px-4">
       <div className="max-w-6xl mx-auto">
-        <h2 className="text-2xl md:text-3xl  font-bold text-center text-gray-900 mb-8 md:mb-12">
-          {trans.title}
-        </h2>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+        <AnimateOnScroll variants={fadeUp}>
+          <h2 className="text-2xl md:text-3xl font-bold text-center text-gray-900 mb-8 md:mb-12">
+            {trans.title}
+          </h2>
+        </AnimateOnScroll>
+
+        <StaggerOnScroll className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
           {garages.map((garage) => (
-            <GarageCard
-              key={garage.id}
-              id={garage.id}
-              name={garage.name}
-              location={garage.location}
-              rating={garage.rating}
-              image={garage.image}
-              latitude={garage.latitude}
-              longitude={garage.longitude}
-              garageOwnerId={garage.garageOwnerId}
-            />
+            <AnimateOnScroll key={garage.id} variants={scaleIn}>
+              <GarageCard
+                id={garage.id}
+                name={garage.name}
+                location={garage.location}
+                rating={garage.rating}
+                image={garage.image}
+                latitude={garage.latitude}
+                longitude={garage.longitude}
+                garageOwnerId={garage.garageOwnerId}
+              />
+            </AnimateOnScroll>
           ))}
-        </div>
+        </StaggerOnScroll>
       </div>
     </section>
   );

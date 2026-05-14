@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
+import { motion } from "framer-motion";
 import sparePartsBg from "@/assets/spareparts/banner/spare_parts_banner.jpg";
 
 interface SellCTAProps {
@@ -23,7 +24,13 @@ export default function SellCTA({ onSellClick }: SellCTAProps) {
             <div className="absolute inset-0 bg-black/80" />
           </div>
 
-          <div className="relative z-10 h-full flex flex-col items-center justify-center text-center px-4">
+          <motion.div
+            className="relative z-10 h-full flex flex-col items-center justify-center text-center px-4"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
+          >
             <h2 className="text-xl md:text-2xl font-bold text-white mb-4">
               Sell Spare Parts All in <br />
               One Place
@@ -42,7 +49,7 @@ export default function SellCTA({ onSellClick }: SellCTAProps) {
               Sell Your Parts
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>

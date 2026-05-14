@@ -1,5 +1,6 @@
 "use client";
 import Image, { StaticImageData } from "next/image";
+import { motion } from "framer-motion";
 import garageOverviewBg from "@/assets/service/garage/garage_overview.png";
 import { useLanguage } from "@/context/LanguageContext";
 import { serviceDetailsTranslations } from "@/translations/serviceDetails";
@@ -22,25 +23,33 @@ export default function GarageOverview({
     <section className="py-16 bg-white">
       <div className="container mx-auto px-4">
         <div className="grid gap-12 lg:grid-cols-2 items-start">
-          <div>
+          <motion.div
+            initial={{ opacity: 0, x: -50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
+          >
             <h2 className="mb-8 text-2xl md:text-4xl font-bold text-gray-900">
               {trans.garageOverview}
             </h2>
             <div className="space-y-6">
               {description.map((paragraph, index) => (
-                <p
-                  key={index}
-                  className="text-gray-600 leading-relaxed text-lg"
-                >
+                <p key={index} className="text-gray-600 leading-relaxed text-lg">
                   {paragraph}
                 </p>
               ))}
             </div>
-          </div>
+          </motion.div>
 
-          <div className="relative h-[400px] lg:h-[500px] overflow-hidden rounded-2xl">
+          <motion.div
+            className="relative h-[400px] lg:h-[500px] overflow-hidden rounded-2xl"
+            initial={{ opacity: 0, x: 50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
+          >
             <Image src={imageSrc} alt="Garage" fill className="object-cover" />
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>
