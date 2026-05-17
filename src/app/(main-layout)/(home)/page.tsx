@@ -20,7 +20,7 @@ const HomePage = () => {
     <HowItWorks />
     <FeaturedPromotions />
     <FeaturedGarages />
-    <SpareParts />
+    {/* <SpareParts /> */}
     <TestimonialsSection />
     <Faq/>
     </div>

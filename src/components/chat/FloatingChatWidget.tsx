@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { useGetConversationsQuery, Message } from "@/store/api/privateChatApi";
 import { usePrivateChat } from "@/hooks/usePrivateChat";
 import { useAppSelector } from "@/store/hooks";
+import { motion, AnimatePresence } from "framer-motion";
 
 export function FloatingChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
@@ -262,22 +263,35 @@ export function FloatingChatWidget() {
     conv.participant.fullName.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  if (!isOpen) {
-    return (
-      <button
-        onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 h-14 w-14 rounded-full bg-blue-500 hover:bg-blue-600 shadow-lg z-50 flex items-center justify-center transition-all"
-      >
-        <MessageCircle className="w-6 h-6 text-white" />
-        {hasUnread && (
-          <span className="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></span>
-        )}
-      </button>
-    );
-  }
-
   return (
-    <div className="fixed bottom-6 right-6 w-80 h-[500px] bg-white rounded-xl shadow-2xl z-50 flex flex-col overflow-hidden">
+    <>
+      <AnimatePresence>
+        {!isOpen && (
+          <motion.button
+            key="chat-button"
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.5 }}
+            onClick={() => setIsOpen(true)}
+            className="fixed bottom-6 right-6 h-14 w-14 rounded-full bg-blue-500 hover:bg-blue-600 shadow-lg z-50 flex items-center justify-center transition-all"
+          >
+            <MessageCircle className="w-6 h-6 text-white" />
+            {hasUnread && (
+              <span className="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></span>
+            )}
+          </motion.button>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {isOpen && (
+        <motion.div
+          initial={{ opacity: 0, y: 100, scale: 0.8 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: 100, scale: 0.8 }}
+          transition={{ type: "spring", damping: 25, stiffness: 300 }}
+          className="fixed bottom-6 right-6 w-80 h-[500px] bg-white rounded-xl shadow-2xl z-50 flex flex-col overflow-hidden"
+        >
       {!selectedChat && (
         <>
           <div className="bg-blue-500 text-white px-4 py-3 flex items-center justify-between">
@@ -406,10 +420,17 @@ export function FloatingChatWidget() {
           </div>
 
           <div className="flex-1 overflow-y-auto bg-gray-50 p-3 space-y-2">
+            <AnimatePresence initial={false}>
             {allMessages.length === 0 ? (
-              <div className="flex items-center justify-center h-full text-gray-400 text-sm">
+              <motion.div 
+                key="empty-messages"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="flex items-center justify-center h-full text-gray-400 text-sm"
+              >
                 No messages yet. Start the conversation!
-              </div>
+              </motion.div>
             ) : (
               allMessages.map((msg) => {
                 const isMine = msg.senderId === currentUserId;
@@ -419,8 +440,14 @@ export function FloatingChatWidget() {
                 });
 
                 return (
-                  <div
+                  <motion.div
                     key={msg.id}
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    transition={{ 
+                      duration: 0.2,
+                      ease: "easeOut"
+                    }}
                     className={`flex ${
                       isMine ? "justify-end" : "justify-start"
                     } mb-1 group`}
@@ -432,7 +459,7 @@ export function FloatingChatWidget() {
                     >
                       {!isMine && (
                         <div className="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs flex-shrink-0">
-                          {selectedChat.name.charAt(0).toUpperCase()}
+                          {(selectedChat?.name ?? "?").charAt(0).toUpperCase()}
                         </div>
                       )}
 
@@ -510,14 +537,20 @@ export function FloatingChatWidget() {
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </motion.div>
                 );
               })
             )}
 
             {/* Typing indicator bubble */}
             {typingUsers.length > 0 && (
-              <div className="flex justify-start mb-1">
+              <motion.div
+                key="typing-indicator"
+                initial={{ opacity: 0, y: 5 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, transition: { duration: 0.1 } }}
+                className="flex justify-start mb-1"
+              >
                 <div className="flex items-end gap-1.5 max-w-[80%]">
                   <div className="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs flex-shrink-0">
                     {selectedChat.name.charAt(0).toUpperCase()}
@@ -538,10 +571,11 @@ export function FloatingChatWidget() {
                     </div>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             )}
 
             <div ref={setMessagesEndRef} />
+            </AnimatePresence>
           </div>
 
           <div className="bg-white border-t p-3">
@@ -607,6 +641,9 @@ export function FloatingChatWidget() {
           </div>
         </>
       )}
-    </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+    </>
   );
 }
