@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, Eye, Trash2, Check, X, Plus, Minus, Paperclip } from "lucide-react";
@@ -77,7 +77,7 @@ export default function GarageOwnersTable({
           </thead>
           <tbody className="divide-y divide-gray-100">
             {garageOwners.map((owner) => (
-              <>
+              <React.Fragment key={owner.userId}>
                 {/* Owner Row */}
                 <tr key={owner.userId} className="hover:bg-gray-50">
                   <td className="py-4 px-6">
@@ -193,7 +193,7 @@ export default function GarageOwnersTable({
                     </td>
                   </tr>
                 )}
-              </>
+              </React.Fragment>
             ))}
           </tbody>
         </table>

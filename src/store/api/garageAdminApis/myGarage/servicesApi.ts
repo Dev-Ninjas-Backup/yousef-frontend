@@ -16,7 +16,7 @@ export const servicesApi = apiSlice.injectEndpoints({
       providesTags: ["Service"],
     }),
 
-    createService: builder.mutation<{ serviceCategory: string }, CreateServiceRequest>({
+    createService: builder.mutation<ServicesResponse, CreateServiceRequest>({
       query: (body) => ({
         url: "/services",
         method: "POST",
@@ -24,7 +24,32 @@ export const servicesApi = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["Service"],
     }),
+
+    updateService: builder.mutation<
+      ServicesResponse,
+      { oldName: string; serviceCategory: string }
+    >({
+      query: ({ oldName, serviceCategory }) => ({
+        url: `/services/${encodeURIComponent(oldName)}`,
+        method: "PATCH",
+        body: { serviceCategory },
+      }),
+      invalidatesTags: ["Service"],
+    }),
+
+    deleteService: builder.mutation<ServicesResponse, string>({
+      query: (serviceName) => ({
+        url: `/services/${encodeURIComponent(serviceName)}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Service"],
+    }),
   }),
 });
 
-export const { useGetMyServicesQuery, useCreateServiceMutation } = servicesApi;
+export const {
+  useGetMyServicesQuery,
+  useCreateServiceMutation,
+  useUpdateServiceMutation,
+  useDeleteServiceMutation,
+} = servicesApi;

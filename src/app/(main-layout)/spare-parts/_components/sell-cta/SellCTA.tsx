@@ -2,17 +2,26 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
+import { useAppSelector } from "@/store/hooks";
 import sparePartsBg from "@/assets/spareparts/banner/spare_parts_banner.jpg";
 
-interface SellCTAProps {
-  onSellClick: () => void;
-}
+export default function SellCTA() {
+  const router = useRouter();
+  const user = useAppSelector((state) => state.auth.user);
 
-export default function SellCTA({ onSellClick }: SellCTAProps) {
+  const handleSellNow = () => {
+    if (user?.role === 'GARAGE_OWNER') {
+      router.push('/garage-admin/my-products/add-product');
+    } else {
+      router.push('/user/my-products/add-product');
+    }
+  };
+
   return (
-    <section className="py-16">
+    <section className="">
       <div className="container mx-auto px-4">
-        <div className="relative h-[400px] rounded-3xl overflow-hidden">
+        <div className="relative h-[280px] md:h-[320px] rounded-3xl overflow-hidden">
           {/* Background Image with Overlay */}
           <div className="absolute inset-0">
             <Image
@@ -42,7 +51,7 @@ export default function SellCTA({ onSellClick }: SellCTAProps) {
               to accessories, everything is just a click away!
             </p>
             <Button
-              onClick={onSellClick}
+              onClick={handleSellNow}
               size="lg"
               className="bg-blue-600 hover:bg-blue-700"
             >

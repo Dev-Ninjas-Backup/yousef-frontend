@@ -32,6 +32,30 @@ export default function HeroSection({ onSearch, initialValues }: HeroSectionProp
   const [serviceName, setServiceName] = useState("");
   
   const { data: serviceCategories } = useGetServiceCategoriesQuery();
+
+  const CANONICAL_SERVICES = [
+    "AC Service",
+    "Battery Replacement",
+    "Body Work",
+    "Brake Repair",
+    "Diagnostics",
+    "Electrical Repair",
+    "Emergency Towing",
+    "Engine Repair",
+    "Oil Change",
+    "Suspension Repair",
+    "Tire Service",
+    "Towing",
+    "Transmission Service",
+    "Van Doorstep Repair",
+  ];
+
+  // Use API data but filter to only canonical services to avoid duplicates/typos
+  const services = serviceCategories?.serviceCategories
+    ? [...new Set(serviceCategories.serviceCategories)].filter((s) =>
+        CANONICAL_SERVICES.includes(s)
+      )
+    : CANONICAL_SERVICES;
   
   useEffect(() => {
     if (initialValues) {
@@ -109,7 +133,7 @@ export default function HeroSection({ onSearch, initialValues }: HeroSectionProp
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all-services">All Services</SelectItem>
-                    {serviceCategories?.serviceCategories.map((service) => (
+                    {services.map((service) => (
                       <SelectItem key={service} value={service}>{service}</SelectItem>
                     ))}
                   </SelectContent>

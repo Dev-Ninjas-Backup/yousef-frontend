@@ -69,7 +69,7 @@ export default function GarageList({ searchParams }: GarageListProps) {
       const newGarages = garagesResponse.data.data.map((garage: any) => ({
         id: garage.id,
         name: garage.name,
-        rating: garage.averageRating || 4.5,
+        rating: garage.averageRating || 0,
         reviews: garage.totalReviews || 0,
         distance: "2.5 km away",
         location: `${garage.city}, ${garage.emirate}`,

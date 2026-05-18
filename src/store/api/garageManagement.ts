@@ -69,6 +69,7 @@ export interface UpdateGarageStatusRequest {
 }
 
 export const garageManagementApi = apiSlice.injectEndpoints({
+  overrideExisting: true,
   endpoints: (builder) => ({
     // Search garages with pagination and filters
     searchGarages: builder.query<SearchGarageResponse, SearchGarageParams>({
