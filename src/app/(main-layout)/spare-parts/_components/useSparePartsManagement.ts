@@ -9,13 +9,13 @@ export function useSparePartsManagement() {
     category: "all",
     condition: "all",
     status: "APPROVED",
+    sortBy: "relevance",
     limit: 9,
     page: 1,
   });
 
   const { data, isLoading, error } = useGetProductsQuery({
     ...filters,
-    // Remove empty/all values to avoid validation errors
     search: filters.search || undefined,
     category:
       filters.category === "all" || !filters.category
@@ -25,7 +25,8 @@ export function useSparePartsManagement() {
       filters.condition === "all" || !filters.condition
         ? undefined
         : filters.condition,
-    status: "APPROVED", // Always filter for approved products
+    status: "APPROVED",
+    sortBy: filters.sortBy || "relevance",
   });
 
   const updateFilter = useCallback(
@@ -68,12 +69,20 @@ export function useSparePartsManagement() {
     [updateFilter]
   );
 
+  const handleSortChange = useCallback(
+    (sort: string) => {
+      updateFilter("sortBy", sort);
+    },
+    [updateFilter]
+  );
+
   const clearFilters = useCallback(() => {
     setFilters({
       search: "",
       category: "all",
       condition: "all",
       status: "APPROVED",
+      sortBy: "relevance",
       limit: 9,
       page: 1,
     });
@@ -88,6 +97,7 @@ export function useSparePartsManagement() {
     handleSearch,
     handleCategoryFilter,
     handleConditionFilter,
+    handleSortChange,
     handlePageChange,
     clearFilters,
   };
