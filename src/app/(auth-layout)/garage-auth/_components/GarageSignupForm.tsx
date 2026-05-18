@@ -35,11 +35,17 @@ const GarageSignupForm: React.FC<GarageSignupFormProps> = ({
     { id: "Oil Change", label: "Oil Change" },
     { id: "Brake Repair", label: "Brake Repair" },
     { id: "AC Service", label: "AC Service" },
-    { id: "Electrical", label: "Electrical" },
+    { id: "Electrical Repair", label: "Electrical Repair" },
     { id: "Engine Repair", label: "Engine Repair" },
     { id: "Tire Service", label: "Tire Service" },
     { id: "Body Work", label: "Body Work" },
-    { id: "Diagnostics", label: "Diagnostics" }
+    { id: "Diagnostics", label: "Diagnostics" },
+    { id: "Towing", label: "Towing" },
+    { id: "Emergency Towing", label: "Emergency Towing" },
+    { id: "Van Doorstep Repair", label: "Van Doorstep Repair" },
+    { id: "Battery Replacement", label: "Battery Replacement" },
+    { id: "Transmission Service", label: "Transmission Service" },
+    { id: "Suspension Repair", label: "Suspension Repair" },
   ];
 
   const emirateOptions = [

@@ -201,21 +201,27 @@ export default function GarageCard({
                   </div>
                   {/* Rating */}
                   <div className="mt-1 flex items-center gap-2">
-                    <div className="flex items-center">
-                      {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          className={`h-4 w-4 ${
-                            i < Math.floor(rating)
-                              ? "fill-yellow-400 text-yellow-400"
-                              : "text-gray-300"
-                          }`}
-                        />
-                      ))}
-                    </div>
-                    <span className="text-sm text-gray-600">
-                      {rating} ({reviews} reviews)
-                    </span>
+                    {reviews > 0 ? (
+                      <>
+                        <div className="flex items-center">
+                          {[...Array(5)].map((_, i) => (
+                            <Star
+                              key={i}
+                              className={`h-4 w-4 ${
+                                i < Math.floor(rating)
+                                  ? "fill-yellow-400 text-yellow-400"
+                                  : "text-gray-300"
+                              }`}
+                            />
+                          ))}
+                        </div>
+                        <span className="text-sm text-gray-600">
+                          {rating.toFixed(1)} ({reviews} reviews)
+                        </span>
+                      </>
+                    ) : (
+                      <span className="text-sm text-gray-400">No reviews yet</span>
+                    )}
                   </div>
                   {/* Location */}
                   <p className="mt-1 text-sm text-gray-500">

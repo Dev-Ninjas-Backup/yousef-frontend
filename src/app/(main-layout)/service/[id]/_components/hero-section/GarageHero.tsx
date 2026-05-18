@@ -129,9 +129,15 @@ export default function GarageHero({
               </div>
 
               <div className="flex items-center gap-2 text-base mb-2">
-                <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
-                <span className="font-medium">{rating}</span>
-                <span className="text-gray-600">({reviews})</span>
+                {reviews > 0 ? (
+                  <>
+                    <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
+                    <span className="font-medium">{rating.toFixed(1)}</span>
+                    <span className="text-gray-600">({reviews} reviews)</span>
+                  </>
+                ) : (
+                  <span className="text-sm text-gray-400">No reviews yet</span>
+                )}
                 <span className="text-gray-400 mx-1"> • </span>
                 <span className="text-gray-600">{distance}</span>
               </div>

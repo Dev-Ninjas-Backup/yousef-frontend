@@ -13,12 +13,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Upload, X, Plus } from "lucide-react";
+import { Upload, X, Plus, Pencil, Trash2, Check } from "lucide-react";
 import { useUpdateGarageMutation } from "@/store/api/garageAdminApis/myGarage/garageApi";
 import {
-  useGetMyServicesQuery,
   useCreateServiceMutation,
+  useUpdateServiceMutation,
+  useDeleteServiceMutation,
 } from "@/store/api/garageAdminApis/myGarage/servicesApi";
+import { useGetServiceCategoriesQuery } from "@/store/api/garageApi";
 import { toast } from "sonner";
 import Image from "next/image";
 import { LocationForm } from "@/components/LocationForm";
@@ -29,14 +31,24 @@ interface EditGarageFormProps {
   garage: any;
 }
 
-export function EditGarageForm({ onCancel, onSave, garage }: EditGarageFormProps) {
+export function EditGarageForm({
+  onCancel,
+  onSave,
+  garage,
+}: EditGarageFormProps) {
   const [updateGarage, { isLoading }] = useUpdateGarageMutation();
   const { data: servicesData, isLoading: servicesLoading } =
-    useGetMyServicesQuery();
+    useGetServiceCategoriesQuery();
   const [createService, { isLoading: creatingService }] =
     useCreateServiceMutation();
+  const [updateService, { isLoading: updatingService }] =
+    useUpdateServiceMutation();
+  const [deleteService, { isLoading: deletingService }] =
+    useDeleteServiceMutation();
   const [newServiceName, setNewServiceName] = useState("");
   const [showAddService, setShowAddService] = useState(false);
+  const [editingService, setEditingService] = useState<string | null>(null);
+  const [editServiceName, setEditServiceName] = useState("");
 
   const [formData, setFormData] = useState({
     name: garage?.name || "",
@@ -60,8 +72,12 @@ export function EditGarageForm({ onCancel, onSave, garage }: EditGarageFormProps
 
   const [coverPhoto, setCoverPhoto] = useState<File | null>(null);
   const [profileImage, setProfileImage] = useState<File | null>(null);
-  const [coverPreview, setCoverPreview] = useState<string>(garage?.coverPhoto || "");
-  const [profilePreview, setProfilePreview] = useState<string>(garage?.profileImage || "");
+  const [coverPreview, setCoverPreview] = useState<string>(
+    garage?.coverPhoto || "",
+  );
+  const [profilePreview, setProfilePreview] = useState<string>(
+    garage?.profileImage || "",
+  );
 
   const toggleService = (serviceName: string) => {
     setFormData((prev: any) => ({
@@ -84,6 +100,47 @@ export function EditGarageForm({ onCancel, onSave, garage }: EditGarageFormProps
       setShowAddService(false);
     } catch (error: any) {
       toast.error(error?.data?.message || "Failed to add service");
+    }
+  };
+
+  const handleEditService = (service: string) => {
+    setEditingService(service);
+    setEditServiceName(service);
+  };
+
+  const handleUpdateService = async () => {
+    if (!editServiceName.trim() || !editingService) return;
+    try {
+      await updateService({
+        oldName: editingService,
+        serviceCategory: editServiceName,
+      }).unwrap();
+      if (formData.services.includes(editingService)) {
+        setFormData((prev: any) => ({
+          ...prev,
+          services: prev.services.map((s: string) =>
+            s === editingService ? editServiceName : s,
+          ),
+        }));
+      }
+      toast.success("Service updated!");
+      setEditingService(null);
+      setEditServiceName("");
+    } catch (error: any) {
+      toast.error(error?.data?.message || "Failed to update service");
+    }
+  };
+
+  const handleDeleteService = async (serviceName: string) => {
+    try {
+      await deleteService(serviceName).unwrap();
+      setFormData((prev: any) => ({
+        ...prev,
+        services: prev.services.filter((s: string) => s !== serviceName),
+      }));
+      toast.success("Service deleted!");
+    } catch (error: any) {
+      toast.error(error?.data?.message || "Failed to delete service");
     }
   };
 
@@ -138,7 +195,7 @@ export function EditGarageForm({ onCancel, onSave, garage }: EditGarageFormProps
     apiFormData.append("garageLng", formData.garageLng.toString());
     apiFormData.append(
       "formattedAddress",
-      formData.formattedAddress || formData.address
+      formData.formattedAddress || formData.address,
     );
     apiFormData.append("placeId", formData.placeId || "");
     apiFormData.append("services", JSON.stringify(formData.services));
@@ -151,7 +208,7 @@ export function EditGarageForm({ onCancel, onSave, garage }: EditGarageFormProps
       onSave(null);
     } catch (error: any) {
       toast.error(
-        error?.data?.message || "Failed to update garage. Please try again."
+        error?.data?.message || "Failed to update garage. Please try again.",
       );
     }
   };
@@ -390,18 +447,71 @@ export function EditGarageForm({ onCancel, onSave, garage }: EditGarageFormProps
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {servicesData?.serviceCategories.map((service) => (
-                <button
-                  key={service}
-                  type="button"
-                  onClick={() => toggleService(service)}
-                  className={`p-4 rounded-lg border-2 transition-all ${
-                    formData.services.includes(service)
-                      ? "border-blue-500 bg-blue-50 text-blue-700"
-                      : "border-gray-200 hover:border-gray-300"
-                  }`}
-                >
-                  <p className="text-sm font-medium text-center">{service}</p>
-                </button>
+                <div key={service} className="relative group">
+                  {editingService === service ? (
+                    <div className="flex gap-1 p-2 rounded-lg border-2 border-blue-500 bg-blue-50">
+                      <input
+                        autoFocus
+                        value={editServiceName}
+                        onChange={(e) => setEditServiceName(e.target.value)}
+                        onKeyDown={(e) =>
+                          e.key === "Enter" && handleUpdateService()
+                        }
+                        placeholder="Edit service name"
+                        aria-label="Edit service name"
+                        className="flex-1 text-sm bg-transparent outline-none text-blue-700"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleUpdateService}
+                        disabled={updatingService}
+                        className="text-blue-600 hover:text-blue-800"
+                      >
+                        <Check className="w-4 h-4" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setEditingService(null)}
+                        className="text-gray-400 hover:text-gray-600"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => toggleService(service)}
+                      className={`w-full p-4 rounded-lg border-2 transition-all ${
+                        formData.services.includes(service)
+                          ? "border-blue-500 bg-blue-50 text-blue-700"
+                          : "border-gray-200 hover:border-gray-300"
+                      }`}
+                    >
+                      <p className="text-sm font-medium text-center">
+                        {service}
+                      </p>
+                    </button>
+                  )}
+                  {editingService !== service && (
+                    <div className="absolute -top-2 -right-2 hidden group-hover:flex gap-1">
+                      <button
+                        type="button"
+                        onClick={() => handleEditService(service)}
+                        className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center shadow"
+                      >
+                        <Pencil className="w-3 h-3" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteService(service)}
+                        disabled={deletingService}
+                        className="w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center shadow"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </button>
+                    </div>
+                  )}
+                </div>
               ))}
             </div>
           )}

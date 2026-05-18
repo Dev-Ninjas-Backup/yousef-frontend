@@ -17,11 +17,11 @@ const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-[#F8FAFC] pt-16 pb-0 overflow-hidden mt-20">
+    <footer className="bg-[#F8FAFC] pt-16 pb-0 overflow-hidden mt-10">
       <div className="container mx-auto px-4 md:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12 mb-12">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-10 lg:gap-12 mb-12">
           {/* Column 1 */}
-          <div className="flex flex-col items-start space-y-4">
+          <div className="col-span-2 md:col-span-1 flex flex-col items-start space-y-4">
             <Image src={sayarahublogo} alt="SayaraHub" className="w-40 h-auto" />
             <p className="text-sm text-gray-500 max-w-[220px]">
               Connecting buyers and sellers of spare parts across the UAE.
@@ -40,7 +40,7 @@ const Footer: React.FC = () => {
           </div>
 
           {/* Column 2 */}
-          <div className="flex flex-col items-start space-y-4">
+          <div className="col-span-1 flex flex-col items-start space-y-4">
             <h3 className="font-bold text-gray-900 text-base">Quick Links</h3>
             <div className="flex flex-col space-y-3 text-sm text-gray-500">
               <Link href="/about" className="hover:text-blue-600">{trans.navigation.about}</Link>
@@ -52,7 +52,7 @@ const Footer: React.FC = () => {
           </div>
 
           {/* Column 3 */}
-          <div className="flex flex-col items-start space-y-4">
+          <div className="col-span-1 flex flex-col items-start space-y-4">
             <h3 className="font-bold text-gray-900 text-base">Help</h3>
             <div className="flex flex-col space-y-3 text-sm text-gray-500">
               <Link href="#" className="hover:text-blue-600">How It Works</Link>
@@ -63,7 +63,7 @@ const Footer: React.FC = () => {
           </div>
 
           {/* Column 4 */}
-          <div className="flex flex-col items-start space-y-4">
+          <div className="col-span-2 md:col-span-1 flex flex-col items-start space-y-4">
             <h3 className="font-bold text-gray-900 text-base">{trans.subscribe.title}</h3>
             <p className="text-sm text-gray-500">
               Get updates on new listings and helpful tips.
@@ -95,19 +95,19 @@ const Footer: React.FC = () => {
               <Link href="#" className="hover:text-gray-600">{trans.bottomLinks.legal}</Link>
               <Link href="#" className="hover:text-gray-600">{trans.bottomLinks.siteMap}</Link>
             </div>
-            <p className="mt-1">© {currentYear} SayaraHub. All rights reserved.</p>
+            {/* <p className="mt-1">© {currentYear} SayaraHub. All rights reserved.</p> */}
           </div>
         </div>
       </div>
       
       {/* Wave shape (Kept from original design but placed at the very bottom) */}
-      <div className="relative w-full opacity-50 mt-4">
+      {/* <div className="relative w-full opacity-50 mt-4">
         <Image
           src={footerWave}
           alt=""
           className="w-full h-auto object-cover min-h-[40px] max-h-[80px]"
         />
-      </div>
+      </div> */}
     </footer>
   );
 };

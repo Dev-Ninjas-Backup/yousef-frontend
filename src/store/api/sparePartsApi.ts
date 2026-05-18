@@ -49,6 +49,7 @@ export interface ProductsParams {
   category?: string;
   condition?: string;
   status?: string;
+  sortBy?: string;
   limit?: number;
   page?: number;
 }
