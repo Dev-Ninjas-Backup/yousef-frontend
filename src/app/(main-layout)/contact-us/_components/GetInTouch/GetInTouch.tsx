@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Send, Loader2 } from "lucide-react";
+import { Send, Loader2, MessageCircle, ShieldCheck, Lock, User2, Mail, PenLine, Truck, Handshake, Info, BadgeCheck } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { contactTranslations } from "@/translations/contact";
 import { useCreateContactMutation, ContactFormData } from "@/store/api/contactApi";
@@ -79,126 +79,290 @@ const GetInTouch: React.FC = () => {
     }
   };
 
+  const renderTitle = (title: string) => {
+    if (title.includes("Touch")) {
+      const parts = title.split("Touch");
+      return <>{parts[0]}<span className="text-[#2563eb]">Touch</span>{parts[1]}</>;
+    }
+    return title;
+  };
+
   return (
-    <section id="get-in-touch" className="py-12 md:py-16 lg:py-20 bg-white">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
+    <section id="get-in-touch" className="py-16 md:py-24 bg-white font-sans relative">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        
+        {/* Top Header */}
         <motion.div
-          className="text-center mb-10 md:mb-12 space-y-5"
-          initial={{ opacity: 0, y: 40 }}
+          className="text-center mb-10 space-y-4"
+          initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.7, ease: "easeOut" }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.6 }}
         >
-          <h2 className="text-3xl sm:text-4xl md:text-6xl font-bold text-[#333333]">
-            {trans.form.title}
+          <h2 className="text-4xl sm:text-5xl lg:text-[48px] font-bold text-[#111827]">
+            {renderTitle(trans.form.title)}
           </h2>
-          <p className="text-gray-600 text-base sm:text-xl max-w-2xl mx-auto">
+          <p className="text-gray-500 text-[15px] sm:text-base max-w-lg mx-auto leading-relaxed">
             {trans.form.subtitle}
           </p>
         </motion.div>
 
-        <motion.div
-          className="max-w-xl mx-auto"
-          initial={{ opacity: 0, y: 50 }}
+        {/* Info Cards Row */}
+        <motion.div 
+          className="flex flex-col md:flex-row justify-center gap-4 sm:gap-6 mb-16 max-w-4xl mx-auto"
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.7, delay: 0.15, ease: "easeOut" }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.2 }}
         >
-          <h3 className="text-xl font-bold text-[#333333] mb-6">
-            {trans.form.formTitle}
-          </h3>
-          <form onSubmit={handleSubmit} className="space-y-6 border rounded-lg p-6">
-            <div className="grid md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <Label htmlFor="firstName">{trans.form.firstName}</Label>
-                <Input
-                  id="firstName"
-                  type="text"
-                  placeholder={trans.form.firstName}
-                  className="bg-[#F3F3F5]"
-                  value={formData.FirstName}
-                  onChange={(e) => handleInputChange("FirstName", e.target.value)}
-                  required
-                />
+          {/* Card 1 */}
+          <div className="bg-[#f8fafc] rounded-2xl p-5 flex items-center gap-4 flex-1 border border-gray-100">
+            <div className="w-12 h-12 rounded-xl bg-[#2563eb] flex items-center justify-center shrink-0 shadow-sm">
+              <MessageCircle className="w-6 h-6 text-white" strokeWidth={2} />
+            </div>
+            <div className="flex flex-col">
+              <h4 className="text-gray-900 font-bold text-[14px]">Quick Response</h4>
+              <p className="text-gray-500 text-[12px] mt-0.5">We typically reply within 24 hours</p>
+            </div>
+          </div>
+          {/* Card 2 */}
+          <div className="bg-[#f8fafc] rounded-2xl p-5 flex items-center gap-4 flex-1 border border-gray-100">
+            <div className="w-12 h-12 rounded-xl bg-[#2563eb] flex items-center justify-center shrink-0 shadow-sm">
+              <ShieldCheck className="w-6 h-6 text-white" strokeWidth={2} />
+            </div>
+            <div className="flex flex-col">
+              <h4 className="text-gray-900 font-bold text-[14px]">Real People</h4>
+              <p className="text-gray-500 text-[12px] mt-0.5">Talk to our support team directly</p>
+            </div>
+          </div>
+          {/* Card 3 */}
+          <div className="bg-[#f8fafc] rounded-2xl p-5 flex items-center gap-4 flex-1 border border-gray-100">
+            <div className="w-12 h-12 rounded-xl bg-[#2563eb] flex items-center justify-center shrink-0 shadow-sm">
+              <Lock className="w-6 h-6 text-white" strokeWidth={2} />
+            </div>
+            <div className="flex flex-col">
+              <h4 className="text-gray-900 font-bold text-[14px]">Your Privacy</h4>
+              <p className="text-gray-500 text-[12px] mt-0.5">Your information is safe with us</p>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Main Form Container */}
+        <motion.div
+          className="max-w-[650px] mx-auto bg-white rounded-[24px] shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-gray-100 p-8 sm:p-10"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7, delay: 0.3 }}
+        >
+          <div className="mb-8">
+            <h3 className="text-[22px] font-bold text-[#111827] mb-2">
+              {trans.form.formTitle}
+            </h3>
+            <p className="text-gray-500 text-[14px]">Fill out the form below and we&apos;ll get back to you shortly.</p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="grid sm:grid-cols-2 gap-5">
+              {/* First Name */}
+              <div className="space-y-1.5">
+                <Label htmlFor="firstName" className="text-[#111827] font-semibold text-[13px]">{trans.form.firstName}</Label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                    <User2 className="h-[18px] w-[18px] text-gray-400" />
+                  </div>
+                  <Input
+                    id="firstName"
+                    type="text"
+                    placeholder="Enter your first name"
+                    className="pl-10 bg-[#fafafa] border-gray-200 h-11 focus-visible:ring-blue-500 rounded-xl text-[14px]"
+                    value={formData.FirstName}
+                    onChange={(e) => handleInputChange("FirstName", e.target.value)}
+                    required
+                  />
+                </div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="lastName">{trans.form.lastName}</Label>
+              
+              {/* Last Name */}
+              <div className="space-y-1.5">
+                <Label htmlFor="lastName" className="text-[#111827] font-semibold text-[13px]">{trans.form.lastName}</Label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                    <User2 className="h-[18px] w-[18px] text-gray-400" />
+                  </div>
+                  <Input
+                    id="lastName"
+                    type="text"
+                    placeholder="Enter your last name"
+                    className="pl-10 bg-[#fafafa] border-gray-200 h-11 focus-visible:ring-blue-500 rounded-xl text-[14px]"
+                    value={formData.LastName}
+                    onChange={(e) => handleInputChange("LastName", e.target.value)}
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Email */}
+            <div className="space-y-1.5">
+              <Label htmlFor="email" className="text-[#111827] font-semibold text-[13px]">{trans.form.email}</Label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                  <Mail className="h-[18px] w-[18px] text-gray-400" />
+                </div>
                 <Input
-                  id="lastName"
-                  type="text"
-                  placeholder={trans.form.lastName}
-                  className="bg-[#F3F3F5]"
-                  value={formData.LastName}
-                  onChange={(e) => handleInputChange("LastName", e.target.value)}
+                  id="email"
+                  type="email"
+                  placeholder="Enter your email address"
+                  className="pl-10 bg-[#fafafa] border-gray-200 h-11 focus-visible:ring-blue-500 rounded-xl text-[14px]"
+                  value={formData.email}
+                  onChange={(e) => handleInputChange("email", e.target.value)}
                   required
                 />
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="email">{trans.form.email}</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder={trans.form.emailPlaceholder}
-                className="bg-[#F3F3F5]"
-                value={formData.email}
-                onChange={(e) => handleInputChange("email", e.target.value)}
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="subject">{trans.form.subject}</Label>
+            {/* Subject */}
+            <div className="space-y-1.5">
+              <Label htmlFor="subject" className="text-[#111827] font-semibold text-[13px]">{trans.form.subject}</Label>
               <Select value={formData.subject} onValueChange={handleSubjectChange}>
-                <SelectTrigger id="subject" className="w-full bg-[#F3F3F5]">
-                  <SelectValue placeholder={trans.form.subjectPlaceholder} />
+                <SelectTrigger id="subject" className="w-full bg-[#fafafa] border-gray-200 h-11 rounded-xl text-[14px]">
+                  <SelectValue placeholder="Select a topic" />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="CAR_PARTS"> <span>{trans.form.subjects.carParts}</span></SelectItem>
-                  <SelectItem value="CAR_SERVICE"> <span>{trans.form.subjects.carService}</span></SelectItem>
-                  <SelectItem value="OTHERS"> <span>{trans.form.subjects.others}</span></SelectItem>
+                <SelectContent className="rounded-xl border-gray-100 shadow-xl">
+                  <SelectItem value="CAR_PARTS" className="cursor-pointer"><span>{trans.form.subjects.carParts}</span></SelectItem>
+                  <SelectItem value="CAR_SERVICE" className="cursor-pointer"><span>{trans.form.subjects.carService}</span></SelectItem>
+                  <SelectItem value="OTHERS" className="cursor-pointer"><span>{trans.form.subjects.others}</span></SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
+            {/* Other Subject Input */}
             {showOtherSubject && (
-              <div className="space-y-2">
-                <Label htmlFor="otherSubject">{trans.form.otherSubject}</Label>
-                <Input
-                  id="otherSubject"
-                  type="text"
-                  placeholder={trans.form.otherSubjectPlaceholder}
-                  className="bg-[#F3F3F5]"
-                  value={formData.othersubject}
-                  onChange={(e) => handleInputChange("othersubject", e.target.value)}
+              <motion.div 
+                className="space-y-1.5"
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+              >
+                <Label htmlFor="otherSubject" className="text-[#111827] font-semibold text-[13px]">{trans.form.otherSubject}</Label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                    <PenLine className="h-[18px] w-[18px] text-gray-400" />
+                  </div>
+                  <Input
+                    id="otherSubject"
+                    type="text"
+                    placeholder="Please specify your subject"
+                    className="pl-10 bg-[#fafafa] border-gray-200 h-11 focus-visible:ring-blue-500 rounded-xl text-[14px]"
+                    value={formData.othersubject}
+                    onChange={(e) => handleInputChange("othersubject", e.target.value)}
+                    required
+                  />
+                </div>
+              </motion.div>
+            )}
+
+            {/* Message */}
+            <div className="space-y-1.5">
+              <Label htmlFor="message" className="text-[#111827] font-semibold text-[13px]">{trans.form.message}</Label>
+              <div className="relative">
+                <div className="absolute top-3.5 left-3.5 pointer-events-none">
+                  <PenLine className="h-[18px] w-[18px] text-gray-400" />
+                </div>
+                <Textarea
+                  id="message"
+                  placeholder="Type your message here..."
+                  className="pl-10 pt-3.5 bg-[#fafafa] border-gray-200 min-h-[120px] focus-visible:ring-blue-500 rounded-xl resize-none text-[14px]"
+                  value={formData.message}
+                  onChange={(e) => handleInputChange("message", e.target.value)}
                   required
                 />
               </div>
-            )}
-
-            <div className="space-y-2">
-              <Label htmlFor="message">{trans.form.message}</Label>
-              <Textarea
-                id="message"
-                placeholder={trans.form.messagePlaceholder}
-                className="bg-[#F3F3F5] min-h-[120px]"
-                value={formData.message}
-                onChange={(e) => handleInputChange("message", e.target.value)}
-                required
-              />
             </div>
 
-            <Button
-              type="submit"
-              disabled={isLoading}
-              className="bg-blue-600 hover:bg-blue-700 text-white flex gap-3 justify-center items-center px-8 py-4 md:py-6 rounded-lg text-sm w-full disabled:opacity-50"
-            >
-              {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-              {isLoading ? "Sending..." : trans.form.sendButton}
-            </Button>
+            {/* Submit Button */}
+            <div className="pt-2">
+              <Button
+                type="submit"
+                disabled={isLoading}
+                className="bg-[#2563eb] hover:bg-[#1d4ed8] text-white flex gap-2 justify-center items-center h-12 rounded-xl text-[15px] font-semibold w-full transition-colors shadow-lg shadow-blue-500/20 disabled:opacity-70"
+              >
+                {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                {isLoading ? "Sending..." : trans.form.sendButton}
+              </Button>
+            </div>
+
+            {/* Secure Note */}
+            <div className="flex items-center justify-center gap-2 mt-4 text-gray-400">
+              <Lock className="w-[12px] h-[12px]" />
+              <span className="text-[11px] font-medium">Your information is secure and will only be used to respond to your inquiry.</span>
+            </div>
           </form>
         </motion.div>
+
+        {/* Bottom Features Banner */}
+        <motion.div 
+          className="max-w-[950px] mx-auto mt-20"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7, delay: 0.4 }}
+        >
+          <div className="bg-[#f8fafc] rounded-2xl p-6 lg:p-8 border border-gray-200/60 shadow-sm flex flex-col md:flex-row items-center justify-between gap-6 md:gap-4">
+            
+            {/* Feature 1 */}
+            <div className="flex items-center gap-3.5 flex-1 w-full justify-start pl-4 md:pl-0">
+              <div className="w-[38px] h-[38px] rounded-full bg-blue-100 flex items-center justify-center shrink-0">
+                <BadgeCheck className="w-5 h-5 text-blue-600" strokeWidth={2} />
+              </div>
+              <div className="flex flex-col">
+                <h5 className="font-bold text-[#111827] text-[13px]">No Payments</h5>
+                <p className="text-gray-500 text-[11px] mt-0.5">We don't handle payments.</p>
+              </div>
+            </div>
+
+            <div className="hidden md:block w-px h-[40px] bg-gray-200 shrink-0"></div>
+
+            {/* Feature 2 */}
+            <div className="flex items-center gap-3.5 flex-1 w-full justify-start pl-4 md:pl-0">
+              <div className="w-[38px] h-[38px] rounded-full bg-blue-100 flex items-center justify-center shrink-0">
+                <Truck className="w-5 h-5 text-blue-600" strokeWidth={2} />
+              </div>
+              <div className="flex flex-col">
+                <h5 className="font-bold text-[#111827] text-[13px]">No Deliveries</h5>
+                <p className="text-gray-500 text-[11px] mt-0.5">We don't provide delivery.</p>
+              </div>
+            </div>
+
+            <div className="hidden md:block w-px h-[40px] bg-gray-200 shrink-0"></div>
+
+            {/* Feature 3 */}
+            <div className="flex items-center gap-3.5 flex-1 w-full justify-start pl-4 md:pl-0">
+              <div className="w-[38px] h-[38px] rounded-full bg-blue-100 flex items-center justify-center shrink-0">
+                <Handshake className="w-5 h-5 text-blue-600" strokeWidth={2} />
+              </div>
+              <div className="flex flex-col">
+                <h5 className="font-bold text-[#111827] text-[13px]">Direct Communication</h5>
+                <p className="text-gray-500 text-[11px] mt-0.5">Connect and deal directly.</p>
+              </div>
+            </div>
+
+            <div className="hidden md:block w-px h-[40px] bg-gray-200 shrink-0"></div>
+
+            {/* Feature 4 */}
+            <div className="flex items-center gap-3.5 flex-1 w-full justify-start pl-4 md:pl-0">
+              <div className="w-[38px] h-[38px] rounded-full bg-blue-100 flex items-center justify-center shrink-0">
+                <Info className="w-5 h-5 text-blue-600" strokeWidth={2} />
+              </div>
+              <div className="flex flex-col">
+                <h5 className="font-bold text-[#111827] text-[13px]">No Guarantees</h5>
+                <p className="text-gray-500 text-[11px] mt-0.5">We don't guarantee sellers or parts.</p>
+              </div>
+            </div>
+
+          </div>
+        </motion.div>
+
       </div>
     </section>
   );

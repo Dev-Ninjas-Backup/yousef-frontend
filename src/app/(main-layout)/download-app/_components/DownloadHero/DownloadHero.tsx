@@ -12,20 +12,16 @@ const DownloadHero: React.FC = () => {
   const trans = t(downloadAppTranslations);
 
   return (
-    <section className="relative py-8 sm:py-12 md:py-10 lg:py-15 overflow-hidden mt-6 sm:mt-8 md:mt-10">
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <div
-          className="w-[400px] h-[400px] sm:w-[500px] sm:h-[500px] md:w-[700px] md:h-[700px] lg:w-[800px] lg:h-[800px] rounded-full opacity-70"
-          style={{
-            background:
-              "radial-gradient(circle, #9BB2D4 0%, #B6D1F9 15%, #D8E5FA 35%, #DBE9FE 55%, #E6F0FF 75%, #E8F1FF 90%, transparent 100%)",
-            filter: "blur(60px)",
-          }}
-        />
+    <section className="relative py-12 sm:py-16 md:py-20 lg:py-24 overflow-hidden mt-6 sm:mt-8 md:mt-10 bg-white">
+      {/* Dynamic Background: Grid + Glowing Center */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(37,99,235,0.08)_0%,rgba(255,255,255,0)_60%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:40px_40px]" />
       </div>
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="flex flex-col lg:flex-row items-center justify-between ">
+        <div className="flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-8">
+          
           {/* Left text */}
           <motion.div
             className="w-full lg:w-auto lg:flex-1 flex flex-col gap-6 lg:gap-8 text-center lg:text-left"
@@ -34,37 +30,45 @@ const DownloadHero: React.FC = () => {
             transition={{ duration: 0.7, ease: "easeOut" }}
           >
             <div className="space-y-4 sm:space-y-5 lg:space-y-6">
-              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-gray-900 leading-tight">
                 {trans.hero.title1}
-                <span className="text-3xl block sm:text-4xl md:text-5xl lg:text-5xl font-semibold leading-tight">
+                <span className="block text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-bold text-gray-700 mt-2">
                   {trans.hero.title2}
                 </span>
               </h1>
-              <p className="text-gray-700 text-sm sm:text-base md:text-lg font-semibold max-w-md mx-auto lg:mx-0">
+              <p className="text-gray-500 text-base sm:text-lg md:text-xl max-w-md mx-auto lg:mx-0 leading-relaxed">
                 {trans.hero.subtitle1}
               </p>
             </div>
-            <button className="bg-blue-600 hover:bg-blue-700 transition-colors text-white px-6 py-3.5 sm:px-8 sm:py-4 rounded-lg font-medium flex items-center gap-3 justify-center w-full sm:w-auto sm:max-w-[320px] mx-auto lg:mx-0 text-sm sm:text-base">
-              {trans.hero.downloadButton}
-              <CircleArrowOutUpRight className="h-5 w-5" />
+            
+            <button className="group relative bg-blue-600 hover:bg-blue-700 transition-all text-white px-8 py-4 rounded-xl font-medium flex items-center gap-3 justify-center w-full sm:w-auto sm:max-w-[320px] mx-auto lg:mx-0 text-base sm:text-lg shadow-[0_8px_30px_rgba(37,99,235,0.3)] hover:shadow-[0_15px_40px_rgba(37,99,235,0.4)] hover:-translate-y-1 overflow-hidden">
+              <span className="relative z-10">{trans.hero.downloadButton}</span>
+              <CircleArrowOutUpRight className="h-5 w-5 relative z-10 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+              {/* Shimmer effect inside button */}
+              <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover:animate-[shimmer_1.5s_infinite] z-0" />
             </button>
           </motion.div>
 
-          {/* Phone image */}
+          {/* Center: Phone image with floating tooltips */}
           <motion.div
-            className="relative w-full sm:max-w-[350px] md:max-w-[450px] lg:max-w-[500px] xl:max-w-[550px] mx-auto lg:mx-0 lg:flex-shrink-0"
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
+            className="relative w-full max-w-[320px] sm:max-w-[380px] md:max-w-[450px] lg:max-w-[480px] mx-auto lg:mx-0 lg:flex-shrink-0"
+            initial={{ opacity: 0, scale: 0.95, y: 30 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
           >
-            <div className="absolute top-[20%] sm:top-[18%] md:top-[20%] -left-2 sm:-left-4 md:-left-6 bg-blue-600 text-white px-3 py-2 sm:px-4 sm:py-2.5 rounded-lg shadow-lg flex items-center gap-2 text-xs sm:text-sm z-10 max-w-[160px] sm:max-w-none">
-              <div className="w-4 h-4 sm:w-5 sm:h-5 bg-white rounded-full flex items-center justify-center flex-shrink-0">
-                <Check className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-blue-600" />
+            {/* Tooltip 1 - Floating animation */}
+            <motion.div 
+              animate={{ y: [0, -12, 0] }}
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+              className="absolute top-[20%] sm:top-[18%] md:top-[20%] -left-4 sm:-left-8 md:-left-12 bg-white/90 backdrop-blur-md border border-gray-100 text-gray-800 px-4 py-3 rounded-xl shadow-xl flex items-center gap-3 text-xs sm:text-sm z-20"
+            >
+              <div className="w-6 h-6 sm:w-7 sm:h-7 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-600" />
               </div>
-              <span className="whitespace-nowrap">{trans.hero.badge1}</span>
-            </div>
+              <span className="font-semibold">{trans.hero.badge1}</span>
+            </motion.div>
 
-            <div className="relative aspect-[9/16]">
+            <div className="relative aspect-[9/16] drop-shadow-[0_25px_45px_rgba(0,0,0,0.15)]">
               <Image
                 src={phoneImage}
                 alt="SayaraHub App"
@@ -74,30 +78,42 @@ const DownloadHero: React.FC = () => {
               />
             </div>
 
-            <div className="absolute bottom-[40%] sm:bottom-[28%] md:bottom-[40%] left-1/2 -translate-x-1/4 translate-y-1/2 bg-green-500 text-white px-3 py-2 sm:px-4 sm:py-2.5 rounded-lg shadow-lg flex items-center gap-2 text-xs sm:text-sm z-10 max-w-[180px] sm:max-w-none">
-              <div className="w-4 h-4 sm:w-5 sm:h-5 bg-white rounded-full flex items-center justify-center flex-shrink-0">
-                <Check className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-green-500" />
+            {/* Tooltip 2 - Floating animation with offset delay */}
+            <motion.div 
+              animate={{ y: [0, -12, 0] }}
+              transition={{ duration: 4.5, delay: 1, repeat: Infinity, ease: "easeInOut" }}
+              className="absolute bottom-[35%] sm:bottom-[30%] md:bottom-[35%] -right-4 sm:-right-8 md:-right-12 bg-white/90 backdrop-blur-md border border-gray-100 text-gray-800 px-4 py-3 rounded-xl shadow-xl flex items-center gap-3 text-xs sm:text-sm z-20"
+            >
+              <div className="w-6 h-6 sm:w-7 sm:h-7 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-600" />
               </div>
-              <span className="whitespace-nowrap">{trans.hero.badge2}</span>
-            </div>
+              <span className="font-semibold">{trans.hero.badge2}</span>
+            </motion.div>
           </motion.div>
 
           {/* Right text */}
           <motion.div
-            className="w-full lg:w-auto lg:flex-1 text-center lg:text-left space-y-3 sm:space-y-4"
+            className="w-full lg:w-auto lg:flex-1 text-center lg:text-left space-y-4"
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.7, delay: 0.3, ease: "easeOut" }}
           >
-            <h3 className="text-4xl sm:text-5xl md:text-6xl font-semibold leading-tight">
+            <h3 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500 leading-tight pb-2">
               {trans.hero.title3}
             </h3>
-            <p className="max-w-xs mx-auto lg:mx-0 text-base sm:text-lg md:text-xl font-semibold text-[#39393B]">
+            <p className="max-w-xs mx-auto lg:mx-0 text-base sm:text-lg md:text-xl font-medium text-gray-600">
               {trans.hero.subtitle2}
             </p>
           </motion.div>
         </div>
       </div>
+
+      {/* Define the shimmer animation in global css or here using style tag as a quick fix if not in tailwind.config */}
+      <style dangerouslySetInnerHTML={{__html: `
+        @keyframes shimmer {
+          100% { transform: translateX(100%); }
+        }
+      `}} />
     </section>
   );
 };
