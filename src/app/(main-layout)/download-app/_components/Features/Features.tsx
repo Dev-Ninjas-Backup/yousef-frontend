@@ -11,6 +11,22 @@ const Features: React.FC = () => {
   const { t } = useLanguage();
   const trans = t(downloadAppTranslations);
 
+  const handleAppDownload = () => {
+    if (typeof window !== "undefined") {
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+      const isAndroid = /android/i.test(navigator.userAgent);
+      
+      if (isIOS) {
+        window.open("https://apps.apple.com/", "_blank");
+      } else if (isAndroid) {
+        window.open("https://play.google.com/store/", "_blank");
+      } else {
+        // Desktop
+        window.open("/download", "_self"); 
+      }
+    }
+  };
+
   return (
     <section className="py-10 md:py-15 bg-white">
       <div className="container mx-auto px-4 max-w-7xl">
