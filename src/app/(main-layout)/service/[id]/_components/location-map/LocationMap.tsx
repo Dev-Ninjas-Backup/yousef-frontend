@@ -1,7 +1,9 @@
 "use client";
+
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { motion } from "framer-motion";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, MapPin, Navigation } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { serviceDetailsTranslations } from "@/translations/serviceDetails";
 
@@ -19,7 +21,6 @@ export default function LocationMap({ address, position }: LocationMapProps) {
 
   const handleSeeLocation = () => {
     if (position?.lat && position?.lng) {
-      // Open Google Maps with directions
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           (currentPosition) => {
@@ -28,13 +29,11 @@ export default function LocationMap({ address, position }: LocationMapProps) {
             window.open(googleMapsUrl, '_blank');
           },
           (error) => {
-            // If location access denied, open Google Maps without current location
             const googleMapsUrl = `https://www.google.com/maps/dir//${position.lat},${position.lng}`;
             window.open(googleMapsUrl, '_blank');
           }
         );
       } else {
-        // If geolocation not supported, open Google Maps without current location
         const googleMapsUrl = `https://www.google.com/maps/dir//${position.lat},${position.lng}`;
         window.open(googleMapsUrl, '_blank');
       }
@@ -42,34 +41,26 @@ export default function LocationMap({ address, position }: LocationMapProps) {
   };
 
   return (
-    <section id="location-map" className="bg-white py-16">
-      <div className="container mx-auto px-4">
-        <motion.div
-          className="mb-8 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-        >
-          <div>
-            <h2 className="text-2xl md:text-4xl font-bold text-gray-900 mb-3">{trans.locationMap}</h2>
-            <p className="text-lg text-gray-600">{address}</p>
-          </div>
-          <div className="flex items-end-safe">
-            <Button variant="link" className="text-red-600 hover:text-red-700 text-base font-medium self-start p-0" onClick={handleSeeLocation}>
-              {trans.seeLocation}
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
-          </div>
-        </motion.div>
+    <motion.div
+      id="location-map"
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-80px" }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+    >
+      <Card className="bg-white border border-slate-100 p-6 rounded-2xl shadow-sm">
+        <h3 className="text-lg font-extrabold text-slate-900 tracking-tight flex items-center gap-2 mb-4">
+          <MapPin className="w-5 h-5 text-[#2563EB]" />
+          {trans.locationMap}
+        </h3>
 
-        <motion.div
-          className="overflow-hidden rounded-2xl shadow-lg h-[400px] md:h-[600px]"
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.7, delay: 0.1, ease: "easeOut" }}
-        >
+        {/* Address text */}
+        <p className="text-sm font-semibold text-slate-600 mb-4 leading-relaxed">
+          {address}
+        </p>
+
+        {/* Map iframe */}
+        <div className="overflow-hidden rounded-xl border border-slate-100 h-[220px] relative mb-4">
           {position?.lat && position?.lng ? (
             <iframe
               width="100%"
@@ -79,14 +70,26 @@ export default function LocationMap({ address, position }: LocationMapProps) {
               allowFullScreen
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
+              className="w-full h-full"
             />
           ) : (
-            <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-              <p className="text-gray-500">Map location not available</p>
+            <div className="w-full h-full bg-slate-100 flex flex-col items-center justify-center gap-2 text-slate-400">
+              <MapPin className="w-8 h-8 animate-bounce" />
+              <p className="font-semibold text-xs">Map not available</p>
             </div>
           )}
-        </motion.div>
-      </div>
-    </section>
+        </div>
+
+        {/* Navigation Button */}
+        <Button 
+          className="w-full bg-[#2563EB] hover:bg-blue-700 text-white font-bold rounded-xl h-11 text-sm flex items-center justify-center gap-2 shadow-sm transition-colors"
+          onClick={handleSeeLocation}
+        >
+          <Navigation className="w-4 h-4" />
+          {trans.seeLocation}
+          <ArrowRight className="h-4 w-4" />
+        </Button>
+      </Card>
+    </motion.div>
   );
 }

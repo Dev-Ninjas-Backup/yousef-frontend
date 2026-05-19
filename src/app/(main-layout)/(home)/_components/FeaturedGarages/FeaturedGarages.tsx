@@ -132,7 +132,7 @@ const FeaturedGarages: React.FC = () => {
         `}} />
 
         <AnimateOnScroll variants={fadeUp} className="mt-8 md:mt-12 flex justify-center">
-          <div className="bg-[#EFF6FF] rounded-2xl p-6 md:p-8 flex flex-col sm:flex-row items-center gap-6 max-w-4xl w-full mx-auto">
+          <div className="bg-[#EFF6FF] rounded-2xl p-6 md:p-8 flex flex-col sm:flex-row items-center gap-6 max-w-4xl w-full mx-auto shadow-sm">
             <div className="w-16 h-16 rounded-full bg-[#DBEAFE] flex items-center justify-center shadow-sm shrink-0">
               <MapPin className="w-8 h-8 text-[#2563EB]" />
             </div>
@@ -140,7 +140,7 @@ const FeaturedGarages: React.FC = () => {
               <h3 className="text-xl md:text-2xl font-bold text-slate-900 mb-1">Want to see more options?</h3>
               <p className="text-slate-600">View all garages near you on the map.</p>
             </div>
-            <Link href="/garages" className="w-full sm:w-auto">
+            <Link href="/service" className="w-full sm:w-auto">
               <Button className="bg-[#2563EB] hover:bg-blue-700 text-white rounded-xl px-8 h-14 text-base font-semibold w-full">
                 View All Garages
                 <ArrowRight className="w-5 h-5 ml-2" />

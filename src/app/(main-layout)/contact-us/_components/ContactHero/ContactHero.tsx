@@ -53,7 +53,7 @@ const ContactHero: React.FC = () => {
   };
 
   return (
-    <section className="relative w-full bg-[#030914] overflow-hidden flex flex-col lg:flex-row items-center min-h-[500px] lg:min-h-[650px] font-sans">
+    <section className="relative w-full bg-[#030914] overflow-hidden flex flex-col lg:flex-row items-center min-h-[500px] lg:min-h-[650px]">
       {/* Right Image Background */}
       <div className="absolute top-0 right-0 w-full lg:w-[65%] h-full z-0">
         <Image
@@ -78,7 +78,7 @@ const ContactHero: React.FC = () => {
             transition={{ duration: 0.7, ease: "easeOut" }}
           >
             {/* Top Badge */}
-            <div className="inline-flex items-center gap-2 bg-[#1e40af] px-4 py-2 rounded-full w-fit mb-6">
+            <div className="inline-flex items-center gap-2 bg-[#1e40af] px-4 py-2 rounded-full w-fit mb-6 transition-all duration-300 hover:scale-105 hover:bg-[#1d4ed8] hover:shadow-[0_0_20px_rgba(37,99,235,0.3)] select-none cursor-default">
               <Headphones className="w-[14px] h-[14px] text-white" strokeWidth={2.5} />
               <span className="text-[11px] font-bold tracking-widest text-white uppercase">WE&apos;RE HERE FOR YOU</span>
             </div>
@@ -98,34 +98,34 @@ const ContactHero: React.FC = () => {
             transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
           >
             {/* Feature 1 */}
-            <div className="flex flex-row items-start gap-3">
-              <div className="w-[42px] h-[42px] rounded-full bg-[#2563eb] flex items-center justify-center shrink-0">
+            <div className="flex flex-row items-start gap-3 p-2 rounded-2xl transition-all duration-300 hover:bg-white/5 hover:translate-x-1 group cursor-default">
+              <div className="w-[42px] h-[42px] rounded-full bg-[#2563eb] flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-110">
                 <ShieldCheck className="w-[20px] h-[20px] text-white" strokeWidth={2.5} />
               </div>
               <div className="flex flex-col pt-0.5">
-                <h4 className="text-white font-bold text-[14px]">Fast Support</h4>
+                <h4 className="text-white font-bold text-[14px] transition-colors duration-300 group-hover:text-blue-400">Fast Support</h4>
                 <p className="text-gray-400 text-[12px] leading-[1.4] mt-1 pr-2">We respond quickly to get you the help you need.</p>
               </div>
             </div>
             
             {/* Feature 2 */}
-            <div className="flex flex-row items-start gap-3">
-              <div className="w-[42px] h-[42px] rounded-full bg-[#172554] flex items-center justify-center shrink-0">
-                <Users className="w-[20px] h-[20px] text-blue-300" strokeWidth={2.5} />
+            <div className="flex flex-row items-start gap-3 p-2 rounded-2xl transition-all duration-300 hover:bg-white/5 hover:translate-x-1 group cursor-default">
+              <div className="w-[42px] h-[42px] rounded-full bg-[#172554] flex items-center justify-center shrink-0 transition-all duration-300 group-hover:bg-[#2563eb] group-hover:scale-110">
+                <Users className="w-[20px] h-[20px] text-blue-300 group-hover:text-white transition-colors duration-300" strokeWidth={2.5} />
               </div>
               <div className="flex flex-col pt-0.5">
-                <h4 className="text-white font-bold text-[14px]">Expert Team</h4>
+                <h4 className="text-white font-bold text-[14px] transition-colors duration-300 group-hover:text-blue-400">Expert Team</h4>
                 <p className="text-gray-400 text-[12px] leading-[1.4] mt-1 pr-2">Automotive professionals ready to assist you.</p>
               </div>
             </div>
 
             {/* Feature 3 */}
-            <div className="flex flex-row items-start gap-3">
-              <div className="w-[42px] h-[42px] rounded-full bg-[#172554] flex items-center justify-center shrink-0">
-                <CheckCircle2 className="w-[20px] h-[20px] text-blue-300" strokeWidth={2.5} />
+            <div className="flex flex-row items-start gap-3 p-2 rounded-2xl transition-all duration-300 hover:bg-white/5 hover:translate-x-1 group cursor-default">
+              <div className="w-[42px] h-[42px] rounded-full bg-[#172554] flex items-center justify-center shrink-0 transition-all duration-300 group-hover:bg-[#2563eb] group-hover:scale-110">
+                <CheckCircle2 className="w-[20px] h-[20px] text-blue-300 group-hover:text-white transition-colors duration-300" strokeWidth={2.5} />
               </div>
               <div className="flex flex-col pt-0.5">
-                <h4 className="text-white font-bold text-[14px]">Hassle-Free</h4>
+                <h4 className="text-white font-bold text-[14px] transition-colors duration-300 group-hover:text-blue-400">Hassle-Free</h4>
                 <p className="text-gray-400 text-[12px] leading-[1.4] mt-1 pr-2">Simple, clear, and stress-free communication.</p>
               </div>
             </div>

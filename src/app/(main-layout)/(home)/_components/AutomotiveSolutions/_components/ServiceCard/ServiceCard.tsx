@@ -10,7 +10,7 @@ interface ServiceCardProps {
 
 const ServiceCard: React.FC<ServiceCardProps> = ({ icon, title, description }) => {
   return (
-    <Card className="text-center hover:shadow-lg transition-shadow max-w-[382px]">
+    <Card className="text-center hover:shadow-lg transition-shadow max-w-[382px] mx-auto h-full flex flex-col">
       <CardHeader className="pb-3">
         <div className="flex justify-center mb-2">
           <div className="w-20 h-20 flex items-center justify-center">
@@ -25,7 +25,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ icon, title, description }) =
         </div>
         <CardTitle className="text-2xl font-semibold text-[#333333]">{title}</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="flex-grow">
         <CardDescription className="text-base text-[#333333]">
           {description}
         </CardDescription>

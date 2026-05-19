@@ -59,7 +59,7 @@ const HeroBanner: React.FC = () => {
             className="text-sm sm:text-base md:text-lg lg:text-2xl text-gray-200 mb-6 md:mb-8 leading-relaxed"
           >
             {trans.description}{" "}
-            <span className="text-white font-semibold notranslate" translate="no">{trans.appName}</span>
+            <span className="text-blue-500 font-semibold notranslate" translate="no">{trans.appName}</span>
             {trans.descriptionContinue}
           </motion.p>
 

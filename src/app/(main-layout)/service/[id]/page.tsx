@@ -96,7 +96,7 @@ export default function GarageDetailsPage({ params }: GarageDetailsPageProps) {
   };
 
   return (
-    <main className={inter.className}>
+    <main className={`${inter.className} bg-[#F8FAFC] min-h-screen pb-16`}>
       <GarageHero
         name={garageData.name}
         rating={garageData.rating}
@@ -108,16 +108,29 @@ export default function GarageDetailsPage({ params }: GarageDetailsPageProps) {
         ownerId={(garage as any).userId}
         phone={garage.garagePhone}
       />
-      <ServicesOffered />
-      <GarageOverview 
-        description={garageData.description} 
-        image={garageData.profileImage}
-      />
-      <OperatingHours hours={garageData.operatingHours} />
-      <LocationMap
-        address={garageData.address}
-        position={garageData.position}
-      />
+      
+      {/* 2-Column Content Grid */}
+      <div className="container mx-auto px-4 max-w-7xl mt-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          {/* Main Left Column */}
+          <div className="lg:col-span-8 space-y-8">
+            <GarageOverview 
+              description={garageData.description} 
+              image={garageData.profileImage}
+            />
+            <ServicesOffered />
+          </div>
+
+          {/* Sidebar Right Column */}
+          <div className="lg:col-span-4 space-y-8 lg:sticky lg:top-24">
+            <OperatingHours hours={garageData.operatingHours} />
+            <LocationMap
+              address={garageData.address}
+              position={garageData.position}
+            />
+          </div>
+        </div>
+      </div>
     </main>
   );
 }

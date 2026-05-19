@@ -68,6 +68,32 @@ const howItWorksSteps = [
   },
 ];
 
+const containerVariants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+      ease: "easeOut" as const,
+      staggerChildren: 0.2,
+      when: "beforeChildren",
+    },
+  },
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 25 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.5,
+      ease: "easeOut" as const,
+    },
+  },
+};
+
 export default function SparePartsPage() {
   const [sellFormOpen, setSellFormOpen] = useState(false);
   const [paymentOpen, setPaymentOpen] = useState(false);
@@ -263,23 +289,27 @@ export default function SparePartsPage() {
 
           {/* How It Works */}
           <motion.div
-            className="mt-24 text-center"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            className="mt-24 text-center bg-white border border-slate-100 rounded-3xl p-8 md:p-12 shadow-xl shadow-slate-100/50 w-full"
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
             viewport={{ once: true, margin: "-60px" }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
           >
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">How It Works</h2>
-            <p className="text-gray-500 mb-12">Buying or selling spare parts is simple</p>
-
-            <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-6 max-w-5xl mx-auto">
+            <h2 className="text-2xl md:text-3xl font-extrabold text-gray-900 mb-2">How It Works</h2>
+            <p className="text-slate-500 mb-10 font-medium">Buying or selling spare parts is simple</p>
+ 
+            <div className="flex flex-col md:flex-row items-stretch justify-center gap-4 md:gap-6 max-w-5xl mx-auto">
               {howItWorksSteps.map((step, index) => {
                 const Icon = step.icon;
                 return (
-                  <div key={index} className="flex items-center w-full md:w-auto">
-                    <div className="bg-white border border-gray-100 shadow-sm rounded-2xl p-5 md:p-6 text-left flex flex-row items-center gap-4 flex-1 md:w-[310px]">
+                  <motion.div
+                    key={index}
+                    variants={cardVariants}
+                    className="flex items-stretch w-full md:w-auto"
+                  >
+                    <div className="bg-white border border-slate-100/80 shadow-[0_4px_20px_-4px_rgba(148,163,184,0.12)] rounded-2xl p-5 md:p-6 text-left flex flex-row items-center gap-4 flex-1 md:w-[290px] lg:w-[310px] hover:shadow-[0_8px_30px_-4px_rgba(148,163,184,0.2)] hover:-translate-y-1 transition-all duration-300">
                       {/* Big Icon on left */}
-                      <div className="bg-[#f0f5ff] rounded-full w-14 h-14 flex items-center justify-center flex-shrink-0">
+                      <div className="bg-blue-50/50 border border-blue-100/50 rounded-full w-14 h-14 flex items-center justify-center flex-shrink-0 shadow-inner">
                         <Icon className="w-7 h-7 text-blue-600" strokeWidth={1.75} />
                       </div>
                       
@@ -291,17 +321,17 @@ export default function SparePartsPage() {
                           </div>
                           <h4 className="font-bold text-gray-900 text-sm">{step.title}</h4>
                         </div>
-                        <p className="text-[13px] text-gray-500 leading-relaxed pr-2">
+                        <p className="text-[13px] text-gray-500 leading-relaxed pr-2 font-medium">
                           {step.description}
                         </p>
                       </div>
                     </div>
                     {index < howItWorksSteps.length - 1 && (
-                      <div className={`hidden md:flex mx-1 ${index === 0 ? "text-blue-600" : "text-gray-300"}`}>
+                      <div className={`hidden md:flex items-center mx-1 ${index === 0 ? "text-blue-600" : "text-gray-300"}`}>
                         <MoveRight className="w-7 h-7" strokeWidth={1.5} />
                       </div>
                     )}
-                  </div>
+                  </motion.div>
                 );
               })}
             </div>
@@ -332,7 +362,7 @@ export default function SparePartsPage() {
                   // Show max 6 products from current fetch for demo purposes
                   products.slice(0, 6).map((product) => (
                     <div key={product.id} className="w-[280px] sm:w-[300px] flex-shrink-0 snap-start">
-                      <ProductCard product={product} />
+                      <ProductCard product={product} showViewDetails={false} />
                     </div>
                   ))
                 ) : (

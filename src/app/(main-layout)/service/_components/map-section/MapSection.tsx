@@ -132,20 +132,20 @@ export default function MapSection({ garages = [] }: MapSectionProps) {
       </GoogleMap>
 
       {/* Enable Precise Location Button */}
-      <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-10">
+      <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-10 w-max max-w-[calc(100vw-32px)]">
         <button
           onClick={enablePreciseLocation}
           disabled={isLoadingLocation}
-          className="bg-white hover:bg-gray-50 text-gray-800 font-semibold py-3 px-6 rounded-full shadow-lg flex items-center gap-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed border border-gray-200"
+          className="bg-white hover:bg-gray-50 text-gray-800 font-bold py-2.5 px-5 sm:py-3 sm:px-6 rounded-full shadow-lg flex items-center gap-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed border border-slate-200 text-xs sm:text-sm md:text-base whitespace-nowrap"
         >
           {isLoadingLocation ? (
             <>
-              <Loader2 className="w-5 h-5 animate-spin" />
+              <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin" />
               <span>{trans.map.gettingLocation}</span>
             </>
           ) : (
             <>
-              <MapPin className="w-5 h-5 text-blue-600" />
+              <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
               <span>{userLocation ? trans.map.updateLocation : trans.map.enableLocation}</span>
             </>
           )}

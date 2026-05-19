@@ -136,3 +136,54 @@ body {
   background: none !important;
   box-shadow: none !important;
 }
+
+/* Fix react-fast-marquee vertical scrollbar glitch */
+.rfm-marquee-container {
+  overflow-y: hidden !important;
+}
+
+/* =========================================
+   Sleek Modern Custom Scrollbar
+   ========================================= */
+/* For Chrome, Safari, and newer Edge */
+::-webkit-scrollbar {
+  width: 8px; /* slim vertical scrollbar */
+  height: 8px; /* slim horizontal scrollbar */
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1; /* slate-300 */
+  border-radius: 9999px;
+  border: 2px solid transparent; /* adds padding space around thumb */
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3b82f6; /* brand blue accent on hover */
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+/* Dark mode overrides for scrollbar */
+.dark ::-webkit-scrollbar-thumb {
+  background: #475569; /* slate-600 */
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #3b82f6; /* brand blue accent */
+}
+
+/* Firefox support */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+.dark * {
+  scrollbar-color: #475569 transparent;
+}

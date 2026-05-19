@@ -1,6 +1,8 @@
 "use client";
+
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { Card } from "@/components/ui/card";
 import AcServiceIcon from "@/assets/service/garage/ac_service_icon.svg";
 import BatteryReplacement from "@/assets/service/garage/battery_icon.svg";
 import TiresIcon from "@/assets/service/garage/tires_icon.svg";
@@ -15,44 +17,52 @@ export default function ServicesOffered() {
   const trans = t(serviceDetailsTranslations);
 
   const services = [
-    { icon: AcServiceIcon, label: trans.services.acService, color: "text-blue-500" },
-    { icon: BatteryReplacement, label: trans.services.batteryReplacement, color: "text-green-500" },
-    { icon: TiresIcon, label: trans.services.tires, color: "text-gray-900" },
-    { icon: EngineDiagnosticsIcon, label: trans.services.engineDiagnostics, color: "text-gray-400" },
-    { icon: ElectricalIcon, label: trans.services.electrical, color: "text-yellow-500" },
-    { icon: SparesIcon, label: trans.services.spares, color: "text-orange-500" },
+    { icon: AcServiceIcon, label: trans.services.acService, bg: "bg-[#EFF6FF]", border: "border-blue-100" },
+    { icon: BatteryReplacement, label: trans.services.batteryReplacement, bg: "bg-[#F0FDF4]", border: "border-green-100" },
+    { icon: TiresIcon, label: trans.services.tires, bg: "bg-[#F8FAFC]", border: "border-slate-200" },
+    { icon: EngineDiagnosticsIcon, label: trans.services.engineDiagnostics, bg: "bg-[#F5F3FF]", border: "border-purple-100" },
+    { icon: ElectricalIcon, label: trans.services.electrical, bg: "bg-[#FEFCE8]", border: "border-yellow-100" },
+    { icon: SparesIcon, label: trans.services.spares, bg: "bg-[#FFF7ED]", border: "border-orange-100" },
   ];
 
   return (
-    <section className=" md:py-16">
-      <div className="container mx-auto px-4">
-        <motion.h2
-          className="mb-10 text-2xl md:text-4xl font-bold text-gray-900"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-        >
-          {trans.servicesOffered}
-        </motion.h2>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-80px" }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+    >
+      <Card className="bg-white border border-slate-100 p-6 md:p-8 rounded-2xl shadow-sm">
+        <div className="mb-6">
+          <h2 className="text-xl md:text-2xl font-extrabold text-slate-900 tracking-tight">
+            {trans.servicesOffered}
+          </h2>
+          <p className="text-slate-500 text-sm mt-1">Specialized services equipped with advanced tools and experts.</p>
+        </div>
 
-        <div className="grid grid-cols-2 gap-4 lg:gap-[2.5rem] md:grid-cols-3 lg:grid-cols-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
           {services.map((service, index) => (
             <motion.div
               key={index}
-              className="flex flex-col items-center gap-4 rounded-2xl bg-white p-8 shadow-sm hover:shadow-md transition-shadow border"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-60px" }}
-              transition={{ duration: 0.5, delay: index * 0.08, ease: "easeOut" }}
-              whileHover={{ y: -5, transition: { duration: 0.2 } }}
+              className="flex flex-col items-center gap-3 rounded-xl bg-slate-50/50 p-5 border border-slate-100 hover:shadow-sm hover:bg-slate-55 transition-all duration-200"
+              whileHover={{ y: -4, transition: { duration: 0.2 } }}
             >
-              <Image src={service.icon} alt={service.label} width={48} height={48} className={service.color} />
-              <span className="text-center text-base font-medium text-gray-700">{service.label}</span>
+              <div className={`w-12 h-12 rounded-xl ${service.bg} flex items-center justify-center border ${service.border} shadow-inner`}>
+                <Image 
+                  src={service.icon} 
+                  alt={service.label} 
+                  width={24} 
+                  height={24} 
+                  className="object-contain"
+                />
+              </div>
+              <span className="text-center text-xs md:text-sm font-bold text-slate-800 tracking-tight leading-tight">
+                {service.label}
+              </span>
             </motion.div>
           ))}
         </div>
-      </div>
-    </section>
+      </Card>
+    </motion.div>
   );
 }

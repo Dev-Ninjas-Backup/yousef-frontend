@@ -162,7 +162,7 @@ export default function FilterSidebar({
             </button>
 
             {categoryOpen && (
-              <div className="space-y-1.5">
+              <div className="space-y-1">
                 {apiCategories.map((cat) => {
                   const Icon = getIconForCategory(cat.name);
                   const checked = selectedCategories.includes(cat.name);
@@ -171,7 +171,11 @@ export default function FilterSidebar({
                   return (
                     <label
                       key={cat.id}
-                      className="flex items-center gap-3 py-1 cursor-pointer group"
+                      className={`flex items-center gap-3 px-2.5 py-2 rounded-lg cursor-pointer group transition-all duration-200 ${
+                        checked
+                          ? "bg-blue-50/50 text-blue-600"
+                          : "text-gray-700 hover:bg-blue-50 hover:text-gray-900"
+                      }`}
                     >
                       <input
                         type="checkbox"
@@ -179,18 +183,18 @@ export default function FilterSidebar({
                         onChange={() => toggleCategory(cat.name)}
                         className="w-4 h-4 rounded border-gray-300 accent-blue-600 cursor-pointer"
                       />
-                      <Icon className={`h-4 w-4 flex-shrink-0 ${checked ? "text-blue-600" : "text-gray-400"}`} />
-                      <span className={`flex-1 text-sm ${checked ? "text-blue-600 font-medium" : "text-gray-700"}`}>
+                      <Icon className={`h-4 w-4 flex-shrink-0 transition-colors ${checked ? "text-blue-600" : "text-gray-400 group-hover:text-gray-600"}`} />
+                      <span className={`flex-1 text-sm transition-colors ${checked ? "text-blue-600 font-semibold" : "text-gray-700 group-hover:text-gray-900"}`}>
                         {cat.name}
                       </span>
-                      <span className="text-xs text-gray-400 font-medium">
+                      <span className={`text-xs font-semibold transition-colors ${checked ? "text-blue-500" : "text-gray-400 group-hover:text-gray-500"}`}>
                         {count.toLocaleString()}
                       </span>
                     </label>
                   );
                 })}
                 {apiCategories.length === 0 && (
-                  <p className="text-xs text-gray-500 italic">No categories found</p>
+                  <p className="text-xs text-gray-500 italic px-2.5">No categories found</p>
                 )}
               </div>
             )}
@@ -211,7 +215,7 @@ export default function FilterSidebar({
             </button>
 
             {conditionOpen && (
-              <div className="space-y-1.5">
+              <div className="space-y-1">
                 {conditions.map((cond) => {
                   const checked = selectedConditions.includes(cond.id);
                   const count = getConditionCount(cond.id);
@@ -219,7 +223,11 @@ export default function FilterSidebar({
                   return (
                     <label
                       key={cond.id}
-                      className="flex items-center gap-3 py-1 cursor-pointer"
+                      className={`flex items-center gap-3 px-2.5 py-2 rounded-lg cursor-pointer group transition-all duration-200 ${
+                        checked
+                          ? "bg-blue-50/50 text-blue-600"
+                          : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+                      }`}
                     >
                       <input
                         type="checkbox"
@@ -227,10 +235,10 @@ export default function FilterSidebar({
                         onChange={() => toggleCondition(cond.id)}
                         className="w-4 h-4 rounded border-gray-300 accent-blue-600 cursor-pointer"
                       />
-                      <span className={`flex-1 text-sm ${checked ? "text-blue-600 font-medium" : "text-gray-700"}`}>
+                      <span className={`flex-1 text-sm transition-colors ${checked ? "text-blue-600 font-semibold" : "text-gray-700 group-hover:text-gray-900"}`}>
                         {cond.label}
                       </span>
-                      <span className="text-xs text-gray-400 font-medium">
+                      <span className={`text-xs font-semibold transition-colors ${checked ? "text-blue-500" : "text-gray-400 group-hover:text-gray-500"}`}>
                         {count.toLocaleString()}
                       </span>
                     </label>

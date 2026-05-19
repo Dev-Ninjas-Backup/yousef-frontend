@@ -9,7 +9,7 @@ import Cta3 from "@/assets/about/cta/c_3.png";
 
 export default function CTASection() {
   return (
-    <section className="py-16 px-4 sm:px-6 lg:px-8 font-sans">
+    <section className="py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-[1280px] mx-auto relative rounded-[40px] bg-[#124cc9] overflow-hidden shadow-2xl">
         
         {/* Background Dot Pattern (Top Right) */}

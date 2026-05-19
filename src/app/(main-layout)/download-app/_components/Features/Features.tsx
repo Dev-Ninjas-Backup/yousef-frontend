@@ -2,6 +2,7 @@
 import React from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import Link from "next/link";
 import feature_img from "@/assets/download-app/features/feature_img.png";
 import { useLanguage } from "@/context/LanguageContext";
 import { downloadAppTranslations } from "@/translations/downloadApp";
@@ -9,22 +10,6 @@ import { downloadAppTranslations } from "@/translations/downloadApp";
 const Features: React.FC = () => {
   const { t } = useLanguage();
   const trans = t(downloadAppTranslations);
-
-  const handleAppDownload = () => {
-    if (typeof window !== "undefined") {
-      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-      const isAndroid = /android/i.test(navigator.userAgent);
-      
-      if (isIOS) {
-        window.open("https://apps.apple.com/", "_blank");
-      } else if (isAndroid) {
-        window.open("https://play.google.com/store/", "_blank");
-      } else {
-        // Desktop
-        window.open("/download", "_self"); 
-      }
-    }
-  };
 
   return (
     <section className="py-10 md:py-15 bg-white">
@@ -46,12 +31,12 @@ const Features: React.FC = () => {
             {trans.features.description}
           </p>
           <div className="flex items-center justify-center gap-4 mt-8">
-            <button onClick={handleAppDownload} className="h-12 md:h-14 transition-transform hover:scale-105">
+            <Link href="#" className="h-12 md:h-14 transition-transform hover:scale-105 block">
               <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Get it on Google Play" className="h-full" />
-            </button>
-            <button onClick={handleAppDownload} className="h-12 md:h-14 transition-transform hover:scale-105">
+            </Link>
+            <Link href="#" className="h-12 md:h-14 transition-transform hover:scale-105 block">
               <img src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Download_on_the_App_Store_Badge.svg" alt="Download on the App Store" className="h-full" />
-            </button>
+            </Link>
           </div>
         </motion.div>
 

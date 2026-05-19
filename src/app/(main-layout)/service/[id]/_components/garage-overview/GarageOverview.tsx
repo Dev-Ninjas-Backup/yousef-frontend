@@ -1,6 +1,8 @@
 "use client";
+
 import Image, { StaticImageData } from "next/image";
 import { motion } from "framer-motion";
+import { Card } from "@/components/ui/card";
 import garageOverviewBg from "@/assets/service/garage/garage_overview.png";
 import { useLanguage } from "@/context/LanguageContext";
 import { serviceDetailsTranslations } from "@/translations/serviceDetails";
@@ -20,38 +22,44 @@ export default function GarageOverview({
   const imageSrc = image && image !== "" ? image : garageOverviewBg;
 
   return (
-    <section className="py-16 bg-white">
-      <div className="container mx-auto px-4">
-        <div className="grid gap-12 lg:grid-cols-2 items-start">
-          <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.7, ease: "easeOut" }}
-          >
-            <h2 className="mb-8 text-2xl md:text-4xl font-bold text-gray-900">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-80px" }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+    >
+      <Card className="bg-white border border-slate-100 p-6 md:p-8 rounded-2xl shadow-sm">
+        <div className="grid gap-8 lg:grid-cols-12 items-start">
+          
+          {/* Description Block */}
+          <div className="lg:col-span-7">
+            <h2 className="text-xl md:text-2xl font-extrabold text-slate-900 tracking-tight mb-4">
               {trans.garageOverview}
             </h2>
-            <div className="space-y-6">
+            <div className="space-y-4">
               {description.map((paragraph, index) => (
-                <p key={index} className="text-gray-600 leading-relaxed text-lg">
+                <p 
+                  key={index} 
+                  className="text-slate-600 leading-relaxed text-sm md:text-base font-medium"
+                >
                   {paragraph}
                 </p>
               ))}
             </div>
-          </motion.div>
+          </div>
 
-          <motion.div
-            className="relative h-[400px] lg:h-[500px] overflow-hidden rounded-2xl"
-            initial={{ opacity: 0, x: 50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.7, ease: "easeOut" }}
-          >
-            <Image src={imageSrc} alt="Garage" fill className="object-cover" />
-          </motion.div>
+          {/* Image Block */}
+          <div className="lg:col-span-5 relative h-[220px] sm:h-[280px] overflow-hidden rounded-xl border border-slate-100 shadow-inner">
+            <Image 
+              src={imageSrc} 
+              alt="Garage Overview" 
+              fill 
+              className="object-cover" 
+            />
+          </div>
+
         </div>
-      </div>
-    </section>
+      </Card>
+    </motion.div>
   );
 }
