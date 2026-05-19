@@ -4,7 +4,7 @@ export const aboutTranslations = {
       established: "Established 2025",
       title1: "Redefining Automotive",
       title2: "Excellence",
-      subtitle: "Driving Trust and Innovation in Every Mile",
+      subtitle: "Driving Reliability and Innovation in Every Mile",
       description:
         "Established in 2025, our platform was created to transform the car service experience across the UAE, connecting vehicle owners with garages, towing services, and Parts listed here are provided by third-party sellers. We do not supply or take responsibility for their quality.",
       joinButton: "Join Our Journey",
@@ -12,7 +12,7 @@ export const aboutTranslations = {
     story: {
       ourStory: "Our Story",
       storyContent: [
-        "SayaraHub was founded in 2025 with a simple mission to provide honest, reliable, and high-quality automotive service to the UAE community. What started as a small idea has grown into a full-service automotive center trusted by customers.",
+        "SayaraHub was founded in 2025 with a simple mission to provide honest, reliable, and high-quality automotive service to the UAE community. What started as a small idea has grown into a full-service automotive center chosen by customers.",
       ],
       ourMission: "Our Mission",
       missionContent: [
@@ -26,7 +26,7 @@ export const aboutTranslations = {
       ],
       empowering: "Empowering Drivers and Garages Alike",
       empoweringContent:
-        "We believe in supporting both sides of the journey. Drivers seek fast, quality service, and garages need the digital tools to grow. From secure communication to listings, every feature is designed with integrity and trust at its core.",
+        "We believe in supporting both sides of the journey. Drivers seek fast, quality service, and garages need the digital tools to grow. From secure communication to listings, every feature is designed with integrity and reliability at its core.",
       features: {
         userCentric: {
           title: "User-Centric",
@@ -55,7 +55,7 @@ export const aboutTranslations = {
       content: [
         "In 2025, we embarked on a mission to transform the automotive service industry. Recognizing the gap between car owners and reliable service providers, we created a comprehensive platform designed to simplify vehicle maintenance and parts procurement.",
         "What started as a vision to bring transparency and convenience to automotive services has evolved into a thriving marketplace. We combine cutting-edge technology with time-tested expertise, offering everything from routine maintenance to premium auto parts all in one seamless platform.",
-        "Today, we're proud to serve a growing community of car enthusiasts, daily commuters, and professional mechanics who trust us for quality, reliability, and exceptional service.",
+        "Today, we're proud to serve a growing community of car enthusiasts, daily commuters, and professional mechanics who rely on us for quality, reliability, and exceptional service.",
       ],
       timeline: {
         idea: {
@@ -79,7 +79,7 @@ export const aboutTranslations = {
       title: "Our Core Values",
       subtitle: "Principles That Drive Us",
       description:
-        "These values shape how we connect garages and customers ensuring trust, transparency, and convenience at every step.",
+        "These values shape how we connect garages and customers ensuring reliability, transparency, and convenience at every step.",
       customerCare: {
         title: "Customer Care",
         description:

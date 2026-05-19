@@ -1,154 +1,333 @@
 "use client";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { ShieldCheck, Users, Wrench, Clock } from "lucide-react";
-import OurStory from "@/assets/about/story/our_story.jpg";
-import OurMission from "@/assets/about/story/our_mission.jpg";
-import OurVision from "@/assets/about/story/our_vision.jpg";
-import Empowering from "@/assets/about/story/empowering.jpg";
-import { useLanguage } from "@/context/LanguageContext";
-import { aboutTranslations } from "@/translations/about";
-
-const fadeLeft = {
-  hidden: { opacity: 0, x: -50 },
-  visible: { opacity: 1, x: 0, transition: { duration: 0.7, ease: "easeOut" as const } },
-};
-const fadeRight = {
-  hidden: { opacity: 0, x: 50 },
-  visible: { opacity: 1, x: 0, transition: { duration: 0.7, ease: "easeOut" as const } },
-};
-const fadeUp = {
-  hidden: { opacity: 0, y: 40 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" as const } },
-};
+import { BookOpen, Target, Shield, Award, Gem, Heart, Users, MapPin, ShieldCheck, Eye, Link2 } from "lucide-react";
+import OurStory from "@/assets/about/story/our_story.png";
+import OurMission from "@/assets/about/story/our_mission.png";
+import OurVision from "@/assets/about/story/our_vision.png";
+import Empowering from "@/assets/about/story/empowering.png";
 
 export default function StorySection() {
-  const { t } = useLanguage();
-  const trans = t(aboutTranslations);
-
-  const features = [
-    { icon: Users, title: trans.story.features.userCentric.title, description: trans.story.features.userCentric.description },
-    { icon: Wrench, title: trans.story.features.instant.title, description: trans.story.features.instant.description },
-    { icon: Clock, title: trans.story.features.transparency.title, description: trans.story.features.transparency.description },
-  ];
-
   return (
-    <section className="py-16 px-4 bg-white">
-      <div className="max-w-7xl mx-auto space-y-16">
-
-        {/* Our Story */}
-        <div className="grid md:grid-cols-2 gap-8">
-          <motion.div
-            variants={fadeLeft}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-80px" }}
+    <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white font-sans">
+      <div className="max-w-[1280px] mx-auto space-y-24 md:space-y-32">
+        
+        {/* Our Story Block */}
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+          {/* Text Content */}
+          <motion.div 
+            className="flex flex-col gap-6"
+            initial={{ opacity: 0, x: -40 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7 }}
           >
-            <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mb-4">{trans.story.ourStory}</h2>
-            <div className="space-y-4 text-gray-700 text-sm md:text-xl leading-relaxed">
-              {trans.story.storyContent.map((paragraph: any, index: number) => (
-                <p key={index}>{paragraph}</p>
-              ))}
+            <div className="inline-flex items-center gap-1.5 bg-[#eff4ff] text-blue-600 px-3.5 py-1.5 rounded-full w-fit">
+              <BookOpen className="w-4 h-4" />
+              <span className="text-[13px] font-semibold tracking-wide">Our Story</span>
+            </div>
+
+            <h2 className="text-4xl md:text-[44px] font-extrabold text-gray-900 leading-[1.15] tracking-tight">
+              Built from a passion<br />
+              for better <span className="text-blue-600">car care.</span>
+            </h2>
+
+            <p className="text-gray-500 text-[15px] leading-relaxed">
+              <strong className="text-gray-800">SayaraHub</strong> was founded in 2025 with a simple mission: to bring <strong className="text-gray-800">honest, reliable, and high-quality automotive services</strong> to the UAE community.
+            </p>
+
+            <p className="text-gray-500 text-[15px] leading-relaxed">
+              What started as a small idea has grown into a full-service platform connecting car owners with verified garages, towing providers, and spare parts sellers.
+            </p>
+
+            {/* Features Row - Single Container */}
+            <div className="mt-4 flex flex-wrap sm:flex-nowrap items-center justify-between gap-4 bg-[#f6f9fc] rounded-[24px] p-6 lg:px-8 lg:py-6">
+              <div className="flex items-start gap-3">
+                <Shield className="w-[26px] h-[26px] text-blue-600 shrink-0" strokeWidth={1.5} />
+                <div>
+                  <h4 className="font-bold text-gray-900 text-[15px]">Honest</h4>
+                  <p className="text-gray-500 text-[13px] leading-tight mt-0.5">No hidden agendas</p>
+                </div>
+              </div>
+              
+              <div className="flex items-start gap-3">
+                <Award className="w-[26px] h-[26px] text-blue-600 shrink-0" strokeWidth={1.5} />
+                <div>
+                  <h4 className="font-bold text-gray-900 text-[15px]">Reliable</h4>
+                  <p className="text-gray-500 text-[13px] leading-tight mt-0.5">You can count on</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <Gem className="w-[26px] h-[26px] text-blue-600 shrink-0" strokeWidth={1.5} />
+                <div>
+                  <h4 className="font-bold text-gray-900 text-[15px]">Quality</h4>
+                  <p className="text-gray-500 text-[13px] leading-tight mt-0.5">That drives loyalty</p>
+                </div>
+              </div>
             </div>
           </motion.div>
-          <motion.div
-            variants={fadeRight}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-80px" }}
-            className="rounded-lg overflow-hidden shadow-lg h-[200px] md:h-[350px]"
+
+          {/* Image Content */}
+          <motion.div 
+            className="relative rounded-[32px] overflow-hidden aspect-[4/3.2] shadow-xl flex flex-col justify-end p-6 md:p-8"
+            initial={{ opacity: 0, x: 40 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7 }}
           >
-            <Image src={OurStory} alt="Our Story" width={600} height={200} className="w-full h-auto md:h-full object-cover" />
+            <Image src={OurStory} alt="Mechanic working on an engine" fill className="object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
+            
+            {/* Dark solid card */}
+            <div className="relative z-10 bg-[#161b22] rounded-[20px] p-5 md:px-6 md:py-5 flex items-center gap-4 shadow-2xl w-fit">
+              <div className="w-[42px] h-[42px] rounded-full bg-blue-500 flex items-center justify-center shrink-0">
+                 <Heart className="w-5 h-5 text-white" fill="currentColor" />
+              </div>
+              <div className="flex flex-col gap-0.5">
+                 <p className="text-white font-bold text-[15px] leading-tight">Chosen by customers.</p>
+                 <p className="text-gray-300 font-medium text-[14px] leading-tight">Driven by service.</p>
+              </div>
+            </div>
           </motion.div>
         </div>
 
-        {/* Our Mission */}
-        <div className="grid md:grid-cols-2 gap-8 items-center">
-          <motion.div
-            variants={fadeLeft}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-80px" }}
-            className="order-2 md:order-1 rounded-lg overflow-hidden shadow-lg"
+
+        {/* Our Mission Block */}
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+          {/* Image Content (Left) */}
+          <motion.div 
+            className="order-2 lg:order-1 relative rounded-[32px] overflow-hidden aspect-[4/3.2] shadow-xl"
+            initial={{ opacity: 0, x: -40 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7 }}
           >
-            <Image src={OurMission} alt="Car trunk" width={600} height={400} className="w-full h-auto object-cover" />
+            <Image src={OurMission} alt="Mechanic opening car trunk" fill className="object-cover" />
+            <div className="absolute inset-0 bg-black/5" />
           </motion.div>
-          <motion.div
-            variants={fadeRight}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-80px" }}
-            className="order-1 md:order-2"
+
+          {/* Text Content (Right) */}
+          <motion.div 
+            className="order-1 lg:order-2 flex flex-col gap-6"
+            initial={{ opacity: 0, x: 40 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7 }}
           >
-            <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mb-4">{trans.story.ourMission}</h2>
-            <div className="text-gray-700 text-sm md:text-xl leading-relaxed">
-              {trans.story.missionContent.map((paragraph: any, index: number) => (
-                <p key={index} className={index > 0 ? "mt-4" : ""}>{paragraph}</p>
-              ))}
+            <div className="inline-flex items-center gap-1.5 bg-[#eff4ff] text-blue-600 px-3.5 py-1.5 rounded-full w-fit">
+              <Target className="w-4 h-4" />
+              <span className="text-[13px] font-semibold tracking-wide">Our Mission</span>
+            </div>
+
+            <h2 className="text-4xl md:text-[44px] font-extrabold text-gray-900 leading-[1.15] tracking-tight">
+              Making car services<br />
+              <span className="text-blue-600">simpler, faster, and smarter.</span>
+            </h2>
+
+            <p className="text-gray-500 text-[15px] leading-relaxed">
+              We&apos;re on a mission to revolutionize how car owners in the UAE find and connect with automotive services.
+            </p>
+
+            <p className="text-gray-500 text-[15px] leading-relaxed">
+              <strong className="text-gray-800">SayaraHub</strong> creates a digital ecosystem where you can discover garages, mechanics, towing services, and spare parts sellers—all in one place.
+              <br/>
+              <strong className="text-gray-800 mt-2 block">No hassle. No uncertainty. Just the right connections.</strong>
+            </p>
+
+            <p className="text-gray-500 text-[15px] leading-relaxed">
+              With real-time locations, verified listings, and transparent information, we help you save time, reduce stress, and get back on the road with confidence.
+            </p>
+
+            {/* Features Row - Separate Chips */}
+            <div className="mt-4 flex flex-wrap lg:flex-nowrap items-center gap-3">
+              <div className="flex items-center gap-3 bg-[#f6f9fc] rounded-[16px] py-3.5 px-4 flex-1 min-w-[140px]">
+                <Users className="w-6 h-6 text-blue-600 shrink-0" strokeWidth={1.5} />
+                <p className="font-bold text-gray-900 text-[13px] leading-[1.3]">Built for<br/>Car Owners</p>
+              </div>
+              
+              <div className="flex items-center gap-3 bg-[#f6f9fc] rounded-[16px] py-3.5 px-4 flex-1 min-w-[140px]">
+                <MapPin className="w-6 h-6 text-blue-600 shrink-0" strokeWidth={1.5} />
+                <p className="font-bold text-gray-900 text-[13px] leading-[1.3]">UAE-Wide<br/>Coverage</p>
+              </div>
+
+              <div className="flex items-center gap-3 bg-[#f6f9fc] rounded-[16px] py-3.5 px-4 flex-1 min-w-[140px]">
+                <ShieldCheck className="w-6 h-6 text-blue-600 shrink-0" strokeWidth={1.5} />
+                <p className="font-bold text-gray-900 text-[13px] leading-[1.3]">Focused on<br/>Reliability</p>
+              </div>
             </div>
           </motion.div>
         </div>
 
-        {/* Our Vision */}
-        <div className="grid md:grid-cols-2 gap-8 items-center">
-          <motion.div
-            variants={fadeLeft}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-80px" }}
+
+        {/* Our Vision Block */}
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+          {/* Text Content */}
+          <motion.div 
+            className="flex flex-col gap-6"
+            initial={{ opacity: 0, x: -40 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7 }}
           >
-            <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mb-4">{trans.story.ourVision}</h2>
-            <div className="space-y-4 text-gray-700 text-sm md:text-xl leading-relaxed">
-              {trans.story.visionContent.map((paragraph: any, index: number) => (
-                <p key={index}>{paragraph}</p>
-              ))}
+            <div className="inline-flex items-center gap-1.5 bg-[#eff4ff] text-blue-600 px-3.5 py-1.5 rounded-full w-fit">
+              <Eye className="w-4 h-4" />
+              <span className="text-[13px] font-semibold tracking-wide">Our Vision</span>
+            </div>
+
+            <h2 className="text-4xl md:text-[44px] font-extrabold text-gray-900 leading-[1.15] tracking-tight">
+              Building the future of<br />
+              automotive, <span className="text-blue-600">together.</span>
+            </h2>
+
+            <p className="text-gray-500 text-[15px] leading-relaxed">
+              To become the UAE&apos;s most comprehensive automotive platform connecting car owners, garages, and suppliers under one digital roof. We envision a future where every vehicle service, repair, or part purchase is just a few clicks away, supported by innovation, technology, and customer care.
+            </p>
+
+            <p className="text-gray-500 text-[15px] leading-relaxed">
+              Our goal is to empower both customers and service providers by fostering a transparent, efficient, and customer-first automotive community that drives the industry forward.
+            </p>
+
+            {/* Features Row - 3 Vertical Cards */}
+            <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="bg-[#f6f9fc] rounded-[24px] p-5 lg:p-6 flex flex-col gap-4">
+                <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
+                  <Users className="w-5 h-5 text-blue-600" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-gray-900 text-[14px] leading-tight">One Platform</h4>
+                  <p className="text-gray-500 text-[13px] leading-[1.4] mt-1.5">All automotive needs, connected in one place.</p>
+                </div>
+              </div>
+              
+              <div className="bg-[#f6f9fc] rounded-[24px] p-5 lg:p-6 flex flex-col gap-4">
+                <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
+                  <Shield className="w-5 h-5 text-blue-600" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-gray-900 text-[14px] leading-tight">Future-Ready</h4>
+                  <p className="text-gray-500 text-[13px] leading-[1.4] mt-1.5">Powered by innovation and technology.</p>
+                </div>
+              </div>
+
+              <div className="bg-[#f6f9fc] rounded-[24px] p-5 lg:p-6 flex flex-col gap-4">
+                <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
+                  <Heart className="w-5 h-5 text-blue-600" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-gray-900 text-[14px] leading-tight">Built on Care</h4>
+                  <p className="text-gray-500 text-[13px] leading-[1.4] mt-1.5">Customer satisfaction drives everything we do.</p>
+                </div>
+              </div>
             </div>
           </motion.div>
-          <motion.div
-            variants={fadeRight}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-80px" }}
-            className="rounded-lg overflow-hidden shadow-lg"
+
+          {/* Image Content */}
+          <motion.div 
+            className="relative rounded-[32px] overflow-hidden aspect-[4/3.5] shadow-xl flex flex-col justify-end p-6 md:p-8"
+            initial={{ opacity: 0, x: 40 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7 }}
           >
-            <Image src={OurVision} alt="Car service" width={600} height={400} className="w-full h-auto object-cover" />
+            <Image src={OurVision} alt="Mechanic under car" fill className="object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
+            
+            {/* Dark glass card */}
+            <div className="relative z-10 bg-[#1a202c]/90 backdrop-blur-md rounded-[20px] p-5 md:px-6 md:py-5 flex items-center gap-5 shadow-2xl w-fit">
+              <div className="flex items-center justify-center shrink-0">
+                 <Target className="w-10 h-10 text-blue-400" strokeWidth={1.5} />
+              </div>
+              <div className="flex flex-col gap-0.5">
+                 <p className="text-white font-bold text-[14px] leading-tight mb-1">Our vision is simple:</p>
+                 <p className="text-gray-300 font-medium text-[13px] leading-tight">Better services. Smarter connections.</p>
+                 <p className="text-gray-300 font-medium text-[13px] leading-tight">Stronger journeys ahead.</p>
+              </div>
+            </div>
           </motion.div>
         </div>
 
-        {/* Empowering Section */}
-        <motion.div
-          className="grid md:grid-cols-2 gap-8 items-center bg-gray-50 p-8 rounded-xl"
+
+        {/* Empowering Block */}
+        <motion.div 
+          className="bg-[#f8faff] rounded-[40px] p-6 sm:p-10 lg:p-14"
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.7, ease: "easeOut" }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7 }}
         >
-          <div className="rounded-lg overflow-hidden shadow-lg">
-            <Image src={Empowering} alt="Tools" width={600} height={400} className="w-full h-auto object-cover" />
-          </div>
-          <div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">{trans.story.empowering}</h2>
-            <p className="text-gray-700 text-sm leading-relaxed mb-6">{trans.story.empoweringContent}</p>
-            <div className="grid sm:grid-cols-2 gap-4">
-              {features.map((feature, index) => (
-                <motion.div
-                  key={index}
-                  className="flex gap-3"
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                >
-                  <div className="bg-blue-100 w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0">
-                    <feature.icon className="w-5 h-5 text-blue-600" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-900 text-sm mb-1">{feature.title}</h3>
-                    <p className="text-gray-600 text-xs leading-relaxed">{feature.description}</p>
-                  </div>
-                </motion.div>
-              ))}
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+            
+            {/* Image Left */}
+            <div className="relative rounded-[32px] overflow-hidden aspect-[4/4.5] shadow-xl flex flex-col justify-end p-6 md:p-8">
+              <Image src={Empowering} alt="Wrenches and tools" fill className="object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+              
+              {/* Dark Card */}
+              <div className="relative z-10 bg-[#161b22]/95 backdrop-blur-sm rounded-[24px] p-6 flex items-center gap-5 shadow-2xl w-fit">
+                <div className="w-[46px] h-[46px] rounded-full bg-blue-600/20 flex items-center justify-center shrink-0">
+                   <Users className="w-5 h-5 text-blue-500" />
+                </div>
+                <div className="flex flex-col gap-1">
+                   <p className="text-white font-bold text-[14px] leading-tight">Stronger connections.</p>
+                   <p className="text-white font-bold text-[14px] leading-tight">Better experiences.</p>
+                   <p className="text-white font-bold text-[14px] leading-tight">Built for everyone.</p>
+                </div>
+              </div>
             </div>
+
+            {/* Text Right */}
+            <div className="flex flex-col gap-10">
+              <div className="flex flex-col gap-6">
+                <div className="inline-flex items-center gap-1.5 bg-blue-100 text-blue-700 px-3.5 py-1.5 rounded-full w-fit">
+                  <Users className="w-4 h-4" />
+                  <span className="text-[13px] font-semibold tracking-wide">Our Promise</span>
+                </div>
+
+                <h2 className="text-4xl md:text-[44px] font-extrabold text-gray-900 leading-[1.15] tracking-tight">
+                  Empowering Drivers and<br />
+                  Garages <span className="text-blue-600">Alike</span>
+                </h2>
+
+                <p className="text-gray-500 text-[15px] leading-relaxed">
+                  We believe in supporting both sides of the journey. Drivers seek fast, quality service, and garages need the digital tools to grow. From secure communication to listings, every feature is designed with integrity and reliability at its core.
+                </p>
+              </div>
+
+              {/* Vertical Features */}
+              <div className="flex flex-col gap-7">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
+                    <Users className="w-5 h-5 text-blue-600" />
+                  </div>
+                  <div className="mt-1">
+                    <h4 className="font-bold text-gray-900 text-[15px]">User-Centric</h4>
+                    <p className="text-gray-500 text-[14px] leading-relaxed mt-1">Transparent with user reviews and service providers in one place.</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
+                    <Link2 className="w-5 h-5 text-blue-600" />
+                  </div>
+                  <div className="mt-1">
+                    <h4 className="font-bold text-gray-900 text-[15px]">Instant Connection</h4>
+                    <p className="text-gray-500 text-[14px] leading-relaxed mt-1">Easily navigate between garages, spare parts sellers, and towing services.</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
+                    <ShieldCheck className="w-5 h-5 text-blue-600" />
+                  </div>
+                  <div className="mt-1">
+                    <h4 className="font-bold text-gray-900 text-[15px]">Transparency First</h4>
+                    <p className="text-gray-500 text-[14px] leading-relaxed mt-1">Honest reviews, real-time updates, and open communication build loyalty.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
           </div>
         </motion.div>
 
