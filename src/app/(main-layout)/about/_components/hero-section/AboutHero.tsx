@@ -1,5 +1,5 @@
 "use client";
-import { Sparkles } from "lucide-react";
+import { Sparkles, MapPin, Wrench, Star } from "lucide-react";
 import { motion } from "framer-motion";
 import AboutBg from "@/assets/about/Banner/about_banner.jpg";
 import Image from "next/image";
@@ -11,53 +11,87 @@ export default function AboutHero() {
   const trans = t(aboutTranslations);
 
   return (
-    <section className="relative h-screen w-full overflow-hidden md:mb-12">
-      <div className="absolute inset-0">
-        <Image
-          src={AboutBg}
-          alt="Garage background"
-          fill
-          className="object-cover rounded-lg"
-        />
-        <div className="absolute inset-0 bg-black/60 rounded-lg" />
+    <section className="pt-20 md:pt-24 pb-4 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto">
+        {/* Contained hero card with rounded corners */}
+        <div className="relative rounded-2xl md:rounded-3xl overflow-hidden min-h-[480px] md:min-h-[560px]">
+          {/* Background Image */}
+          <Image
+            src={AboutBg}
+            alt="About SayaraHub"
+            fill
+            className="object-cover"
+            priority
+          />
+          {/* Dark overlay gradient */}
+          <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/60 to-black/30" />
+          {/* Bottom fade */}
+          <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/60 to-transparent" />
+
+          {/* Content */}
+          <motion.div
+            className="relative z-10 flex flex-col justify-center h-full min-h-[480px] md:min-h-[560px] px-8 md:px-14 lg:px-20 py-12 max-w-3xl"
+            initial="hidden"
+            animate="visible"
+            variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.15 } } }}
+          >
+            {/* Badge */}
+            <motion.div
+              variants={{ hidden: { opacity: 0, y: -20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5 } } }}
+              className="inline-flex items-center gap-2 mb-6 bg-white/10 backdrop-blur-md border border-white/20 px-4 py-2 rounded-full w-fit"
+            >
+              <Sparkles className="w-4 h-4 text-yellow-400" />
+              <span className="text-white text-sm font-semibold tracking-wide">{trans.hero.established}</span>
+              <Sparkles className="w-4 h-4 text-yellow-400" />
+            </motion.div>
+
+            {/* Heading */}
+            <motion.h1
+              variants={{ hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0, transition: { duration: 0.7 } } }}
+              className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-white leading-tight mb-4"
+            >
+              {trans.hero.title1}
+              <span className="block text-blue-400">{trans.hero.title2}</span>
+            </motion.h1>
+
+            {/* Subtitle */}
+            <motion.p
+              variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6 } } }}
+              className="text-lg md:text-xl text-blue-200 font-medium mb-4"
+            >
+              {trans.hero.subtitle}
+            </motion.p>
+
+            {/* Description */}
+            <motion.p
+              variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6 } } }}
+              className="text-gray-300 text-base leading-relaxed mb-8 max-w-xl"
+            >
+              {trans.hero.description}
+            </motion.p>
+
+            {/* Quick stat chips */}
+            <motion.div
+              variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5 } } }}
+              className="flex flex-wrap gap-3"
+            >
+              {[
+                { icon: <MapPin className="w-4 h-4" />, label: "UAE-Wide Coverage" },
+                { icon: <Wrench className="w-4 h-4" />, label: "Verified Garages" },
+                { icon: <Star className="w-4 h-4" />, label: "500+ Happy Users" },
+              ].map((chip, i) => (
+                <div
+                  key={i}
+                  className="flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/15 text-white text-sm px-4 py-2 rounded-full"
+                >
+                  <span className="text-blue-300">{chip.icon}</span>
+                  {chip.label}
+                </div>
+              ))}
+            </motion.div>
+          </motion.div>
+        </div>
       </div>
-
-      <motion.div
-        className="relative z-10 flex h-full flex-col items-center justify-center px-4 text-center"
-        initial="hidden"
-        animate="visible"
-        variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.2 } } }}
-      >
-        <motion.div
-          variants={{ hidden: { opacity: 0, y: -20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6 } } }}
-          className="flex items-center gap-2 mb-6 bg-black/30 px-4 py-2 rounded-full backdrop-blur-sm"
-        >
-          <Sparkles className="w-5 h-5 text-yellow-400" />
-          <span className="text-white text-sm font-medium">{trans.hero.established}</span>
-          <Sparkles className="w-5 h-5 text-yellow-400" />
-        </motion.div>
-
-        <motion.h1
-          variants={{ hidden: { opacity: 0, y: 40 }, visible: { opacity: 1, y: 0, transition: { duration: 0.7 } } }}
-          className="mb-4 text-4xl md:text-6xl text-white leading-tight"
-        >
-          {trans.hero.title1}<br />{trans.hero.title2}
-        </motion.h1>
-
-        <motion.p
-          variants={{ hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0, transition: { duration: 0.7 } } }}
-          className="text-xl md:text-2xl text-gray-200 mb-6 font-light"
-        >
-          {trans.hero.subtitle}
-        </motion.p>
-
-        <motion.p
-          variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.7 } } }}
-          className="max-w-3xl text-base md:text-lg text-gray-300 mb-8 leading-relaxed"
-        >
-          {trans.hero.description}
-        </motion.p>
-      </motion.div>
     </section>
   );
 }
