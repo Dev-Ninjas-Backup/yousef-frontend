@@ -297,13 +297,13 @@ export default function SalesRefundsPage() {
                     <div className="flex items-center gap-3">
                       <button 
                         onClick={() => setFeedback("yes")}
-                        className="inline-flex items-center gap-1.5 px-4.5 py-2.5 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 font-semibold text-xs transition"
+                        className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 font-semibold text-xs transition shrink-0 whitespace-nowrap"
                       >
                         <ThumbsUp className="w-3.5 h-3.5 text-slate-500" /> Yes, clear
                       </button>
                       <button 
                         onClick={() => setFeedback("no")}
-                        className="inline-flex items-center gap-1.5 px-4.5 py-2.5 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 font-semibold text-xs transition"
+                        className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 font-semibold text-xs transition shrink-0 whitespace-nowrap"
                       >
                         <ThumbsDown className="w-3.5 h-3.5 text-slate-500" /> No, too complex
                       </button>

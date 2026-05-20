@@ -156,7 +156,7 @@ export const legalTranslations = {
             { name: "Spare Parts", url: "/spare-parts" },
             { name: "Download App", url: "/download-app" },
             { name: "About Us", url: "/about" },
-            { name: "Contact Us", url: "/contact" }
+            { name: "Contact Us", url: "/contact-us" }
           ]
         },
         {
@@ -336,7 +336,7 @@ export const legalTranslations = {
             { name: "قطع الغيار", url: "/spare-parts" },
             { name: "تحميل التطبيق", url: "/download-app" },
             { name: "من نحن", url: "/about" },
-            { name: "اتصل بنا", url: "/contact" }
+            { name: "اتصل بنا", url: "/contact-us" }
           ]
         },
         {
@@ -430,7 +430,7 @@ export const legalHiTranslations = {
             { name: "स्पेयर पार्ट्स", url: "/spare-parts" },
             { name: "ऐप डाउनलोड करें", url: "/download-app" },
             { name: "हमारे बारे में", url: "/about" },
-            { name: "संपर्क करें", url: "/contact" },
+            { name: "संपर्क करें", url: "/contact-us" },
           ],
         },
         {

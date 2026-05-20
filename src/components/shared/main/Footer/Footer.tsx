@@ -55,10 +55,11 @@ const Footer: React.FC = () => {
           <div className="col-span-1 flex flex-col items-start space-y-4">
             <h3 className="font-bold text-gray-900 text-base">{trans.bottomLinks.legal}</h3>
             <div className="flex flex-col space-y-3 text-sm text-gray-500">
-              <Link href="#" className="hover:text-blue-600">{trans.bottomLinks.privacyPolicy}</Link>
-              <Link href="#" className="hover:text-blue-600">{trans.bottomLinks.termsOfUse}</Link>
-              <Link href="#" className="hover:text-blue-600">{trans.bottomLinks.legal}</Link>
-              <Link href="#" className="hover:text-blue-600">{trans.bottomLinks.siteMap}</Link>
+              <Link href="/privacy-policy" className="hover:text-blue-600">{trans.bottomLinks.privacyPolicy}</Link>
+              <Link href="/terms" className="hover:text-blue-600">{trans.bottomLinks.termsOfUse}</Link>
+              <Link href="/sales-refunds" className="hover:text-blue-600">{trans.bottomLinks.salesRefunds}</Link>
+              <Link href="/legal" className="hover:text-blue-600">{trans.bottomLinks.legal}</Link>
+              <Link href="/sitemap" className="hover:text-blue-600">{trans.bottomLinks.siteMap}</Link>
             </div>
           </div>
 
