@@ -1,9 +1,9 @@
 "use client";
 import React from "react";
 import StepCard from "./_components/StepCard";
-import phoneImage1 from "@/assets/home/howItWorks/how-it-works-1.svg";
+import phoneImage1 from "@/assets/home/howItWorks/how-it-works-1.png";
 import phoneImage2 from "@/assets/home/howItWorks/how-it-works-2.svg";
-import phoneImage3 from "@/assets/home/howItWorks/how-it-works-3.svg";
+import phoneImage3 from "@/assets/home/howItWorks/how-it-works-3.png";
 import { useLanguage } from "@/context/LanguageContext";
 import { howItWorksTranslations } from "@/translations/howItWorks";
 import { AnimateOnScroll, fadeUp, fadeLeft, fadeRight } from "@/lib/animations";
