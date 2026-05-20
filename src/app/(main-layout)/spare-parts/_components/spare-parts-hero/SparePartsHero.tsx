@@ -20,7 +20,7 @@ export default function SparePartsHero() {
   };
 
   return (
-    <section className="relative min-h-[550px] md:min-h-[600px] lg:h-[600px] w-full overflow-hidden flex items-center">
+    <section className="relative min-h-[550px] md:min-h-[600px] lg:h-[600px] w-full overflow-hidden flex items-center rounded-2xl md:rounded-3xl">
       <div className="absolute inset-0">
         <Image
           src={sparePartsBg}

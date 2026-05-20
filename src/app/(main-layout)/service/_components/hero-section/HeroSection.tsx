@@ -71,15 +71,15 @@ export default function HeroSection({ onSearch, initialValues }: HeroSectionProp
   };
 
   return (
-    <section className="relative h-[640px] md:h-[720px] w-full overflow-hidden md:mb-16 ">
+    <section className="relative h-[640px] md:h-[720px] w-full overflow-hidden md:mb-16 rounded-2xl md:rounded-3xl">
       <div className="absolute inset-0">
         <Image
           src={garageBg}
           alt="Garage background"
           fill
-          className="object-cover rounded-lg"
+          className="object-cover"
         />
-        <div className="absolute inset-0 bg-black/80 rounded-lg" />
+        <div className="absolute inset-0 bg-black/80" />
       </div>
 
       <div className="relative z-10 flex h-full flex-col items-center justify-end md:justify-center px-4 pb-12">
