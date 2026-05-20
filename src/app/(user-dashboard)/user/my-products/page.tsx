@@ -4,6 +4,7 @@ import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { EditProductModal } from "./_components/EditProductModal";
+import UserDashboardHeader from "@/components/shared/dashboard/user/UserDashboardHeader";
 import { DeleteProductModal } from "./_components/DeleteProductModal";
 import {
   useGetUserMyProductsQuery,
@@ -363,7 +364,8 @@ export default function UserMyProductsPage() {
   }
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto py-2">
+    <div className="space-y-6 max-w-7xl mx-auto pt-0 pb-6">
+      <UserDashboardHeader activeTab="my-products" />
       {/* Title Header Section */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>

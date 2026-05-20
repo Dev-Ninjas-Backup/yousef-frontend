@@ -44,7 +44,7 @@ export default function PasswordChangeForm({
   };
 
   return (
-    <div className="p-4 sm:p-5 bg-white border border-gray-100 rounded-2xl shadow-sm">
+    <div className="p-4 sm:p-5 bg-[#F8FAFC] border border-gray-100/80 rounded-xl">
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-3 sm:gap-4 flex-1">
           {/* Icon Wrapper */}

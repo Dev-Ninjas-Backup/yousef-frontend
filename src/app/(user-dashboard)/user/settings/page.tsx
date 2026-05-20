@@ -13,7 +13,8 @@ import {
   MessageSquare,
   Sparkles,
   Crown,
-  ClipboardCheck
+  ClipboardCheck,
+  ShieldCheck
 } from "lucide-react";
 import NotificationsSection from "./_components/NotificationsSection";
 import PasswordChangeForm from "./_components/PasswordChangeForm";
@@ -21,6 +22,7 @@ import DeleteAccountSection from "./_components/DeleteAccountSection";
 import { useSettingsManagement } from "./_components/useSettingsManagement";
 import { useGetUserProfileQuery } from "@/store/api/userApi";
 import { useGetMyProductsQuery } from "@/store/api/sparePartsApi";
+import UserDashboardHeader from "@/components/shared/dashboard/user/UserDashboardHeader";
 
 export default function UserSettingsPage() {
   const {
@@ -65,10 +67,12 @@ export default function UserSettingsPage() {
   }
 
   return (
-    <div className="w-full py-4 max-w-7xl mx-auto">
+    <div className="w-full pt-1 pb-6 max-w-7xl mx-auto">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 items-start">
         {/* Left Column (Settings) */}
         <div className="lg:col-span-2 space-y-6 sm:space-y-8">
+          <UserDashboardHeader activeTab="settings" />
+
           {/* Header */}
           <div>
             <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">
@@ -85,14 +89,20 @@ export default function UserSettingsPage() {
           />
 
           {/* Account Actions Section */}
-          <div className="space-y-4">
-            <div>
-              <h2 className="text-base sm:text-lg font-bold text-gray-900 mb-1">
-                Account Actions
-              </h2>
-              <p className="text-sm text-gray-500">
-                Manage your security and account preferences
-              </p>
+          <div className="bg-white rounded-2xl border border-gray-100 p-5 sm:p-6 shadow-sm">
+            {/* Section Header */}
+            <div className="flex items-start gap-4 mb-6">
+              <div className="p-3 bg-blue-50 text-blue-600 rounded-full shrink-0">
+                <ShieldCheck className="w-5 h-5" />
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-gray-900 mb-1">
+                  Account Actions
+                </h2>
+                <p className="text-sm text-gray-500">
+                  Manage your security and account preferences
+                </p>
+              </div>
             </div>
             
             <div className="space-y-4">

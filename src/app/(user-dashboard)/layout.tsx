@@ -8,11 +8,13 @@ import { FloatingChatWidget } from "@/components/chat/FloatingChatWidget";
 export default function UserLayout({ children }: { children: ReactNode }) {
   return (
     <ProtectedRoute requiredRole={["CAR_OWNER"]} redirectTo="/user-auth">
-      <div className="px-[5%] mx-auto min-h-screen bg-gray-50">
-        <UserNavbar />
-        <main className=" p-4 sm:p-6 lg:p-8">
-          <div className="">{children}</div>
-        </main>
+      <div className="min-h-screen bg-gray-50 w-full px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <UserNavbar />
+          <main className="pt-4 pb-8">
+            <div className="">{children}</div>
+          </main>
+        </div>
         <FloatingChatWidget />
       </div>
     </ProtectedRoute>
