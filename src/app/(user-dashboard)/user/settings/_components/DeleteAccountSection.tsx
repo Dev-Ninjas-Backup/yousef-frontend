@@ -11,7 +11,7 @@ export default function DeleteAccountSection({
   const [showConfirm, setShowConfirm] = useState(false);
 
   return (
-    <div className="p-4 sm:p-5 bg-[#FFF5F5] border border-red-100 rounded-2xl shadow-sm">
+    <div className="p-4 sm:p-5 bg-[#FFF5F5] border border-red-100/80 rounded-xl">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-start sm:items-center gap-3 sm:gap-4 flex-1">
           {/* Icon Wrapper */}
