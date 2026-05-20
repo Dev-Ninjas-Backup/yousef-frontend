@@ -9,7 +9,7 @@ import Empowering from "@/assets/about/story/empowering.png";
 
 export default function StorySection() {
   return (
-    <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white font-sans">
+    <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white">
       <div className="max-w-[1280px] mx-auto space-y-24 md:space-y-32">
         
         {/* Our Story Block */}
@@ -41,27 +41,27 @@ export default function StorySection() {
             </p>
 
             {/* Features Row - Single Container */}
-            <div className="mt-4 flex flex-wrap sm:flex-nowrap items-center justify-between gap-4 bg-[#f6f9fc] rounded-[24px] p-6 lg:px-8 lg:py-6">
-              <div className="flex items-start gap-3">
-                <Shield className="w-[26px] h-[26px] text-blue-600 shrink-0" strokeWidth={1.5} />
+            <div className="mt-4 flex flex-wrap sm:flex-nowrap items-center justify-between gap-4 bg-[#f6f9fc] rounded-[24px] p-6 lg:px-8 lg:py-6 select-none">
+              <div className="flex items-start gap-3 p-2 rounded-xl transition-all duration-300 hover:bg-white hover:shadow-[0_8px_25px_rgba(0,0,0,0.04)] hover:-translate-y-0.5 group cursor-default">
+                <Shield className="w-[26px] h-[26px] text-blue-600 shrink-0 transition-transform duration-300 group-hover:scale-110" strokeWidth={1.5} />
                 <div>
-                  <h4 className="font-bold text-gray-900 text-[15px]">Honest</h4>
+                  <h4 className="font-bold text-gray-900 text-[15px] transition-colors duration-300 group-hover:text-blue-600">Honest</h4>
                   <p className="text-gray-500 text-[13px] leading-tight mt-0.5">No hidden agendas</p>
                 </div>
               </div>
               
-              <div className="flex items-start gap-3">
-                <Award className="w-[26px] h-[26px] text-blue-600 shrink-0" strokeWidth={1.5} />
+              <div className="flex items-start gap-3 p-2 rounded-xl transition-all duration-300 hover:bg-white hover:shadow-[0_8px_25px_rgba(0,0,0,0.04)] hover:-translate-y-0.5 group cursor-default">
+                <Award className="w-[26px] h-[26px] text-blue-600 shrink-0 transition-transform duration-300 group-hover:scale-110" strokeWidth={1.5} />
                 <div>
-                  <h4 className="font-bold text-gray-900 text-[15px]">Reliable</h4>
+                  <h4 className="font-bold text-gray-900 text-[15px] transition-colors duration-300 group-hover:text-blue-600">Reliable</h4>
                   <p className="text-gray-500 text-[13px] leading-tight mt-0.5">You can count on</p>
                 </div>
               </div>
 
-              <div className="flex items-start gap-3">
-                <Gem className="w-[26px] h-[26px] text-blue-600 shrink-0" strokeWidth={1.5} />
+              <div className="flex items-start gap-3 p-2 rounded-xl transition-all duration-300 hover:bg-white hover:shadow-[0_8px_25px_rgba(0,0,0,0.04)] hover:-translate-y-0.5 group cursor-default">
+                <Gem className="w-[26px] h-[26px] text-blue-600 shrink-0 transition-transform duration-300 group-hover:scale-110" strokeWidth={1.5} />
                 <div>
-                  <h4 className="font-bold text-gray-900 text-[15px]">Quality</h4>
+                  <h4 className="font-bold text-gray-900 text-[15px] transition-colors duration-300 group-hover:text-blue-600">Quality</h4>
                   <p className="text-gray-500 text-[13px] leading-tight mt-0.5">That drives loyalty</p>
                 </div>
               </div>
@@ -70,17 +70,17 @@ export default function StorySection() {
 
           {/* Image Content */}
           <motion.div 
-            className="relative rounded-[32px] overflow-hidden aspect-[4/3.2] shadow-xl flex flex-col justify-end p-6 md:p-8"
+            className="relative rounded-[32px] overflow-hidden aspect-[4/3.2] shadow-xl flex flex-col justify-end p-6 md:p-8 transition-all duration-500 hover:shadow-2xl hover:-translate-y-1.5 group"
             initial={{ opacity: 0, x: 40 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
           >
-            <Image src={OurStory} alt="Mechanic working on an engine" fill className="object-cover" />
+            <Image src={OurStory} alt="Mechanic working on an engine" fill className="object-cover transition-transform duration-700 ease-out group-hover:scale-105" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
             
             {/* Dark solid card */}
-            <div className="relative z-10 bg-[#161b22] rounded-[20px] p-5 md:px-6 md:py-5 flex items-center gap-4 shadow-2xl w-fit">
+            <div className="relative z-10 bg-[#161b22]/90 backdrop-blur-sm border border-white/5 rounded-[20px] p-5 md:px-6 md:py-5 flex items-center gap-4 shadow-2xl w-fit transition-all duration-300 hover:scale-105 hover:bg-[#161b22] hover:border-white/15 select-none">
               <div className="w-[42px] h-[42px] rounded-full bg-blue-500 flex items-center justify-center shrink-0">
                  <Heart className="w-5 h-5 text-white" fill="currentColor" />
               </div>
@@ -97,13 +97,13 @@ export default function StorySection() {
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           {/* Image Content (Left) */}
           <motion.div 
-            className="order-2 lg:order-1 relative rounded-[32px] overflow-hidden aspect-[4/3.2] shadow-xl"
+            className="order-2 lg:order-1 relative rounded-[32px] overflow-hidden aspect-[4/3.2] shadow-xl transition-all duration-500 hover:shadow-2xl hover:-translate-y-1.5 group"
             initial={{ opacity: 0, x: -40 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
           >
-            <Image src={OurMission} alt="Mechanic opening car trunk" fill className="object-cover" />
+            <Image src={OurMission} alt="Mechanic opening car trunk" fill className="object-cover transition-transform duration-700 ease-out group-hover:scale-105" />
             <div className="absolute inset-0 bg-black/5" />
           </motion.div>
 
@@ -140,20 +140,20 @@ export default function StorySection() {
             </p>
 
             {/* Features Row - Separate Chips */}
-            <div className="mt-4 flex flex-wrap lg:flex-nowrap items-center gap-3">
-              <div className="flex items-center gap-3 bg-[#f6f9fc] rounded-[16px] py-3.5 px-4 flex-1 min-w-[140px]">
-                <Users className="w-6 h-6 text-blue-600 shrink-0" strokeWidth={1.5} />
-                <p className="font-bold text-gray-900 text-[13px] leading-[1.3]">Built for<br/>Car Owners</p>
+            <div className="mt-4 flex flex-wrap lg:flex-nowrap items-center gap-3 select-none">
+              <div className="flex items-center gap-3 bg-[#f6f9fc] rounded-[16px] py-3.5 px-4 flex-1 min-w-[140px] transition-all duration-300 hover:bg-white hover:shadow-[0_8px_25px_rgba(0,0,0,0.04)] hover:-translate-y-0.5 border border-transparent hover:border-blue-50 group cursor-default">
+                <Users className="w-6 h-6 text-blue-600 shrink-0 transition-transform duration-300 group-hover:scale-110" strokeWidth={1.5} />
+                <p className="font-bold text-gray-900 text-[13px] leading-[1.3] transition-colors duration-300 group-hover:text-blue-600">Built for<br/>Car Owners</p>
               </div>
               
-              <div className="flex items-center gap-3 bg-[#f6f9fc] rounded-[16px] py-3.5 px-4 flex-1 min-w-[140px]">
-                <MapPin className="w-6 h-6 text-blue-600 shrink-0" strokeWidth={1.5} />
-                <p className="font-bold text-gray-900 text-[13px] leading-[1.3]">UAE-Wide<br/>Coverage</p>
+              <div className="flex items-center gap-3 bg-[#f6f9fc] rounded-[16px] py-3.5 px-4 flex-1 min-w-[140px] transition-all duration-300 hover:bg-white hover:shadow-[0_8px_25px_rgba(0,0,0,0.04)] hover:-translate-y-0.5 border border-transparent hover:border-blue-50 group cursor-default">
+                <MapPin className="w-6 h-6 text-blue-600 shrink-0 transition-transform duration-300 group-hover:scale-110" strokeWidth={1.5} />
+                <p className="font-bold text-gray-900 text-[13px] leading-[1.3] transition-colors duration-300 group-hover:text-blue-600">UAE-Wide<br/>Coverage</p>
               </div>
 
-              <div className="flex items-center gap-3 bg-[#f6f9fc] rounded-[16px] py-3.5 px-4 flex-1 min-w-[140px]">
-                <ShieldCheck className="w-6 h-6 text-blue-600 shrink-0" strokeWidth={1.5} />
-                <p className="font-bold text-gray-900 text-[13px] leading-[1.3]">Focused on<br/>Reliability</p>
+              <div className="flex items-center gap-3 bg-[#f6f9fc] rounded-[16px] py-3.5 px-4 flex-1 min-w-[140px] transition-all duration-300 hover:bg-white hover:shadow-[0_8px_25px_rgba(0,0,0,0.04)] hover:-translate-y-0.5 border border-transparent hover:border-blue-50 group cursor-default">
+                <ShieldCheck className="w-6 h-6 text-blue-600 shrink-0 transition-transform duration-300 group-hover:scale-110" strokeWidth={1.5} />
+                <p className="font-bold text-gray-900 text-[13px] leading-[1.3] transition-colors duration-300 group-hover:text-blue-600">Focused on<br/>Reliability</p>
               </div>
             </div>
           </motion.div>
@@ -189,33 +189,33 @@ export default function StorySection() {
             </p>
 
             {/* Features Row - 3 Vertical Cards */}
-            <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="bg-[#f6f9fc] rounded-[24px] p-5 lg:p-6 flex flex-col gap-4">
-                <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
-                  <Users className="w-5 h-5 text-blue-600" />
+            <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-4 select-none">
+              <div className="bg-[#f6f9fc] rounded-[24px] p-5 lg:p-6 flex flex-col gap-4 transition-all duration-300 hover:bg-white hover:shadow-[0_12px_30px_rgba(0,0,0,0.06)] hover:-translate-y-1 border border-transparent hover:border-blue-50 group cursor-default">
+                <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center shrink-0 transition-colors duration-300 group-hover:bg-blue-600 group-hover:text-white">
+                  <Users className="w-5 h-5 text-blue-600 group-hover:text-white transition-colors duration-300" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-gray-900 text-[14px] leading-tight">One Platform</h4>
+                  <h4 className="font-bold text-gray-900 text-[14px] leading-tight transition-colors duration-300 group-hover:text-blue-600">One Platform</h4>
                   <p className="text-gray-500 text-[13px] leading-[1.4] mt-1.5">All automotive needs, connected in one place.</p>
                 </div>
               </div>
               
-              <div className="bg-[#f6f9fc] rounded-[24px] p-5 lg:p-6 flex flex-col gap-4">
-                <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
-                  <Shield className="w-5 h-5 text-blue-600" />
+              <div className="bg-[#f6f9fc] rounded-[24px] p-5 lg:p-6 flex flex-col gap-4 transition-all duration-300 hover:bg-white hover:shadow-[0_12px_30px_rgba(0,0,0,0.06)] hover:-translate-y-1 border border-transparent hover:border-blue-50 group cursor-default">
+                <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center shrink-0 transition-colors duration-300 group-hover:bg-blue-600 group-hover:text-white">
+                  <Shield className="w-5 h-5 text-blue-600 group-hover:text-white transition-colors duration-300" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-gray-900 text-[14px] leading-tight">Future-Ready</h4>
+                  <h4 className="font-bold text-gray-900 text-[14px] leading-tight transition-colors duration-300 group-hover:text-blue-600">Future-Ready</h4>
                   <p className="text-gray-500 text-[13px] leading-[1.4] mt-1.5">Powered by innovation and technology.</p>
                 </div>
               </div>
 
-              <div className="bg-[#f6f9fc] rounded-[24px] p-5 lg:p-6 flex flex-col gap-4">
-                <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
-                  <Heart className="w-5 h-5 text-blue-600" />
+              <div className="bg-[#f6f9fc] rounded-[24px] p-5 lg:p-6 flex flex-col gap-4 transition-all duration-300 hover:bg-white hover:shadow-[0_12px_30px_rgba(0,0,0,0.06)] hover:-translate-y-1 border border-transparent hover:border-blue-50 group cursor-default">
+                <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center shrink-0 transition-colors duration-300 group-hover:bg-blue-600 group-hover:text-white">
+                  <Heart className="w-5 h-5 text-blue-600 group-hover:text-white transition-colors duration-300" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-gray-900 text-[14px] leading-tight">Built on Care</h4>
+                  <h4 className="font-bold text-gray-900 text-[14px] leading-tight transition-colors duration-300 group-hover:text-blue-600">Built on Care</h4>
                   <p className="text-gray-500 text-[13px] leading-[1.4] mt-1.5">Customer satisfaction drives everything we do.</p>
                 </div>
               </div>
@@ -224,17 +224,17 @@ export default function StorySection() {
 
           {/* Image Content */}
           <motion.div 
-            className="relative rounded-[32px] overflow-hidden aspect-[4/3.5] shadow-xl flex flex-col justify-end p-6 md:p-8"
+            className="relative rounded-[32px] overflow-hidden aspect-[4/3.5] shadow-xl flex flex-col justify-end p-6 md:p-8 transition-all duration-500 hover:shadow-2xl hover:-translate-y-1.5 group"
             initial={{ opacity: 0, x: 40 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
           >
-            <Image src={OurVision} alt="Mechanic under car" fill className="object-cover" />
+            <Image src={OurVision} alt="Mechanic under car" fill className="object-cover transition-transform duration-700 ease-out group-hover:scale-105" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
             
             {/* Dark glass card */}
-            <div className="relative z-10 bg-[#1a202c]/90 backdrop-blur-md rounded-[20px] p-5 md:px-6 md:py-5 flex items-center gap-5 shadow-2xl w-fit">
+            <div className="relative z-10 bg-[#1a202c]/90 backdrop-blur-md border border-white/5 rounded-[20px] p-5 md:px-6 md:py-5 flex items-center gap-5 shadow-2xl w-fit transition-all duration-300 hover:scale-105 hover:bg-[#1a202c] hover:border-white/15 select-none">
               <div className="flex items-center justify-center shrink-0">
                  <Target className="w-10 h-10 text-blue-400" strokeWidth={1.5} />
               </div>
@@ -259,12 +259,12 @@ export default function StorySection() {
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
             
             {/* Image Left */}
-            <div className="relative rounded-[32px] overflow-hidden aspect-[4/4.5] shadow-xl flex flex-col justify-end p-6 md:p-8">
-              <Image src={Empowering} alt="Wrenches and tools" fill className="object-cover" />
+            <div className="relative rounded-[32px] overflow-hidden aspect-[4/4.5] shadow-xl flex flex-col justify-end p-6 md:p-8 transition-all duration-500 hover:shadow-2xl hover:-translate-y-1.5 group">
+              <Image src={Empowering} alt="Wrenches and tools" fill className="object-cover transition-transform duration-700 ease-out group-hover:scale-105" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
               
               {/* Dark Card */}
-              <div className="relative z-10 bg-[#161b22]/95 backdrop-blur-sm rounded-[24px] p-6 flex items-center gap-5 shadow-2xl w-fit">
+              <div className="relative z-10 bg-[#161b22]/90 backdrop-blur-sm border border-white/5 rounded-[24px] p-6 flex items-center gap-5 shadow-2xl w-fit transition-all duration-300 hover:scale-105 hover:bg-[#161b22] hover:border-white/15 select-none">
                 <div className="w-[46px] h-[46px] rounded-full bg-blue-600/20 flex items-center justify-center shrink-0">
                    <Users className="w-5 h-5 text-blue-500" />
                 </div>
@@ -295,33 +295,33 @@ export default function StorySection() {
               </div>
 
               {/* Vertical Features */}
-              <div className="flex flex-col gap-7">
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
-                    <Users className="w-5 h-5 text-blue-600" />
+              <div className="flex flex-col gap-7 select-none">
+                <div className="flex items-start gap-4 p-3 rounded-2xl transition-all duration-300 hover:bg-white hover:shadow-[0_8px_25px_rgba(0,0,0,0.04)] hover:-translate-y-0.5 border border-transparent hover:border-blue-50/50 group cursor-default">
+                  <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center shrink-0 transition-colors duration-300 group-hover:bg-blue-600 group-hover:text-white">
+                    <Users className="w-5 h-5 text-blue-600 group-hover:text-white transition-colors duration-300" />
                   </div>
                   <div className="mt-1">
-                    <h4 className="font-bold text-gray-900 text-[15px]">User-Centric</h4>
+                    <h4 className="font-bold text-gray-900 text-[15px] transition-colors duration-300 group-hover:text-blue-600">User-Centric</h4>
                     <p className="text-gray-500 text-[14px] leading-relaxed mt-1">Transparent with user reviews and service providers in one place.</p>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
-                    <Link2 className="w-5 h-5 text-blue-600" />
+                <div className="flex items-start gap-4 p-3 rounded-2xl transition-all duration-300 hover:bg-white hover:shadow-[0_8px_25px_rgba(0,0,0,0.04)] hover:-translate-y-0.5 border border-transparent hover:border-blue-50/50 group cursor-default">
+                  <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center shrink-0 transition-colors duration-300 group-hover:bg-blue-600 group-hover:text-white">
+                    <Link2 className="w-5 h-5 text-blue-600 group-hover:text-white transition-colors duration-300" />
                   </div>
                   <div className="mt-1">
-                    <h4 className="font-bold text-gray-900 text-[15px]">Instant Connection</h4>
+                    <h4 className="font-bold text-gray-900 text-[15px] transition-colors duration-300 group-hover:text-blue-600">Instant Connection</h4>
                     <p className="text-gray-500 text-[14px] leading-relaxed mt-1">Easily navigate between garages, spare parts sellers, and towing services.</p>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
-                    <ShieldCheck className="w-5 h-5 text-blue-600" />
+                <div className="flex items-start gap-4 p-3 rounded-2xl transition-all duration-300 hover:bg-white hover:shadow-[0_8px_25px_rgba(0,0,0,0.04)] hover:-translate-y-0.5 border border-transparent hover:border-blue-50/50 group cursor-default">
+                  <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center shrink-0 transition-colors duration-300 group-hover:bg-blue-600 group-hover:text-white">
+                    <ShieldCheck className="w-5 h-5 text-blue-600 group-hover:text-white transition-colors duration-300" />
                   </div>
                   <div className="mt-1">
-                    <h4 className="font-bold text-gray-900 text-[15px]">Transparency First</h4>
+                    <h4 className="font-bold text-gray-900 text-[15px] transition-colors duration-300 group-hover:text-blue-600">Transparency First</h4>
                     <p className="text-gray-500 text-[14px] leading-relaxed mt-1">Honest reviews, real-time updates, and open communication build loyalty.</p>
                   </div>
                 </div>

@@ -38,7 +38,7 @@ export default function AboutHero() {
             {/* Badge */}
             <motion.div
               variants={{ hidden: { opacity: 0, y: -20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5 } } }}
-              className="inline-flex items-center gap-2 mb-6 bg-white/10 backdrop-blur-md border border-white/20 px-4 py-2 rounded-full w-fit"
+              className="inline-flex items-center gap-2 mb-6 bg-white/10 backdrop-blur-md border border-white/20 px-4 py-2 rounded-full w-fit transition-all duration-300 hover:scale-105 hover:bg-white/25 hover:border-white/35 cursor-default select-none"
             >
               <Sparkles className="w-4 h-4 text-yellow-400" />
               <span className="text-white text-sm font-semibold tracking-wide">{trans.hero.established}</span>
@@ -82,7 +82,7 @@ export default function AboutHero() {
               ].map((chip, i) => (
                 <div
                   key={i}
-                  className="flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/15 text-white text-sm px-4 py-2 rounded-full"
+                  className="flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/15 text-white text-sm px-4 py-2 rounded-full transition-all duration-300 hover:scale-105 hover:bg-white/25 hover:border-white/35 cursor-default select-none shadow-sm hover:shadow-md"
                 >
                   <span className="text-blue-300">{chip.icon}</span>
                   {chip.label}

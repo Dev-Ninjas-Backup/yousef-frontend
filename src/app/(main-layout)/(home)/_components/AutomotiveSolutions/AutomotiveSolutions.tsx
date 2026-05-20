@@ -45,7 +45,7 @@ const AutomotiveSolutions: React.FC = () => {
 
         <StaggerOnScroll className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-8">
           {services.map((service) => (
-            <AnimateOnScroll key={service.title} variants={scaleIn}>
+            <AnimateOnScroll key={service.title} variants={scaleIn} className="h-full">
               <ServiceCard
                 icon={service.icon}
                 title={service.title}

@@ -53,12 +53,12 @@ const Footer: React.FC = () => {
 
           {/* Column 3 */}
           <div className="col-span-1 flex flex-col items-start space-y-4">
-            <h3 className="font-bold text-gray-900 text-base">Help</h3>
+            <h3 className="font-bold text-gray-900 text-base">{trans.bottomLinks.legal}</h3>
             <div className="flex flex-col space-y-3 text-sm text-gray-500">
-              <Link href="#" className="hover:text-blue-600">How It Works</Link>
-              <Link href="#" className="hover:text-blue-600">Tips for Buyers</Link>
-              <Link href="#" className="hover:text-blue-600">Tips for Sellers</Link>
-              <Link href="#" className="hover:text-blue-600">FAQs</Link>
+              <Link href="#" className="hover:text-blue-600">{trans.bottomLinks.privacyPolicy}</Link>
+              <Link href="#" className="hover:text-blue-600">{trans.bottomLinks.termsOfUse}</Link>
+              <Link href="#" className="hover:text-blue-600">{trans.bottomLinks.legal}</Link>
+              <Link href="#" className="hover:text-blue-600">{trans.bottomLinks.siteMap}</Link>
             </div>
           </div>
 
@@ -86,16 +86,6 @@ const Footer: React.FC = () => {
           <div className="text-center lg:text-left">
             <p className="mb-1">SayaraHub connects buyers and sellers. Transactions are handled directly between users.</p>
             <p>© {currentYear} SayaraHub. All rights reserved.</p>
-          </div>
-          
-          <div className="flex flex-col items-center lg:items-end gap-2">
-            <div className="flex gap-4 md:gap-6 flex-wrap justify-center">
-              <Link href="#" className="hover:text-gray-600">{trans.bottomLinks.privacyPolicy}</Link>
-              <Link href="#" className="hover:text-gray-600">{trans.bottomLinks.termsOfUse}</Link>
-              <Link href="#" className="hover:text-gray-600">{trans.bottomLinks.legal}</Link>
-              <Link href="#" className="hover:text-gray-600">{trans.bottomLinks.siteMap}</Link>
-            </div>
-            {/* <p className="mt-1">© {currentYear} SayaraHub. All rights reserved.</p> */}
           </div>
         </div>
       </div>

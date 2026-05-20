@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import { motion } from "framer-motion";
+import Link from "next/link";
 import dualPhoneImg from "@/assets/download-app/trustedpartner/dual_phone.png";
 import { useLanguage } from "@/context/LanguageContext";
 import { downloadAppTranslations } from "@/translations/downloadApp";
@@ -11,17 +12,7 @@ const TrustedPartner: React.FC = () => {
 
   const handleAppDownload = () => {
     if (typeof window !== "undefined") {
-      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-      const isAndroid = /android/i.test(navigator.userAgent);
-      
-      if (isIOS) {
-        window.open("https://apps.apple.com/", "_blank");
-      } else if (isAndroid) {
-        window.open("https://play.google.com/store/", "_blank");
-      } else {
-        // Desktop
-        window.open("/download", "_self"); 
-      }
+      window.open("/download-app", "_self");
     }
   };
 
@@ -120,32 +111,44 @@ const TrustedPartner: React.FC = () => {
               </p>
               
               <div className="flex flex-wrap justify-center md:justify-start gap-4 mt-8">
-                <button onClick={handleAppDownload} className="h-12 md:h-14 transition-transform hover:scale-105">
+                <Link href="/download-app" className="h-12 md:h-14 transition-transform hover:scale-105 block">
                   <img src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Download_on_the_App_Store_Badge.svg" alt="Download on the App Store" className="h-full" />
-                </button>
-                <button onClick={handleAppDownload} className="h-12 md:h-14 transition-transform hover:scale-105">
+                </Link>
+                <Link href="/download-app" className="h-12 md:h-14 transition-transform hover:scale-105 block">
                   <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Get it on Google Play" className="h-full" />
-                </button>
+                </Link>
               </div>
             </motion.div>
 
             {/* Right Side: Dual Phones INSIDE the container */}
-            <div className="relative lg:flex justify-end items-center h-full hidden py-8 pr-4 lg:pr-12 z-20 pointer-events-none">
+            <motion.div 
+              className="relative lg:flex justify-end items-center h-full hidden py-8 pr-4 lg:pr-12 z-20 pointer-events-none"
+              initial={{ opacity: 0, x: 60, y: 20 }}
+              whileInView={{ opacity: 1, x: 0, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.9, delay: 0.45, ease: [0.16, 1, 0.3, 1] }}
+            >
               <img 
                 src={dualPhoneImg.src} 
                 alt="SayaraHub App Screen" 
                 className="w-auto max-h-[420px] lg:max-h-[500px] object-contain drop-shadow-2xl"
               />
-            </div>
+            </motion.div>
             
             {/* Mobile/Tablet image fallback */}
-            <div className="lg:hidden w-full flex justify-center mt-8 pb-8 px-4 relative z-20">
+            <motion.div 
+              className="lg:hidden w-full flex justify-center mt-8 pb-8 px-4 relative z-20"
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.45, ease: "easeOut" }}
+            >
                <img 
                 src={dualPhoneImg.src} 
                 alt="SayaraHub App Screen" 
                 className="w-full max-w-[350px] h-auto object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.3)]"
               />
-            </div>
+            </motion.div>
 
           </div>
         </motion.div>

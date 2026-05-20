@@ -1,10 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { MapPin, Star, Phone, MessageCircle } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { MapPin, Star, Phone, MessageCircle, BadgeCheck, Clock, Navigation } from "lucide-react";
 import Image from "next/image";
 import garageBg from "@/assets/service/garage/technical_checking_car_transmission.jpg";
 import ChatDialog from "../chat/ChatDialog";
@@ -46,7 +45,6 @@ export default function GarageHero({
     if (!ownerId) return;
     
     try {
-      // Create or get existing conversation with garage owner
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/private-chat/send-message/${ownerId}`, {
         method: 'POST',
         headers: {
@@ -62,7 +60,6 @@ export default function GarageHero({
       const data = await response.json();
       
       if (data.success) {
-        // Trigger FloatingChatWidget to open with this conversation
         const event = new CustomEvent('openChat', {
           detail: {
             userId: ownerId,
@@ -92,119 +89,97 @@ export default function GarageHero({
     }
   };
 
+  const currentStatus = operatingHours[0]?.status || "Open";
+  const currentHours = operatingHours[0]?.hours || "8:00 AM - 8:00 PM";
+
   return (
-    <section className="relative h-[400px] md:h-[720px] w-full mb-[150px] md:mb-[350px]">
-      <div className="absolute inset-0">
-        <Image
-          src={coverPhoto || garageBg}
-          alt={name}
-          fill
-          className="object-cover"
-          priority
-        />
-        <div className="absolute inset-0 bg-black/60 " />
-      </div>
+    <section className="bg-white pt-24 pb-6 border-b border-slate-100">
+      <div className="container mx-auto px-4 max-w-7xl">
+        
+        {/* Full-width Wide Banner Image */}
+        <div className="relative w-full h-[250px] sm:h-[350px] md:h-[480px] rounded-3xl overflow-hidden shadow-sm group mb-8">
+          <Image
+            src={coverPhoto || garageBg}
+            alt={name}
+            fill
+            className="object-cover transition-transform duration-700 group-hover:scale-102"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+          
+          {/* Distance overlay badge */}
+          <div className="absolute bottom-6 left-6 bg-white/90 backdrop-blur-md px-4 py-2 rounded-xl flex items-center gap-2 shadow-md">
+            <MapPin className="w-4 h-4 text-[#2563EB]" />
+            <span className="text-sm font-bold text-slate-800">{distance}</span>
+          </div>
+        </div>
 
-      <div className="absolute left-1/2 top-1/2 md:top-3/4 -translate-x-1/2 w-full max-w-6xl px-4 z-10">
-        <Card className="w-full bg-white p-6 md:p-10 shadow-md rounded-2xl">
-          <div className="">
-            <div className="flex-1">
-              <div className="flex items-center gap-3 mb-3 justify-between">
-                <div className="flex items-center gap-3">
-                  <h1 className="text-base md:text-4xl font-bold text-gray-900">
-                    {name}
-                  </h1>
-                  <div className="w-2 h-2 rounded-full bg-green-500" />
-                </div>
+        {/* Header Block: Title, Info, and CTA buttons */}
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 pb-6">
+          <div className="space-y-3">
+            {/* Title & Verified Badge */}
+            <div className="flex items-center gap-3">
+              <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
+                {name}
+              </h1>
+              <BadgeCheck className="w-8 h-8 text-white fill-[#1877F2] shrink-0" />
+            </div>
 
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="self-start rounded-md border px-6 border-blue-500 text-sm md:text-base"
-                  onClick={handleSeeLocationScroll}
-                >
-                  <MapPin className="mr-2 h-5 w-5" />
-                  {trans.seeLocation}
-                </Button>
+            {/* Ratings & Quick details */}
+            <div className="flex flex-wrap items-center gap-4 text-sm md:text-base">
+              <div className="flex items-center gap-1.5">
+                <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                <span className="font-extrabold text-slate-900">{rating > 0 ? rating.toFixed(1) : "0.0"}</span>
+                <span className="text-slate-500">({reviews > 0 ? `${reviews} reviews` : "No reviews yet"})</span>
               </div>
-
-              <div className="flex items-center gap-2 text-base mb-2">
-                {reviews > 0 ? (
-                  <>
-                    <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
-                    <span className="font-medium">{rating.toFixed(1)}</span>
-                    <span className="text-gray-600">({reviews} reviews)</span>
-                  </>
-                ) : (
-                  <span className="text-sm text-gray-400">No reviews yet</span>
-                )}
-                <span className="text-gray-400 mx-1"> • </span>
-                <span className="text-gray-600">{distance}</span>
-              </div>
-
-              <div className="flex flex-wrap gap-2 mb-2">
-                <div className="flex justify-items-center items-center gap-2">
-                  {services.map((service, index) => (
-                    <span
-                      key={index}
-                      className="text-xs md:text-base font-medium text-gray-700 flex items-center"
-                    >
-                      {service}
-                      <span className="text-gray-400 mx-1">•</span>
-                    </span>
-                  ))}
-                </div>
-
-                <div className="flex gap-3">
-                  <Button
-                    onClick={handleMessage}
-                    size="lg"
-                    className="bg-blue-600 hover:bg-blue-700 rounded-xl w-10 h-10 md:w-12 md:h-12 p-0"
-                  >
-                    <MessageCircle className="h-5 w-5" />
-                  </Button>
-                  <Button
-                    onClick={handleCall}
-                    size="lg"
-                    className="bg-blue-600 hover:bg-blue-700 rounded-xl w-10 h-10 md:w-12 md:h-12 p-0"
-                  >
-                    <Phone className="h-5 w-5" />
-                  </Button>
-                </div>
+              <span className="text-slate-300 hidden sm:inline">•</span>
+              
+              {/* Live Status Badge */}
+              <div className="flex items-center gap-2">
+                <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold border ${
+                  currentStatus === "Open" 
+                    ? "bg-[#F0FDF4] border-green-100 text-[#15803D]" 
+                    : "bg-red-50 border-red-100 text-red-700"
+                }`}>
+                  <span className={`w-1.5 h-1.5 rounded-full mr-1.5 ${
+                    currentStatus === "Open" ? "bg-[#16A34A] animate-pulse" : "bg-red-500"
+                  }`} />
+                  {currentStatus === "Open" ? `Open • Closes at ${currentHours.split('-')[1]?.trim() || '8:00 PM'}` : "Closed"}
+                </span>
               </div>
             </div>
           </div>
 
-          <div className="space-y-2">
-            <h2 className="text-sm md:text-3xl font-bold text-gray-900">
-              {trans.operatingHours}
-            </h2>
-            <div className="space-y-4">
-              {operatingHours.map((hour, index) => (
-                <div key={index} className="flex items-center justify-between">
-                  <div className="flex flex-col">
-                    <span className="text-sm md:text-lg font-medium text-gray-900">
-                      {hour.day}
-                    </span>
-                    <span className="text-xs md:text-sm text-gray-600">
-                      {hour.hours}
-                    </span>
-                  </div>
-                  <Badge
-                    variant="outline"
-                    className={`${
-                      hour.status === "Open"
-                        ? "bg-green-50 text-green-700 border-green-200"
-                        : "bg-red-50 text-red-700 border-red-200"
-                    } px-6 py-2 rounded-full font-sm md:text-base font-medium w-24`}
-                  >
-                    {hour.status === "Open" ? trans.open : trans.closed}
-                  </Badge>
-                </div>
-              ))}
-            </div>
+          {/* Action CTAs */}
+          <div className="flex flex-wrap items-center gap-3">
+            <Button 
+              onClick={handleSeeLocationScroll}
+              variant="outline"
+              className="bg-white border border-[#BFDBFE] hover:bg-[#EFF6FF] text-[#2563EB] font-bold rounded-xl px-6 h-12 text-sm md:text-base transition-colors"
+            >
+              <MapPin className="w-5 h-5 mr-2" />
+              See Location
+            </Button>
+            
+            <Button 
+              onClick={handleMessage}
+              className="bg-[#16A34A] hover:bg-green-700 text-white font-bold rounded-xl px-6 h-12 text-sm md:text-base border-0 transition-colors"
+            >
+              <MessageCircle className="w-5 h-5 mr-2 fill-current" />
+              Message
+            </Button>
+
+            {phone && (
+              <Button 
+                onClick={handleCall}
+                className="bg-[#2563EB] hover:bg-blue-700 text-white font-bold rounded-xl w-12 h-12 p-0 shrink-0 transition-colors"
+              >
+                <Phone className="w-5 h-5" />
+              </Button>
+            )}
           </div>
-        </Card>
+        </div>
+
       </div>
 
       <ChatDialog

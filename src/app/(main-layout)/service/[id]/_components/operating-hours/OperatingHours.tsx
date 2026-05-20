@@ -1,6 +1,9 @@
 "use client";
+
 import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
 import { motion } from "framer-motion";
+import { Clock, Calendar } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { serviceDetailsTranslations } from "@/translations/serviceDetails";
 
@@ -17,46 +20,52 @@ export default function OperatingHours({ hours }: OperatingHoursProps) {
   const trans = t(serviceDetailsTranslations);
 
   return (
-    <section className="bg-white md:py-16">
-      <div className="container mx-auto px-4">
-        <motion.h2
-          className="mb-4 md:mb-10 text-2xl md:text-4xl font-bold text-gray-900"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-        >
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-80px" }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+    >
+      <Card className="bg-white border border-slate-100 p-6 rounded-2xl shadow-sm">
+        <h3 className="text-lg font-extrabold text-slate-900 tracking-tight flex items-center gap-2 mb-5">
+          <Clock className="w-5 h-5 text-[#2563EB]" />
           {trans.operatingHours}
-        </motion.h2>
+        </h3>
 
-        <div className="max-w-2xl space-y-2 md:space-y-6">
+        <div className="space-y-4">
           {hours.map((hour, index) => (
-            <motion.div
+            <div
               key={index}
-              className="flex items-center justify-between"
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, margin: "-40px" }}
-              transition={{ duration: 0.5, delay: index * 0.07, ease: "easeOut" }}
+              className="flex items-center justify-between p-3.5 rounded-xl bg-slate-50/50 border border-slate-100/50"
             >
-              <div className="flex flex-col">
-                <span className="text-lg font-medium text-gray-900">{hour.day}</span>
-                <span className="text-sm text-gray-600">{hour.hours}</span>
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-lg bg-white border border-slate-100 flex items-center justify-center shadow-inner shrink-0">
+                  <Calendar className="w-4 h-4 text-slate-500" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-sm font-bold text-slate-900 leading-tight">
+                    {hour.day}
+                  </span>
+                  <span className="text-xs font-semibold text-slate-500 mt-0.5">
+                    {hour.hours}
+                  </span>
+                </div>
               </div>
+              
               <Badge
                 variant="outline"
-                className={`${
+                className={`px-3 py-1 rounded-full text-xs font-bold border transition-colors ${
                   hour.status === "Open"
-                    ? "bg-green-50 text-green-700 border-green-200"
+                    ? "bg-[#F0FDF4] text-[#15803D] border-green-200"
                     : "bg-red-50 text-red-700 border-red-200"
-                } px-8 py-2 rounded-full text-base font-medium w-20 md:w-32`}
+                }`}
               >
                 {hour.status === "Open" ? trans.open : trans.closed}
               </Badge>
-            </motion.div>
+            </div>
           ))}
         </div>
-      </div>
-    </section>
+      </Card>
+    </motion.div>
   );
 }

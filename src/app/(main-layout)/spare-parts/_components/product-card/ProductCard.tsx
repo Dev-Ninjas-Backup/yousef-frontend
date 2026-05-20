@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { MapPin } from "lucide-react";
+import { MapPin, Eye } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Product } from "@/store/api/sparePartsApi";
@@ -7,6 +7,7 @@ import { Product } from "@/store/api/sparePartsApi";
 interface ProductCardProps {
   product: Product;
   viewMode?: "grid" | "list";
+  showViewDetails?: boolean;
 }
 
 // Simple time ago formatter
@@ -27,7 +28,11 @@ const timeAgo = (dateString: string) => {
   return `${months} months ago`;
 };
 
-export default function ProductCard({ product, viewMode = "grid" }: ProductCardProps) {
+export default function ProductCard({ 
+  product, 
+  viewMode = "grid",
+  showViewDetails = true 
+}: ProductCardProps) {
   const condition = String(product.condition || "");
   const timeString = timeAgo(product.createdAt);
 
@@ -40,7 +45,7 @@ export default function ProductCard({ product, viewMode = "grid" }: ProductCardP
       whileHover={{ y: -4, transition: { duration: 0.2 } }}
       className="h-full"
     >
-      <Link href={`/spare-parts/product/${product.id}`} className="block h-full">
+      <Link href={`/spare-parts/product/${product.id}`} className="block h-full group">
         <div className={`h-full bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow overflow-hidden flex ${viewMode === 'list' ? 'flex-col sm:flex-row' : 'flex-col'}`}>
           {/* Image */}
           <div className={`relative bg-gray-50 overflow-hidden ${viewMode === 'list' ? 'h-[200px] sm:h-auto sm:w-[280px] shrink-0' : 'h-[180px]'}`}>
@@ -63,37 +68,63 @@ export default function ProductCard({ product, viewMode = "grid" }: ProductCardP
 
           {/* Content */}
           <div className="flex flex-col flex-1 p-4">
-            {/* Category Tag */}
-            <div className="mb-2">
-              <span className="inline-block bg-[#eff5ff] text-blue-600 text-[11px] font-medium px-2 py-0.5 rounded">
+            {/* Badges */}
+            <div className="flex flex-wrap items-center gap-1.5 mb-2">
+              <span className="inline-block bg-[#eff5ff] text-blue-600 text-[10px] font-semibold px-2 py-0.5 rounded">
                 {product.category?.name || "Spare Parts"}
+              </span>
+              <span className="inline-block bg-amber-50 text-amber-700 text-[10px] font-semibold px-2 py-0.5 rounded border border-amber-100/50">
+                {condition.charAt(0).toUpperCase() + condition.slice(1).toLowerCase()}
+              </span>
+            </div>
+
+            {/* Title */}
+            <h3 className="text-sm sm:text-base font-bold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-1 mb-1.5" title={product.partName}>
+              {product.partName || "Unknown Product"}
+            </h3>
+
+            {/* Brand & Stock */}
+            <div className="flex items-center justify-between text-[11px] text-gray-400 mb-2">
+              {product.brand ? (
+                <span>Brand: <span className="font-semibold text-gray-600">{product.brand}</span></span>
+              ) : (
+                <span>Brand: <span className="font-semibold text-gray-600">Generic</span></span>
+              )}
+              <span className={product.quantity > 0 ? "text-green-600 font-medium" : "text-red-500 font-medium"}>
+                {product.quantity > 0 ? `${product.quantity} Available` : "Sold Out"}
               </span>
             </div>
 
             {/* Price */}
-            <div className="mb-1">
-              <span className="text-lg font-bold text-gray-900">
+            <div className="mb-3">
+              <span className="text-base sm:text-lg font-extrabold text-blue-600">
                 AED {Number(product.price || 0).toLocaleString()}
               </span>
             </div>
 
-            {/* Condition & Name */}
-            <div className="mb-4">
-              <span className="text-xs text-gray-500">
-                {condition.charAt(0).toUpperCase() + condition.slice(1).toLowerCase()} • {product.partName || "Unknown Product"}
-              </span>
-            </div>
-
             {/* Footer row (Location & Time) */}
-            <div className="flex items-center justify-between mt-auto pt-4 text-[11px] text-gray-400">
+            <div className="flex items-center justify-between mt-auto pt-3 border-t border-gray-100 text-[11px] text-gray-400">
               <div className="flex items-center gap-1">
                 <MapPin className="w-3 h-3" />
                 <span>UAE</span>
               </div>
-              <div>
-                {timeString}
+              <div className="flex items-center gap-3">
+                <span className="flex items-center gap-0.5">
+                  <Eye className="w-3 h-3" />
+                  {product.views || 0}
+                </span>
+                <span>
+                  {timeString}
+                </span>
               </div>
             </div>
+
+            {/* View Details Button */}
+            {showViewDetails && (
+              <div className="mt-4 w-full bg-blue-50 text-blue-600 text-center py-2.5 rounded-lg text-xs font-semibold transition-colors group-hover:bg-blue-600 group-hover:text-white">
+                View Details
+              </div>
+            )}
           </div>
         </div>
       </Link>

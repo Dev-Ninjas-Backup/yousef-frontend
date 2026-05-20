@@ -7,20 +7,20 @@ import Link from "next/link";
 
 export default function StatsSection() {
   return (
-    <section className="py-16 md:py-24 px-4 sm:px-6 lg:px-8 bg-white font-sans">
+    <section className="py-16 md:py-24 px-4 sm:px-6 lg:px-8 bg-white">
       <div className="max-w-[1280px] mx-auto space-y-24 md:space-y-32">
         
         {/* Top Section: Feature Highlight */}
         <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
           {/* Left side: Image */}
           <motion.div 
-            className="relative rounded-[24px] overflow-hidden aspect-square shadow-lg flex flex-col justify-end p-8 md:p-10"
+            className="relative rounded-[24px] overflow-hidden aspect-square shadow-lg flex flex-col justify-end p-8 md:p-10 transition-all duration-500 hover:shadow-2xl hover:-translate-y-1.5 group"
             initial={{ opacity: 0, x: -40 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
           >
-            <Image src={AboutStats} alt="Mechanic" fill className="object-cover" priority />
+            <Image src={AboutStats} alt="Mechanic" fill className="object-cover transition-transform duration-700 ease-out group-hover:scale-105" priority />
             <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
             <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent" />
             
@@ -35,7 +35,7 @@ export default function StatsSection() {
               </div>
 
               {/* Dark glass card */}
-              <div className="bg-[#0f141e] border border-white/10 rounded-2xl p-4 md:p-5 flex items-center gap-4 shadow-2xl w-fit min-w-[260px]">
+              <div className="bg-[#0f141e]/90 backdrop-blur-sm border border-white/10 rounded-2xl p-4 md:p-5 flex items-center gap-4 shadow-2xl w-fit min-w-[260px] transition-all duration-300 hover:scale-105 hover:bg-[#0f141e] hover:border-white/20 select-none">
                 <div className="flex-shrink-0">
                    <ShieldCheck className="w-7 h-7 text-blue-500" strokeWidth={2} />
                 </div>
@@ -80,19 +80,19 @@ export default function StatsSection() {
                 { icon: Truck, title: "Get towing near your location", desc: "24/7 towing services, available when you need them." },
                 { icon: Settings, title: "Browse parts & contact sellers", desc: "Discover spare parts and connect directly with sellers." }
               ].map((item, i) => (
-                <div key={i} className="flex items-center gap-4 p-4 md:px-5 md:py-4 rounded-[16px] border border-gray-100 bg-white hover:border-gray-200 transition-colors">
-                  <div className="w-[46px] h-[46px] rounded-full bg-[#f0f5ff] text-blue-600 flex items-center justify-center shrink-0">
+                <div key={i} className="flex items-center gap-4 p-4 md:px-5 md:py-4 rounded-[16px] border border-gray-100 bg-white hover:border-blue-100 hover:shadow-[0_8px_30px_rgb(37,99,235,0.06)] hover:-translate-y-0.5 transition-all duration-300 group cursor-default">
+                  <div className="w-[46px] h-[46px] rounded-full bg-[#f0f5ff] text-blue-600 flex items-center justify-center shrink-0 transition-colors duration-300 group-hover:bg-blue-600 group-hover:text-white">
                     <item.icon className="w-5 h-5" strokeWidth={1.5} />
                   </div>
                   <div>
-                    <h4 className="font-bold text-gray-900 text-[15px] mb-0.5">{item.title}</h4>
+                    <h4 className="font-bold text-gray-900 text-[15px] mb-0.5 transition-colors duration-300 group-hover:text-blue-600">{item.title}</h4>
                     <p className="text-gray-500 text-[13px]">{item.desc}</p>
                   </div>
                 </div>
               ))}
             </div>
 
-            <Link href="/services" className="mt-3 bg-[#1d64f2] hover:bg-blue-700 text-white font-medium text-[15px] py-3 px-6 rounded-xl flex items-center gap-2 w-fit transition-colors">
+            <Link href="/service" className="mt-3 bg-[#1d64f2] hover:bg-blue-700 text-white font-medium text-[15px] py-3 px-6 rounded-xl flex items-center gap-2 w-fit transition-colors">
               Explore Services
               <ArrowRight className="w-4 h-4" strokeWidth={2} />
             </Link>
