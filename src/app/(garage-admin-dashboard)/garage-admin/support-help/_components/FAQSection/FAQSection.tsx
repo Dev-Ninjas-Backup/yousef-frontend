@@ -3,24 +3,34 @@ import { Card, CardContent } from "@/components/ui/card";
 const FAQSection = () => {
   const faqs = [
     {
-      question: "How do I add a new product listing?",
+      question: "How do I set up and manage my garage profile?",
       answer:
-        'Click the "Add New Product" button and fill in all required details including product name, category, price, and description.',
+        "Navigate to the 'My Garage' tab from the sidebar menu. Here, you can edit your garage name, location, contact details, profile and banner photos, operating hours, and list of services offered. Keeping this updated helps customers locate and contact you.",
     },
     {
-      question: "When will my listing be approved?",
+      question: "How does the product listing approval process work?",
       answer:
-        "Product listings are typically reviewed within 24-48 hours. You will receive a notification once approved.",
+        "When you upload a new product or spare part, it undergoes a quick moderation review to ensure listings contain accurate photos, categories, and descriptions. Review is typically completed within a few hours.",
     },
     {
-      question: "What are the fees for listing products?",
+      question: "What listing plan do I have as a garage owner?",
       answer:
-        "You get 3 free listings. After that, each additional listing costs 20 AED.",
+        "All registered Garage Partners use the Garage Partner Plan (AED 100/month). This tier provides you with unlimited product listings, premium search placement, a 'Verified' badge, and direct customer contact options.",
     },
     {
       question: "How do I respond to customer inquiries?",
       answer:
-        "Go to the Inquiries tab to view and respond to all customer messages directly.",
+        "Go to the 'Inquiries' tab in the sidebar. You can view all incoming messages, see which product the customer is asking about, check their contact info, and respond directly.",
+    },
+    {
+      question: "How can I promote my listings for higher visibility?",
+      answer:
+        "You can create active advertisements or promote specific products through the 'Ad & Promotion' tab. Promoted listings appear at the top of customer search pages to drive higher sales inquiry volume.",
+    },
+    {
+      question: "How do I manage my billing or cancel my plan?",
+      answer:
+        "Navigate to the 'Plans & Billing' section in your sidebar. From there, you can check your next billing date, manage your subscription plan, or request cancellation. Cancellations take effect at the end of the current billing cycle.",
     },
   ];
 

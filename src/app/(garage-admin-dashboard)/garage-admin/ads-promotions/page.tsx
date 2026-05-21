@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card"; // kept for empty-state card
 import { Plus } from "lucide-react";
 import PromotionalAdCard from "./_components/PromotionalAdCard/PromotionalAdCard";
 import PromotionsStat from "./_components/PromotionsStat/PromotionsStat";
@@ -35,8 +35,7 @@ export default function AdsPromotionsPage() {
             Promotional Pricing:
           </p>
           <p className="text-sm text-blue-800">
-            You get 2 free promotional listings. Additional listings cost 20 AED
-            each. All free listings used. New ads will require payment.
+            Promote your listings for increased visibility. Choose 3-day (49 AED) or 7-day (99 AED) promotional slots. Your Garage Partner Plan includes unlimited listings with no per-listing fees.
           </p>
         </CardContent>
       </Card>

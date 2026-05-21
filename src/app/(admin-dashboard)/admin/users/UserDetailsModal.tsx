@@ -90,7 +90,14 @@ export default function UserDetailsModal({
                       </span>
                       <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                         <Shield className="w-3 h-3 mr-1" />
-                        {user.role.replace('_', ' ')}
+                        {user.role
+                          ? user.role
+                              .replace(/_/g, " ")
+                              .toLowerCase()
+                              .split(" ")
+                              .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                              .join(" ")
+                          : ""}
                       </span>
                     </div>
                   </div>

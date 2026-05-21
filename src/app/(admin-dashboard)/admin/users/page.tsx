@@ -48,7 +48,14 @@ export default function UserManagementPage() {
       user.fullName || "",
       user.email || "",
       user.phone || "",
-      user.role.replace('_', ' ') || "",
+      user.role
+        ? user.role
+            .replace(/_/g, " ")
+            .toLowerCase()
+            .split(" ")
+            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(" ")
+        : "",
       user.isActive ? "Active" : "Inactive",
       (user.vehicles || 0).toString(),
       user.isVerified ? "Yes" : "No",
@@ -187,7 +194,16 @@ export default function UserManagementPage() {
                       )}
                       <div>
                         <p className="text-sm font-medium text-gray-900">{user.fullName}</p>
-                        <p className="text-[10px] text-blue-600 font-bold uppercase">{user.role.replace('_', ' ')}</p>
+                        <p className="text-[10px] text-blue-600 font-bold">
+                          {user.role
+                            ? user.role
+                                .replace(/_/g, " ")
+                                .toLowerCase()
+                                .split(" ")
+                                .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                                .join(" ")
+                            : ""}
+                        </p>
                       </div>
                     </div>
                   </td>

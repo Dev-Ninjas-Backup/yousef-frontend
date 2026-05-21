@@ -23,10 +23,10 @@ const PlanCard = () => {
     <div className="bg-white p-3 sm:p-4 md:p-6 rounded-xl border w-full">
       <div className="mb-4 sm:mb-6">
         <h2 className="text-base sm:text-lg md:text-xl font-semibold text-gray-900 mb-1">
-          Choose Your Plan
+          Premium Garage Plan
         </h2>
         <p className="text-xs sm:text-sm text-gray-500">
-          Select a billing cycle that works for you
+          Unlimited features and listings for your garage business
         </p>
       </div>
       <div className="flex flex-col items-center w-full">
@@ -35,10 +35,10 @@ const PlanCard = () => {
             <div className="flex items-start justify-between gap-3">
               <div>
                 <h3 className="text-sm sm:text-base md:text-lg font-semibold text-gray-900">
-                  Monthly
+                  Garage Partner Plan
                 </h3>
                 <p className="text-xs sm:text-sm text-gray-500">
-                  Billed every month
+                  Billed monthly
                 </p>
               </div>
               <CircleCheckBig className="w-5 h-5 text-green-600 flex-shrink-0" />

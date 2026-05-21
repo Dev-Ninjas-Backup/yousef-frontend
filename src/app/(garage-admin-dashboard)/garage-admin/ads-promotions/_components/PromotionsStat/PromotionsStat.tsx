@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
 import { promotionalAdApi } from "@/store/api/garageAdminApis/promotionalAd/promotionalAd";
-import { Clock, Gift, LucideIcon, TrendingUp } from "lucide-react";
+import { Clock, LucideIcon, TrendingUp } from "lucide-react";
 import React from "react";
 
 interface PromotionsStatProps {
@@ -16,13 +16,6 @@ const PromotionsStat = () => {
   const { data: promotinalStats, isLoading: promotionalStatsLoading } =
     promotionalAdApi.useGetPromotionalAdStatsQuery();
   const stats = [
-    {
-      title: "Free Listings Used",
-      value: promotinalStats?.freeListingUsed,
-      subtitle: "0 remaining",
-      icon: Gift,
-      color: "text-blue-600",
-    },
     {
       title: "Active Ads",
       value: promotinalStats?.activeAds,

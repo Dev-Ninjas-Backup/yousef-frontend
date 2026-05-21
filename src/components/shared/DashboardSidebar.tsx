@@ -73,7 +73,16 @@ const DashboardSidebar = ({
           <div className="px-4 py-3 border-b border-gray-100">
             <p className="text-sm text-gray-500">Welcome back,</p>
             <p className="font-semibold text-gray-900">{user.name}</p>
-            <p className="text-xs text-blue-600 capitalize">{user.role}</p>
+            <p className="text-xs text-blue-600 font-medium">
+              {user.role
+                ? user.role
+                    .replace(/_/g, " ")
+                    .toLowerCase()
+                    .split(" ")
+                    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                    .join(" ")
+                : ""}
+            </p>
           </div>
         )}
 

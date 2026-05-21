@@ -25,6 +25,7 @@ interface Product {
 
 interface ProductsTableProps {
   products: Product[];
+  categoryMap: Map<string, string>;
   onView: (id: string) => void;
   onEdit: (id: string) => void;
   onDelete: (id: string) => void;
@@ -32,6 +33,7 @@ interface ProductsTableProps {
 
 export function ProductsTable({
   products,
+  categoryMap,
   onView,
   onEdit,
   onDelete,
@@ -65,6 +67,9 @@ export function ProductsTable({
             <tr>
               <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">
                 Product
+              </th>
+              <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">
+                Category
               </th>
               <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">
                 Condition
@@ -117,6 +122,9 @@ export function ProductsTable({
                       </p>
                     </div>
                   </div>
+                </td>
+                <td className="py-3 px-4 text-sm text-gray-700 font-medium">
+                  {categoryMap.get(product.categoryId) || product.categoryId || "N/A"}
                 </td>
                 <td className="py-3 px-4 text-sm text-gray-700">
                   {product.condition}
@@ -204,6 +212,12 @@ export function ProductsTable({
               </div>
             </div>
             <div className="grid grid-cols-2 gap-2 text-sm">
+              <div>
+                <span className="text-gray-500">Category:</span>
+                <span className="ml-1 text-gray-900 font-medium">
+                  {categoryMap.get(product.categoryId) || product.categoryId || "N/A"}
+                </span>
+              </div>
               <div>
                 <span className="text-gray-500">Condition:</span>
                 <span className="ml-1 text-gray-900">{product.condition}</span>

@@ -101,7 +101,7 @@ export const garageAdminNavItems: NavItem[] = [
     icon: <LuMessageSquare className="text-lg" />,
   },
   {
-    label: "Subscription",
+    label: "Plans & Billing",
     path: "/garage-admin/subscription",
     icon: <CreditCard className="text-lg" />,
   },

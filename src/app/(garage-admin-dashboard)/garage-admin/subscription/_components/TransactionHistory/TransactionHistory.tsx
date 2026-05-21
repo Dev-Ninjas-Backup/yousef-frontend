@@ -19,7 +19,7 @@ const TransactionHistory = () => {
     const rows = transactions.map(t => [
       t.transactionId,
       new Date(t.createdAt).toLocaleDateString(),
-      `${t.paymentType} Subscription`,
+      `${t.paymentType} Plan`,
       t.paymentMethod,
       t.amount.toFixed(2),
       t.currency.toUpperCase(),
@@ -153,7 +153,7 @@ const TransactionHistory = () => {
                   {formatDate(transaction.createdAt)}
                 </td>
                 <td className="px-3 sm:px-4 py-3 text-xs sm:text-sm text-gray-900 whitespace-nowrap">
-                  {transaction.paymentType} Subscription
+                  {transaction.paymentType} Plan
                 </td>
                 <td className="px-3 sm:px-4 py-3 text-xs sm:text-sm text-gray-500 whitespace-nowrap">
                   {transaction.paymentMethod}
@@ -210,7 +210,7 @@ const TransactionHistory = () => {
                 </td>
                 <td className="px-3 py-2 text-gray-900">{formatDate(transaction.createdAt)}</td>
                 <td className="px-3 py-2 text-gray-900 truncate">
-                  {transaction.paymentType} Subscription
+                  {transaction.paymentType} Plan
                 </td>
                 <td className="px-3 py-2 text-gray-900">
                   {formatAmount(transaction.amount, transaction.currency)}
@@ -256,7 +256,7 @@ const TransactionHistory = () => {
             <div>
               <p className="text-xs text-gray-500 mb-1">Description</p>
               <p className="text-xs sm:text-sm text-gray-900">
-                {transaction.paymentType} Subscription
+                {transaction.paymentType} Plan
               </p>
             </div>
 
