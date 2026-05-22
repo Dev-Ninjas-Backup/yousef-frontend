@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Loader2 } from "lucide-react";
+import { Loader2, ArrowUp, ArrowDown, ArrowUpDown } from "lucide-react";
 import { LuSearch, LuDownload, LuTrash2, LuStar } from "react-icons/lu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
@@ -33,8 +33,21 @@ function StarDisplay({ rating }: { rating: number }) {
 function ReviewsContent() {
   const [search, setSearch] = useState("");
   const [ratingFilter, setRatingFilter] = useState<string>("");
+  const [dateFilter, setDateFilter] = useState<string>("All Time");
   const [page, setPage] = useState(1);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  const [sortField, setSortField] = useState<string | null>(null);
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+
+  const handleSort = (field: string) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    } else {
+      setSortField(field);
+      setSortDirection("asc");
+    }
+  };
 
   const { data: reviews, isLoading } = useGetAllClientReviewsQuery();
   const [adminDelete, { isLoading: isDeleting }] =
@@ -53,14 +66,67 @@ function ReviewsContent() {
     }
   };
 
+  // Filter
+  const filtered = (reviews ?? []).filter((r) => {
+    const matchSearch =
+      r.user?.fullName?.toLowerCase().includes(search.toLowerCase()) ||
+      r.reviewText?.toLowerCase().includes(search.toLowerCase()) ||
+      r.user?.email?.toLowerCase().includes(search.toLowerCase());
+    const matchRating = ratingFilter
+      ? Number(r.rating) === Number(ratingFilter)
+      : true;
+      
+    if (!matchSearch || !matchRating) return false;
+
+    // Date filter
+    if (dateFilter !== "All Time") {
+      const revDate = new Date(r.createdAt);
+      const now = new Date();
+      const diffTime = Math.abs(now.getTime() - revDate.getTime());
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      
+      if (dateFilter === "Today" && diffDays > 1) return false;
+      if (dateFilter === "This Week" && diffDays > 7) return false;
+      if (dateFilter === "This Month" && diffDays > 30) return false;
+      if (dateFilter === "This Year" && diffDays > 365) return false;
+    }
+    return true;
+  });
+
+  const sortedReviews = [...filtered].sort((a, b) => {
+    if (!sortField) return 0;
+    
+    let aValue: any = "";
+    let bValue: any = "";
+    
+    if (sortField === "user") {
+      aValue = a.user?.fullName || "";
+      bValue = b.user?.fullName || "";
+    } else if (sortField === "rating") {
+      aValue = Number(a.rating) || 0;
+      bValue = Number(b.rating) || 0;
+    } else if (sortField === "createdAt") {
+      aValue = new Date(a.createdAt).getTime();
+      bValue = new Date(b.createdAt).getTime();
+    }
+    
+    if (aValue < bValue) {
+      return sortDirection === "asc" ? -1 : 1;
+    }
+    if (aValue > bValue) {
+      return sortDirection === "asc" ? 1 : -1;
+    }
+    return 0;
+  });
+
   const handleExport = () => {
-    if (!filtered.length) return toast.error("No data to export.");
+    if (!sortedReviews.length) return toast.error("No data to export.");
     const headers = ["Name", "Email", "Rating", "Review", "Date"];
-    const rows = filtered.map((r) => [
-      r.user?.fullName ?? "",
-      r.user?.email ?? "",
-      r.rating,
-      r.reviewText.replace(/"/g, "'"),
+    const rows = sortedReviews.map((r) => [
+      r.user?.fullName ?? "N/A",
+      r.user?.email ?? "N/A",
+      (r.rating || 0).toString(),
+      (r.reviewText || "").replace(/"/g, '""'),
       new Date(r.createdAt).toLocaleDateString(),
     ]);
     const csv = [headers, ...rows]
@@ -73,21 +139,9 @@ function ReviewsContent() {
     link.click();
   };
 
-  // Filter
-  const filtered = (reviews ?? []).filter((r) => {
-    const matchSearch =
-      r.user?.fullName?.toLowerCase().includes(search.toLowerCase()) ||
-      r.reviewText?.toLowerCase().includes(search.toLowerCase()) ||
-      r.user?.email?.toLowerCase().includes(search.toLowerCase());
-    const matchRating = ratingFilter
-      ? Number(r.rating) === Number(ratingFilter)
-      : true;
-    return matchSearch && matchRating;
-  });
-
   // Pagination
-  const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
-  const paginated = filtered.slice(
+  const totalPages = Math.ceil(sortedReviews.length / ITEMS_PER_PAGE);
+  const paginated = sortedReviews.slice(
     (page - 1) * ITEMS_PER_PAGE,
     page * ITEMS_PER_PAGE
   );
@@ -176,6 +230,21 @@ function ReviewsContent() {
             <option value="2">2 Stars</option>
             <option value="1">1 Star</option>
           </select>
+          <select
+            value={dateFilter}
+            onChange={(e) => {
+              setDateFilter(e.target.value);
+              setPage(1);
+            }}
+            title="Filter by submission date"
+            className="px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="All Time">All Time</option>
+            <option value="Today">Submitted Today</option>
+            <option value="This Week">Submitted This Week</option>
+            <option value="This Month">Submitted This Month</option>
+            <option value="This Year">Submitted This Year</option>
+          </select>
         </div>
       </div>
 
@@ -192,17 +261,47 @@ function ReviewsContent() {
           <table className="w-full">
             <thead>
               <tr className="border-b border-gray-100 bg-gray-50">
-                <th className="text-left py-4 px-5 text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  User
+                <th
+                  onClick={() => handleSort("user")}
+                  className="text-left py-4 px-5 text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none transition-colors"
+                >
+                  <div className="flex items-center gap-1.5">
+                    User
+                    {sortField === "user" ? (
+                      sortDirection === "asc" ? <ArrowUp className="w-3.5 h-3.5 text-blue-600" /> : <ArrowDown className="w-3.5 h-3.5 text-blue-600" />
+                    ) : (
+                      <ArrowUpDown className="w-3.5 h-3.5 text-gray-400" />
+                    )}
+                  </div>
                 </th>
-                <th className="text-left py-4 px-5 text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Rating
+                <th
+                  onClick={() => handleSort("rating")}
+                  className="text-left py-4 px-5 text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none transition-colors"
+                >
+                  <div className="flex items-center gap-1.5">
+                    Rating
+                    {sortField === "rating" ? (
+                      sortDirection === "asc" ? <ArrowUp className="w-3.5 h-3.5 text-blue-600" /> : <ArrowDown className="w-3.5 h-3.5 text-blue-600" />
+                    ) : (
+                      <ArrowUpDown className="w-3.5 h-3.5 text-gray-400" />
+                    )}
+                  </div>
                 </th>
                 <th className="text-left py-4 px-5 text-xs font-semibold text-gray-600 uppercase tracking-wider">
                   Review
                 </th>
-                <th className="text-left py-4 px-5 text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Date
+                <th
+                  onClick={() => handleSort("createdAt")}
+                  className="text-left py-4 px-5 text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none transition-colors"
+                >
+                  <div className="flex items-center gap-1.5">
+                    Date
+                    {sortField === "createdAt" ? (
+                      sortDirection === "asc" ? <ArrowUp className="w-3.5 h-3.5 text-blue-600" /> : <ArrowDown className="w-3.5 h-3.5 text-blue-600" />
+                    ) : (
+                      <ArrowUpDown className="w-3.5 h-3.5 text-gray-400" />
+                    )}
+                  </div>
                 </th>
                 <th className="text-left py-4 px-5 text-xs font-semibold text-gray-600 uppercase tracking-wider">
                   Action

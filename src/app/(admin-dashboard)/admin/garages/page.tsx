@@ -3,6 +3,7 @@
 import { useState } from "react";
 import {
   useSearchGaragesQuery,
+  useLazySearchGaragesQuery,
   useUpdateGarageOwnerStatusMutation,
   useUpdateGarageStatusMutation,
   useDeleteGarageMutation,
@@ -23,6 +24,7 @@ export default function GarageManagementPage() {
   const [statusFilter, setStatusFilter] = useState<
     "APPROVE" | "PENDING" | "DECLINE" | "all"
   >("all");
+  const [dateFilter, setDateFilter] = useState<string>("all");
   const [page, setPage] = useState(1);
   const [selectedOwner, setSelectedOwner] = useState<GarageOwner | null>(null);
   const [selectedGarage, setSelectedGarage] = useState<GarageInfo | null>(null);
@@ -41,8 +43,24 @@ export default function GarageManagementPage() {
   const [updateOwnerStatus] = useUpdateGarageOwnerStatusMutation();
   const [updateGarageStatus] = useUpdateGarageStatusMutation();
   const [deleteGarage] = useDeleteGarageMutation();
+  const [triggerGetGarages] = useLazySearchGaragesQuery();
+  const [isExporting, setIsExporting] = useState(false);
 
-  const garageOwners = response?.data || [];
+  const rawGarageOwners = response?.data || [];
+  const garageOwners = rawGarageOwners.filter((owner) => {
+    if (dateFilter !== "all") {
+      const joinDate = new Date(owner.createdAt);
+      const now = new Date();
+      const diffTime = Math.abs(now.getTime() - joinDate.getTime());
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      
+      if (dateFilter === "Today" && diffDays > 1) return false;
+      if (dateFilter === "This Week" && diffDays > 7) return false;
+      if (dateFilter === "This Month" && diffDays > 30) return false;
+      if (dateFilter === "This Year" && diffDays > 365) return false;
+    }
+    return true;
+  });
   const metadata = response?.metadata;
 
   const handleOwnerApprove = async (userId: string) => {
@@ -98,47 +116,119 @@ export default function GarageManagementPage() {
     }
   };
 
-  const handleExportCSV = () => {
-    if (!garageOwners.length) {
-      alert("No data to export");
-      return;
+  const handleExportCSV = async () => {
+    try {
+      setIsExporting(true);
+      const res = await triggerGetGarages({
+        name: searchQuery || undefined,
+        status: statusFilter === "all" ? undefined : statusFilter,
+        page: 1,
+        limit: 10000,
+      }).unwrap();
+
+      const allGarageOwners = res?.data || [];
+      if (!allGarageOwners.length) {
+        alert("No data to export");
+        return;
+      }
+
+      // Filter all owners locally based on dateFilter
+      const filteredAllOwners = allGarageOwners.filter((owner) => {
+        if (dateFilter !== "all") {
+          const joinDate = new Date(owner.createdAt);
+          const now = new Date();
+          const diffTime = Math.abs(now.getTime() - joinDate.getTime());
+          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+          
+          if (dateFilter === "Today" && diffDays > 1) return false;
+          if (dateFilter === "This Week" && diffDays > 7) return false;
+          if (dateFilter === "This Month" && diffDays > 30) return false;
+          if (dateFilter === "This Year" && diffDays > 365) return false;
+        }
+        return true;
+      });
+
+      if (!filteredAllOwners.length) {
+        alert("No matching data to export");
+        return;
+      }
+
+      const getAbsoluteUrl = (path?: string) => {
+        if (!path) return "";
+        if (path.startsWith("http://") || path.startsWith("https://")) return path;
+        const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+        const cleanPath = path.startsWith("/") ? path : `/${path}`;
+        return `${baseUrl}${cleanPath}`;
+      };
+
+      const csvHeaders = [
+        "Owner Name",
+        "Owner Phone",
+        "Owner Status",
+        "Garage Name",
+        "Garage Email",
+        "Garage Phone",
+        "Garage Address",
+        "Garage Status",
+        "Trade License Document Link",
+        "Garage Logo Document Link",
+        "Created Date"
+      ];
+
+      const csvData: string[][] = [];
+      filteredAllOwners.forEach(owner => {
+        if (owner.garages && owner.garages.length > 0) {
+          owner.garages.forEach(garage => {
+            csvData.push([
+              owner.ownerName || "",
+              owner.phone || "",
+              owner.isGarageVerified ? "APPROVED" : "PENDING",
+              garage.garageName || "",
+              garage.email || "",
+              garage.garagePhone || "",
+              garage.formattedAddress || "",
+              garage.garageStatus || "",
+              getAbsoluteUrl(owner.tradeLicense),
+              getAbsoluteUrl(owner.garageLogo),
+              new Date(owner.createdAt).toLocaleDateString()
+            ]);
+          });
+        } else {
+          csvData.push([
+            owner.ownerName || "",
+            owner.phone || "",
+            owner.isGarageVerified ? "APPROVED" : "PENDING",
+            "",
+            "",
+            "",
+            "",
+            "",
+            getAbsoluteUrl(owner.tradeLicense),
+            getAbsoluteUrl(owner.garageLogo),
+            new Date(owner.createdAt).toLocaleDateString()
+          ]);
+        }
+      });
+
+      const csvContent = [csvHeaders, ...csvData]
+        .map(row => row.map(field => `"${(field || "").replace(/"/g, '""')}"`).join(","))
+        .join("\n");
+
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const link = document.createElement("a");
+      const url = URL.createObjectURL(blob);
+      link.setAttribute("href", url);
+      link.setAttribute("download", `garage-data-${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = "hidden";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to export data");
+    } finally {
+      setIsExporting(false);
     }
-
-    const csvHeaders = [
-      "Owner Name",
-      "Email",
-      "Phone",
-      "Status",
-      "Garage Name",
-      "Garage Address",
-      "Garage Status",
-      "Created Date"
-    ];
-
-    const csvData = garageOwners.map(owner => [
-      owner.ownerName || "",
-      owner.garages?.[0]?.email || "",
-      owner.phone || "",
-      owner.garageStatus || "",
-      owner.garages?.[0]?.garageName || "",
-      owner.garages?.[0]?.formattedAddress || "",
-      owner.garages?.[0]?.garageStatus || "",
-      new Date(owner.createdAt).toLocaleDateString()
-    ]);
-
-    const csvContent = [csvHeaders, ...csvData]
-      .map(row => row.map(field => `"${field}"`).join(","))
-      .join("\n");
-
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const link = document.createElement("a");
-    const url = URL.createObjectURL(blob);
-    link.setAttribute("href", url);
-    link.setAttribute("download", `garage-data-${new Date().toISOString().split('T')[0]}.csv`);
-    link.style.visibility = "hidden";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
   };
 
   if (isLoading) {
@@ -174,8 +264,19 @@ export default function GarageManagementPage() {
       <SearchFilters
         searchQuery={searchQuery}
         statusFilter={statusFilter}
-        onSearchChange={setSearchQuery}
-        onStatusChange={setStatusFilter}
+        dateFilter={dateFilter}
+        onSearchChange={(val) => {
+          setSearchQuery(val);
+          setPage(1);
+        }}
+        onStatusChange={(val) => {
+          setStatusFilter(val);
+          setPage(1);
+        }}
+        onDateChange={(val) => {
+          setDateFilter(val);
+          setPage(1);
+        }}
       />
 
       {/* Garage Owners Table */}

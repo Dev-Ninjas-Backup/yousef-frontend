@@ -71,6 +71,8 @@ interface CreateProductRequest {
   brand?: string;
   description?: string;
   isPromoted?: boolean;
+  listingPlan?: string;
+  promotedDuration?: string;
   sellerName?: string;
   sellerEmail?: string;
   sellerPhoneNumber?: string;
@@ -139,6 +141,9 @@ export const productApi = apiSlice.injectEndpoints({
         if (data.description) formData.append("description", data.description);
         if (data.isPromoted !== undefined)
           formData.append("isPromoted", data.isPromoted.toString());
+        if (data.listingPlan) formData.append("listingPlan", data.listingPlan);
+        if (data.promotedDuration)
+          formData.append("promotedDuration", data.promotedDuration);
         if (data.sellerName) formData.append("sellerName", data.sellerName);
         if (data.sellerEmail) formData.append("sellerEmail", data.sellerEmail);
         if (data.sellerPhoneNumber)
@@ -222,16 +227,18 @@ export const productApi = apiSlice.injectEndpoints({
     }),
 
     // Create Promotion Payment
-    createPromotionPayment: builder.mutation<PaymentResponse, void>({
-      query: () => ({
+    createPromotionPayment: builder.mutation<PaymentResponse, { duration?: string } | void>({
+      query: (data) => ({
         url: "/products/create-promotion-payment",
         method: "POST",
+        body: data || {},
       }),
     }),
-    createMonthlyPayment: builder.mutation<PaymentResponse, void>({
-      query: () => ({
+    createMonthlyPayment: builder.mutation<PaymentResponse, { planType?: string } | void>({
+      query: (data) => ({
         url: "/products/create-monthly-payment",
         method: "POST",
+        body: data || {},
       }),
     }),
     createPayPerPayment: builder.mutation<PaymentResponse, void>({

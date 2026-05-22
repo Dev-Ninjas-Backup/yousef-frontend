@@ -85,8 +85,8 @@ export const adminApiSlice = apiSlice.enhanceEndpoints({ addTagTypes: ['Admin'] 
 });
 
 export const {
-
   useGetAllUsersQuery,
+  useLazyGetAllUsersQuery,
   useGetUserByIdQuery,
   useDeleteUserMutation,
 } = adminApiSlice;

@@ -42,28 +42,70 @@ export default function NotificationDropdown() {
       setNotifications(JSON.parse(saved));
     } else {
       // Seed initial dummy notifications to ensure it is not empty
-      const initial: NotificationItem[] = [
-        {
-          id: "welcome",
-          type: "System",
-          title: "Welcome to SayaraHub!",
-          message: user?.role === "GARAGE_OWNER"
-            ? "Your Garage Partner Plan is now active with unlimited listings."
-            : "Welcome to SayaraHub Dashboard. Track your parts and profile here.",
-          createdAt: new Date().toISOString(),
-          read: false,
-          link: user?.role === "GARAGE_OWNER" ? "/garage-admin/subscription" : "/user/settings",
-        },
-        {
-          id: "inquiry-sample",
-          type: "CustomerInquiryAlert",
-          title: "Inquiries System Active",
-          message: "Potential buyers can now contact your business. All incoming inquiries will appear here.",
-          createdAt: new Date(Date.now() - 3600000).toISOString(),
-          read: false,
-          link: user?.role === "GARAGE_OWNER" ? "/garage-admin/inquiries" : "/user/dashboard",
-        }
-      ];
+      let initial: NotificationItem[] = [];
+      if (user?.role === "SUPER_ADMIN") {
+        initial = [
+          {
+            id: "welcome-admin",
+            type: "System",
+            title: "Welcome Admin!",
+            message: "Welcome to SayaraHub Admin Portal. Monitor user registrations, garages, and spare parts approval.",
+            createdAt: new Date().toISOString(),
+            read: false,
+            link: "/admin/dashboard",
+          },
+          {
+            id: "pending-inquiry",
+            type: "CustomerInquiryAlert",
+            title: "Toyota Camry Brake Pads Inquiry",
+            message: "A customer has sent an inquiry regarding brake pads compatibility.",
+            createdAt: new Date(Date.now() - 900000).toISOString(),
+            read: false,
+            link: "/admin/messages?tab=customer",
+          },
+          {
+            id: "pending-garage",
+            type: "UserRegistration",
+            title: "Garage Registration Pending",
+            message: "A new garage profile has been uploaded and is waiting for your review and approval.",
+            createdAt: new Date(Date.now() - 1800000).toISOString(),
+            read: false,
+            link: "/admin/garages",
+          },
+          {
+            id: "pending-part",
+            type: "ProductApproveUpdate",
+            title: "Spare Part Pending Review",
+            message: "A new spare part listing has been submitted and requires admin approval.",
+            createdAt: new Date(Date.now() - 3600000).toISOString(),
+            read: false,
+            link: "/admin/spareparts",
+          }
+        ];
+      } else {
+        initial = [
+          {
+            id: "welcome",
+            type: "System",
+            title: "Welcome to SayaraHub!",
+            message: user?.role === "GARAGE_OWNER"
+              ? "Your Garage Partner Plan is now active with unlimited listings."
+              : "Welcome to SayaraHub Dashboard. Track your parts and profile here.",
+            createdAt: new Date().toISOString(),
+            read: false,
+            link: user?.role === "GARAGE_OWNER" ? "/garage-admin/subscription" : "/user/settings",
+          },
+          {
+            id: "inquiry-sample",
+            type: "CustomerInquiryAlert",
+            title: "Inquiries System Active",
+            message: "Potential buyers can now contact your business. All incoming inquiries will appear here.",
+            createdAt: new Date(Date.now() - 3600000).toISOString(),
+            read: false,
+            link: user?.role === "GARAGE_OWNER" ? "/garage-admin/inquiries" : "/user/dashboard",
+          }
+        ];
+      }
       setNotifications(initial);
       localStorage.setItem(`sayarahub_notifications_${userId}`, JSON.stringify(initial));
     }
@@ -271,6 +313,20 @@ export default function NotificationDropdown() {
                     {getIcon(item.type)}
                   </div>
                   <div className="flex-1 min-w-0 pr-2">
+                    <div className="flex items-center gap-1.5 mb-1.5 flex-wrap">
+                      {item.type === "CustomerInquiryAlert" ? (
+                        <span className="bg-blue-100 text-blue-800 text-[9px] font-extrabold px-1.5 py-0.5 rounded uppercase tracking-wider">Customer Message</span>
+                      ) : ["UserRegistration", "ProductApproveUpdate"].includes(item.type) ? (
+                        <span className="bg-purple-100 text-purple-800 text-[9px] font-extrabold px-1.5 py-0.5 rounded uppercase tracking-wider">Garage Message</span>
+                      ) : (
+                        <span className="bg-gray-100 text-gray-800 text-[9px] font-extrabold px-1.5 py-0.5 rounded uppercase tracking-wider">System Alert</span>
+                      )}
+                      {item.type === "CustomerInquiryAlert" && (
+                        <span className="bg-red-100 text-[#FF3B30] text-[9px] font-black px-1.5 py-0.5 rounded uppercase tracking-wider animate-pulse">
+                          High Priority
+                        </span>
+                      )}
+                    </div>
                     <div className="flex items-start justify-between gap-1">
                       <p className={cn("text-xs font-semibold text-gray-950 truncate", !item.read && "font-bold")}>
                         {item.title}

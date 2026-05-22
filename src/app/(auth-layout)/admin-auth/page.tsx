@@ -47,7 +47,7 @@ export default function AdminAuth() {
       
       // Check if user is SUPER_ADMIN
       if (user.role !== 'SUPER_ADMIN') {
-        setError("Access denied. This portal is for Super Administrators only.");
+        setError("Access denied. This portal is for the Main Administrator only.");
         return;
       }
 
@@ -114,7 +114,7 @@ export default function AdminAuth() {
                 <div className="inline-flex items-center gap-3 mb-6 bg-red-500/20 text-red-400 rounded-full px-6 py-3 border border-red-500/30">
                   <Shield className="h-5 w-5" />
                   <span className="text-sm font-semibold tracking-wide">
-                    SUPER ADMIN ACCESS
+                    MAIN ADMIN ACCESS
                   </span>
                 </div>
                 

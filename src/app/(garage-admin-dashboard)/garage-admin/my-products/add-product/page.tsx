@@ -18,6 +18,7 @@ import {
   useGetUserLimitQuery,
 } from "@/store/api/garageAdminApis/products/products";
 import { useGetCategoriesQuery } from "@/store/api/garageAdminApis/categoryApi";
+import { useGetPaymentConfigQuery } from "@/store/fetures/setting.api";
 import { toast } from "sonner";
 import {
   Upload,
@@ -50,6 +51,8 @@ export default function AddProductPage() {
     useGetCategoriesQuery();
   const { data: userLimit, isLoading: userLimitLoading } =
     useGetUserLimitQuery();
+  const { data: paymentConfigData } = useGetPaymentConfigQuery();
+  const paymentConfig = paymentConfigData?.data;
 
   const [selectedPlanCard, setSelectedPlanCard] = useState<PlanCardType>("FREE");
   const [promoDuration, setPromoDuration] = useState<"3" | "7">("7");
@@ -180,6 +183,8 @@ export default function AddProductPage() {
         photos: photos.length > 0 ? photos : undefined,
         verificationImage: verificationImage || undefined,
         isPromoted: formData.isPromoted,
+        listingPlan: selectedPlanCard,
+        promotedDuration: promoDuration,
       }).unwrap();
 
       toast.success("Product created successfully!");
@@ -193,7 +198,7 @@ export default function AddProductPage() {
   // Determine if specific plan requires payment redirect
   const needsMonthlySubscription =
     ["MONTHLY_BASIC", "MONTHLY_PRO", "MONTHLY_GARAGE"].includes(selectedPlanCard) &&
-    !userLimit?.hasProductMonthly;
+    !(userLimit?.hasProductMonthly || userLimit?.hasGarageMonthly);
 
   const needsPayPer =
     selectedPlanCard === "PAY_PER" && (!userLimit || userLimit.productCredits <= 0);
@@ -301,7 +306,7 @@ export default function AddProductPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
             <div>
               <Label htmlFor="price" className="font-semibold text-gray-700">
                 Price (AED) *
@@ -342,6 +347,26 @@ export default function AddProductPage() {
                 required
                 className="mt-1.5 focus-visible:ring-indigo-500"
               />
+            </div>
+
+            <div>
+              <Label htmlFor="condition" className="font-semibold text-gray-700">
+                Condition *
+              </Label>
+              <Select
+                value={formData.condition}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, condition: value })
+                }
+              >
+                <SelectTrigger className="mt-1.5 w-full focus:ring-indigo-500">
+                  <SelectValue placeholder="Select condition" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="New">New</SelectItem>
+                  <SelectItem value="Used">Used</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             <div>
@@ -434,7 +459,7 @@ export default function AddProductPage() {
             </p>
           </div>
 
-          {userLimit?.hasProductMonthly ? (
+          {(userLimit?.hasProductMonthly || userLimit?.hasGarageMonthly) ? (
             <div className="bg-green-50/50 border border-green-200 rounded-2xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
@@ -449,7 +474,7 @@ export default function AddProductPage() {
               </div>
               <div className="bg-white border border-green-200 px-4 py-2.5 rounded-xl text-center shadow-sm shrink-0">
                 <span className="block text-xs font-semibold text-gray-500 uppercase">Billing Cycle</span>
-                <span className="font-extrabold text-green-600 text-sm">AED 100/mo</span>
+                <span className="font-extrabold text-green-600 text-sm">AED {paymentConfig?.monthlyGaragePrice || "99"}/mo</span>
               </div>
             </div>
           ) : (
@@ -477,7 +502,7 @@ export default function AddProductPage() {
                   Go to Plans & Billing
                 </Button>
                 <span className="text-xs text-gray-500">
-                  Activate your plan for AED 100/month to get unlimited listings.
+                  Activate your plan for AED {paymentConfig?.monthlyGaragePrice || "99"}/month to get unlimited listings.
                 </span>
               </div>
             </div>
@@ -579,7 +604,7 @@ export default function AddProductPage() {
                 >
                   <div className="flex items-center justify-between">
                     <span className="font-bold text-gray-955 text-sm">3 Days Promotion</span>
-                    <span className="font-black text-indigo-600 text-base">49 AED</span>
+                    <span className="font-black text-indigo-600 text-base">{paymentConfig?.promotionalAdPrice3Days || "49"} AED</span>
                   </div>
                   <ul className="text-xs text-gray-600 space-y-1.5 mt-3 pt-3 border-t">
                     <li className="flex items-center gap-1.5">
@@ -607,7 +632,7 @@ export default function AddProductPage() {
                   </span>
                   <div className="flex items-center justify-between">
                     <span className="font-bold text-gray-955 text-sm">7 Days Promotion</span>
-                    <span className="font-black text-indigo-600 text-base">99 AED</span>
+                    <span className="font-black text-indigo-600 text-base">{paymentConfig?.promotionalAdPrice7Days || "99"} AED</span>
                   </div>
                   <ul className="text-xs text-gray-600 space-y-1.5 mt-3 pt-3 border-t">
                     <li className="flex items-center gap-1.5">
@@ -677,7 +702,7 @@ export default function AddProductPage() {
 
                   {needsPromotionPayment && (
                     <div className="pt-4 border-t">
-                      <PaymentPromotion formData={formData} />
+                      <PaymentPromotion formData={formData} duration={promoDuration} />
                     </div>
                   )}
                 </div>

@@ -72,7 +72,7 @@ const DashboardNavbar = ({ onMenuToggle }: DashboardNavbarProps) => {
                   {isAdmin ? "Admin User" : user?.name || "Admin"}
                 </p>
                 <p className="text-xs text-gray-500">
-                  {isAdmin ? "Super Admin" : "Garage Admin"}
+                  {isAdmin ? "Main Admin" : "Garage Admin"}
                 </p>
               </div>
             </div>

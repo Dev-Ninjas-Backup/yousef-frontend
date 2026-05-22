@@ -228,10 +228,11 @@ export const userProductApi = apiSlice.injectEndpoints({
         method: "POST",
       }),
     }),
-    createUserMonthlyPayment: builder.mutation<PaymentResponse, void>({
-      query: () => ({
+    createUserMonthlyPayment: builder.mutation<PaymentResponse, { planType?: string } | void>({
+      query: (body) => ({
         url: "/products/create-monthly-payment",
         method: "POST",
+        body: body || { planType: "PRO" },
       }),
     }),
     createUserPayPerPayment: builder.mutation<PaymentResponse, void>({

@@ -74,14 +74,16 @@ const DashboardSidebar = ({
             <p className="text-sm text-gray-500">Welcome back,</p>
             <p className="font-semibold text-gray-900">{user.name}</p>
             <p className="text-xs text-blue-600 font-medium">
-              {user.role
-                ? user.role
-                    .replace(/_/g, " ")
-                    .toLowerCase()
-                    .split(" ")
-                    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-                    .join(" ")
-                : ""}
+              {user.role === "SUPER_ADMIN"
+                ? "Main Admin"
+                : user.role
+                  ? user.role
+                      .replace(/_/g, " ")
+                      .toLowerCase()
+                      .split(" ")
+                      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                      .join(" ")
+                  : ""}
             </p>
           </div>
         )}

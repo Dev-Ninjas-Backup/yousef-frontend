@@ -18,6 +18,7 @@ import {
   useGetUserLimitQuery,
 } from "@/store/api/garageAdminApis/products/products";
 import { useGetCategoriesQuery } from "@/store/api/garageAdminApis/categoryApi";
+import { useGetPaymentConfigQuery } from "@/store/fetures/setting.api";
 import { toast } from "sonner";
 import {
   Upload,
@@ -50,6 +51,8 @@ export default function AddProductPage() {
     useGetCategoriesQuery();
   const { data: userLimit, isLoading: userLimitLoading } =
     useGetUserLimitQuery();
+  const { data: paymentConfigData } = useGetPaymentConfigQuery();
+  const paymentConfig = paymentConfigData?.data;
 
   const [selectedPlanCard, setSelectedPlanCard] = useState<PlanCardType>("FREE");
   const [promoDuration, setPromoDuration] = useState<"3" | "7">("7");
@@ -187,6 +190,8 @@ export default function AddProductPage() {
         photos: photos.length > 0 ? photos : undefined,
         verificationImage: verificationImage || undefined,
         isPromoted: formData.isPromoted,
+        listingPlan: selectedPlanCard,
+        promotedDuration: promoDuration,
       }).unwrap();
 
       toast.success("Product created successfully!");
@@ -311,7 +316,7 @@ export default function AddProductPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
             <div>
               <Label htmlFor="price" className="font-semibold text-gray-700">
                 Price (AED) *
@@ -352,6 +357,26 @@ export default function AddProductPage() {
                 required
                 className="mt-1.5 focus-visible:ring-indigo-500"
               />
+            </div>
+
+            <div>
+              <Label htmlFor="condition" className="font-semibold text-gray-700">
+                Condition *
+              </Label>
+              <Select
+                value={formData.condition}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, condition: value })
+                }
+              >
+                <SelectTrigger className="mt-1.5 w-full focus:ring-indigo-500">
+                  <SelectValue placeholder="Select condition" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="New">New</SelectItem>
+                  <SelectItem value="Used">Used</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             <div>
@@ -482,7 +507,7 @@ export default function AddProductPage() {
                 </div>
 
                 <div className="mt-4">
-                  <h3 className="text-xl font-bold text-gray-900">First 3 Listings Only</h3>
+                  <h3 className="text-xl font-bold text-gray-900">First {paymentConfig?.freePromotionalListings || "3"} Listings Only</h3>
                   <p className="text-2xl font-extrabold text-green-600 mt-1">FREE</p>
                   <p className="text-xs text-gray-500 mt-1">Active for 30 days</p>
                 </div>
@@ -490,7 +515,7 @@ export default function AddProductPage() {
                 <ul className="mt-5 space-y-2.5 text-sm text-gray-600">
                   <li className="flex items-center gap-2">
                     <Check className="w-4.5 h-4.5 text-green-500 shrink-0" />
-                    <span>Only for first 3 products</span>
+                    <span>Only for first {paymentConfig?.freePromotionalListings || "3"} products</span>
                   </li>
                   <li className="flex items-center gap-2">
                     <Check className="w-4.5 h-4.5 text-green-500 shrink-0" />
@@ -512,12 +537,12 @@ export default function AddProductPage() {
                   <div className="space-y-2">
                     <div className="flex justify-between text-xs font-bold text-gray-700">
                       <span>You have {freeProductsLeft} free listings left</span>
-                      <span>{freeProductsUsed} of 3 used</span>
+                      <span>{freeProductsUsed} of {paymentConfig?.freePromotionalListings || "3"} used</span>
                     </div>
                     <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
                       <div
                         className="bg-green-500 h-2 rounded-full transition-all duration-300"
-                        style={{ width: `${(freeProductsUsed / 3) * 100}%` }}
+                        style={{ width: `${(freeProductsUsed / Number(paymentConfig?.freePromotionalListings || 3)) * 100}%` }}
                       />
                     </div>
                   </div>
@@ -550,7 +575,7 @@ export default function AddProductPage() {
 
                 <div className="mt-4">
                   <h3 className="text-xl font-bold text-gray-900">Single Product Listing</h3>
-                  <p className="text-2xl font-extrabold text-amber-600 mt-1">9 AED <span className="text-sm font-normal text-gray-500">/ Listing</span></p>
+                  <p className="text-2xl font-extrabold text-amber-600 mt-1">{paymentConfig?.perListingPrice || "9"} AED <span className="text-sm font-normal text-gray-500">/ Listing</span></p>
                   <p className="text-xs text-gray-500 mt-1">Active for 30 days</p>
                 </div>
 
@@ -608,7 +633,7 @@ export default function AddProductPage() {
                   <div className="space-y-1 flex-1">
                     <div className="flex items-center justify-between">
                       <span className="font-bold text-gray-900 text-sm">Basic Plan</span>
-                      <span className="text-blue-600 font-extrabold text-sm">29 AED/mo</span>
+                      <span className="text-blue-600 font-extrabold text-sm">{paymentConfig?.monthlyBasicPrice || "29"} AED/mo</span>
                     </div>
                     <p className="text-[11px] text-gray-500">Up to 10 listings • 60 days duration</p>
                     <ul className="text-[10px] text-gray-600 space-y-0.5 pt-1.5 border-t">
@@ -640,7 +665,7 @@ export default function AddProductPage() {
                   <div className="space-y-1 flex-1">
                     <div className="flex items-center justify-between">
                       <span className="font-bold text-gray-900 text-sm">Pro Seller</span>
-                      <span className="text-indigo-600 font-extrabold text-sm">59 AED/mo</span>
+                      <span className="text-indigo-600 font-extrabold text-sm">{paymentConfig?.monthlyProPrice || "59"} AED/mo</span>
                     </div>
                     <p className="text-[11px] text-gray-500">Unlimited listings • 60 days duration</p>
                     <ul className="text-[10px] text-gray-600 space-y-0.5 pt-1.5 border-t">
@@ -669,7 +694,7 @@ export default function AddProductPage() {
                   <div className="space-y-1 flex-1">
                     <div className="flex items-center justify-between">
                       <span className="font-bold text-gray-900 text-sm">Garage / Biz</span>
-                      <span className="text-orange-600 font-extrabold text-sm">99 AED/mo</span>
+                      <span className="text-orange-600 font-extrabold text-sm">{paymentConfig?.monthlyGaragePrice || "99"} AED/mo</span>
                     </div>
                     <p className="text-[11px] text-gray-500">Unlimited listings • 60 days duration</p>
                     <ul className="text-[10px] text-gray-600 space-y-0.5 pt-1.5 border-t">
@@ -692,7 +717,7 @@ export default function AddProductPage() {
           {/* Conditional Plan Payment Inline Triggers */}
           {needsMonthlySubscription && (
             <div className="pt-2">
-              <PaymentMonthly formData={formData} />
+              <PaymentMonthly formData={formData} planType={selectedPlanCard} />
             </div>
           )}
           {needsPayPer && !userLimit?.hasProductMonthly && (
@@ -708,16 +733,16 @@ export default function AddProductPage() {
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 text-xs text-gray-600">
               <div className="space-y-1">
-                <h4 className="font-bold text-gray-900">1. First 3 listings are FREE</h4>
+                <h4 className="font-bold text-gray-900">1. First {paymentConfig?.freePromotionalListings || "3"} listings are FREE</h4>
                 <p>No promotion can be applied to free listings. Valid for 30 days.</p>
               </div>
               <div className="space-y-1">
                 <h4 className="font-bold text-gray-900">2. Pay per listing</h4>
-                <p>Costs 9 AED per listing. Active for 45 days.</p>
+                <p>Costs {paymentConfig?.perListingPrice || "9"} AED per listing. Active for 30 days.</p>
               </div>
               <div className="space-y-1">
                 <h4 className="font-bold text-gray-900">3. Monthly plans</h4>
-                <p>Basic (29 AED), Pro (59 AED), and Garage (99 AED) plans for unlimited/higher volume.</p>
+                <p>Basic ({paymentConfig?.monthlyBasicPrice || "29"} AED), Pro ({paymentConfig?.monthlyProPrice || "59"} AED), and Garage ({paymentConfig?.monthlyGaragePrice || "99"} AED) plans for unlimited/higher volume.</p>
               </div>
               <div className="space-y-1">
                 <h4 className="font-bold text-gray-900">4. Expiry reminders</h4>
@@ -827,7 +852,7 @@ export default function AddProductPage() {
                 >
                   <div className="flex items-center justify-between">
                     <span className="font-bold text-gray-950 text-sm">3 Days Promotion</span>
-                    <span className="font-black text-indigo-600 text-base">49 AED</span>
+                    <span className="font-black text-indigo-600 text-base">{paymentConfig?.promotionalAdPrice3Days || "49"} AED</span>
                   </div>
                   <ul className="text-xs text-gray-600 space-y-1.5 mt-3 pt-3 border-t">
                     <li className="flex items-center gap-1.5">
@@ -855,7 +880,7 @@ export default function AddProductPage() {
                   </span>
                   <div className="flex items-center justify-between">
                     <span className="font-bold text-gray-950 text-sm">7 Days Promotion</span>
-                    <span className="font-black text-indigo-600 text-base">99 AED</span>
+                    <span className="font-black text-indigo-600 text-base">{paymentConfig?.promotionalAdPrice7Days || "99"} AED</span>
                   </div>
                   <ul className="text-xs text-gray-600 space-y-1.5 mt-3 pt-3 border-t">
                     <li className="flex items-center gap-1.5">
@@ -935,7 +960,7 @@ export default function AddProductPage() {
 
                   {needsPromotionPayment && (
                     <div className="pt-4 border-t">
-                      <PaymentPromotion formData={formData} />
+                      <PaymentPromotion formData={formData} duration={promoDuration} />
                     </div>
                   )}
                 </div>
