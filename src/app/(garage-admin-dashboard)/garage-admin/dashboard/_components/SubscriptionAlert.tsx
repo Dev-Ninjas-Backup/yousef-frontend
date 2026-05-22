@@ -31,7 +31,7 @@ export function SubscriptionAlert() {
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-2">
             <h3 className="font-semibold text-gray-900">
-              Platform Subscription Status
+              Platform Plans & Billing Status
             </h3>
             <Info className="w-4 h-4 text-gray-400" />
           </div>
@@ -57,7 +57,7 @@ export function SubscriptionAlert() {
           </div>
           <p className="text-xs text-gray-600 mb-4">
             You'll be notified before your free period expires. Keep your
-            subscription active to continue receiving bookings, messages, and
+            billing active to continue receiving bookings, messages, and
             sales inquiries.
           </p>
           <Link href="/garage-admin/subscription">
@@ -67,7 +67,7 @@ export function SubscriptionAlert() {
               className="border-yellow-600 text-yellow-700 hover:bg-yellow-100"
             >
               <CreditCard className="w-4 h-4" />
-              Manage Subscription
+              Manage Plans & Billing
             </Button>
           </Link>
         </div>

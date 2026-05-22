@@ -62,6 +62,7 @@ approveProduct: builder.mutation<
 
 export const {
   useGetProductsQuery,
+  useLazyGetProductsQuery,
   useGetProductByIdQuery,
   useApproveProductMutation,
   useDeleteProductMutation,

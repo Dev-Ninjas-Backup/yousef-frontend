@@ -135,6 +135,7 @@ export const garageManagementApi = apiSlice.injectEndpoints({
 
 export const {
   useSearchGaragesQuery,
+  useLazySearchGaragesQuery,
   useGetAllGaragesQuery,
   useGetGarageByIdQuery,
   useUpdateGarageOwnerStatusMutation,

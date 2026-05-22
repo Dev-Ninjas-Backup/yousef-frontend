@@ -53,7 +53,7 @@ const ContactHero: React.FC = () => {
   };
 
   return (
-    <section className="relative w-full bg-[#030914] overflow-hidden flex flex-col lg:flex-row items-center min-h-[500px] lg:min-h-[650px]">
+    <section className="relative w-full bg-[#030914] overflow-hidden flex flex-col lg:flex-row items-center min-h-[500px] lg:min-h-[650px] rounded-2xl md:rounded-3xl">
       {/* Right Image Background */}
       <div className="absolute top-0 right-0 w-full lg:w-[65%] h-full z-0">
         <Image

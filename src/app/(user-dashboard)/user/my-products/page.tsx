@@ -10,6 +10,7 @@ import {
   useGetUserMyProductsQuery,
   Product,
 } from "@/store/api/userApis/products/userProducts";
+import { useGetCategoriesQuery } from "@/store/api/garageAdminApis/categoryApi";
 import {
   Eye,
   Package,
@@ -242,6 +243,16 @@ export default function UserMyProductsPage() {
   const [showFiltersPanel, setShowFiltersPanel] = useState(false);
 
   const { data, isLoading } = useGetUserMyProductsQuery();
+  const { data: categoriesData } = useGetCategoriesQuery();
+  const categoryMap = useMemo(() => {
+    const map = new Map<string, string>();
+    if (categoriesData?.data?.data) {
+      categoriesData.data.data.forEach((cat) => {
+        map.set(cat.id, cat.name);
+      });
+    }
+    return map;
+  }, [categoriesData]);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -497,9 +508,9 @@ export default function UserMyProductsPage() {
                 className="w-full bg-gray-50 border border-gray-200 text-gray-700 text-xs font-medium px-3 py-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:bg-white"
               >
                 <option value="all">All Categories</option>
-                {categoriesList.map((cat) => (
-                  <option key={cat} value={cat}>
-                    {cat}
+                {categoriesList.map((catId) => (
+                  <option key={catId} value={catId}>
+                    {categoryMap.get(catId) || catId}
                   </option>
                 ))}
               </select>
@@ -752,7 +763,7 @@ export default function UserMyProductsPage() {
 
                       {/* Category */}
                       <td className="p-4 text-xs font-semibold text-gray-600">
-                        {product.categoryId || "Uncategorized"}
+                        {categoryMap.get(product.categoryId) || product.categoryId || "Uncategorized"}
                       </td>
 
                       {/* Condition */}
@@ -789,8 +800,12 @@ export default function UserMyProductsPage() {
                       </td>
 
                       {/* Description Short Preview */}
-                      <td className="p-4 text-xs text-gray-500 max-w-xs truncate" title={product.description}>
-                        {product.description || "-"}
+                      <td className="p-4 text-xs text-gray-500 max-w-[150px] truncate" title={product.description}>
+                        {product.description 
+                          ? (product.description.length > 35 
+                              ? product.description.slice(0, 35) + "..." 
+                              : product.description) 
+                          : "-"}
                       </td>
 
                       {/* Views */}

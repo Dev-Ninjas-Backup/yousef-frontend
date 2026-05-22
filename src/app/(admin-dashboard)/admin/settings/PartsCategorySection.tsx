@@ -110,29 +110,29 @@ export default function PartsCategorySection() {
         </button>
       </div>
 
-      <div className="space-y-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3">
         {categories.map((category) => (
           <div
             key={category.id}
-            className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200 hover:border-gray-300 transition-colors"
+            className="flex items-center justify-between p-3.5 bg-gray-50 rounded-lg border border-gray-200 hover:border-gray-300 hover:shadow-sm transition-all"
           >
             <div>
               <p className="text-sm font-semibold text-gray-900">{category.name}</p>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
               <button
                 onClick={() => handleOpenEdit(category)}
-                className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
               >
                 <LuPencil className="w-4 h-4" />
               </button>
               <button
                 onClick={() => handleDelete(category.id)}
                 disabled={isDeleting && deletingId === category.id}
-                className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
+                className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors disabled:opacity-50"
               >
                 {isDeleting && deletingId === category.id ? (
-                  <span className="w-4 h-4 border-2 border-red-400 border-t-transparent rounded-full animate-spin inline-block" />
+                  <span className="w-3.5 h-3.5 border-2 border-red-400 border-t-transparent rounded-full animate-spin inline-block" />
                 ) : (
                   <LuTrash2 className="w-4 h-4" />
                 )}

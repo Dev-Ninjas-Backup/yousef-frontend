@@ -38,7 +38,7 @@ const CancelSubscription = () => {
           </div>
           <div className="flex-1 min-w-0">
             <h3 className="font-semibold text-sm sm:text-base md:text-lg text-gray-900 mb-1 sm:mb-2">
-              Cancel Subscription
+              Cancel Plan
             </h3>
             <p className="text-xs sm:text-sm text-gray-700 mb-3 sm:mb-4">
               If you cancel, you'll continue to have access until the end of
@@ -49,7 +49,7 @@ const CancelSubscription = () => {
               variant="outline"
               className="border-red-600 text-red-600 hover:bg-red-50 w-full sm:w-auto text-xs sm:text-sm"
             >
-              Cancel Subscription
+              Cancel Plan
             </Button>
           </div>
         </CardContent>
@@ -59,16 +59,16 @@ const CancelSubscription = () => {
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
             <DialogTitle className="text-xl font-bold">
-              Cancel Subscription?
+              Cancel Plan?
             </DialogTitle>
             <DialogDescription>
-              Are you sure you want to cancel your subscription? You'll lose
+              Are you sure you want to cancel your plan? You'll lose
               access to premium features at the end of your billing period.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowDialog(false)}>
-              Keep Subscription
+              Keep Plan
             </Button>
             <Button
               variant="destructive"

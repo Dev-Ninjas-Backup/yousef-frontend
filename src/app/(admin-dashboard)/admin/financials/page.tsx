@@ -9,8 +9,15 @@ import {
   LuEye,
   LuWarehouse,
   LuPackage,
+  LuSearch,
+  LuSparkles,
+  LuUserCheck,
+  LuTag,
+  LuLayers,
+  LuX,
 } from "react-icons/lu";
 import { Bar } from "react-chartjs-2";
+import { ArrowUp, ArrowDown, ArrowUpDown } from "lucide-react";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -20,14 +27,11 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import { useGetFinancialOverviewQuery, useGetLast30DaysDataQuery, useGetRevenueChartDataQuery } from "@/store/fetures/financial.api";
-
-// Import your API hooks
-
+import { useGetLast30DaysDataQuery, Transaction } from "@/store/fetures/financial.api";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-// Stat Card Component (Unchanged)
+// Stat Card Component
 const StatCard = ({
   icon: Icon,
   value,
@@ -56,27 +60,130 @@ const StatCard = ({
 );
 
 export default function FinancialOverviewPage() {
-  const [dateFilter] = useState("Last 30 Days");
+  const [dateFilter, setDateFilter] = useState("Last 30 Days");
+  const [selectedTrx, setSelectedTrx] = useState<Transaction | null>(null);
 
-  // API Queries
-  const { data: overview, isLoading: isOverviewLoading } = useGetFinancialOverviewQuery();
-  const { data: chartRawData } = useGetRevenueChartDataQuery();
-  const { data: transactions, isLoading: isTransLoading } = useGetLast30DaysDataQuery();
+  // Filter and Sort states
+  const [searchQuery, setSearchQuery] = useState("");
+  const [typeFilter, setTypeFilter] = useState("All Types");
+  const [statusFilter, setStatusFilter] = useState("All Status");
 
-  // Extract specific revenue types from the API response
-  const garageRevenue = overview?.revenueByType?.find(r => r.type === "GARAGE_SUBSCRIPTION")?.amount || 0;
-  const partsRevenue = overview?.revenueByType?.find(r => r.type === "MONTHLY_PEY_PRODUCT")?.amount || 0;
+  const [sortField, setSortField] = useState<string | null>("date");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
 
-  // Chart Data Mapping
+  const handleSort = (field: string) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    } else {
+      setSortField(field);
+      setSortDirection("asc");
+    }
+  };
+
+  // API Queries (fetches all payments dynamically now)
+  const { data: transactions = [], isLoading: isTransLoading } = useGetLast30DaysDataQuery();
+
+  // Helper function to format currency in AED
+  const formatAED = (val: number) => {
+    return `AED ${val.toLocaleString("en-US", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })}`;
+  };
+
+  // Filter transactions based on date range (applied globally)
+  const dateFilteredTransactions = transactions.filter((trx) => {
+    if (!trx.date) return true;
+    const trxDate = new Date(trx.date);
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+    trxDate.setHours(0, 0, 0, 0);
+
+    if (dateFilter === "Last 7 Days") {
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(now.getDate() - 7);
+      return trxDate >= sevenDaysAgo;
+    }
+    if (dateFilter === "Last 30 Days") {
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(now.getDate() - 30);
+      return trxDate >= thirtyDaysAgo;
+    }
+    if (dateFilter === "Last 90 Days") {
+      const ninetyDaysAgo = new Date();
+      ninetyDaysAgo.setDate(now.getDate() - 90);
+      return trxDate >= ninetyDaysAgo;
+    }
+    if (dateFilter === "This Month") {
+      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+      return trxDate >= startOfMonth;
+    }
+    if (dateFilter === "This Year") {
+      const startOfYear = new Date(now.getFullYear(), 0, 1);
+      return trxDate >= startOfYear;
+    }
+    return true; // All Time
+  });
+
+  // Calculate detailed financial metrics (only for completed payments in the filtered range)
+  const completedFilter = dateFilteredTransactions.filter(trx => trx.status === "COMPLETED");
+
+  const totalRevenue = completedFilter.reduce((sum, trx) => sum + (trx.amount || 0), 0) / 100;
+  
+  const garageRevenue = completedFilter
+    .filter(trx => trx.type === "GARAGE_SUBSCRIPTION")
+    .reduce((sum, trx) => sum + (trx.amount || 0), 0) / 100;
+
+  const sellerSubRevenue = completedFilter
+    .filter(trx => trx.type === "MONTHLY_PEY_PRODUCT")
+    .reduce((sum, trx) => sum + (trx.amount || 0), 0) / 100;
+
+  const payPerListingRevenue = completedFilter
+    .filter(trx => trx.type === "PAY_PER_PRODUCT")
+    .reduce((sum, trx) => sum + (trx.amount || 0), 0) / 100;
+
+  const promotionRevenue = completedFilter
+    .filter(trx => trx.type === "PRODUCT_PROMOTION" || trx.type === "PRODUCT_PROMOTION_CREDIT")
+    .reduce((sum, trx) => sum + (trx.amount || 0), 0) / 100;
+
+  const otherRevenue = completedFilter
+    .filter(trx => 
+      trx.type !== "GARAGE_SUBSCRIPTION" && 
+      trx.type !== "MONTHLY_PEY_PRODUCT" && 
+      trx.type !== "PAY_PER_PRODUCT" && 
+      trx.type !== "PRODUCT_PROMOTION" && 
+      trx.type !== "PRODUCT_PROMOTION_CREDIT"
+    )
+    .reduce((sum, trx) => sum + (trx.amount || 0), 0) / 100;
+
+  // Chart Data Mapping (group completed payments by month name)
+  const monthlyData: Record<string, number> = {};
+  const monthNames = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
+
+  completedFilter.forEach((trx) => {
+    const d = new Date(trx.date);
+    const mName = monthNames[d.getMonth()];
+    const year = d.getFullYear();
+    const key = `${mName} ${year}`;
+    monthlyData[key] = (monthlyData[key] || 0) + (trx.amount || 0) / 100;
+  });
+
+  const sortedMonths = Object.keys(monthlyData).sort((a, b) => {
+    return new Date(a).getTime() - new Date(b).getTime();
+  });
+
   const chartData = {
-    labels: chartRawData?.map(d => d.month.split(" ")[0]) || ["Loading..."],
+    labels: sortedMonths.length > 0 ? sortedMonths : ["No Data"],
     datasets: [
       {
-        label: "revenue",
-        data: chartRawData?.map(d => d.revenue) || [0],
+        label: "Revenue (AED)",
+        data: sortedMonths.length > 0 ? sortedMonths.map(m => monthlyData[m]) : [0],
         backgroundColor: "#3B82F6",
         borderRadius: 4,
-        barThickness: 50,
+        barThickness: 40,
       }
     ],
   };
@@ -110,11 +217,106 @@ export default function FinancialOverviewPage() {
     },
   };
 
-  const handleExportData = () => console.log("Exporting data...");
-  const handleView = (id: string) => console.log("Viewing transaction:", id);
+  // Search & Type & Status filters for charges table
+  const filteredTransactions = dateFilteredTransactions.filter((trx) => {
+    const matchesSearch =
+      trx.customerName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      trx.customerEmail?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      trx.type?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      trx.id?.toLowerCase().includes(searchQuery.toLowerCase());
+    if (!matchesSearch) return false;
 
-  if (isOverviewLoading || isTransLoading) {
-    return <div className="p-10 text-center">Loading Financial Data...</div>;
+    if (typeFilter !== "All Types" && trx.type !== typeFilter) return false;
+    if (statusFilter !== "All Status" && trx.status !== statusFilter) return false;
+
+    return true;
+  });
+
+  const sortedTransactions = [...filteredTransactions].sort((a, b) => {
+    if (!sortField) return 0;
+    
+    let aValue: any = "";
+    let bValue: any = "";
+    
+    if (sortField === "type") {
+      aValue = a.type || "";
+      bValue = b.type || "";
+    } else if (sortField === "customerName") {
+      aValue = a.customerName || "";
+      bValue = b.customerName || "";
+    } else if (sortField === "amount") {
+      aValue = Number(a.amount) || 0;
+      bValue = Number(b.amount) || 0;
+    } else if (sortField === "date") {
+      aValue = new Date(a.date).getTime();
+      bValue = new Date(b.date).getTime();
+    } else if (sortField === "status") {
+      aValue = a.status || "";
+      bValue = b.status || "";
+    }
+    
+    if (aValue < bValue) {
+      return sortDirection === "asc" ? -1 : 1;
+    }
+    if (aValue > bValue) {
+      return sortDirection === "asc" ? 1 : -1;
+    }
+    return 0;
+  });
+
+  // Clean export CSV matching filtered and sorted list
+  const handleExportData = () => {
+    if (!sortedTransactions.length) {
+      alert("No data to export");
+      return;
+    }
+
+    const csvHeaders = [
+      "Charge ID",
+      "Billing Type",
+      "Customer Name",
+      "Customer Email",
+      "Amount (AED)",
+      "Charge Date",
+      "Payment Method",
+      "Payment Status"
+    ];
+
+    const csvData = sortedTransactions.map(trx => [
+      trx.id || "",
+      trx.type ? trx.type.replace(/_/g, " ") : "",
+      trx.customerName || "",
+      trx.customerEmail || "",
+      trx.amount ? (trx.amount / 100).toFixed(2) : "0.00",
+      trx.date || "",
+      trx.method || "",
+      trx.status || ""
+    ]);
+
+    const csvContent = [csvHeaders, ...csvData]
+      .map(row => row.map(field => `"${(field || "").replace(/"/g, '""')}"`).join(","))
+      .join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", `platform-charges-${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleView = (id: string) => {
+    const found = transactions.find((t) => t.id === id);
+    if (found) {
+      setSelectedTrx(found);
+    }
+  };
+
+  if (isTransLoading) {
+    return <div className="p-10 text-center text-sm font-semibold text-gray-500">Loading Financial Data...</div>;
   }
 
   return (
@@ -123,13 +325,28 @@ export default function FinancialOverviewPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-xl sm:text-2xl font-semibold text-gray-900">Financial Overview</h1>
-          <p className="text-sm text-gray-500 mt-1">Track revenue, payments, and transactions</p>
+          <p className="text-sm text-gray-500 mt-1">Track platform charges, subscriptions, and advertisement revenues</p>
         </div>
         <div className="flex items-center gap-3">
-          <button className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-white text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors shadow-sm border border-gray-200">
-            <LuCalendar className="w-4 h-4" />
-            {dateFilter}
-          </button>
+          {/* Custom Styled Select Dropdown matching button */}
+          <div className="relative">
+            <LuCalendar className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 w-4 h-4 pointer-events-none" />
+            <select
+              value={dateFilter}
+              onChange={(e) => setDateFilter(e.target.value)}
+              title="Global date range"
+              className="pl-9 pr-8 py-2.5 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer shadow-sm appearance-none"
+            >
+              <option value="Last 30 Days">Last 30 Days</option>
+              <option value="Last 7 Days">Last 7 Days</option>
+              <option value="Last 90 Days">Last 90 Days</option>
+              <option value="This Month">This Month</option>
+              <option value="This Year">This Year</option>
+              <option value="All Time">All Time</option>
+            </select>
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-500 w-0 h-0"></div>
+          </div>
+
           <button onClick={handleExportData} className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm">
             <LuDownload className="w-4 h-4" />
             Export Data
@@ -137,46 +354,112 @@ export default function FinancialOverviewPage() {
         </div>
       </div>
 
-      {/* Stats Grid */}
+      {/* Dynamic 6-Card Specific Revenue Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
         <StatCard
           icon={LuDollarSign}
-          value={`$${overview?.thisMonthRevenue?.toLocaleString() || "0"}`}
-          label="Total Revenue (This Month)"
+          value={formatAED(totalRevenue)}
+          label={`Total Revenue (${dateFilter})`}
           iconBg="bg-green-50"
           iconColor="text-green-600"
           trendIcon={LuTrendingUp}
         />
         <StatCard
           icon={LuWarehouse}
-          value={`$${garageRevenue.toLocaleString()}`}
-          label="Garage Services Revenue"
+          value={formatAED(garageRevenue)}
+          label={`Garage Subscriptions (${dateFilter})`}
           iconBg="bg-blue-50"
           iconColor="text-blue-600"
           trendIcon={LuTrendingUp}
         />
         <StatCard
-          icon={LuPackage}
-          value={`$${partsRevenue.toLocaleString()}`}
-          label="Parts Sales Revenue"
+          icon={LuUserCheck}
+          value={formatAED(sellerSubRevenue)}
+          label={`Seller Subscriptions (${dateFilter})`}
+          iconBg="bg-purple-50"
+          iconColor="text-purple-600"
+          trendIcon={LuTrendingUp}
+        />
+        <StatCard
+          icon={LuTag}
+          value={formatAED(payPerListingRevenue)}
+          label={`Pay Per Listing Fees (${dateFilter})`}
           iconBg="bg-orange-50"
           iconColor="text-orange-600"
+          trendIcon={LuTrendingUp}
+        />
+        <StatCard
+          icon={LuSparkles}
+          value={formatAED(promotionRevenue)}
+          label={`Product Promotions (${dateFilter})`}
+          iconBg="bg-amber-50"
+          iconColor="text-amber-600"
+          trendIcon={LuTrendingUp}
+        />
+        <StatCard
+          icon={LuLayers}
+          value={formatAED(otherRevenue)}
+          label={`Other/General Charges (${dateFilter})`}
+          iconBg="bg-gray-50"
+          iconColor="text-gray-600"
           trendIcon={LuTrendingUp}
         />
       </div>
 
       {/* Chart */}
       <div className="bg-white rounded-xl p-4 sm:p-5 lg:p-6 shadow-sm border border-gray-100">
-        <h2 className="text-base sm:text-lg font-semibold text-gray-900 mb-4 sm:mb-6">Revenue & Transactions</h2>
+        <h2 className="text-base sm:text-lg font-semibold text-gray-900 mb-4 sm:mb-6">Revenue & Transactions Trend</h2>
         <div className="h-64 sm:h-72 lg:h-80">
           <Bar data={chartData} options={chartOptions} />
         </div>
       </div>
 
-      {/* Recent Transactions */}
+      {/* Recent Charges (Sub & Promo) Table */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="p-4 sm:p-5 lg:p-6 border-b border-gray-100">
-          <h2 className="text-base sm:text-lg font-semibold text-gray-900">Recent Transactions</h2>
+        <div className="p-4 sm:p-5 lg:p-6 border-b border-gray-100 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h2 className="text-base sm:text-lg font-semibold text-gray-900">Recent Platform Charges</h2>
+            <p className="text-xs text-gray-500 mt-0.5">Audit log of system-related subscriptions, listing fees, and promotional charges</p>
+          </div>
+          
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="relative min-w-[200px]">
+              <LuSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <input
+                type="text"
+                placeholder="Search customer, ID, type..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            
+            <select
+              value={typeFilter}
+              onChange={(e) => setTypeFilter(e.target.value)}
+              title="Filter by transaction type"
+              className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+            >
+              <option value="All Types">All Types</option>
+              <option value="GARAGE_SUBSCRIPTION">Garage Subscription</option>
+              <option value="MONTHLY_PEY_PRODUCT">Seller Subscription</option>
+              <option value="PAY_PER_PRODUCT">Pay Per Listing</option>
+              <option value="PRODUCT_PROMOTION">Product Promotion</option>
+              <option value="PRODUCT_PROMOTION_CREDIT">Promotion Credit</option>
+            </select>
+
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              title="Filter by payment status"
+              className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+            >
+              <option value="All Status">All Status</option>
+              <option value="COMPLETED">COMPLETED</option>
+              <option value="PENDING">PENDING</option>
+              <option value="FAILED">FAILED</option>
+            </select>
+          </div>
         </div>
 
         {/* Desktop Table */}
@@ -184,21 +467,88 @@ export default function FinancialOverviewPage() {
           <table className="w-full">
             <thead>
               <tr className="border-b border-gray-100 bg-gray-50">
-                <th className="text-left py-4 px-5 text-xs font-semibold text-gray-600 uppercase">Type</th>
-                <th className="text-left py-4 px-5 text-xs font-semibold text-gray-600 uppercase">Customer</th>
-                <th className="text-left py-4 px-5 text-xs font-semibold text-gray-600 uppercase">Amount</th>
-                <th className="text-left py-4 px-5 text-xs font-semibold text-gray-600 uppercase">Date</th>
-                <th className="text-left py-4 px-5 text-xs font-semibold text-gray-600 uppercase">Status</th>
+                <th
+                  onClick={() => handleSort("type")}
+                  className="text-left py-4 px-5 text-xs font-semibold text-gray-600 uppercase cursor-pointer hover:bg-gray-100 select-none transition-colors"
+                >
+                  <div className="flex items-center gap-1.5">
+                    Billing Type
+                    {sortField === "type" ? (
+                      sortDirection === "asc" ? <ArrowUp className="w-3.5 h-3.5 text-blue-600" /> : <ArrowDown className="w-3.5 h-3.5 text-blue-600" />
+                    ) : (
+                      <ArrowUpDown className="w-3.5 h-3.5 text-gray-400" />
+                    )}
+                  </div>
+                </th>
+                <th
+                  onClick={() => handleSort("customerName")}
+                  className="text-left py-4 px-5 text-xs font-semibold text-gray-600 uppercase cursor-pointer hover:bg-gray-100 select-none transition-colors"
+                >
+                  <div className="flex items-center gap-1.5">
+                    Customer
+                    {sortField === "customerName" ? (
+                      sortDirection === "asc" ? <ArrowUp className="w-3.5 h-3.5 text-blue-600" /> : <ArrowDown className="w-3.5 h-3.5 text-blue-600" />
+                    ) : (
+                      <ArrowUpDown className="w-3.5 h-3.5 text-gray-400" />
+                    )}
+                  </div>
+                </th>
+                <th
+                  onClick={() => handleSort("amount")}
+                  className="text-left py-4 px-5 text-xs font-semibold text-gray-600 uppercase cursor-pointer hover:bg-gray-100 select-none transition-colors"
+                >
+                  <div className="flex items-center gap-1.5">
+                    Amount
+                    {sortField === "amount" ? (
+                      sortDirection === "asc" ? <ArrowUp className="w-3.5 h-3.5 text-blue-600" /> : <ArrowDown className="w-3.5 h-3.5 text-blue-600" />
+                    ) : (
+                      <ArrowUpDown className="w-3.5 h-3.5 text-gray-400" />
+                    )}
+                  </div>
+                </th>
+                <th
+                  onClick={() => handleSort("date")}
+                  className="text-left py-4 px-5 text-xs font-semibold text-gray-600 uppercase cursor-pointer hover:bg-gray-100 select-none transition-colors"
+                >
+                  <div className="flex items-center gap-1.5">
+                    Date
+                    {sortField === "date" ? (
+                      sortDirection === "asc" ? <ArrowUp className="w-3.5 h-3.5 text-blue-600" /> : <ArrowDown className="w-3.5 h-3.5 text-blue-600" />
+                    ) : (
+                      <ArrowUpDown className="w-3.5 h-3.5 text-gray-400" />
+                    )}
+                  </div>
+                </th>
+                <th
+                  onClick={() => handleSort("status")}
+                  className="text-left py-4 px-5 text-xs font-semibold text-gray-600 uppercase cursor-pointer hover:bg-gray-100 select-none transition-colors"
+                >
+                  <div className="flex items-center gap-1.5">
+                    Status
+                    {sortField === "status" ? (
+                      sortDirection === "asc" ? <ArrowUp className="w-3.5 h-3.5 text-blue-600" /> : <ArrowDown className="w-3.5 h-3.5 text-blue-600" />
+                    ) : (
+                      <ArrowUpDown className="w-3.5 h-3.5 text-gray-400" />
+                    )}
+                  </div>
+                </th>
                 <th className="text-left py-4 px-5 text-xs font-semibold text-gray-600 uppercase">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {transactions?.map((trx) => (
+              {sortedTransactions.map((trx) => (
                 <tr key={trx.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="py-4 px-5 text-sm text-gray-900">{trx.type.replace("_", " ")}</td>
-                  <td className="py-4 px-5 text-sm text-gray-900">{trx.customerName}</td>
-                  <td className="py-4 px-5 text-sm font-medium text-gray-900">${trx.amount.toLocaleString()}</td>
-                  <td className="py-4 px-5 text-sm text-gray-900">{trx.date}</td>
+                  <td className="py-4 px-5 text-sm text-gray-900">{trx.type ? trx.type.replace(/_/g, " ") : ""}</td>
+                  <td className="py-4 px-5 text-sm text-gray-950">
+                    <div>
+                      <p className="font-medium text-gray-900">{trx.customerName}</p>
+                      <p className="text-xs text-gray-400 mt-0.5">{trx.customerEmail}</p>
+                    </div>
+                  </td>
+                  <td className="py-4 px-5 text-sm font-semibold text-gray-900">
+                    {formatAED((trx.amount || 0) / 100)}
+                  </td>
+                  <td className="py-4 px-5 text-sm text-gray-600">{trx.date}</td>
                   <td className="py-4 px-5">
                     <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${
                       trx.status === "COMPLETED" ? "bg-green-50 text-green-700" : "bg-yellow-50 text-yellow-700"
@@ -215,16 +565,21 @@ export default function FinancialOverviewPage() {
               ))}
             </tbody>
           </table>
+          {sortedTransactions.length === 0 && (
+            <div className="py-12 text-center text-sm text-gray-500">
+              No transactions match the selected filters.
+            </div>
+          )}
         </div>
 
         {/* Mobile View */}
         <div className="lg:hidden divide-y divide-gray-100">
-          {transactions?.map((trx) => (
+          {sortedTransactions.map((trx) => (
             <div key={trx.id} className="p-4 sm:p-5 hover:bg-gray-50">
               <div className="flex items-start justify-between mb-3">
                 <div className="flex-1">
                   <h3 className="text-base font-semibold text-gray-900">{trx.customerName}</h3>
-                  <p className="text-xs text-gray-500 mt-1">{trx.type.replace("_", " ")} • {trx.date}</p>
+                  <p className="text-xs text-gray-500 mt-1">{trx.type ? trx.type.replace(/_/g, " ") : ""} • {trx.date}</p>
                 </div>
                 <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${
                   trx.status === "COMPLETED" ? "bg-green-50 text-green-700" : "bg-yellow-50 text-yellow-700"
@@ -233,15 +588,99 @@ export default function FinancialOverviewPage() {
                 </span>
               </div>
               <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-                <p className="text-lg font-bold text-gray-900">${trx.amount.toLocaleString()}</p>
+                <p className="text-lg font-bold text-gray-900">{formatAED((trx.amount || 0) / 100)}</p>
                 <button onClick={() => handleView(trx.id)} className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg">
                   <LuEye className="w-4 h-4" />
                 </button>
               </div>
             </div>
           ))}
+          {sortedTransactions.length === 0 && (
+            <div className="py-12 text-center text-sm text-gray-500">
+              No transactions match the selected filters.
+            </div>
+          )}
         </div>
       </div>
+
+      {/* Transaction Details Modal */}
+      {selectedTrx && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm transition-opacity">
+          <div className="bg-white rounded-2xl max-w-lg w-full shadow-xl overflow-hidden border border-gray-100 animate-in fade-in zoom-in duration-200">
+            {/* Modal Header */}
+            <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
+              <h3 className="font-semibold text-gray-900 text-lg">Transaction Details</h3>
+              <button
+                onClick={() => setSelectedTrx(null)}
+                className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+                aria-label="Close details"
+              >
+                <LuX className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-6 space-y-6">
+              {/* Header Status & Amount */}
+              <div className="text-center pb-4 border-b border-gray-100">
+                <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold mb-3 ${
+                  selectedTrx.status === "COMPLETED" ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"
+                }`}>
+                  {selectedTrx.status}
+                </span>
+                <h4 className="text-3xl font-extrabold text-gray-900">{formatAED((selectedTrx.amount || 0) / 100)}</h4>
+                <p className="text-sm text-gray-500 mt-1">{selectedTrx.type ? selectedTrx.type.replace(/_/g, " ") : ""}</p>
+              </div>
+
+              {/* Detail Sections */}
+              <div className="grid grid-cols-2 gap-y-4 gap-x-6 text-sm">
+                <div className="col-span-2 sm:col-span-1">
+                  <p className="text-xs text-gray-400 font-medium uppercase tracking-wider">Transaction ID</p>
+                  <p className="text-gray-900 font-semibold mt-1 truncate" title={selectedTrx.id}>{selectedTrx.id}</p>
+                </div>
+                <div className="col-span-2 sm:col-span-1">
+                  <p className="text-xs text-gray-400 font-medium uppercase tracking-wider">Date & Time</p>
+                  <p className="text-gray-900 font-semibold mt-1">{selectedTrx.date}</p>
+                </div>
+                <div className="col-span-2 sm:col-span-1">
+                  <p className="text-xs text-gray-400 font-medium uppercase tracking-wider">Customer Name</p>
+                  <p className="text-gray-900 font-semibold mt-1">{selectedTrx.customerName || "N/A"}</p>
+                </div>
+                <div className="col-span-2 sm:col-span-1">
+                  <p className="text-xs text-gray-400 font-medium uppercase tracking-wider">Customer Email</p>
+                  <p className="text-gray-900 font-semibold mt-1 truncate" title={selectedTrx.customerEmail}>{selectedTrx.customerEmail || "N/A"}</p>
+                </div>
+                <div className="col-span-2 sm:col-span-1">
+                  <p className="text-xs text-gray-400 font-medium uppercase tracking-wider">Payment Method</p>
+                  <p className="text-gray-900 font-semibold mt-1 capitalize">{selectedTrx.method || "card"}</p>
+                </div>
+                {selectedTrx.productID && (
+                  <div className="col-span-2 sm:col-span-1">
+                    <p className="text-xs text-gray-400 font-medium uppercase tracking-wider">Product ID</p>
+                    <p className="text-gray-900 font-semibold mt-1 truncate" title={selectedTrx.productID}>{selectedTrx.productID}</p>
+                  </div>
+                )}
+                {selectedTrx.updatedAt && (
+                  <div className="col-span-2">
+                    <p className="text-xs text-gray-400 font-medium uppercase tracking-wider">Last Updated</p>
+                    <p className="text-gray-900 font-semibold mt-1">{new Date(selectedTrx.updatedAt).toLocaleString()}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="px-6 py-4 border-t border-gray-100 bg-gray-50/50 flex justify-end">
+              <button
+                onClick={() => setSelectedTrx(null)}
+                className="px-4 py-2 bg-gray-900 text-white text-sm font-semibold rounded-xl hover:bg-gray-800 transition-colors shadow-sm active:scale-95"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

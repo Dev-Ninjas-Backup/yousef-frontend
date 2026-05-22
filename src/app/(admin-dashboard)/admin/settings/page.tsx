@@ -39,6 +39,16 @@ export default function PlatformSettingsPage() {
   const [platformDescription, setPlatformDescription] = useState("");
   const [sparePartsMonthly, setSparePartsMonthly] = useState("");
   const [perListingPrice, setPerListingPrice] = useState("");
+  const [freePromotionalListings, setFreePromotionalListings] = useState("");
+  const [monthlyBasicPrice, setMonthlyBasicPrice] = useState("");
+  const [monthlyProPrice, setMonthlyProPrice] = useState("");
+  const [monthlyGaragePrice, setMonthlyGaragePrice] = useState("");
+  const [promotionalAdPrice3Days, setPromotionalAdPrice3Days] = useState("");
+  const [promotionalAdPrice7Days, setPromotionalAdPrice7Days] = useState("");
+
+  // Confirmation Modal States
+  const [showFirstConfirm, setShowFirstConfirm] = useState(false);
+  const [showSecondConfirm, setShowSecondConfirm] = useState(false);
 
   // Categories State (Restored)
   const [categories, setCategories] = useState<PartsCategory[]>(initialCategories);
@@ -59,10 +69,26 @@ useEffect(() => {
       console.log("Setting Payment State:", paymentData.data);
       setSparePartsMonthly(paymentData.data.sparePartsMonthly || "");
       setPerListingPrice(paymentData.data.perListingPrice || "");
+      setFreePromotionalListings(paymentData.data.freePromotionalListings || "");
+      setMonthlyBasicPrice(paymentData.data.monthlyBasicPrice || "");
+      setMonthlyProPrice(paymentData.data.monthlyProPrice || "");
+      setMonthlyGaragePrice(paymentData.data.monthlyGaragePrice || "");
+      setPromotionalAdPrice3Days(paymentData.data.promotionalAdPrice3Days || "");
+      setPromotionalAdPrice7Days(paymentData.data.promotionalAdPrice7Days || "");
     }
   }, [paymentData]); // Run when paymentData changes
 
-  const handleSaveChanges = async () => {
+  const handleSaveChanges = () => {
+    setShowFirstConfirm(true);
+  };
+
+  const handleFirstConfirm = () => {
+    setShowFirstConfirm(false);
+    setShowSecondConfirm(true);
+  };
+
+  const handleSecondConfirm = async () => {
+    setShowSecondConfirm(false);
     try {
       await updatePlatform({
         platformName,
@@ -72,7 +98,13 @@ useEffect(() => {
 
       await updatePayment({
         sparePartsMonthly,
-        perListingPrice
+        perListingPrice,
+        freePromotionalListings,
+        monthlyBasicPrice,
+        monthlyProPrice,
+        monthlyGaragePrice,
+        promotionalAdPrice3Days,
+        promotionalAdPrice7Days,
       }).unwrap();
 
       toast.success("Settings updated successfully!");
@@ -225,10 +257,12 @@ useEffect(() => {
 
       {/* Manage Subscription (Payment Config) */}
       <div className="bg-white rounded-xl p-5 sm:p-6 shadow-sm border border-gray-100">
-        <h2 className="text-base sm:text-lg font-semibold text-gray-900 mb-5">Manage Subscription</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+        <h2 className="text-base sm:text-lg font-semibold text-gray-900 mb-5">Manage Listing & Plan Settings</h2>
+        
+        {/* Row 1: General Limits */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Spare Parts Monthly Fee</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Spare Parts Monthly Fee (AED)</label>
             <input
               type="text"
               value={sparePartsMonthly}
@@ -237,7 +271,7 @@ useEffect(() => {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Per Listing Price</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Per Listing Price (AED)</label>
             <input
               type="text"
               value={perListingPrice}
@@ -245,11 +279,79 @@ useEffect(() => {
               className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
             />
           </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Free Listing Limit (e.g. 3)</label>
+            <input
+              type="text"
+              value={freePromotionalListings}
+              onChange={(e) => setFreePromotionalListings(e.target.value)}
+              className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+            />
+          </div>
         </div>
 
-        <div className="space-y-4">
-          <div className="flex items-center justify-between py-3 border-b border-gray-100">
-            <p className="text-sm text-gray-900">Free Promotional Listing Status</p>
+        {/* Row 2: Monthly Subscriptions */}
+        <h3 className="text-sm font-bold text-gray-800 mb-3 border-t pt-4">Monthly Plan Price Tiers</h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Basic Seller Plan (AED)</label>
+            <input
+              type="text"
+              value={monthlyBasicPrice}
+              onChange={(e) => setMonthlyBasicPrice(e.target.value)}
+              className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Pro Seller Plan (AED)</label>
+            <input
+              type="text"
+              value={monthlyProPrice}
+              onChange={(e) => setMonthlyProPrice(e.target.value)}
+              className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Garage Partner Plan (AED)</label>
+            <input
+              type="text"
+              value={monthlyGaragePrice}
+              onChange={(e) => setMonthlyGaragePrice(e.target.value)}
+              className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+            />
+          </div>
+        </div>
+
+        {/* Row 3: Promotions */}
+        <h3 className="text-sm font-bold text-gray-800 mb-3 border-t pt-4">Promotion Durations</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">3 Days Promotion Price (AED)</label>
+            <input
+              type="text"
+              value={promotionalAdPrice3Days}
+              onChange={(e) => setPromotionalAdPrice3Days(e.target.value)}
+              className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">7 Days Promotion Price (AED)</label>
+            <input
+              type="text"
+              value={promotionalAdPrice7Days}
+              onChange={(e) => setPromotionalAdPrice7Days(e.target.value)}
+              className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+            />
+          </div>
+        </div>
+
+        {/* Toggle Status */}
+        <div className="space-y-4 border-t pt-4">
+          <div className="flex items-center justify-between py-3">
+            <div>
+              <p className="text-sm font-medium text-gray-900">Free Promotional Listing Status</p>
+              <p className="text-xs text-gray-500">Enable/disable free listings on the platform</p>
+            </div>
             <button
               onClick={handleTogglePromo}
               className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
@@ -278,6 +380,58 @@ useEffect(() => {
           Reset to Defaults
         </button>
       </div>
+
+      {/* First Confirmation Modal */}
+      {showFirstConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 w-full max-w-md shadow-2xl border border-gray-100 dark:border-gray-700 relative transform transition-all scale-100">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Change Settings / Plan Prices?</h3>
+            <p className="text-sm text-gray-600 dark:text-gray-300 mb-6">
+              Are you sure you want to change your plan?
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setShowFirstConfirm(false)}
+                className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 dark:bg-gray-700 dark:hover:bg-gray-650 dark:text-gray-200 rounded-lg text-sm transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleFirstConfirm}
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm transition-colors shadow-sm"
+              >
+                Yes, Proceed
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Second Confirmation Modal (Final) */}
+      {showSecondConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 w-full max-w-md shadow-2xl border border-gray-100 dark:border-gray-700 relative transform transition-all scale-100">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Confirm Settings & Price Update</h3>
+            <p className="text-sm text-gray-600 dark:text-gray-300 mb-6">
+              This action will update your subscription. Do you want to proceed?
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setShowSecondConfirm(false)}
+                className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 dark:bg-gray-700 dark:hover:bg-gray-650 dark:text-gray-200 rounded-lg text-sm transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSecondConfirm}
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm transition-colors shadow-sm"
+              >
+                Yes, Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -39,7 +39,7 @@ export default function SubscriptionSuccess() {
           <div className="space-y-2">
             <h1 className="text-3xl font-bold text-gray-900">Payment Successful!</h1>
             <p className="text-gray-600">
-              Your subscription has been activated successfully.
+              Your plan has been activated successfully.
             </p>
           </div>
 
@@ -60,7 +60,7 @@ export default function SubscriptionSuccess() {
             }}
             className="w-full bg-blue-600 hover:bg-blue-700"
           >
-            {window.opener ? 'Close' : 'Go to Subscription'}
+            {window.opener ? 'Close' : 'Go to Plans & Billing'}
           </Button>
         </CardContent>
       </Card>

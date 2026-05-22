@@ -5,15 +5,17 @@ import { openPaymentInNewTab } from "@/utils/paymentUtils";
 
 interface PaymentMonthlyProps {
   formData: any;
+  planType: string;
 }
 
-const PaymentMonthly = ({ formData }: PaymentMonthlyProps) => {
+const PaymentMonthly = ({ formData, planType }: PaymentMonthlyProps) => {
   const [createMonthlyPayment, { isLoading: isMonthlyPaymentLoading }] =
     useCreateMonthlyPaymentMutation();
   const handlePayment = async () => {
     localStorage.setItem("productFormData", JSON.stringify(formData));
     try {
-      const response = await createMonthlyPayment().unwrap();
+      const cleanPlanType = planType.replace("MONTHLY_", "");
+      const response = await createMonthlyPayment({ planType: cleanPlanType }).unwrap();
       openPaymentInNewTab(response.url);
     } catch (error: any) {
       toast.error(error?.data?.message || "Failed to create payment session");

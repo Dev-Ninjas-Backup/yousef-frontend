@@ -14,19 +14,19 @@ const HeroBanner: React.FC = () => {
   const { t } = useLanguage();
   const trans = t(bannerTranslations);
   return (
-    <section className="relative w-full h-[500px]  md:h-[700px] lg:h-[900px] overflow-hidden pt-10 md:pt-0">
+    <section className="relative w-full h-[500px] md:h-[700px] lg:h-[900px] overflow-hidden pt-10 md:pt-0 rounded-2xl md:rounded-3xl">
       <div className="absolute inset-0 z-0">
         <video
           autoPlay
           loop
           muted
           playsInline
-          className="absolute inset-0 w-full h-full object-cover rounded-lg"
+          className="absolute inset-0 w-full h-full object-cover"
         >
           <source src="./banner.mp4" type="video/mp4" />
           Your browser does not support the video tag.
         </video>
-        <div className="absolute inset-0 bg-black/60 rounded-lg" />
+        <div className="absolute inset-0 bg-black/60" />
       </div>
       <div className="relative container mx-auto z-10 flex items-center h-full px-4">
         <motion.div

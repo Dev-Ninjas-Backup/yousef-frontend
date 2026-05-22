@@ -42,7 +42,7 @@ export default function SuccessPayment() {
               Payment Successful!
             </h1>
             <p className="text-gray-600">
-              Your subscription has been activated successfully.
+              Your payment has been processed successfully.
             </p>
           </div>
 

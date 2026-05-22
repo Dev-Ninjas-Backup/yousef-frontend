@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 
 import { SubscriptionAlert } from "@/app/(garage-admin-dashboard)/garage-admin/dashboard/_components/SubscriptionAlert";
-import { FreeListingsAlert } from "@/app/(garage-admin-dashboard)/garage-admin/dashboard/_components/FreeListingsAlert";
 import { PerformanceSummary } from "@/app/(garage-admin-dashboard)/garage-admin/dashboard/_components/PerformanceSummary";
 import { RecentActivity } from "@/app/(garage-admin-dashboard)/garage-admin/dashboard/_components/RecentActivity";
 import { RecentListings } from "@/app/(garage-admin-dashboard)/garage-admin/dashboard/_components/RecentListings";
@@ -29,7 +28,6 @@ function GarageAdminDashboardContent() {
       {/* Alerts */}
       <div className="space-y-4">
         <SubscriptionAlert />
-        <FreeListingsAlert />
       </div>
 
       <StatsCardGrid />

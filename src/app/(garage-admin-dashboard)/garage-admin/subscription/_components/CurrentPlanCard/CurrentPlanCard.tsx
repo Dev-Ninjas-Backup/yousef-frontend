@@ -68,7 +68,7 @@ const CurrentPlanCard = () => {
           <Info className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
           <div className="space-y-1 min-w-0">
             <p className="text-xs sm:text-sm text-blue-900">
-              After your trial ends, your subscription will automatically
+              After your trial ends, your plan will automatically
               convert to a paid plan.
             </p>
             <p className="text-xs sm:text-sm text-blue-900">

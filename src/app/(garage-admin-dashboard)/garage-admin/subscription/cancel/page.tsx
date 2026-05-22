@@ -50,7 +50,7 @@ export default function SubscriptionCancel() {
               }}
               className="w-full bg-blue-600 hover:bg-blue-700"
             >
-              {window.opener ? 'Close' : 'Back to Subscription'}
+              {window.opener ? 'Close' : 'Back to Plans & Billing'}
             </Button>
             <Button
               onClick={() => {

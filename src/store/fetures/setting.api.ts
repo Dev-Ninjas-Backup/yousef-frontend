@@ -13,6 +13,11 @@ export interface PaymentConfig {
   promotionalAdPrice: string;
   freePromotionalListings: string;
   freePromotionalListingStatus?: boolean;
+  monthlyBasicPrice?: string;
+  monthlyProPrice?: string;
+  monthlyGaragePrice?: string;
+  promotionalAdPrice3Days?: string;
+  promotionalAdPrice7Days?: string;
 }
 
 export interface ApiResponse<T> {
@@ -27,6 +32,11 @@ export const adminSettingsApiSlice = apiSlice.injectEndpoints({
 
     getPlatformSetting: builder.query<ApiResponse<PlatformSetting>, void>({
       query: () => "/admin-setting/get-platform-setting",
+      providesTags: ["AdminSetting" as any],
+    }),
+
+    getPlatformSettingPublic: builder.query<ApiResponse<PlatformSetting>, void>({
+      query: () => "/admin-setting/public-setting",
       providesTags: ["AdminSetting" as any],
     }),
 
@@ -81,6 +91,7 @@ export const adminSettingsApiSlice = apiSlice.injectEndpoints({
 
 export const {
   useGetPlatformSettingQuery,
+  useGetPlatformSettingPublicQuery,
   useUpdatePlatformSettingMutation,
   useToggleAutoApproveGaragesMutation,
   useToggleAutoEmailNotificationMutation,

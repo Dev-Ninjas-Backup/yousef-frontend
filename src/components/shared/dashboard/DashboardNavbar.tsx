@@ -1,7 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { Bell, HardDrive, LogOut, Menu } from "lucide-react";
+import { HardDrive, LogOut, Menu } from "lucide-react";
+import NotificationDropdown from "./NotificationDropdown";
 import { useAuth } from "@/context/AuthContext";
 import { usePathname } from "next/navigation";
 import logoImg from "@/assets/logo.png";
@@ -58,10 +59,7 @@ const DashboardNavbar = ({ onMenuToggle }: DashboardNavbarProps) => {
           </div>
 
           <div className="flex items-center gap-2 lg:gap-4">
-            <button className="relative p-2 hover:bg-gray-100 rounded-lg transition-colors">
-              <Bell className="w-5 h-5 text-gray-600" />
-              <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-            </button>
+            <NotificationDropdown />
 
             <div className="flex items-center gap-2">
               <Avatar className="w-8 h-8">
@@ -74,7 +72,7 @@ const DashboardNavbar = ({ onMenuToggle }: DashboardNavbarProps) => {
                   {isAdmin ? "Admin User" : user?.name || "Admin"}
                 </p>
                 <p className="text-xs text-gray-500">
-                  {isAdmin ? "Super Admin" : "Garage Admin"}
+                  {isAdmin ? "Main Admin" : "Garage Admin"}
                 </p>
               </div>
             </div>

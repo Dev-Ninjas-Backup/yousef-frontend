@@ -5,9 +5,10 @@ import { openPaymentInNewTab } from "@/utils/paymentUtils";
 
 interface PaymentPromotionProps {
   formData: any;
+  duration: string;
 }
 
-const PaymentPromotion = ({ formData }: PaymentPromotionProps) => {
+const PaymentPromotion = ({ formData, duration }: PaymentPromotionProps) => {
   const [createPromotionPayment, { isLoading: isPaymentLoading }] =
     useCreatePromotionPaymentMutation();
 
@@ -15,7 +16,7 @@ const PaymentPromotion = ({ formData }: PaymentPromotionProps) => {
     localStorage.setItem("productFormData", JSON.stringify(formData));
 
     try {
-      const response = await createPromotionPayment().unwrap();
+      const response = await createPromotionPayment({ duration }).unwrap();
       openPaymentInNewTab(response.url);
     } catch (error: any) {
       toast.error(error?.data?.message || "Failed to create payment session");
