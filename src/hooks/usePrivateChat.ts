@@ -77,14 +77,14 @@ export function usePrivateChat(
     });
 
     // Typing events
-    socketInstance.on("private:user_typing", (data: TypingUser) => {
+    socketInstance.on("private:typing_start", (data: { conversationId: string; userId: string }) => {
       setTypingUsers((prev) => {
         const filtered = prev.filter((user) => user.userId !== data.userId);
-        return data.isTyping ? [...filtered, data] : filtered;
+        return [...filtered, { userId: data.userId, fullName: "Someone", isTyping: true }];
       });
     });
 
-    socketInstance.on("private:user_stop_typing", (data: TypingUser) => {
+    socketInstance.on("private:typing_stop", (data: { conversationId: string; userId: string }) => {
       setTypingUsers((prev) => 
         prev.filter((user) => user.userId !== data.userId)
       );
@@ -92,6 +92,7 @@ export function usePrivateChat(
 
     // Status events
     socketInstance.on("private:user_status", (status: UserStatus) => {
+      console.log("📨 [usePrivateChat Hook] Received private:user_status event:", status);
       setUserStatuses((prev) => {
         const newMap = new Map(prev);
         newMap.set(status.userId, status);
@@ -100,17 +101,18 @@ export function usePrivateChat(
     });
 
     socketInstance.on("private:error", (error) => {
-      console.error("❌ Error:", error);
+      console.error("❌ [usePrivateChat Hook] Socket error:", error);
     });
 
     socketInstance.on("disconnect", () => {
-      console.log("❌ Disconnected");
+      console.log("❌ [usePrivateChat Hook] Socket disconnected");
       setIsConnected(false);
     });
 
     setSocket(socketInstance);
 
     return () => {
+      console.log("🔌 [usePrivateChat Hook] Cleaning up socket connection");
       socketInstance.disconnect();
     };
   }, []);
@@ -123,9 +125,14 @@ export function usePrivateChat(
 
   // Load conversation
   useEffect(() => {
-    if (!socket || !recipientId) return;
+    if (!socket || !recipientId) {
+      console.log("ℹ️ [usePrivateChat Hook] Skipping load conversation: socket or recipientId missing", { hasSocket: !!socket, recipientId });
+      return;
+    }
 
+    console.log("📤 [usePrivateChat Hook] Requesting conversation and user status for:", recipientId);
     socket.emit("private:load_single_conversation", recipientId);
+    socket.emit("private:get_user_status", recipientId);
 
     const handleConversation = (data: any) => {
       if (data.messages) {
@@ -146,25 +153,34 @@ export function usePrivateChat(
 
     if (!isTyping) {
       setIsTyping(true);
-      socket.emit("private:typing_start", recipientId);
+      socket.emit("private:typing_start", {
+        conversationId: conversationId || "",
+        recipientId
+      });
 
       // Auto stop typing after 3 seconds
       setTimeout(() => {
         if (isTyping) {
           setIsTyping(false);
-          socket.emit("private:typing_stop", recipientId);
+          socket.emit("private:typing_stop", {
+            conversationId: conversationId || "",
+            recipientId
+          });
         }
       }, 3000);
     }
-  }, [socket, recipientId, isTyping]);
+  }, [socket, conversationId, recipientId, isTyping]);
 
   // Stop typing manually
   const stopTyping = useCallback(() => {
     if (!socket || !recipientId || !isTyping) return;
     
     setIsTyping(false);
-    socket.emit("private:typing_stop", recipientId);
-  }, [socket, recipientId, isTyping]);
+    socket.emit("private:typing_stop", {
+      conversationId: conversationId || "",
+      recipientId
+    });
+  }, [socket, conversationId, recipientId, isTyping]);
 
   // Send message
   const sendMessage = useCallback(
@@ -215,17 +231,23 @@ export function usePrivateChat(
   // Get user status
   const getUserStatus = useCallback(
     (userId: string): UserStatus | null => {
-      return userStatuses.get(userId) || null;
+      const status = userStatuses.get(userId) || null;
+      console.log(`🔍 [usePrivateChat Hook] getUserStatus called for user ${userId}:`, status);
+      return status;
     },
     [userStatuses]
   );
 
-  // Get typing users for current conversation
-  const getTypingUsers = useCallback(() => {
-    return typingUsers.filter((user) => user.userId !== recipientId);
+  // Get typing users
+  const getTypingUsers = useCallback((userId?: string) => {
+    if (userId) {
+      return typingUsers.filter((user) => user.userId === userId);
+    }
+    return typingUsers.filter((user) => user.userId === recipientId);
   }, [typingUsers, recipientId]);
 
   return {
+    socket,
     messages,
     sendMessage,
     editMessage,

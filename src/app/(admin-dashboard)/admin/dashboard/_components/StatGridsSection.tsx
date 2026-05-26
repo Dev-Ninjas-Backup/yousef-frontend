@@ -75,7 +75,7 @@ const StatGridsSection = () => {
 
       <StatCard
         icon={LuDollarSign}
-        value={`$${data?.revenueStats.totalRevenueLast30Days.toLocaleString() || "0"}`}
+        value={`${data?.revenueStats.totalRevenueLast30Days.toLocaleString() || "0"} AED`}
         label="Monthly Revenue"
         change={formatChange(revenueChange)}
         iconBg="bg-green-50"

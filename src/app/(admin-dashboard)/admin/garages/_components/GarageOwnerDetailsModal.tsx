@@ -205,7 +205,7 @@ export default function GarageOwnerDetailsModal({
                     Revenue
                   </p>
                   <p className="font-semibold text-gray-900">
-                    ${owner.revenue.toLocaleString()}
+                    {owner.revenue.toLocaleString()} AED
                   </p>
                 </div>
 

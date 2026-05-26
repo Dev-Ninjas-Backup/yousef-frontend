@@ -514,7 +514,7 @@ export default function SparePartsManagementPage() {
                     {part.category?.name}
                   </td>
                   <td className="py-4 px-5 text-sm text-gray-900">
-                    ${part.price}
+                    {part.price} AED
                   </td>
                   <td className="py-4 px-5">
                     <span

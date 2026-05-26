@@ -62,7 +62,7 @@ const RevenueTrends = () => {
         displayColors: false,
         callbacks: {
           label: function (context: any) {
-            return `$${context.parsed.y.toLocaleString()}`;
+            return `${context.parsed.y.toLocaleString()} AED`;
           },
         },
       },
@@ -105,7 +105,7 @@ const RevenueTrends = () => {
           },
           padding: 8,
           callback: function (value: any) {
-            return `$${value >= 1000 ? (value / 1000).toFixed(0) + 'k' : value}`;
+            return `${value >= 1000 ? (value / 1000).toFixed(0) + 'k' : value} AED`;
           },
         },
         beginAtZero: true,
