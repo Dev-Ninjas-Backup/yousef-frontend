@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { MessageCircle, X, Search, ArrowLeft, Send, Check, Paperclip, Image, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -47,6 +47,7 @@ export function FloatingChatWidget() {
   );
 
   const {
+    socket,
     messages,
     sendMessage,
     markAsRead,
@@ -62,6 +63,15 @@ export function FloatingChatWidget() {
       : null,
     selectedChat?.id // recipient ID for Socket.io
   );
+
+  // Query online status for all active conversations in the inbox list
+  useEffect(() => {
+    if (socket && conversations && conversations.length > 0) {
+      conversations.forEach((conv) => {
+        socket.emit("private:get_user_status", conv.participant.id);
+      });
+    }
+  }, [socket, conversations]);
 
   // Load messages from REST API first, then Socket for real-time
   useEffect(() => {
@@ -106,7 +116,14 @@ export function FloatingChatWidget() {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const typingUsers = getTypingUsers();
+  const inputRef = useRef<HTMLInputElement | null>(null);
   const userStatus = selectedChat ? getUserStatus(selectedChat.id) : null;
+  const isOnline = userStatus?.isOnline ?? false;
+  console.log("🖥️ [FloatingChatWidget] rendering with:", {
+    selectedChatId: selectedChat?.id,
+    userStatus,
+    isOnline,
+  });
 
   // Combine REST API messages with real-time messages, avoiding duplicates
   const allMessages = React.useMemo(() => {
@@ -251,6 +268,9 @@ export function FloatingChatWidget() {
       setMessage("");
       setSelectedFiles([]);
       stopTyping(); // Stop typing indicator when message is sent
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 50);
     }
   };
 
@@ -345,8 +365,21 @@ export function FloatingChatWidget() {
                     }}
                     className="w-full p-3 hover:bg-gray-50 flex items-center gap-3 border-b transition-colors"
                   >
-                    <div className="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold flex-shrink-0">
-                      {conv.participant.fullName.charAt(0).toUpperCase()}
+                    <div className="relative shrink-0">
+                      {conv.participant.profilePhoto ? (
+                        <img
+                          src={conv.participant.profilePhoto}
+                          alt={conv.participant.fullName}
+                          className="w-12 h-12 rounded-full object-cover border border-gray-100"
+                        />
+                      ) : (
+                        <div className="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold">
+                          {conv.participant.fullName.charAt(0).toUpperCase()}
+                        </div>
+                      )}
+                      {getUserStatus(conv.participant.id)?.isOnline && (
+                        <span className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 border-2 border-white rounded-full"></span>
+                      )}
                     </div>
 
                     <div className="flex-1 text-left min-w-0">
@@ -354,7 +387,11 @@ export function FloatingChatWidget() {
                         {conv.participant.fullName}
                       </p>
                       <p className="text-xs text-gray-500 truncate">
-                        {conv.lastMessage?.content || "No messages yet"}
+                        {getTypingUsers(conv.participant.id).length > 0 ? (
+                          <span className="text-blue-500 font-semibold animate-pulse">Typing...</span>
+                        ) : (
+                          conv.lastMessage?.content || "No messages yet"
+                        )}
                       </p>
                     </div>
 
@@ -386,12 +423,12 @@ export function FloatingChatWidget() {
                 <h3 className="font-semibold text-sm">{selectedChat.name}</h3>
                 <div className="flex items-center gap-1">
                   <div
-                    className={`w-2 h-2 rounded-full ${
-                      isConnected ? "bg-green-400" : "bg-red-400"
+                    className={`w-2.5 h-2.5 rounded-full ${
+                      isOnline ? "bg-green-500" : "bg-gray-400"
                     }`}
                   />
                   <p className="text-xs opacity-90">
-                    {isConnected ? "Online" : "Connecting..."}
+                    {isOnline ? "Online" : "Offline"}
                     {typingUsers.length > 0 && (
                       <span className="inline-flex items-center ml-1">
                         • Typing
@@ -619,6 +656,7 @@ export function FloatingChatWidget() {
               </label>
               
               <Input
+                ref={inputRef}
                 value={message}
                 onChange={(e) => handleMessageInput(e.target.value)}
                 placeholder="Type message..."

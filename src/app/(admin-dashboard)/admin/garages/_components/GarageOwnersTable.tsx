@@ -230,7 +230,7 @@ export default function GarageOwnersTable({
                   </td>
                   <td className="py-4 px-6">
                     <span className="text-sm font-medium">
-                      ${owner.revenue.toLocaleString()}
+                      {owner.revenue.toLocaleString()} AED
                     </span>
                   </td>
                   <td className="py-4 px-6">

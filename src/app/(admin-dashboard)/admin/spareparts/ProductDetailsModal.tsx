@@ -97,7 +97,7 @@ export default function ProductDetailsModal({
                   }`}>
                     {product.status}
                   </span>
-                  <span className="text-2xl font-bold text-blue-600">${product.price}</span>
+                  <span className="text-2xl font-bold text-blue-600">{product.price} AED</span>
                 </div>
                 <p className="text-gray-600">Brand: <span className="font-semibold">{product.brand}</span></p>
               </div>

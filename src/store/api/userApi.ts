@@ -31,6 +31,13 @@ export interface User {
   updatedAt: string;
   serviceCategories?: string[];
   garages?: any[];
+  isMembership?: boolean;
+  subscriptionStartDate?: string;
+  subscriptionEndsAt?: string;
+  productMonthlyActive?: boolean;
+  productMonthlyStartDate?: string;
+  productMonthlyEndDate?: string;
+  productMonthlyPlanType?: string;
 }
 
 export interface UpdateProfileRequest {

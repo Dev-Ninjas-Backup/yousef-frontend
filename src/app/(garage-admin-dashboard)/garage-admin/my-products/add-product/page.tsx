@@ -391,11 +391,49 @@ export default function AddProductPage() {
           </div>
         </div>
 
+        {/* Description & User Guideline note layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 bg-white rounded-2xl border p-5 sm:p-6 shadow-sm space-y-4">
+            <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2">
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 text-xs font-semibold text-blue-600">
+                2
+              </span>
+              Description
+            </h2>
+            <Textarea
+              id="description"
+              placeholder="Describe your product, condition, features, compatibility and shipping info..."
+              value={formData.description}
+              onChange={(e) =>
+                setFormData({ ...formData, description: e.target.value })
+              }
+              rows={6}
+              className="focus-visible:ring-indigo-500 w-full resize-y mt-2"
+              maxLength={2000}
+            />
+            <div className="text-xs text-gray-400 text-right">
+              {formData.description.length} / 2000 characters
+            </div>
+          </div>
+
+          <div className="bg-amber-50/50 rounded-2xl border border-amber-200 p-5 sm:p-6 flex flex-col justify-center space-y-3">
+            <div className="flex items-start gap-3">
+              <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+              <div>
+                <h4 className="font-bold text-amber-900 text-sm">SayaraHub Note</h4>
+                <p className="text-xs text-amber-800/80 mt-1 leading-relaxed">
+                  SayaraHub only connects buyers and sellers. All payments and transactions happen directly between users. We recommend meet-in-person and inspecting parts before purchase.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Product Photos Section */}
         <div className="bg-white rounded-2xl border p-5 sm:p-6 shadow-sm space-y-4">
           <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2">
             <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 text-xs font-semibold text-blue-600">
-              2
+              3
             </span>
             Product Photos
           </h2>
@@ -445,12 +483,130 @@ export default function AddProductPage() {
           )}
         </div>
 
+        {/* Contact/Seller Information */}
+        <div className="bg-white rounded-2xl border p-5 sm:p-6 shadow-sm space-y-5">
+          <div>
+            <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2">
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 text-xs font-semibold text-blue-600">
+                4
+              </span>
+              Seller Information
+            </h2>
+            <p className="text-sm text-gray-500 mt-1">
+              Provide contact info so potential buyers can reach out to you directly.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <div>
+              <Label htmlFor="sellerName" className="font-semibold text-gray-700">
+                Seller Name
+              </Label>
+              <Input
+                id="sellerName"
+                placeholder="Enter seller name"
+                value={formData.sellerName}
+                onChange={(e) =>
+                  setFormData({ ...formData, sellerName: e.target.value })
+                }
+                className="mt-1.5 focus-visible:ring-indigo-500"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="sellerEmail" className="font-semibold text-gray-700">
+                Seller Email *
+              </Label>
+              <Input
+                id="sellerEmail"
+                type="email"
+                required
+                placeholder="Enter email address"
+                value={formData.sellerEmail}
+                onChange={(e) =>
+                  setFormData({ ...formData, sellerEmail: e.target.value })
+                }
+                className="mt-1.5 focus-visible:ring-indigo-500"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="sellerPhoneNumber" className="font-semibold text-gray-700">
+                Seller Phone Number
+              </Label>
+              <Input
+                id="sellerPhoneNumber"
+                placeholder="e.g. +971501234567"
+                value={formData.sellerPhoneNumber}
+                onChange={(e) =>
+                  setFormData({ ...formData, sellerPhoneNumber: e.target.value })
+                }
+                className="mt-1.5 focus-visible:ring-indigo-500"
+              />
+            </div>
+          </div>
+
+          {formData.sellerType === "VERIFIED_SUPPLIER" && (
+            <div className="border-t pt-5 mt-4 space-y-3">
+              <div>
+                <Label className="font-bold text-gray-800">Verification Document *</Label>
+                <p className="text-xs text-gray-500">
+                  Verified suppliers are required to upload a trade license or commercial registration document image.
+                </p>
+              </div>
+
+              <input
+                type="file"
+                id="verificationImage"
+                accept="image/*"
+                onChange={handleVerificationImageChange}
+                className="hidden"
+              />
+              
+              <label
+                htmlFor="verificationImage"
+                className="border-2 border-dashed border-gray-200 rounded-xl p-6 text-center hover:border-indigo-500 hover:bg-indigo-50/20 cursor-pointer block transition-all group"
+              >
+                {verificationPreview ? (
+                  <div className="relative inline-block border rounded-lg overflow-hidden max-w-xs shadow-sm bg-gray-50">
+                    <Image
+                      src={verificationPreview}
+                      alt="Verification preview"
+                      width={300}
+                      height={200}
+                      className="object-contain max-h-48"
+                    />
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setVerificationImage(null);
+                        setVerificationPreview("");
+                      }}
+                      className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-1.5 transition-all shadow-md"
+                      title="Remove verification document"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="py-2">
+                    <Upload className="w-10 h-10 mx-auto text-gray-400 mb-2 group-hover:scale-110 transition-transform duration-200" />
+                    <span className="block text-sm font-semibold text-gray-700">Upload trade license / document</span>
+                    <span className="block text-xs text-gray-400 mt-1">PNG, JPG or WEBP (Max 1 file)</span>
+                  </div>
+                )}
+              </label>
+            </div>
+          )}
+        </div>
+
         {/* Listing Plans Section */}
         <div className="bg-white rounded-2xl border p-5 sm:p-6 shadow-sm space-y-6">
           <div>
             <h2 className="text-xl font-extrabold text-gray-900 flex items-center gap-2">
               <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 text-xs font-semibold text-blue-600">
-                3
+                5
               </span>
               Listing Plan
             </h2>
@@ -509,44 +665,6 @@ export default function AddProductPage() {
           )}
         </div>
 
-        {/* Description & User Guideline note layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 bg-white rounded-2xl border p-5 sm:p-6 shadow-sm space-y-4">
-            <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2">
-              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 text-xs font-semibold text-blue-600">
-                4
-              </span>
-              Description
-            </h2>
-            <Textarea
-              id="description"
-              placeholder="Describe your product, condition, features, compatibility and shipping info..."
-              value={formData.description}
-              onChange={(e) =>
-                setFormData({ ...formData, description: e.target.value })
-              }
-              rows={6}
-              className="focus-visible:ring-indigo-500 w-full resize-y mt-2"
-              maxLength={2000}
-            />
-            <div className="text-xs text-gray-400 text-right">
-              {formData.description.length} / 2000 characters
-            </div>
-          </div>
-
-          <div className="bg-amber-50/50 rounded-2xl border border-amber-200 p-5 sm:p-6 flex flex-col justify-center space-y-3">
-            <div className="flex items-start gap-3">
-              <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
-              <div>
-                <h4 className="font-bold text-amber-900 text-sm">SayaraHub Note</h4>
-                <p className="text-xs text-amber-800/80 mt-1 leading-relaxed">
-                  SayaraHub only connects buyers and sellers. All payments and transactions happen directly between users. We recommend meet-in-person and inspecting parts before purchase.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
         {/* Boost Your Product / Promotion Section */}
         <div className="bg-white rounded-2xl border p-5 sm:p-6 shadow-sm space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -554,7 +672,7 @@ export default function AddProductPage() {
               <div className="flex items-center gap-2">
                 <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2">
                   <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 text-xs font-semibold text-blue-600">
-                    5
+                    6
                   </span>
                   Promote This Product
                 </h2>
@@ -708,124 +826,6 @@ export default function AddProductPage() {
                 </div>
             </div>
           </div>
-        </div>
-
-        {/* Contact/Seller Information */}
-        <div className="bg-white rounded-2xl border p-5 sm:p-6 shadow-sm space-y-5">
-          <div>
-            <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2">
-              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 text-xs font-semibold text-blue-600">
-                6
-              </span>
-              Seller Information
-            </h2>
-            <p className="text-sm text-gray-500 mt-1">
-              Provide contact info so potential buyers can reach out to you directly.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            <div>
-              <Label htmlFor="sellerName" className="font-semibold text-gray-700">
-                Seller Name
-              </Label>
-              <Input
-                id="sellerName"
-                placeholder="Enter seller name"
-                value={formData.sellerName}
-                onChange={(e) =>
-                  setFormData({ ...formData, sellerName: e.target.value })
-                }
-                className="mt-1.5 focus-visible:ring-indigo-500"
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="sellerEmail" className="font-semibold text-gray-700">
-                Seller Email *
-              </Label>
-              <Input
-                id="sellerEmail"
-                type="email"
-                required
-                placeholder="Enter email address"
-                value={formData.sellerEmail}
-                onChange={(e) =>
-                  setFormData({ ...formData, sellerEmail: e.target.value })
-                }
-                className="mt-1.5 focus-visible:ring-indigo-500"
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="sellerPhoneNumber" className="font-semibold text-gray-700">
-                Seller Phone Number
-              </Label>
-              <Input
-                id="sellerPhoneNumber"
-                placeholder="e.g. +971501234567"
-                value={formData.sellerPhoneNumber}
-                onChange={(e) =>
-                  setFormData({ ...formData, sellerPhoneNumber: e.target.value })
-                }
-                className="mt-1.5 focus-visible:ring-indigo-500"
-              />
-            </div>
-          </div>
-
-          {formData.sellerType === "VERIFIED_SUPPLIER" && (
-            <div className="border-t pt-5 mt-4 space-y-3">
-              <div>
-                <Label className="font-bold text-gray-800">Verification Document *</Label>
-                <p className="text-xs text-gray-500">
-                  Verified suppliers are required to upload a trade license or commercial registration document image.
-                </p>
-              </div>
-
-              <input
-                type="file"
-                id="verificationImage"
-                accept="image/*"
-                onChange={handleVerificationImageChange}
-                className="hidden"
-              />
-              
-              <label
-                htmlFor="verificationImage"
-                className="border-2 border-dashed border-gray-200 rounded-xl p-6 text-center hover:border-indigo-500 hover:bg-indigo-50/20 cursor-pointer block transition-all group"
-              >
-                {verificationPreview ? (
-                  <div className="relative inline-block border rounded-lg overflow-hidden max-w-xs shadow-sm bg-gray-50">
-                    <Image
-                      src={verificationPreview}
-                      alt="Verification preview"
-                      width={300}
-                      height={200}
-                      className="object-contain max-h-48"
-                    />
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setVerificationImage(null);
-                        setVerificationPreview("");
-                      }}
-                      className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-1.5 transition-all shadow-md"
-                      title="Remove verification document"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  </div>
-                ) : (
-                  <div className="py-2">
-                    <Upload className="w-10 h-10 mx-auto text-gray-400 mb-2 group-hover:scale-110 transition-transform duration-200" />
-                    <span className="block text-sm font-semibold text-gray-700">Upload trade license / document</span>
-                    <span className="block text-xs text-gray-400 mt-1">PNG, JPG or WEBP (Max 1 file)</span>
-                  </div>
-                )}
-              </label>
-            </div>
-          )}
         </div>
 
         {/* Terms Checkbox and Actions Row */}
