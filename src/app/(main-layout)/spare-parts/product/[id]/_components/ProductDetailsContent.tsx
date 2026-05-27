@@ -8,6 +8,7 @@ import { Loader2, Eye, Calendar, Package, MapPin, User, Phone, Mail, MessageCirc
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useAppSelector } from "@/store/hooks";
+import Cookies from "js-cookie";
 
 interface ProductDetailsContentProps {
   product?: Product;
@@ -29,12 +30,13 @@ export default function ProductDetailsContent({
     if (!product?.createdBy?.id) return;
     
     try {
+      const token = Cookies.get("token");
       // Create or get existing conversation with seller
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/private-chat/send-message/${product.createdBy.id}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${document.cookie.split('token=')[1]?.split(';')[0]}`
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
           content: `Hi! I'm interested in your ${product.partName}. Is it still available?`,

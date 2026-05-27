@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { HardDrive, LogOut, Menu } from "lucide-react";
 import NotificationDropdown from "./NotificationDropdown";
 import { useAuth } from "@/context/AuthContext";
@@ -31,13 +32,15 @@ const DashboardNavbar = ({ onMenuToggle }: DashboardNavbarProps) => {
               <Menu className="w-5 h-5 text-gray-600" />
             </button>
 
-            <Image
-              src={logoImg}
-              alt="SayaraHub"
-              width={120}
-              height={40}
-              className="h-7 lg:h-8 w-auto"
-            />
+            <Link href="/" className="hover:opacity-90 transition-opacity">
+              <Image
+                src={logoImg}
+                alt="SayaraHub"
+                width={120}
+                height={40}
+                className="h-7 lg:h-8 w-auto"
+              />
+            </Link>
 
             <div className="hidden sm:flex items-center border-l border-gray-300 pl-3">
               <div>

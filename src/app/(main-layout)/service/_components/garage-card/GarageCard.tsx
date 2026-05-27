@@ -12,6 +12,10 @@ import { AiFillTool } from "react-icons/ai";
 import Link from "next/link";
 import Image from "next/image";
 import DirectionIcon from "@/assets/service/GarageCard/direc_icon.svg";
+import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import Cookies from "js-cookie";
 
 interface GarageCardProps {
   id: string;
@@ -51,6 +55,9 @@ export default function GarageCard({
   ownerId,
   phone,
 }: GarageCardProps) {
+  const { isAuthenticated } = useAuth();
+  const router = useRouter();
+
   const getStatusColor = () => {
     switch (status) {
       case "Open 24/7":
@@ -106,7 +113,9 @@ export default function GarageCard({
     }
   };
 
-  const handleDirections = () => {
+  const handleDirections = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     if (position?.lat && position?.lng) {
       // Get current location and navigate to Google Maps
       if (navigator.geolocation) {
@@ -130,16 +139,24 @@ export default function GarageCard({
     }
   };
 
-  const handleMessage = async () => {
+  const handleMessage = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     if (!ownerId) return;
+    if (!isAuthenticated) {
+      toast.error("Please login to message the garage owner.");
+      router.push("/user-auth");
+      return;
+    }
     
     try {
+      const token = Cookies.get("token");
       // Create or get existing conversation with garage owner
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/private-chat/send-message/${ownerId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${document.cookie.split('token=')[1]?.split(';')[0]}`
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
           content: `Hi! I'm interested in your garage services at ${name}. Can you provide more information?`,
@@ -158,13 +175,18 @@ export default function GarageCard({
           }
         });
         window.dispatchEvent(event);
+      } else {
+        toast.error(data.message || "Failed to start conversation.");
       }
     } catch (error) {
       console.error('Failed to start conversation:', error);
+      toast.error("Failed to start conversation. Please try again.");
     }
   };
 
-  const handleCall = () => {
+  const handleCall = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     if (phone) {
       window.location.href = `tel:${phone}`;
     }
