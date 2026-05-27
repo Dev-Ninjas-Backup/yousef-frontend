@@ -76,6 +76,14 @@ export function usePrivateChat(
       );
     });
 
+    socketInstance.on("private:message_read", (data: { messageId: string; conversationId: string }) => {
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === data.messageId ? { ...msg, isRead: true } : msg
+        )
+      );
+    });
+
     // Typing events
     socketInstance.on("private:typing_start", (data: { conversationId: string; userId: string }) => {
       setTypingUsers((prev) => {

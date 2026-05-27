@@ -29,7 +29,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { GoogleMap, Marker } from "@react-google-maps/api";
 import { MapPin, Loader2 } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
@@ -60,6 +60,52 @@ export default function MapSection({ garages = [] }: MapSectionProps) {
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
   const [locationError, setLocationError] = useState<string | null>(null);
   const [mapCenter, setMapCenter] = useState(defaultCenter);
+  const [map, setMap] = useState<any>(null);
+
+  const onLoad = useCallback((mapInstance: any) => {
+    setMap(mapInstance);
+  }, []);
+
+  const onUnmount = useCallback(() => {
+    setMap(null);
+  }, []);
+
+  // Dynamically fit map bounds to include all garage markers and user location
+  useEffect(() => {
+    if (!map) return;
+
+    if (garages.length > 0) {
+      const bounds = new window.google.maps.LatLngBounds();
+      let hasValidPosition = false;
+
+      garages.forEach((garage) => {
+        if (garage.position?.lat && garage.position?.lng) {
+          bounds.extend(garage.position);
+          hasValidPosition = true;
+        }
+      });
+
+      if (userLocation) {
+        bounds.extend(userLocation);
+        hasValidPosition = true;
+      }
+
+      if (hasValidPosition) {
+        // Set a one-time listener to prevent map from zooming in too close
+        window.google.maps.event.addListenerOnce(map, "bounds_changed", () => {
+          const currentZoom = map.getZoom();
+          if (currentZoom && currentZoom > 15) {
+            map.setZoom(14);
+          }
+        });
+
+        map.fitBounds(bounds);
+      }
+    } else {
+      map.setCenter(userLocation || defaultCenter);
+      map.setZoom(userLocation ? 15 : 12);
+    }
+  }, [map, garages, userLocation]);
 
   const enablePreciseLocation = () => {
     setIsLoadingLocation(true);
@@ -96,6 +142,8 @@ export default function MapSection({ garages = [] }: MapSectionProps) {
     <div className="h-full w-full relative">
       <GoogleMap
         mapContainerStyle={mapContainerStyle}
+        onLoad={onLoad}
+        onUnmount={onUnmount}
         center={mapCenter}
         zoom={userLocation ? 15 : 12}
         options={{

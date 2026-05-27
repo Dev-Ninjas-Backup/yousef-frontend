@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
-import { UserCircle, Globe, ChevronDown, LogOut } from "lucide-react";
+import { UserCircle, Globe, ChevronDown, LogOut, LayoutDashboard } from "lucide-react";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
@@ -143,8 +143,9 @@ const Navbar = () => {
                   <Link
                     href={getDashboardLink()}
                     onClick={() => setIsUserMenuOpen(false)}
-                    className="block w-full text-left px-4 py-3 text-white/80 hover:bg-white/10 transition-colors"
+                    className="w-full text-left px-4 py-3 text-white/80 hover:bg-white/10 transition-colors flex items-center gap-2"
                   >
+                    <LayoutDashboard className="w-4 h-4" />
                     {trans.dashboard}
                   </Link>
                   <button
@@ -260,7 +261,7 @@ const Navbar = () => {
                     className="flex items-center gap-2 text-white/80 hover:text-[#0A84FF] transition-colors px-4 py-2 rounded-lg hover:bg-white/5"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
-                    <UserCircle className="w-4 h-4" />
+                    <LayoutDashboard className="w-4 h-4" />
                     <span>{trans.dashboard}</span>
                   </Link>
                   <button

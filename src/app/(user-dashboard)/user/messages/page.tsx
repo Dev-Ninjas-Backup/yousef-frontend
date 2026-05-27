@@ -2,18 +2,21 @@
 
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import Link from "next/link";
-import { 
-  X, 
-  Search, 
-  ArrowLeft, 
-  Send, 
-  Check, 
-  Paperclip, 
-  Image as ImageIcon, 
-  FileText, 
+import {
+  X,
+  Search,
+  ArrowLeft,
+  Send,
+  Check,
+  Paperclip,
+  Image as ImageIcon,
+  FileText,
   MessageSquare,
   ChevronRight,
-  Plus
+  Plus,
+  Globe,
+  Languages,
+  ChevronDown
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,6 +26,7 @@ import { useAppSelector } from "@/store/hooks";
 import { motion, AnimatePresence } from "framer-motion";
 import UserDashboardSidebar from "@/components/shared/dashboard/user/UserDashboardSidebar";
 import Cookies from "js-cookie";
+import { translationService } from "@/services/translation.service";
 
 export default function UserMessagesPage() {
   const currentUserId = useAppSelector((state) => state.auth.user?.id);
@@ -37,7 +41,59 @@ export default function UserMessagesPage() {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [isMobileChatOpen, setIsMobileChatOpen] = useState(false);
-  
+
+  // Translation states
+  const [translatedMessages, setTranslatedMessages] = useState<Record<string, { text: string; lang: 'en' | 'ar' | 'hi' }>>({});
+  const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
+  const [globalChatLang, setGlobalChatLang] = useState<'en' | 'ar' | 'hi'>('en');
+  const [showGlobalLangMenu, setShowGlobalLangMenu] = useState(false);
+
+  // Handle single message translation
+  const handleTranslateMessage = async (msgId: string, content: string, lang: 'en' | 'ar' | 'hi') => {
+    setActiveMenuId(null);
+    if (lang === 'en') {
+      setTranslatedMessages(prev => {
+        const copy = { ...prev };
+        delete copy[msgId];
+        return copy;
+      });
+      return;
+    }
+    try {
+      const translated = await translationService.translate(content, lang);
+      setTranslatedMessages(prev => ({
+        ...prev,
+        [msgId]: { text: translated, lang }
+      }));
+    } catch (e) {
+      console.error("Message translation failed", e);
+    }
+  };
+
+  // Handle global chat translation
+  const handleGlobalTranslate = async (lang: 'en' | 'ar' | 'hi') => {
+    setGlobalChatLang(lang);
+    setShowGlobalLangMenu(false);
+    if (lang === 'en') {
+      setTranslatedMessages({});
+      return;
+    }
+
+    try {
+      const messagesToTranslate = allMessages.filter(m => m.content);
+      const texts = messagesToTranslate.map(m => m.content);
+      const translations = await translationService.translateBatch(texts, lang);
+
+      const newTranslations: Record<string, { text: string; lang: 'en' | 'ar' | 'hi' }> = {};
+      messagesToTranslate.forEach((msg, idx) => {
+        newTranslations[msg.id] = { text: translations[idx], lang };
+      });
+      setTranslatedMessages(newTranslations);
+    } catch (e) {
+      console.error("Global translation failed", e);
+    }
+  };
+
   const chatContainerRef = useRef<HTMLDivElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -73,6 +129,21 @@ export default function UserMessagesPage() {
   );
 
   const typingUsers = getTypingUsers();
+
+  // Listen for socket events to refetch conversation statuses and unread counts
+  useEffect(() => {
+    if (socket) {
+      const handleRefetch = () => {
+        refetchConversations();
+      };
+      socket.on("private:new_message", handleRefetch);
+      socket.on("private:message_read", handleRefetch);
+      return () => {
+        socket.off("private:new_message", handleRefetch);
+        socket.off("private:message_read", handleRefetch);
+      };
+    }
+  }, [socket, refetchConversations]);
 
   // Query online status for all active conversations in the inbox list
   useEffect(() => {
@@ -130,7 +201,7 @@ export default function UserMessagesPage() {
 
       if (belongsToCurrentChat) {
         const existingMsg = messageMap.get(msg.id);
-        if (!existingMsg || msg.isEdited || msg.isDeleted) {
+        if (!existingMsg || msg.isEdited || msg.isDeleted || msg.isRead !== existingMsg.isRead) {
           messageMap.set(msg.id, msg);
         }
       }
@@ -144,9 +215,11 @@ export default function UserMessagesPage() {
   // Mark unread messages as read when viewing a chat
   useEffect(() => {
     if (selectedChat?.id && allMessages.length > 0) {
-      const lastUnread = allMessages.find(m => m.recipientId === currentUserId && !m.isRead);
-      if (lastUnread) {
-        markAsRead(lastUnread.id);
+      const unreadMessages = allMessages.filter(m => m.senderId !== currentUserId && !m.isRead);
+      if (unreadMessages.length > 0) {
+        unreadMessages.forEach(msg => {
+          markAsRead(msg.id);
+        });
         refetchConversations();
       }
     }
@@ -158,6 +231,29 @@ export default function UserMessagesPage() {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
   }, [allMessages, typingUsers]);
+
+  // Reset translations when selected chat changes
+  useEffect(() => {
+    setTranslatedMessages({});
+    setActiveMenuId(null);
+    setGlobalChatLang('en');
+    setShowGlobalLangMenu(false);
+  }, [selectedChat?.id]);
+
+  // Automatically translate new incoming messages if global translation is active
+  useEffect(() => {
+    if (globalChatLang !== 'en' && allMessages.length > 0) {
+      const lastMessage = allMessages[allMessages.length - 1];
+      if (lastMessage && lastMessage.content && !translatedMessages[lastMessage.id]) {
+        translationService.translate(lastMessage.content, globalChatLang).then(translated => {
+          setTranslatedMessages(prev => ({
+            ...prev,
+            [lastMessage.id]: { text: translated, lang: globalChatLang }
+          }));
+        });
+      }
+    }
+  }, [allMessages.length, globalChatLang]);
 
   // Handle file inputs
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -268,10 +364,10 @@ export default function UserMessagesPage() {
   return (
     <div className="w-full pt-1 pb-6 max-w-7xl mx-auto">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 items-start">
-        
+
         {/* Left Column - Dedicated Chat Area */}
         <div className="lg:col-span-2 space-y-6">
-          
+
           {/* Header */}
           <div className="space-y-1">
             <Link
@@ -283,10 +379,10 @@ export default function UserMessagesPage() {
             </Link>
             <div className="flex items-center gap-3">
               {isMobileChatOpen && (
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className="lg:hidden" 
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="lg:hidden"
                   onClick={() => setIsMobileChatOpen(false)}
                 >
                   <ArrowLeft className="w-5 h-5 text-gray-700" />
@@ -305,7 +401,7 @@ export default function UserMessagesPage() {
 
           {/* Main Inbox Card Container */}
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex h-[620px]">
-            
+
             {/* 1. Inbox List Pane */}
             <div className={`w-full lg:w-1/3 flex flex-col border-r border-gray-100 ${isMobileChatOpen ? 'hidden lg:flex' : 'flex'}`}>
               <div className="p-4 border-b border-gray-100 bg-gray-50/50">
@@ -354,9 +450,8 @@ export default function UserMessagesPage() {
                           });
                           setIsMobileChatOpen(true);
                         }}
-                        className={`w-full p-4 flex items-start gap-3.5 transition-all text-left hover:bg-gray-50/70 ${
-                          isSelected ? "bg-blue-50/40 border-l-4 border-blue-600" : ""
-                        }`}
+                        className={`w-full p-4 flex items-start gap-3.5 transition-all text-left hover:bg-gray-50/70 ${isSelected ? "bg-blue-50/40 border-l-4 border-blue-600" : ""
+                          }`}
                       >
                         {/* Avatar */}
                         <div className="relative shrink-0">
@@ -395,9 +490,11 @@ export default function UserMessagesPage() {
                           </p>
                         </div>
 
-                        {/* Unread dot */}
+                        {/* Unread count badge */}
                         {conv.unreadCount > 0 && (
-                          <span className="shrink-0 w-2.5 h-2.5 bg-blue-600 rounded-full mt-1.5 self-center"></span>
+                          <span className="shrink-0 min-w-[18px] h-[18px] px-1.5 bg-blue-600 rounded-full text-[9px] font-black text-white flex items-center justify-center shadow-sm animate-pulse mt-1.5 self-center">
+                            {conv.unreadCount}
+                          </span>
                         )}
                       </button>
                     );
@@ -438,9 +535,9 @@ export default function UserMessagesPage() {
                     {/* Header */}
                     <div className="bg-white px-5 py-4 border-b border-gray-100 flex items-center justify-between shadow-sm">
                       <div className="flex items-center gap-3">
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
+                        <Button
+                          variant="ghost"
+                          size="icon"
                           className="lg:hidden p-0 h-8 w-8 text-gray-500"
                           onClick={() => setIsMobileChatOpen(false)}
                         >
@@ -458,9 +555,8 @@ export default function UserMessagesPage() {
                               {selectedChat.name.charAt(0).toUpperCase()}
                             </div>
                           )}
-                          <span className={`absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border-2 border-white ${
-                            isOnline ? "bg-green-500" : "bg-gray-400"
-                          }`} />
+                          <span className={`absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border-2 border-white ${isOnline ? "bg-green-500" : "bg-gray-400"
+                            }`} />
                         </div>
                         <div>
                           <h3 className="font-bold text-sm text-gray-900">{selectedChat.name}</h3>
@@ -469,10 +565,52 @@ export default function UserMessagesPage() {
                           </span>
                         </div>
                       </div>
+
+                      {/* Global Translation Selector */}
+                      <div className="flex items-center gap-2 relative">
+                        <div className="relative">
+                          <button
+                            onClick={() => setShowGlobalLangMenu(!showGlobalLangMenu)}
+                            className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold text-gray-500 hover:text-blue-600 hover:bg-gray-100 border border-gray-200 transition-colors shadow-sm cursor-pointer ${showGlobalLangMenu ? 'bg-gray-100 text-blue-600 border-blue-300' : ''
+                              }`}
+                            title="Translate Chat"
+                          >
+                            <Languages className="w-3.5 h-3.5" />
+                            <span>{globalChatLang === 'ar' ? 'العربية' : globalChatLang === 'hi' ? 'हिन्दी' : ''}</span>
+                            <ChevronDown className="w-3 h-3 opacity-60" />
+                          </button>
+
+                          {showGlobalLangMenu && (
+                            <div className="absolute right-0 top-full mt-1.5 bg-white rounded-xl shadow-xl border border-gray-100 p-1 flex flex-col gap-0.5 text-xs text-gray-700 min-w-[120px] z-50">
+                              <button
+                                onClick={() => handleGlobalTranslate('en')}
+                                className={`px-3 py-2 hover:bg-gray-50 rounded-lg text-left font-semibold ${globalChatLang === 'en' ? 'bg-blue-50 text-blue-600 font-bold' : ''
+                                  }`}
+                              >
+                                Original
+                              </button>
+                              <button
+                                onClick={() => handleGlobalTranslate('ar')}
+                                className={`px-3 py-2 hover:bg-gray-50 rounded-lg text-left font-semibold ${globalChatLang === 'ar' ? 'bg-blue-50 text-blue-600 font-bold' : ''
+                                  }`}
+                              >
+                                العربية (AR)
+                              </button>
+                              <button
+                                onClick={() => handleGlobalTranslate('hi')}
+                                className={`px-3 py-2 hover:bg-gray-50 rounded-lg text-left font-semibold ${globalChatLang === 'hi' ? 'bg-blue-50 text-blue-600 font-bold' : ''
+                                  }`}
+                              >
+                                हिन्दी (HI)
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </div>
                     </div>
 
                     {/* Chat Feed */}
-                    <div 
+                    <div
                       ref={chatContainerRef}
                       className="flex-1 overflow-y-auto p-4 space-y-3.5"
                     >
@@ -491,7 +629,7 @@ export default function UserMessagesPage() {
                           return (
                             <div
                               key={msg.id}
-                              className={`flex ${isMine ? "justify-end" : "justify-start"}`}
+                              className={`flex ${isMine ? "justify-end" : "justify-start"} group mb-1`}
                             >
                               <div className={`flex items-end gap-2 max-w-[75%] ${isMine ? "flex-row-reverse" : "flex-row"}`}>
                                 {!isMine && (
@@ -501,13 +639,21 @@ export default function UserMessagesPage() {
                                 )}
                                 <div className="space-y-1">
                                   <div
-                                    className={`rounded-2xl px-4 py-2 text-xs leading-relaxed break-words shadow-sm ${
-                                      isMine
-                                        ? "bg-blue-600 text-white rounded-br-sm"
-                                        : "bg-white text-gray-800 rounded-bl-sm border border-gray-100"
-                                    }`}
+                                    className={`rounded-2xl px-4 py-2 text-xs leading-relaxed break-words shadow-sm ${isMine
+                                      ? "bg-blue-600 text-white rounded-br-sm"
+                                      : "bg-white text-gray-800 rounded-bl-sm border border-gray-100"
+                                      }`}
                                   >
-                                    {msg.content && <p>{msg.content}</p>}
+                                    {msg.content && (
+                                      <div>
+                                        <p>{translatedMessages[msg.id] ? translatedMessages[msg.id].text : msg.content}</p>
+                                        {translatedMessages[msg.id] && (
+                                          <span className={`block text-[9px] mt-1 font-light ${isMine ? 'text-blue-200' : 'text-gray-400'}`}>
+                                            (Translated to {translatedMessages[msg.id].lang === 'hi' ? 'Hindi' : translatedMessages[msg.id].lang === 'ar' ? 'Arabic' : 'English'})
+                                          </span>
+                                        )}
+                                      </div>
+                                    )}
 
                                     {/* Files */}
                                     {msg.files && msg.files.length > 0 && (
@@ -519,7 +665,7 @@ export default function UserMessagesPage() {
                                           return (
                                             <div key={idx}>
                                               {isImage ? (
-                                                <div 
+                                                <div
                                                   className="max-w-[200px] max-h-[140px] overflow-hidden rounded-lg cursor-pointer border border-gray-100 hover:opacity-90"
                                                   onClick={() => window.open(fileUrl, "_blank")}
                                                 >
@@ -534,11 +680,10 @@ export default function UserMessagesPage() {
                                                   href={fileUrl}
                                                   target="_blank"
                                                   rel="noreferrer"
-                                                  className={`inline-flex items-center gap-2 p-2 rounded-lg text-[11px] font-medium transition-all ${
-                                                    isMine 
-                                                      ? "bg-blue-700 hover:bg-blue-800 text-white" 
-                                                      : "bg-gray-100 hover:bg-gray-200 text-gray-700"
-                                                  }`}
+                                                  className={`inline-flex items-center gap-2 p-2 rounded-lg text-[11px] font-medium transition-all ${isMine
+                                                    ? "bg-blue-700 hover:bg-blue-800 text-white"
+                                                    : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+                                                    }`}
                                                 >
                                                   <FileText className="w-3.5 h-3.5" />
                                                   <span className="truncate max-w-[120px]">{fileName}</span>
@@ -550,15 +695,44 @@ export default function UserMessagesPage() {
                                       </div>
                                     )}
                                   </div>
-                                  
+
                                   {/* Timestamp */}
                                   <div className={`flex items-center gap-1 text-[10px] text-gray-400 ${isMine ? 'justify-end' : 'justify-start'}`}>
                                     <span>{time}</span>
                                     {isMine && (
-                                      <Check className={`w-3.5 h-3.5 ${msg.isRead ? "text-blue-500" : "text-gray-300"}`} />
+                                      <div className="flex items-center">
+                                        <Check
+                                          className={`w-3.5 h-3.5 ${msg.isRead ? "text-blue-500" : "text-gray-400"}`}
+                                        />
+                                        {msg.isRead && (
+                                          <Check className="w-3.5 h-3.5 text-blue-500 -ml-1.5" />
+                                        )}
+                                      </div>
                                     )}
                                   </div>
                                 </div>
+
+                                {/* Individual Message Translation Button */}
+                                {msg.content && (
+                                  <div className="relative opacity-0 group-hover:opacity-100 transition-opacity self-center shrink-0">
+                                    <button
+                                      onClick={() => setActiveMenuId(activeMenuId === msg.id ? null : msg.id)}
+                                      className="p-1 hover:bg-gray-100 rounded-full text-gray-400 hover:text-gray-600 transition-colors"
+                                      title="Translate message"
+                                    >
+                                      <Globe className="w-3.5 h-3.5" />
+                                    </button>
+
+                                    {activeMenuId === msg.id && (
+                                      <div className={`absolute z-30 bottom-full mb-1 bg-white rounded-lg shadow-lg border border-gray-150 p-1 flex gap-1 text-[10px] ${isMine ? 'right-0' : 'left-0'
+                                        }`}>
+                                        <button onClick={() => handleTranslateMessage(msg.id, msg.content, 'en')} className="px-1.5 py-0.5 hover:bg-gray-100 rounded font-semibold text-gray-700">EN</button>
+                                        <button onClick={() => handleTranslateMessage(msg.id, msg.content, 'ar')} className="px-1.5 py-0.5 hover:bg-gray-100 rounded font-semibold text-gray-700">AR</button>
+                                        <button onClick={() => handleTranslateMessage(msg.id, msg.content, 'hi')} className="px-1.5 py-0.5 hover:bg-gray-100 rounded font-semibold text-gray-700">HI</button>
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
                               </div>
                             </div>
                           );

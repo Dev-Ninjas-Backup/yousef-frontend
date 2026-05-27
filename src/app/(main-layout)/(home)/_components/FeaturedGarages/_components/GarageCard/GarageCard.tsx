@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -5,6 +7,10 @@ import { Star, MapPin, MessageCircle, BadgeCheck, Navigation, Clock } from "luci
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import Cookies from "js-cookie";
 
 interface GarageCardProps {
   id?: string;
@@ -33,6 +39,8 @@ const GarageCard: React.FC<GarageCardProps> = ({
   services,
   profileImage
 }) => {
+  const { isAuthenticated } = useAuth();
+  const router = useRouter();
   
   const handleGetDirections = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -52,12 +60,19 @@ const GarageCard: React.FC<GarageCardProps> = ({
     e.stopPropagation();
     if (!garageOwnerId) return;
 
+    if (!isAuthenticated) {
+      toast.error("Please login to message the garage owner.");
+      router.push("/user-auth");
+      return;
+    }
+
     try {
+      const token = Cookies.get("token");
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/private-chat/send-message/${garageOwnerId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${document.cookie.split('token=')[1]?.split(';')[0]}`
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
           content: `Hi! I'm interested in your garage services at ${name} (${location}). Could you please provide more information?`,
@@ -75,9 +90,12 @@ const GarageCard: React.FC<GarageCardProps> = ({
           }
         });
         window.dispatchEvent(chatEvent);
+      } else {
+        toast.error(data.message || "Failed to start conversation.");
       }
     } catch (error) {
       console.error('Failed to start conversation:', error);
+      toast.error("Failed to start conversation. Please try again.");
     }
   };
 

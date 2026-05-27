@@ -118,7 +118,7 @@ export default function GarageDetailsPage({ params }: GarageDetailsPageProps) {
               description={garageData.description} 
               image={garageData.profileImage}
             />
-            <ServicesOffered />
+            <ServicesOffered services={garageData.services} />
           </div>
 
           {/* Sidebar Right Column */}

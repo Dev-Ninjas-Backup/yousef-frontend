@@ -9,6 +9,10 @@ import garageBg from "@/assets/service/garage/technical_checking_car_transmissio
 import ChatDialog from "../chat/ChatDialog";
 import { useLanguage } from "@/context/LanguageContext";
 import { serviceDetailsTranslations } from "@/translations/serviceDetails";
+import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import Cookies from "js-cookie";
 
 interface GarageHeroProps {
   name: string;
@@ -40,16 +44,24 @@ export default function GarageHero({
   const { t } = useLanguage();
   const trans = t(serviceDetailsTranslations);
   const [chatOpen, setChatOpen] = useState(false);
+  const { isAuthenticated } = useAuth();
+  const router = useRouter();
 
   const handleMessage = async () => {
     if (!ownerId) return;
+    if (!isAuthenticated) {
+      toast.error("Please login to message the garage owner.");
+      router.push("/user-auth");
+      return;
+    }
     
     try {
+      const token = Cookies.get("token");
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/private-chat/send-message/${ownerId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${document.cookie.split('token=')[1]?.split(';')[0]}`
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
           content: `Hi! I'm interested in your garage services at ${name}. Can you provide more information?`,
@@ -67,9 +79,12 @@ export default function GarageHero({
           }
         });
         window.dispatchEvent(event);
+      } else {
+        toast.error(data.message || "Failed to start conversation.");
       }
     } catch (error) {
       console.error('Failed to start conversation:', error);
+      toast.error("Failed to start conversation. Please try again.");
     }
   };
 

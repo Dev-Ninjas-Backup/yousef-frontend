@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion } from "framer-motion";
-import { Loader2 } from "lucide-react";
+import { Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 import GarageCard from "../garage-card/GarageCard";
 import MapSection from "../map-section/MapSection";
 import {
@@ -40,6 +40,7 @@ export default function GarageList({ searchParams }: GarageListProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const [allGarages, setAllGarages] = useState<any[]>([]);
   const [hasMore, setHasMore] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const observerTarget = useRef(null);
 
   const limit = showMap ? 10 : 10;
@@ -48,6 +49,7 @@ export default function GarageList({ searchParams }: GarageListProps) {
   const {
     data: garagesResponse,
     isLoading,
+    isFetching,
     error,
   } = useGetGaragesQuery({
     page: currentPage,
@@ -59,7 +61,6 @@ export default function GarageList({ searchParams }: GarageListProps) {
   // Reset when showMap or search params change
   useEffect(() => {
     setCurrentPage(1);
-    setAllGarages([]);
     setHasMore(true);
   }, [searchParams, showMap]);
 
@@ -141,7 +142,7 @@ export default function GarageList({ searchParams }: GarageListProps) {
     setCurrentPage(page);
   };
 
-  if (isLoading && currentPage === 1) {
+  if ((isLoading || isFetching) && currentPage === 1) {
     return (
       <section className="relative py-8">
         <div className="container mx-auto px-4">
@@ -215,7 +216,7 @@ export default function GarageList({ searchParams }: GarageListProps) {
 
         {/* Desktop: Map Background + Cards Overlay | Mobile: Cards then Map */}
         <div
-          className={`${showMap ? "lg:relative lg:h-[1150px]" : "md:block"}`}
+          className={`${showMap ? "lg:relative lg:h-[1150px] overflow-hidden rounded-xl" : "md:block"}`}
         >
           {/* Map - Below on mobile, Background on desktop */}
           {showMap && (
@@ -224,11 +225,28 @@ export default function GarageList({ searchParams }: GarageListProps) {
             </div>
           )}
 
+          {/* Hide/Show Toggle Button - Desktop Only */}
+          {showMap && (
+            <button
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              className={`hidden lg:flex absolute top-4 z-20 items-center justify-center w-10 h-10 rounded-full bg-white hover:bg-gray-50 text-gray-700 shadow-lg border border-gray-200 transition-all duration-300 ease-in-out ${
+                isSidebarOpen ? "lg:left-[592px]" : "lg:left-4"
+              }`}
+              title={isSidebarOpen ? "Hide Garages List" : "Show Garages List"}
+            >
+              {isSidebarOpen ? <ChevronLeft className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
+            </button>
+          )}
+
           {/* Garage Cards */}
           <div
-            className={`${
+            className={`transition-all duration-300 ease-in-out ${
               showMap
-                ? "lg:absolute lg:left-4 lg:top-4 lg:z-10 lg:w-full lg:max-w-xl lg:max-h-[calc(100%-2rem)] lg:overflow-y-auto lg:pr-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+                ? `lg:absolute lg:top-4 lg:z-10 lg:w-full lg:max-w-xl lg:max-h-[calc(100%-2rem)] lg:overflow-y-auto lg:pr-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] ${
+                    isSidebarOpen 
+                      ? "lg:left-4 lg:opacity-100 lg:translate-x-0" 
+                      : "lg:-translate-x-[110%] lg:opacity-0 lg:pointer-events-none"
+                  }`
                 : "md:grid md:grid-cols-2 md:gap-4"
             }`}
           >
