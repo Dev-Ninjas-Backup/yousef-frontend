@@ -26,7 +26,9 @@ export default function SparePartsHero() {
           src={sparePartsBg}
           alt="Spare Parts background"
           fill
+          sizes="(max-width: 1280px) 100vw, 1280px"
           className="object-cover"
+          priority
         />
         <div className="absolute inset-0 bg-gradient-to-r from-[#0F172A] via-[#0F172A]/90 to-[#0F172A]/20" />
       </div>

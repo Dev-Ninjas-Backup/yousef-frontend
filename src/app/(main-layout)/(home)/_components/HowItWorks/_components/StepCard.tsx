@@ -31,6 +31,7 @@ const StepCard: React.FC<StepCardProps> = ({
                 src={phoneImage}
                 alt={`${title} - Step ${stepNumber}`}
                 fill
+                sizes="(max-width: 768px) 200px, 250px"
                 className="object-contain drop-shadow-2xl px-5"
                 priority
               />

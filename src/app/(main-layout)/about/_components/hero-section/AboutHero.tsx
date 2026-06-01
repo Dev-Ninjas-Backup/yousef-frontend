@@ -17,6 +17,7 @@ export default function AboutHero() {
         src={AboutBg}
         alt="About SayaraHub"
         fill
+        sizes="(max-width: 1280px) 100vw, 1280px"
         className="object-cover"
         priority
       />

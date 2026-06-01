@@ -77,7 +77,9 @@ export default function HeroSection({ onSearch, initialValues }: HeroSectionProp
           src={garageBg}
           alt="Garage background"
           fill
+          sizes="(max-width: 1280px) 100vw, 1280px"
           className="object-cover"
+          priority
         />
         <div className="absolute inset-0 bg-black/80" />
       </div>

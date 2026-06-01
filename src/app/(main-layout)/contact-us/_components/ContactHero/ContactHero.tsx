@@ -60,6 +60,7 @@ const ContactHero: React.FC = () => {
           src={contactHeroimg}
           alt="Contact us"
           fill
+          sizes="(max-width: 1024px) 100vw, 65vw"
           className="object-cover object-[center_right] lg:object-[80%_center]"
           priority
         />

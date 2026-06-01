@@ -132,7 +132,13 @@ export default function CTASection() {
                   viewport={{ once: true }}
                   transition={{ duration: 0.8 }}
                 >
-                  <Image src={Cta1} alt="Mechanic" fill className="object-cover -rotate-[10deg] scale-[1.35]" />
+                  <Image
+                    src={Cta1}
+                    alt="Mechanic"
+                    fill
+                    sizes="(max-width: 640px) 100vw, 700px"
+                    className="object-cover -rotate-[10deg] scale-[1.35]"
+                  />
                   <div className="absolute inset-0 bg-blue-900/10 mix-blend-overlay pointer-events-none" />
                 </motion.div>
                 
@@ -146,7 +152,13 @@ export default function CTASection() {
                     viewport={{ once: true }}
                     transition={{ duration: 0.8, delay: 0.2 }}
                   >
-                    <Image src={Cta2} alt="Driver" fill className="object-cover -rotate-[10deg] scale-[1.35]" />
+                    <Image
+                      src={Cta2}
+                      alt="Driver"
+                      fill
+                      sizes="(max-width: 640px) 60vw, 400px"
+                      className="object-cover -rotate-[10deg] scale-[1.35]"
+                    />
                     <div className="absolute inset-0 bg-blue-900/10 mix-blend-overlay pointer-events-none" />
                   </motion.div>
                   
@@ -158,7 +170,13 @@ export default function CTASection() {
                     viewport={{ once: true }}
                     transition={{ duration: 0.8, delay: 0.4 }}
                   >
-                    <Image src={Cta3} alt="Partnership" fill className="object-cover -rotate-[10deg] scale-[1.35]" />
+                    <Image
+                      src={Cta3}
+                      alt="Partnership"
+                      fill
+                      sizes="(max-width: 640px) 40vw, 300px"
+                      className="object-cover -rotate-[10deg] scale-[1.35]"
+                    />
                     <div className="absolute inset-0 bg-blue-900/10 mix-blend-overlay pointer-events-none" />
                   </motion.div>
                 </div>

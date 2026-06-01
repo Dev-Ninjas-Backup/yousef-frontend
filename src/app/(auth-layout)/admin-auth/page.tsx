@@ -96,7 +96,9 @@ export default function AdminAuth() {
                   alt="SayaraHub"
                   width={150}
                   height={40}
-                  className="h-8 md:h-10 w-auto brightness-0 invert cursor-pointer hover:opacity-80 transition-opacity"
+                  className="!h-8 md:!h-10 w-auto brightness-0 invert cursor-pointer hover:opacity-80 transition-opacity"
+                  style={{ width: "auto", height: "auto" }}
+                  priority
                 />
               </Link>
               <div className="flex items-center gap-2 text-white/80">

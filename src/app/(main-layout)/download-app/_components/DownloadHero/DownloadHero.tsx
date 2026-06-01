@@ -73,6 +73,7 @@ const DownloadHero: React.FC = () => {
                 src={phoneImage}
                 alt="SayaraHub App"
                 fill
+                sizes="(max-width: 640px) 320px, (max-width: 768px) 380px, (max-width: 1024px) 450px, 480px"
                 className="object-contain"
                 priority
               />

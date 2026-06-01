@@ -100,7 +100,13 @@ const HowItWorks: React.FC = () => {
                   <div className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-shadow border border-gray-100/80 flex flex-col h-full overflow-hidden">
                     {/* Image */}
                     <div className="h-44 md:h-48 relative w-full bg-gray-50 overflow-hidden border-b border-gray-50">
-                      <Image src={imageUrl} alt={step.title} fill className="object-cover group-hover:scale-105 transition-transform duration-700 ease-in-out" />
+                      <Image
+                        src={imageUrl}
+                        alt={step.title}
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 33vw, 20vw"
+                        className="object-cover group-hover:scale-105 transition-transform duration-700 ease-in-out"
+                      />
                     </div>
 
                     {/* Content */}

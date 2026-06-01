@@ -23,7 +23,9 @@ export default function GarageVerificationModal({ isOpen, onClose }: GarageVerif
               alt="SayaraHub"
               width={120}
               height={32}
-              className="h-8 w-auto mx-auto mb-4"
+              className="!h-8 w-auto mx-auto mb-4"
+              style={{ width: "auto", height: "auto" }}
+              priority
             />
           </div>
         </DialogHeader>

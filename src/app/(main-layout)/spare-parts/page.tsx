@@ -211,8 +211,13 @@ export default function SparePartsPage() {
                         : "flex flex-col gap-4"
                     }
                   >
-                    {products.map((product) => (
-                      <ProductCard key={product.id} product={product} viewMode={viewMode} />
+                    {products.map((product, index) => (
+                      <ProductCard 
+                        key={product.id} 
+                        product={product} 
+                        viewMode={viewMode} 
+                        priority={index < 2} 
+                      />
                     ))}
                   </div>
 
