@@ -116,6 +116,7 @@ export default function ProductDetailsContent({
                   width={600}
                   height={600}
                   className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
+                  priority
                 />
               </div>
               {product.photos.length > 1 && (

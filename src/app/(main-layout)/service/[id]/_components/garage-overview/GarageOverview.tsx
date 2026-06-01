@@ -54,6 +54,7 @@ export default function GarageOverview({
               src={imageSrc} 
               alt="Garage Overview" 
               fill 
+              sizes="(max-width: 1024px) 100vw, 533px"
               className="object-cover" 
             />
           </div>

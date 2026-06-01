@@ -117,6 +117,7 @@ export default function GarageHero({
             src={coverPhoto || garageBg}
             alt={name}
             fill
+            sizes="(max-width: 1280px) 100vw, 1280px"
             className="object-cover transition-transform duration-700 group-hover:scale-102"
             priority
           />

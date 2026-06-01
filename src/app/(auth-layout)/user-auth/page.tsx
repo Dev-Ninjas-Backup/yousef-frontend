@@ -79,7 +79,9 @@ export default function UserAuth() {
                 alt="SayaraHub"
                 width={150}
                 height={40}
-                className="h-8 md:h-10 w-auto ml-10 md:ml-20 cursor-pointer hover:opacity-80 transition-opacity"
+                className="!h-8 md:!h-10 w-auto ml-10 md:ml-20 cursor-pointer hover:opacity-80 transition-opacity"
+                style={{ width: "auto", height: "auto" }}
+                priority
               />
             </Link>
           </div>

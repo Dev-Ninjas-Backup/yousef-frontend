@@ -8,6 +8,7 @@ interface ProductCardProps {
   product: Product;
   viewMode?: "grid" | "list";
   showViewDetails?: boolean;
+  priority?: boolean;
 }
 
 // Simple time ago formatter
@@ -31,7 +32,8 @@ const timeAgo = (dateString: string) => {
 export default function ProductCard({ 
   product, 
   viewMode = "grid",
-  showViewDetails = true 
+  showViewDetails = true,
+  priority = false
 }: ProductCardProps) {
   const condition = String(product.condition || "");
   const timeString = timeAgo(product.createdAt);
@@ -53,7 +55,9 @@ export default function ProductCard({
               src={product.photos?.[0] || "/placeholder-product.jpg"}
               alt={product.partName || "Product"}
               fill
+              sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 300px"
               className="object-cover transition-transform duration-500 hover:scale-105"
+              priority={priority}
             />
 
             {/* Promoted badge */}

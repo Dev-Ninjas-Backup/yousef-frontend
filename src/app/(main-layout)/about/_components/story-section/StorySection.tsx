@@ -76,7 +76,13 @@ export default function StorySection() {
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
           >
-            <Image src={OurStory} alt="Mechanic working on an engine" fill className="object-cover transition-transform duration-700 ease-out group-hover:scale-105" />
+            <Image
+              src={OurStory}
+              alt="Mechanic working on an engine"
+              fill
+              sizes="(max-width: 1024px) 100vw, 640px"
+              className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+            />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
             
             {/* Dark solid card */}
@@ -103,7 +109,13 @@ export default function StorySection() {
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
           >
-            <Image src={OurMission} alt="Mechanic opening car trunk" fill className="object-cover transition-transform duration-700 ease-out group-hover:scale-105" />
+            <Image
+              src={OurMission}
+              alt="Mechanic opening car trunk"
+              fill
+              sizes="(max-width: 1024px) 100vw, 640px"
+              className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+            />
             <div className="absolute inset-0 bg-black/5" />
           </motion.div>
 
@@ -230,7 +242,13 @@ export default function StorySection() {
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
           >
-            <Image src={OurVision} alt="Mechanic under car" fill className="object-cover transition-transform duration-700 ease-out group-hover:scale-105" />
+            <Image
+              src={OurVision}
+              alt="Mechanic under car"
+              fill
+              sizes="(max-width: 1024px) 100vw, 640px"
+              className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+            />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
             
             {/* Dark glass card */}
@@ -260,7 +278,13 @@ export default function StorySection() {
             
             {/* Image Left */}
             <div className="relative rounded-[32px] overflow-hidden aspect-[4/4.5] shadow-xl flex flex-col justify-end p-6 md:p-8 transition-all duration-500 hover:shadow-2xl hover:-translate-y-1.5 group">
-              <Image src={Empowering} alt="Wrenches and tools" fill className="object-cover transition-transform duration-700 ease-out group-hover:scale-105" />
+              <Image
+                src={Empowering}
+                alt="Wrenches and tools"
+                fill
+                sizes="(max-width: 1024px) 100vw, 640px"
+                className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+              />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
               
               {/* Dark Card */}

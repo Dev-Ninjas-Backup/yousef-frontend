@@ -132,6 +132,7 @@ const FeaturedPromotions: React.FC = () => {
                       src={promo.image}
                       alt={promo.title}
                       fill
+                      sizes="(max-width: 1280px) 100vw, 1280px"
                       className="object-cover"
                       priority={idx === 0}
                     />
@@ -221,6 +222,7 @@ const FeaturedPromotions: React.FC = () => {
                       src={promo.image}
                       alt={promo.title}
                       fill
+                      sizes="208px"
                       className="object-cover"
                     />
                   </div>
