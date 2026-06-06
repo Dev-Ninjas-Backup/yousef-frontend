@@ -311,7 +311,7 @@ const GetInTouch: React.FC = () => {
           <div className="bg-[#f8fafc] rounded-2xl p-6 lg:p-8 border border-gray-200/60 shadow-sm flex flex-col md:flex-row items-center justify-between gap-6 md:gap-4 select-none">
             
             {/* Feature 1 */}
-            <div className="flex items-center gap-3.5 flex-1 w-full justify-start pl-4 md:pl-0 p-2 rounded-xl transition-all duration-300 hover:bg-white hover:shadow-[0_8px_25px_rgba(0,0,0,0.04)] hover:-translate-y-0.5 group cursor-default">
+            <div className="flex items-center gap-3.5 flex-1 w-full justify-start px-3 py-2 rounded-xl transition-all duration-300 hover:bg-white hover:shadow-[0_8px_25px_rgba(0,0,0,0.04)] hover:-translate-y-0.5 group cursor-default">
               <div className="w-[38px] h-[38px] rounded-full bg-blue-100 flex items-center justify-center shrink-0 transition-colors duration-300 group-hover:bg-blue-600 group-hover:text-white">
                 <BadgeCheck className="w-5 h-5 text-blue-600 group-hover:text-white transition-colors duration-300" strokeWidth={2} />
               </div>
@@ -324,7 +324,7 @@ const GetInTouch: React.FC = () => {
             <div className="hidden md:block w-px h-[40px] bg-gray-200 shrink-0"></div>
 
             {/* Feature 2 */}
-            <div className="flex items-center gap-3.5 flex-1 w-full justify-start pl-4 md:pl-0 p-2 rounded-xl transition-all duration-300 hover:bg-white hover:shadow-[0_8px_25px_rgba(0,0,0,0.04)] hover:-translate-y-0.5 group cursor-default">
+            <div className="flex items-center gap-3.5 flex-1 w-full justify-start px-3 py-2 rounded-xl transition-all duration-300 hover:bg-white hover:shadow-[0_8px_25px_rgba(0,0,0,0.04)] hover:-translate-y-0.5 group cursor-default">
               <div className="w-[38px] h-[38px] rounded-full bg-blue-100 flex items-center justify-center shrink-0 transition-colors duration-300 group-hover:bg-blue-600 group-hover:text-white">
                 <Truck className="w-5 h-5 text-blue-600 group-hover:text-white transition-colors duration-300" strokeWidth={2} />
               </div>
@@ -337,7 +337,7 @@ const GetInTouch: React.FC = () => {
             <div className="hidden md:block w-px h-[40px] bg-gray-200 shrink-0"></div>
 
             {/* Feature 3 */}
-            <div className="flex items-center gap-3.5 flex-1 w-full justify-start pl-4 md:pl-0 p-2 rounded-xl transition-all duration-300 hover:bg-white hover:shadow-[0_8px_25px_rgba(0,0,0,0.04)] hover:-translate-y-0.5 group cursor-default">
+            <div className="flex items-center gap-3.5 flex-1 w-full justify-start px-3 py-2 rounded-xl transition-all duration-300 hover:bg-white hover:shadow-[0_8px_25px_rgba(0,0,0,0.04)] hover:-translate-y-0.5 group cursor-default">
               <div className="w-[38px] h-[38px] rounded-full bg-blue-100 flex items-center justify-center shrink-0 transition-colors duration-300 group-hover:bg-blue-600 group-hover:text-white">
                 <Handshake className="w-5 h-5 text-blue-600 group-hover:text-white transition-colors duration-300" strokeWidth={2} />
               </div>
@@ -350,7 +350,7 @@ const GetInTouch: React.FC = () => {
             <div className="hidden md:block w-px h-[40px] bg-gray-200 shrink-0"></div>
 
             {/* Feature 4 */}
-            <div className="flex items-center gap-3.5 flex-1 w-full justify-start pl-4 md:pl-0 p-2 rounded-xl transition-all duration-300 hover:bg-white hover:shadow-[0_8px_25px_rgba(0,0,0,0.04)] hover:-translate-y-0.5 group cursor-default">
+            <div className="flex items-center gap-3.5 flex-1 w-full justify-start px-3 py-2 rounded-xl transition-all duration-300 hover:bg-white hover:shadow-[0_8px_25px_rgba(0,0,0,0.04)] hover:-translate-y-0.5 group cursor-default">
               <div className="w-[38px] h-[38px] rounded-full bg-blue-100 flex items-center justify-center shrink-0 transition-colors duration-300 group-hover:bg-blue-600 group-hover:text-white">
                 <Info className="w-5 h-5 text-blue-600 group-hover:text-white transition-colors duration-300" strokeWidth={2} />
               </div>

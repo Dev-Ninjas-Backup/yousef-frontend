@@ -30,7 +30,7 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
-import { GoogleMap, Marker } from "@react-google-maps/api";
+import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api";
 import { MapPin, Loader2 } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { serviceTranslations } from "@/translations/service";
@@ -56,6 +56,12 @@ interface MapSectionProps {
 export default function MapSection({ garages = [] }: MapSectionProps) {
   const { t } = useLanguage();
   const trans = t(serviceTranslations);
+
+  const { isLoaded } = useJsApiLoader({
+    id: "google-map-script",
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
+  });
+
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
   const [locationError, setLocationError] = useState<string | null>(null);
@@ -138,6 +144,23 @@ export default function MapSection({ garages = [] }: MapSectionProps) {
     );
   };
 
+  if (!isLoaded) {
+    return (
+      <div className="absolute inset-0 bg-slate-50/90 backdrop-blur-xs flex items-center justify-center z-10 rounded-xl">
+        <div className="flex flex-col items-center gap-4">
+          <div className="relative">
+            <Loader2 className="w-12 h-12 text-blue-600 animate-spin" />
+            <div className="absolute inset-0 w-12 h-12 border-4 border-blue-200 rounded-full animate-pulse" />
+          </div>
+          <div className="text-center">
+            <p className="text-lg font-semibold text-gray-900">Loading Maps</p>
+            <p className="text-sm text-gray-500 mt-1">Please wait...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="h-full w-full relative">
       <GoogleMap
@@ -154,7 +177,7 @@ export default function MapSection({ garages = [] }: MapSectionProps) {
         }}
       >
         {/* Garage markers */}
-        {garages.map((garage) => (
+        {map && garages.map((garage) => (
           <Marker
             key={garage.id}
             position={garage.position}
@@ -163,12 +186,12 @@ export default function MapSection({ garages = [] }: MapSectionProps) {
         ))}
         
         {/* User location marker */}
-        {userLocation && (
+        {map && userLocation && window.google && (
           <Marker
             position={userLocation}
             title={trans.map.yourLocation}
             icon={{
-              path: google.maps.SymbolPath.CIRCLE,
+              path: window.google.maps.SymbolPath.CIRCLE,
               scale: 10,
               fillColor: "#4285F4",
               fillOpacity: 1,

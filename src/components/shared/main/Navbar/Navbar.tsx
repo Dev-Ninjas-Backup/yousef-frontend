@@ -16,9 +16,14 @@ const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLangMenuOpen, setIsLangMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
 
   const { user, isAuthenticated, logout } = useAuth();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const trans = t(navbarTranslations);
 
@@ -130,7 +135,15 @@ const Navbar = () => {
           <TranslationToggle />
 
           {/* Auth buttons - desktop only */}
-          {isAuthenticated ? (
+          {!mounted ? (
+            <Link
+              href="/user-auth"
+              className="hidden lg:flex items-center gap-2 text-white hover:text-[#0A84FF] py-2 px-4 rounded-full bg-black/40 shadow-[0_0_15px_rgba(255,255,255,0.1)] transition-all duration-300"
+            >
+              <span className="text-sm text-white/80">{trans.login}</span>
+              <UserCircle className="w-5 h-5 text-white/80" />
+            </Link>
+          ) : isAuthenticated ? (
             <div className="hidden lg:block relative user-dropdown">
               <button
                 onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
@@ -225,27 +238,30 @@ const Navbar = () => {
               </div>
               <button
                 onClick={() => handleLanguageChange("en")}
-                className={`w-full text-left flex items-center gap-2 text-white/80 hover:text-[#0A84FF] transition-colors px-4 py-2 rounded-lg hover:bg-white/5 ${
+                className={`w-full text-left flex items-center gap-2 text-white/80 hover:text-[#0A84FF] transition-colors px-4 py-2 rounded-lg hover:bg-white/5 notranslate ${
                   language === "en" ? "bg-white/5 font-semibold" : ""
                 }`}
+                translate="no"
               >
                 <Globe className="w-4 h-4" />
                 <span>English</span>
               </button>
               <button
                 onClick={() => handleLanguageChange("ar")}
-                className={`w-full text-left flex items-center gap-2 text-white/80 hover:text-[#0A84FF] transition-colors px-4 py-2 rounded-lg hover:bg-white/5 ${
+                className={`w-full text-left flex items-center gap-2 text-white/80 hover:text-[#0A84FF] transition-colors px-4 py-2 rounded-lg hover:bg-white/5 notranslate ${
                   language === "ar" ? "bg-white/5 font-semibold" : ""
                 }`}
+                translate="no"
               >
                 <Globe className="w-4 h-4" />
                 <span>العربية</span>
               </button>
               <button
                 onClick={() => handleLanguageChange("hi")}
-                className={`w-full text-left flex items-center gap-2 text-white/80 hover:text-[#0A84FF] transition-colors px-4 py-2 rounded-lg hover:bg-white/5 ${
+                className={`w-full text-left flex items-center gap-2 text-white/80 hover:text-[#0A84FF] transition-colors px-4 py-2 rounded-lg hover:bg-white/5 notranslate ${
                   language === "hi" ? "bg-white/5 font-semibold" : ""
                 }`}
+                translate="no"
               >
                 <Globe className="w-4 h-4" />
                 <span>हिन्दी</span>

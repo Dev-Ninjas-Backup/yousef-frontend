@@ -2,6 +2,7 @@ import { apiSlice } from '../api/apiSlice';
 import { Garage, GarageQueryParams, GarageResponse } from './types';
 
 export const adminApiSlice = apiSlice.enhanceEndpoints({ addTagTypes: ['Admin'] }).injectEndpoints({
+  overrideExisting: true,
   endpoints: (builder) => ({
     
     getGarages: builder.query<GarageResponse, GarageQueryParams>({

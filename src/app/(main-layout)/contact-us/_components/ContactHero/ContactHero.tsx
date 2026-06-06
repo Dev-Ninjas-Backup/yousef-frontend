@@ -73,63 +73,102 @@ const ContactHero: React.FC = () => {
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pt-24 pb-16 lg:pt-[120px] lg:pb-24">
         <div className="w-full lg:w-[50%] flex flex-col gap-6 lg:pr-4">
+          {/* Top Badge */}
           <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.7, ease: "easeOut" }}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0, ease: "easeOut" }}
+            className="inline-flex items-center gap-2 bg-[#1e40af] px-4 py-2 rounded-full w-fit hover:scale-105 hover:bg-[#1d4ed8] hover:shadow-[0_0_20px_rgba(37,99,235,0.3)] select-none cursor-default"
           >
-            {/* Top Badge */}
-            <div className="inline-flex items-center gap-2 bg-[#1e40af] px-4 py-2 rounded-full w-fit mb-6 transition-all duration-300 hover:scale-105 hover:bg-[#1d4ed8] hover:shadow-[0_0_20px_rgba(37,99,235,0.3)] select-none cursor-default">
-              <Headphones className="w-[14px] h-[14px] text-white" strokeWidth={2.5} />
-              <span className="text-[11px] font-bold tracking-widest text-white uppercase">WE&apos;RE HERE FOR YOU</span>
-            </div>
+            <Headphones className="w-[14px] h-[14px] text-white" strokeWidth={2.5} />
+            <span className="text-[11px] font-bold tracking-widest text-white uppercase">WE&apos;RE HERE FOR YOU</span>
+          </motion.div>
 
-            <h1 className="text-4xl sm:text-5xl lg:text-[54px] font-extrabold text-white mb-8 leading-[1.1] tracking-tight">
-              {renderTitle(trans.hero.title)}
-            </h1>
+          {/* Title */}
+          <motion.h1
+            className="text-4xl sm:text-5xl lg:text-[54px] font-extrabold text-white leading-[1.1] tracking-tight"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1, ease: "easeOut" }}
+          >
+            {renderTitle(trans.hero.title)}
+          </motion.h1>
 
+          {/* Description */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
+          >
             {renderDescription(trans.hero.description)}
           </motion.div>
 
           {/* Features Row */}
-          <motion.div 
-            className="grid grid-cols-1 sm:grid-cols-3 gap-6 lg:gap-8 mt-6 lg:mt-8 w-full lg:min-w-[650px]"
-            initial={{ opacity: 0, y: 20 }}
+          <motion.div
+            className="grid grid-cols-1 sm:grid-cols-3 gap-6 lg:gap-8 mt-2 w-full lg:min-w-[650px]"
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
+            transition={{ duration: 0.6, delay: 0.3, ease: "easeOut" }}
           >
             {/* Feature 1 */}
-            <div className="flex flex-row items-start gap-3 p-2 rounded-2xl transition-all duration-300 hover:bg-white/5 hover:translate-x-1 group cursor-default">
-              <div className="w-[42px] h-[42px] rounded-full bg-[#2563eb] flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-110">
-                <ShieldCheck className="w-[20px] h-[20px] text-white" strokeWidth={2.5} />
-              </div>
+            <motion.div
+              className="flex flex-row items-start gap-3 p-2 rounded-2xl cursor-default"
+              whileHover="hover"
+              variants={{ hover: { x: 4, backgroundColor: "rgba(255,255,255,0.05)" } }}
+              transition={{ type: "spring", stiffness: 300, damping: 25 }}
+            >
+              <motion.div
+                className="w-[42px] h-[42px] rounded-full bg-[#172554] flex items-center justify-center shrink-0"
+                variants={{ hover: { scale: 1.1, backgroundColor: "#2563eb" } }}
+                transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              >
+                <ShieldCheck className="w-[20px] h-[20px] text-blue-300" strokeWidth={2.5} />
+              </motion.div>
               <div className="flex flex-col pt-0.5">
-                <h4 className="text-white font-bold text-[14px] transition-colors duration-300 group-hover:text-blue-400">Fast Support</h4>
+                <h4 className="text-white font-bold text-[14px]">Fast Support</h4>
                 <p className="text-gray-400 text-[12px] leading-[1.4] mt-1 pr-2">We respond quickly to get you the help you need.</p>
               </div>
-            </div>
-            
+            </motion.div>
+
             {/* Feature 2 */}
-            <div className="flex flex-row items-start gap-3 p-2 rounded-2xl transition-all duration-300 hover:bg-white/5 hover:translate-x-1 group cursor-default">
-              <div className="w-[42px] h-[42px] rounded-full bg-[#172554] flex items-center justify-center shrink-0 transition-all duration-300 group-hover:bg-[#2563eb] group-hover:scale-110">
-                <Users className="w-[20px] h-[20px] text-blue-300 group-hover:text-white transition-colors duration-300" strokeWidth={2.5} />
-              </div>
+            <motion.div
+              className="flex flex-row items-start gap-3 p-2 rounded-2xl cursor-default"
+              whileHover="hover"
+              variants={{ hover: { x: 4, backgroundColor: "rgba(255,255,255,0.05)" } }}
+              transition={{ type: "spring", stiffness: 300, damping: 25 }}
+            >
+              <motion.div
+                className="w-[42px] h-[42px] rounded-full bg-[#172554] flex items-center justify-center shrink-0"
+                variants={{ hover: { scale: 1.1, backgroundColor: "#2563eb" } }}
+                transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              >
+                <Users className="w-[20px] h-[20px] text-blue-300" strokeWidth={2.5} />
+              </motion.div>
               <div className="flex flex-col pt-0.5">
-                <h4 className="text-white font-bold text-[14px] transition-colors duration-300 group-hover:text-blue-400">Expert Team</h4>
+                <h4 className="text-white font-bold text-[14px]">Expert Team</h4>
                 <p className="text-gray-400 text-[12px] leading-[1.4] mt-1 pr-2">Automotive professionals ready to assist you.</p>
               </div>
-            </div>
+            </motion.div>
 
             {/* Feature 3 */}
-            <div className="flex flex-row items-start gap-3 p-2 rounded-2xl transition-all duration-300 hover:bg-white/5 hover:translate-x-1 group cursor-default">
-              <div className="w-[42px] h-[42px] rounded-full bg-[#172554] flex items-center justify-center shrink-0 transition-all duration-300 group-hover:bg-[#2563eb] group-hover:scale-110">
-                <CheckCircle2 className="w-[20px] h-[20px] text-blue-300 group-hover:text-white transition-colors duration-300" strokeWidth={2.5} />
-              </div>
+            <motion.div
+              className="flex flex-row items-start gap-3 p-2 rounded-2xl cursor-default"
+              whileHover="hover"
+              variants={{ hover: { x: 4, backgroundColor: "rgba(255,255,255,0.05)" } }}
+              transition={{ type: "spring", stiffness: 300, damping: 25 }}
+            >
+              <motion.div
+                className="w-[42px] h-[42px] rounded-full bg-[#172554] flex items-center justify-center shrink-0"
+                variants={{ hover: { scale: 1.1, backgroundColor: "#2563eb" } }}
+                transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              >
+                <CheckCircle2 className="w-[20px] h-[20px] text-blue-300" strokeWidth={2.5} />
+              </motion.div>
               <div className="flex flex-col pt-0.5">
-                <h4 className="text-white font-bold text-[14px] transition-colors duration-300 group-hover:text-blue-400">Hassle-Free</h4>
+                <h4 className="text-white font-bold text-[14px]">Hassle-Free</h4>
                 <p className="text-gray-400 text-[12px] leading-[1.4] mt-1 pr-2">Simple, clear, and stress-free communication.</p>
               </div>
-            </div>
+            </motion.div>
           </motion.div>
         </div>
       </div>

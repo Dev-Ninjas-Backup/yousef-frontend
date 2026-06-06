@@ -75,7 +75,7 @@ function SearchNearbyContent() {
             <div>
               <h1 className="text-3xl font-bold text-gray-900">Nearby Garages</h1>
               <p className="text-gray-600 mt-2">
-                Found {garages?.length || 0} garages within {radius}km of your location
+                Found {garages?.length || 0} garages {radius === 100000 ? "with full radius" : `within ${radius}km`} of your location
               </p>
             </div>
           </div>
@@ -177,7 +177,7 @@ function SearchNearbyContent() {
         ) : (
           <div className="text-center py-12 bg-white rounded-lg">
             <p className="text-gray-500">
-              No garages found within {radius}km of your location
+              No garages found {radius === 100000 ? "with full radius" : `within ${radius}km`} of your location
             </p>
           </div>
         )}

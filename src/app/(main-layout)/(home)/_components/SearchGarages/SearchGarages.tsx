@@ -58,7 +58,9 @@ const SearchGarages: React.FC = () => {
           setNearbyResults(garages.slice(0, 5));
           setShowNearbySearch(true);
           toast.success(
-            `Found ${garages.length} garages within ${searchRadius}km`,
+            searchRadius === 100000
+              ? `Found ${garages.length} garages`
+              : `Found ${garages.length} garages within ${searchRadius}km`,
           );
         } catch (error: any) {
           const errorMessage = error?.data?.message;
@@ -88,7 +90,7 @@ const SearchGarages: React.FC = () => {
           ? parseFloat(customRadius)
           : parseFloat(radius);
         router.push(
-          `/service?lat=${latitude}&lng=${longitude}&radius=${searchRadius}`,
+          `/service?lat=${latitude}&lng=${longitude}&radius=${searchRadius}#garages-list`,
         );
       });
     }
@@ -138,6 +140,9 @@ const SearchGarages: React.FC = () => {
                     </SelectItem>
                     <SelectItem value="50">
                       <span>50 km</span>
+                    </SelectItem>
+                    <SelectItem value="100000">
+                      <span>Full Radius</span>
                     </SelectItem>
                     <SelectItem value="custom">
                       <span>Custom</span>

@@ -144,7 +144,7 @@ export default function GarageList({ searchParams }: GarageListProps) {
 
   if ((isLoading || isFetching) && currentPage === 1) {
     return (
-      <section className="relative py-8">
+      <section id="garages-list" className="relative py-8">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-center h-64">
             <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
@@ -169,7 +169,7 @@ export default function GarageList({ searchParams }: GarageListProps) {
   }
 
   return (
-    <section className="relative py-8">
+    <section id="garages-list" className="relative py-8">
       <div className="container mx-auto px-4">
         {/* Header */}
         <motion.div
@@ -220,7 +220,7 @@ export default function GarageList({ searchParams }: GarageListProps) {
         >
           {/* Map - Below on mobile, Background on desktop */}
           {showMap && (
-            <div className="h-[400px] w-full overflow-hidden rounded-xl lg:absolute lg:inset-0 lg:h-full lg:z-0">
+            <div className="relative h-[400px] w-full overflow-hidden rounded-xl lg:absolute lg:inset-0 lg:h-full lg:z-0">
               <MapSection garages={garages} />
             </div>
           )}

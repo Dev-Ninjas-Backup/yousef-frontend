@@ -176,11 +176,7 @@ export function FloatingChatWidget() {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const userStatus = selectedChat ? getUserStatus(selectedChat.id) : null;
   const isOnline = userStatus?.isOnline ?? false;
-  console.log("🖥️ [FloatingChatWidget] rendering with:", {
-    selectedChatId: selectedChat?.id,
-    userStatus,
-    isOnline,
-  });
+
 
   // Combine REST API messages with real-time messages, avoiding duplicates
   const allMessages = React.useMemo(() => {
@@ -559,7 +555,7 @@ export function FloatingChatWidget() {
                     </div>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <div className="relative flex items-center">
+                    <div className="relative flex items-center notranslate" translate="no">
                       <button
                         onClick={() => setShowGlobalLangMenu(!showGlobalLangMenu)}
                         className={`flex items-center gap-1 px-2 py-1 rounded-lg border border-blue-400 bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-semibold transition-all shadow-sm focus:outline-none cursor-pointer ${showGlobalLangMenu ? 'bg-blue-700 border-blue-300' : ''

@@ -10,7 +10,7 @@ export const searchGaragesTranslations = {
       { value: "sharjah", label: "Sharjah" },
       { value: "ajman", label: "Ajman" },
       { value: "umm-al-quwain", label: "Umm Al Quwain" },
-      { value: "ras-al-khaimah", label: "Ras Al Khaimah" },
+      { value: "ras-al-khaimah", label: "Ras Al-Khaimah" },
       { value: "fujairah", label: "Fujairah" },
     ],
     services: [

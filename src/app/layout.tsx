@@ -7,7 +7,6 @@ import { ReduxProvider } from "@/providers/ReduxProvider";
 import { TranslationProvider } from "@/context/LanguageContext";
 import { GoogleTranslateWrapper } from "@/components/shared/GoogleTranslateWrapper";
 import { ScrollToTop } from "@/components/shared/ScrollToTop";
-import { GoogleMapsProvider } from "@/providers/GoogleMapsProvider";
 import {ToastContainer} from "react-toastify"
 import { Toaster } from "@/components/ui/sonner";
 
@@ -40,14 +39,12 @@ export default function RootLayout({
         <ReduxProvider>
           <ToastContainer />
           <TranslationProvider>
-            <GoogleMapsProvider>
-              <AuthProvider>
-                <GoogleTranslateWrapper>
-                  {children}
-                  <ScrollToTop />
-                </GoogleTranslateWrapper>
-              </AuthProvider>
-            </GoogleMapsProvider>
+            <AuthProvider>
+              <GoogleTranslateWrapper>
+                {children}
+                <ScrollToTop />
+              </GoogleTranslateWrapper>
+            </AuthProvider>
           </TranslationProvider>
         </ReduxProvider>
         <Toaster position="top-right" />

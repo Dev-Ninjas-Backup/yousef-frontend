@@ -9,7 +9,7 @@ export function GoogleMapsProvider({ children }: { children: ReactNode }) {
     <LoadScript
       googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || ""}
       loadingElement={
-        <div className="fixed inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-50">
+        <div className="absolute inset-0 bg-slate-50/90 backdrop-blur-xs flex items-center justify-center z-10 rounded-xl">
           <div className="flex flex-col items-center gap-4">
             <div className="relative">
               <Loader2 className="w-12 h-12 text-blue-600 animate-spin" />

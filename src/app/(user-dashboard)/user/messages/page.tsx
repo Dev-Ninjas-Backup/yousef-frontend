@@ -567,7 +567,7 @@ export default function UserMessagesPage() {
                       </div>
 
                       {/* Global Translation Selector */}
-                      <div className="flex items-center gap-2 relative">
+                      <div className="flex items-center gap-2 relative notranslate" translate="no">
                         <div className="relative">
                           <button
                             onClick={() => setShowGlobalLangMenu(!showGlobalLangMenu)}
