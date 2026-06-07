@@ -17,6 +17,7 @@ import SearchFilters from "./_components/SearchFilters";
 import GarageOwnersTable from "./_components/GarageOwnersTable";
 import GarageOwnerDetailsModal from "./_components/GarageOwnerDetailsModal";
 import GarageDetailsModal from "./_components/GarageDetailsModal";
+import BrandExpertiseReviewModal from "./_components/BrandExpertiseReviewModal";
 import Pagination from "./_components/Pagination";
 
 export default function GarageManagementPage() {
@@ -28,6 +29,13 @@ export default function GarageManagementPage() {
   const [page, setPage] = useState(1);
   const [selectedOwner, setSelectedOwner] = useState<GarageOwner | null>(null);
   const [selectedGarage, setSelectedGarage] = useState<GarageInfo | null>(null);
+  const [reviewBrandsGarage, setReviewBrandsGarage] = useState<GarageInfo | null>(null);
+  const [isReviewBrandsOpen, setIsReviewBrandsOpen] = useState(false);
+
+  const handleReviewBrands = (garage: GarageInfo) => {
+    setReviewBrandsGarage(garage);
+    setIsReviewBrandsOpen(true);
+  };
 
   const {
     data: response,
@@ -290,6 +298,7 @@ export default function GarageManagementPage() {
         onGarageApprove={handleGarageApprove}
         onGarageReject={handleGarageReject}
         onGarageView={setSelectedGarage}
+        onReviewBrands={handleReviewBrands}
       />
 
       {/* Pagination */}
@@ -310,11 +319,38 @@ export default function GarageManagementPage() {
         onClose={() => setSelectedOwner(null)}
       />
 
-      <GarageDetailsModal
-        garage={selectedGarage}
-        isOpen={!!selectedGarage}
-        onClose={() => setSelectedGarage(null)}
-      />
+      {(() => {
+        const latestGarage = selectedGarage
+          ? garageOwners
+              .flatMap((owner) => owner.garages)
+              .find((g) => g.garageId === selectedGarage.garageId) || selectedGarage
+          : null;
+        return (
+          <GarageDetailsModal
+            garage={latestGarage}
+            isOpen={!!selectedGarage}
+            onClose={() => setSelectedGarage(null)}
+          />
+        );
+      })()}
+
+      {(() => {
+        const latestReviewGarage = reviewBrandsGarage
+          ? garageOwners
+              .flatMap((owner) => owner.garages)
+              .find((g) => g.garageId === reviewBrandsGarage.garageId) || reviewBrandsGarage
+          : null;
+        return (
+          <BrandExpertiseReviewModal
+            garage={latestReviewGarage}
+            isOpen={isReviewBrandsOpen}
+            onClose={() => {
+              setIsReviewBrandsOpen(false);
+              setReviewBrandsGarage(null);
+            }}
+          />
+        );
+      })()}
     </div>
   );
 }

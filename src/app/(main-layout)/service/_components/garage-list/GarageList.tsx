@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion } from "framer-motion";
-import { Loader2, ChevronLeft, ChevronRight } from "lucide-react";
+import { Loader2, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, SlidersHorizontal } from "lucide-react";
 import GarageCard from "../garage-card/GarageCard";
 import MapSection from "../map-section/MapSection";
 import {
@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/pagination";
 import { useLanguage } from "@/context/LanguageContext";
 import { serviceTranslations } from "@/translations/service";
-import { useGetGaragesQuery } from "@/store/api/garageApi";
+import { useGetGaragesQuery, useGetServiceCategoriesQuery } from "@/store/api/garageApi";
 
 interface GarageListProps {
   searchParams: {
@@ -41,11 +41,41 @@ export default function GarageList({ searchParams }: GarageListProps) {
   const [allGarages, setAllGarages] = useState<any[]>([]);
   const [hasMore, setHasMore] = useState(true);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [selectedService, setSelectedService] = useState<string | null>(null);
+  const [selectedExpertise, setSelectedExpertise] = useState<string | null>(null);
+  const [userCoords, setUserCoords] = useState<{ lat: number; lng: number } | null>(null);
   const observerTarget = useRef(null);
+
+  const { data: servicesData } = useGetServiceCategoriesQuery();
+  const servicesList = servicesData?.serviceCategories || [
+    "Battery Replacement",
+    "Suspension Repair",
+    "AC Service",
+    "Oil Change",
+    "Engine Repair",
+    "Tire Service",
+  ];
 
   const limit = showMap ? 10 : 10;
 
-  // API call with search parameters
+  // Fetch geolocation for distance sorting
+  useEffect(() => {
+    if (typeof window !== "undefined" && navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setUserCoords({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          });
+        },
+        (error) => {
+          console.error("Error getting geolocation", error);
+        }
+      );
+    }
+  }, []);
+
+  // API call with search and filter parameters
   const {
     data: garagesResponse,
     isLoading,
@@ -55,14 +85,18 @@ export default function GarageList({ searchParams }: GarageListProps) {
     page: currentPage,
     limit,
     emirate: searchParams.emirate || undefined,
-    serviceName: searchParams.serviceName || undefined,
+    serviceName: selectedService || searchParams.serviceName || undefined,
+    brandExpertise: selectedExpertise || undefined,
+    sortBy: sortBy || undefined,
+    userLat: userCoords ? userCoords.lat.toString() : undefined,
+    userLng: userCoords ? userCoords.lng.toString() : undefined,
   });
 
-  // Reset when showMap or search params change
+  // Reset when showMap, search params, filters or sorting change
   useEffect(() => {
     setCurrentPage(1);
     setHasMore(true);
-  }, [searchParams, showMap]);
+  }, [searchParams, showMap, selectedService, selectedExpertise, sortBy]);
 
   // Transform and accumulate garages for infinite scroll
   useEffect(() => {
@@ -72,7 +106,7 @@ export default function GarageList({ searchParams }: GarageListProps) {
         name: garage.name,
         rating: garage.averageRating || 0,
         reviews: garage.totalReviews || 0,
-        distance: "2.5 km away",
+        distance: garage.distance || "2.5 km away",
         location: `${garage.city}, ${garage.emirate}`,
         services: garage.services || [],
         description: garage.description || "Professional automotive services",
@@ -89,6 +123,7 @@ export default function GarageList({ searchParams }: GarageListProps) {
           weekends: garage.weekendsHours,
         },
         ownerId: garage.userId,
+        brandExpertise: garage.brandExpertise || [],
       }));
 
       if (showMap) {
@@ -173,7 +208,7 @@ export default function GarageList({ searchParams }: GarageListProps) {
       <div className="container mx-auto px-4">
         {/* Header */}
         <motion.div
-          className="mb-12 flex flex-col gap-8 md:flex-row md:items-center"
+          className="mb-6 flex flex-col gap-8 md:flex-row md:items-center"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
@@ -188,10 +223,10 @@ export default function GarageList({ searchParams }: GarageListProps) {
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-4">
+          <div className="grid grid-cols-1 sm:flex sm:flex-wrap items-center gap-3 w-full sm:w-auto">
             {/* Sort */}
             <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className="w-[180px] bg-white">
+              <SelectTrigger className="w-full sm:w-[180px] bg-white">
                 <SelectValue placeholder={trans.list.sortBy} />
               </SelectTrigger>
               <SelectContent>
@@ -199,12 +234,55 @@ export default function GarageList({ searchParams }: GarageListProps) {
                 <SelectItem value="rating">
                   {trans.list.sortByRating}
                 </SelectItem>
-                <SelectItem value="price">{trans.list.sortByPrice}</SelectItem>
               </SelectContent>
             </Select>
 
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-medium">{trans.list.showMap}</span>
+            {/* Service Filter */}
+            <Select
+              value={selectedService || "all"}
+              onValueChange={(val) => setSelectedService(val === "all" ? null : val)}
+            >
+              <SelectTrigger className="w-full sm:w-[180px] bg-white">
+                <SelectValue placeholder="All Services" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Services</SelectItem>
+                {servicesList.map((service: string) => (
+                  <SelectItem key={service} value={service}>
+                    {service}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            {/* Brand Expertise Filter */}
+            <Select
+              value={selectedExpertise || "all"}
+              onValueChange={(val) => setSelectedExpertise(val === "all" ? null : val)}
+            >
+              <SelectTrigger className="w-full sm:w-[180px] bg-white">
+                <SelectValue placeholder="Experts In" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Expertises</SelectItem>
+                {[
+                  "American cars",
+                  "Japanese cars",
+                  "British cars",
+                  "German cars",
+                  "Korean cars",
+                  "French cars",
+                  "Italian cars",
+                ].map((origin) => (
+                  <SelectItem key={origin} value={origin}>
+                    {origin}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <div className="flex items-center justify-between sm:justify-start gap-2 bg-white px-3 py-2.5 rounded-lg border sm:border-0 sm:bg-transparent sm:px-0 sm:py-0 w-full sm:w-auto">
+              <span className="text-sm font-medium text-gray-700 sm:text-gray-900">{trans.list.showMap}</span>
               <Switch
                 checked={showMap}
                 onCheckedChange={setShowMap}
@@ -216,7 +294,7 @@ export default function GarageList({ searchParams }: GarageListProps) {
 
         {/* Desktop: Map Background + Cards Overlay | Mobile: Cards then Map */}
         <div
-          className={`${showMap ? "lg:relative lg:h-[1150px] overflow-hidden rounded-xl" : "md:block"}`}
+          className={`${showMap ? "lg:relative lg:h-[1150px] overflow-hidden rounded-xl space-y-8 sm:space-y-0" : "md:block"}`}
         >
           {/* Map - Below on mobile, Background on desktop */}
           {showMap && (
@@ -255,6 +333,8 @@ export default function GarageList({ searchParams }: GarageListProps) {
                 showMap ? "space-y-4" : "space-y-4 md:space-y-0 md:contents"
               }
             >
+
+
               {garages.length > 0 ? (
                 <>
                   {garages.map((garage: any) => (

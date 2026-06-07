@@ -39,6 +39,7 @@ export interface GarageInfo {
   weekdaysHours: string;
   weekendsHours: string;
   brandExpertise: string[];
+  requestedBrandExpertise: string[];
   garageStatus: "PENDING" | "APPROVED" | "REJECTED";
   services: string[];
   createdAt: string;
@@ -94,8 +95,8 @@ export const garageManagementApi = apiSlice.injectEndpoints({
       providesTags: ["Garage"],
     }),
 
-    // Get garage info by ID
-    getGarageById: builder.query<GarageOwner, string>({
+    // Get garage owner info by user ID (admin endpoint)
+    getGarageOwnerById: builder.query<GarageOwner, string>({
       query: (id) => `/garage-management/info/${id}`,
       providesTags: (result, error, id) => [{ type: "Garage", id }],
     }),
@@ -130,6 +131,32 @@ export const garageManagementApi = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["Garage"],
     }),
+
+    // Approve brand expertise claims
+    approveBrandExpertise: builder.mutation<
+      any,
+      { garageId: string; brands: string[] }
+    >({
+      query: ({ garageId, brands }) => ({
+        url: `/garage-management/approve-brands/${garageId}`,
+        method: "PATCH",
+        body: { brands },
+      }),
+      invalidatesTags: ["Garage"],
+    }),
+
+    // Reject brand expertise claims
+    rejectBrandExpertise: builder.mutation<
+      any,
+      { garageId: string; brands: string[] }
+    >({
+      query: ({ garageId, brands }) => ({
+        url: `/garage-management/reject-brands/${garageId}`,
+        method: "PATCH",
+        body: { brands },
+      }),
+      invalidatesTags: ["Garage"],
+    }),
   }),
 });
 
@@ -137,8 +164,10 @@ export const {
   useSearchGaragesQuery,
   useLazySearchGaragesQuery,
   useGetAllGaragesQuery,
-  useGetGarageByIdQuery,
+  useGetGarageOwnerByIdQuery,
   useUpdateGarageOwnerStatusMutation,
   useUpdateGarageStatusMutation,
   useDeleteGarageMutation,
+  useApproveBrandExpertiseMutation,
+  useRejectBrandExpertiseMutation,
 } = garageManagementApi;
