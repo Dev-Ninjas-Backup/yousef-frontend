@@ -42,7 +42,7 @@ export default function StorySection() {
 
             {/* Features Row - Single Container */}
             <div className="mt-4 flex flex-wrap sm:flex-nowrap items-center justify-between gap-4 bg-[#f6f9fc] rounded-[24px] p-6 lg:px-8 lg:py-6 select-none">
-              <div className="flex items-start gap-3 p-2 rounded-xl transition-all duration-300 hover:bg-white hover:shadow-[0_8px_25px_rgba(0,0,0,0.04)] hover:-translate-y-0.5 group cursor-default">
+              <div className="flex items-start gap-3 p-2 rounded-xl  hover:bg-white hover:shadow-[0_8px_25px_rgba(0,0,0,0.04)] hover:-translate-y-0.5 group cursor-default">
                 <Shield className="w-[26px] h-[26px] text-blue-600 shrink-0 transition-transform duration-300 group-hover:scale-110" strokeWidth={1.5} />
                 <div>
                   <h4 className="font-bold text-gray-900 text-[15px] transition-colors duration-300 group-hover:text-blue-600">Honest</h4>
@@ -50,7 +50,7 @@ export default function StorySection() {
                 </div>
               </div>
               
-              <div className="flex items-start gap-3 p-2 rounded-xl transition-all duration-300 hover:bg-white hover:shadow-[0_8px_25px_rgba(0,0,0,0.04)] hover:-translate-y-0.5 group cursor-default">
+              <div className="flex items-start gap-3 p-2 rounded-xl  hover:bg-white hover:shadow-[0_8px_25px_rgba(0,0,0,0.04)] hover:-translate-y-0.5 group cursor-default">
                 <Award className="w-[26px] h-[26px] text-blue-600 shrink-0 transition-transform duration-300 group-hover:scale-110" strokeWidth={1.5} />
                 <div>
                   <h4 className="font-bold text-gray-900 text-[15px] transition-colors duration-300 group-hover:text-blue-600">Reliable</h4>
@@ -58,7 +58,7 @@ export default function StorySection() {
                 </div>
               </div>
 
-              <div className="flex items-start gap-3 p-2 rounded-xl transition-all duration-300 hover:bg-white hover:shadow-[0_8px_25px_rgba(0,0,0,0.04)] hover:-translate-y-0.5 group cursor-default">
+              <div className="flex items-start gap-3 p-2 rounded-xl  hover:bg-white hover:shadow-[0_8px_25px_rgba(0,0,0,0.04)] hover:-translate-y-0.5 group cursor-default">
                 <Gem className="w-[26px] h-[26px] text-blue-600 shrink-0 transition-transform duration-300 group-hover:scale-110" strokeWidth={1.5} />
                 <div>
                   <h4 className="font-bold text-gray-900 text-[15px] transition-colors duration-300 group-hover:text-blue-600">Quality</h4>
@@ -86,7 +86,7 @@ export default function StorySection() {
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
             
             {/* Dark solid card */}
-            <div className="relative z-10 bg-[#161b22]/90 backdrop-blur-sm border border-white/5 rounded-[20px] p-5 md:px-6 md:py-5 flex items-center gap-4 shadow-2xl w-fit transition-all duration-300 hover:scale-105 hover:bg-[#161b22] hover:border-white/15 select-none">
+            <div className="relative z-10 bg-[#161b22]/90 backdrop-blur-sm border border-white/5 rounded-[20px] p-5 md:px-6 md:py-5 flex items-center gap-4 shadow-2xl w-fit  hover:scale-105 hover:bg-[#161b22] hover:border-white/15 select-none">
               <div className="w-[42px] h-[42px] rounded-full bg-blue-500 flex items-center justify-center shrink-0">
                  <Heart className="w-5 h-5 text-white" fill="currentColor" />
               </div>
@@ -153,17 +153,17 @@ export default function StorySection() {
 
             {/* Features Row - Separate Chips */}
             <div className="mt-4 flex flex-wrap lg:flex-nowrap items-center gap-3 select-none">
-              <div className="flex items-center gap-3 bg-[#f6f9fc] rounded-[16px] py-3.5 px-4 flex-1 min-w-[140px] transition-all duration-300 hover:bg-white hover:shadow-[0_8px_25px_rgba(0,0,0,0.04)] hover:-translate-y-0.5 border border-transparent hover:border-blue-50 group cursor-default">
+              <div className="flex items-center gap-3 bg-[#f6f9fc] rounded-[16px] py-3.5 px-4 flex-1 min-w-[140px]  hover:bg-white hover:shadow-[0_8px_25px_rgba(0,0,0,0.04)] hover:-translate-y-0.5 border border-transparent hover:border-blue-50 group cursor-default">
                 <Users className="w-6 h-6 text-blue-600 shrink-0 transition-transform duration-300 group-hover:scale-110" strokeWidth={1.5} />
                 <p className="font-bold text-gray-900 text-[13px] leading-[1.3] transition-colors duration-300 group-hover:text-blue-600">Built for<br/>Car Owners</p>
               </div>
               
-              <div className="flex items-center gap-3 bg-[#f6f9fc] rounded-[16px] py-3.5 px-4 flex-1 min-w-[140px] transition-all duration-300 hover:bg-white hover:shadow-[0_8px_25px_rgba(0,0,0,0.04)] hover:-translate-y-0.5 border border-transparent hover:border-blue-50 group cursor-default">
+              <div className="flex items-center gap-3 bg-[#f6f9fc] rounded-[16px] py-3.5 px-4 flex-1 min-w-[140px]  hover:bg-white hover:shadow-[0_8px_25px_rgba(0,0,0,0.04)] hover:-translate-y-0.5 border border-transparent hover:border-blue-50 group cursor-default">
                 <MapPin className="w-6 h-6 text-blue-600 shrink-0 transition-transform duration-300 group-hover:scale-110" strokeWidth={1.5} />
                 <p className="font-bold text-gray-900 text-[13px] leading-[1.3] transition-colors duration-300 group-hover:text-blue-600">UAE-Wide<br/>Coverage</p>
               </div>
 
-              <div className="flex items-center gap-3 bg-[#f6f9fc] rounded-[16px] py-3.5 px-4 flex-1 min-w-[140px] transition-all duration-300 hover:bg-white hover:shadow-[0_8px_25px_rgba(0,0,0,0.04)] hover:-translate-y-0.5 border border-transparent hover:border-blue-50 group cursor-default">
+              <div className="flex items-center gap-3 bg-[#f6f9fc] rounded-[16px] py-3.5 px-4 flex-1 min-w-[140px]  hover:bg-white hover:shadow-[0_8px_25px_rgba(0,0,0,0.04)] hover:-translate-y-0.5 border border-transparent hover:border-blue-50 group cursor-default">
                 <ShieldCheck className="w-6 h-6 text-blue-600 shrink-0 transition-transform duration-300 group-hover:scale-110" strokeWidth={1.5} />
                 <p className="font-bold text-gray-900 text-[13px] leading-[1.3] transition-colors duration-300 group-hover:text-blue-600">Focused on<br/>Reliability</p>
               </div>
@@ -202,7 +202,7 @@ export default function StorySection() {
 
             {/* Features Row - 3 Vertical Cards */}
             <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-4 select-none">
-              <div className="bg-[#f6f9fc] rounded-[24px] p-5 lg:p-6 flex flex-col gap-4 transition-all duration-300 hover:bg-white hover:shadow-[0_12px_30px_rgba(0,0,0,0.06)] hover:-translate-y-1 border border-transparent hover:border-blue-50 group cursor-default">
+              <div className="bg-[#f6f9fc] rounded-[24px] p-5 lg:p-6 flex flex-col gap-4  hover:bg-white hover:shadow-[0_12px_30px_rgba(0,0,0,0.06)] hover:-translate-y-1 border border-transparent hover:border-blue-50 group cursor-default">
                 <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center shrink-0 transition-colors duration-300 group-hover:bg-blue-600 group-hover:text-white">
                   <Users className="w-5 h-5 text-blue-600 group-hover:text-white transition-colors duration-300" />
                 </div>
@@ -212,7 +212,7 @@ export default function StorySection() {
                 </div>
               </div>
               
-              <div className="bg-[#f6f9fc] rounded-[24px] p-5 lg:p-6 flex flex-col gap-4 transition-all duration-300 hover:bg-white hover:shadow-[0_12px_30px_rgba(0,0,0,0.06)] hover:-translate-y-1 border border-transparent hover:border-blue-50 group cursor-default">
+              <div className="bg-[#f6f9fc] rounded-[24px] p-5 lg:p-6 flex flex-col gap-4  hover:bg-white hover:shadow-[0_12px_30px_rgba(0,0,0,0.06)] hover:-translate-y-1 border border-transparent hover:border-blue-50 group cursor-default">
                 <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center shrink-0 transition-colors duration-300 group-hover:bg-blue-600 group-hover:text-white">
                   <Shield className="w-5 h-5 text-blue-600 group-hover:text-white transition-colors duration-300" />
                 </div>
@@ -222,7 +222,7 @@ export default function StorySection() {
                 </div>
               </div>
 
-              <div className="bg-[#f6f9fc] rounded-[24px] p-5 lg:p-6 flex flex-col gap-4 transition-all duration-300 hover:bg-white hover:shadow-[0_12px_30px_rgba(0,0,0,0.06)] hover:-translate-y-1 border border-transparent hover:border-blue-50 group cursor-default">
+              <div className="bg-[#f6f9fc] rounded-[24px] p-5 lg:p-6 flex flex-col gap-4  hover:bg-white hover:shadow-[0_12px_30px_rgba(0,0,0,0.06)] hover:-translate-y-1 border border-transparent hover:border-blue-50 group cursor-default">
                 <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center shrink-0 transition-colors duration-300 group-hover:bg-blue-600 group-hover:text-white">
                   <Heart className="w-5 h-5 text-blue-600 group-hover:text-white transition-colors duration-300" />
                 </div>
@@ -252,7 +252,7 @@ export default function StorySection() {
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
             
             {/* Dark glass card */}
-            <div className="relative z-10 bg-[#1a202c]/90 backdrop-blur-md border border-white/5 rounded-[20px] p-5 md:px-6 md:py-5 flex items-center gap-5 shadow-2xl w-fit transition-all duration-300 hover:scale-105 hover:bg-[#1a202c] hover:border-white/15 select-none">
+            <div className="relative z-10 bg-[#1a202c]/90 backdrop-blur-md border border-white/5 rounded-[20px] p-5 md:px-6 md:py-5 flex items-center gap-5 shadow-2xl w-fit  hover:scale-105 hover:bg-[#1a202c] hover:border-white/15 select-none">
               <div className="flex items-center justify-center shrink-0">
                  <Target className="w-10 h-10 text-blue-400" strokeWidth={1.5} />
               </div>
@@ -288,7 +288,7 @@ export default function StorySection() {
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
               
               {/* Dark Card */}
-              <div className="relative z-10 bg-[#161b22]/90 backdrop-blur-sm border border-white/5 rounded-[24px] p-6 flex items-center gap-5 shadow-2xl w-fit transition-all duration-300 hover:scale-105 hover:bg-[#161b22] hover:border-white/15 select-none">
+              <div className="relative z-10 bg-[#161b22]/90 backdrop-blur-sm border border-white/5 rounded-[24px] p-6 flex items-center gap-5 shadow-2xl w-fit  hover:scale-105 hover:bg-[#161b22] hover:border-white/15 select-none">
                 <div className="w-[46px] h-[46px] rounded-full bg-blue-600/20 flex items-center justify-center shrink-0">
                    <Users className="w-5 h-5 text-blue-500" />
                 </div>
@@ -320,7 +320,7 @@ export default function StorySection() {
 
               {/* Vertical Features */}
               <div className="flex flex-col gap-7 select-none">
-                <div className="flex items-start gap-4 p-3 rounded-2xl transition-all duration-300 hover:bg-white hover:shadow-[0_8px_25px_rgba(0,0,0,0.04)] hover:-translate-y-0.5 border border-transparent hover:border-blue-50/50 group cursor-default">
+                <div className="flex items-start gap-4 p-3 rounded-2xl  hover:bg-white hover:shadow-[0_8px_25px_rgba(0,0,0,0.04)] hover:-translate-y-0.5 border border-transparent hover:border-blue-50/50 group cursor-default">
                   <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center shrink-0 transition-colors duration-300 group-hover:bg-blue-600 group-hover:text-white">
                     <Users className="w-5 h-5 text-blue-600 group-hover:text-white transition-colors duration-300" />
                   </div>
@@ -330,7 +330,7 @@ export default function StorySection() {
                   </div>
                 </div>
 
-                <div className="flex items-start gap-4 p-3 rounded-2xl transition-all duration-300 hover:bg-white hover:shadow-[0_8px_25px_rgba(0,0,0,0.04)] hover:-translate-y-0.5 border border-transparent hover:border-blue-50/50 group cursor-default">
+                <div className="flex items-start gap-4 p-3 rounded-2xl  hover:bg-white hover:shadow-[0_8px_25px_rgba(0,0,0,0.04)] hover:-translate-y-0.5 border border-transparent hover:border-blue-50/50 group cursor-default">
                   <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center shrink-0 transition-colors duration-300 group-hover:bg-blue-600 group-hover:text-white">
                     <Link2 className="w-5 h-5 text-blue-600 group-hover:text-white transition-colors duration-300" />
                   </div>
@@ -340,7 +340,7 @@ export default function StorySection() {
                   </div>
                 </div>
 
-                <div className="flex items-start gap-4 p-3 rounded-2xl transition-all duration-300 hover:bg-white hover:shadow-[0_8px_25px_rgba(0,0,0,0.04)] hover:-translate-y-0.5 border border-transparent hover:border-blue-50/50 group cursor-default">
+                <div className="flex items-start gap-4 p-3 rounded-2xl  hover:bg-white hover:shadow-[0_8px_25px_rgba(0,0,0,0.04)] hover:-translate-y-0.5 border border-transparent hover:border-blue-50/50 group cursor-default">
                   <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center shrink-0 transition-colors duration-300 group-hover:bg-blue-600 group-hover:text-white">
                     <ShieldCheck className="w-5 h-5 text-blue-600 group-hover:text-white transition-colors duration-300" />
                   </div>

@@ -41,6 +41,16 @@ interface CreateGarageFormProps {
   onSave: (data: any) => void;
 }
 
+const CAR_ORIGINS = [
+  "American cars",
+  "Japanese cars",
+  "British cars",
+  "German cars",
+  "Korean cars",
+  "French cars",
+  "Italian cars",
+];
+
 export function CreateGarageForm({ onCancel, onSave }: CreateGarageFormProps) {
   const [createGarage, { isLoading }] = useCreateGarageMutation();
   const { data: servicesData, isLoading: servicesLoading } =
@@ -106,6 +116,24 @@ export function CreateGarageForm({ onCancel, onSave }: CreateGarageFormProps) {
         ? prev.services.filter((s) => s !== serviceName)
         : [...prev.services, serviceName],
     }));
+  };
+
+  const getSelectedBrands = (): string[] => {
+    if (Array.isArray(formData.brandExpertise)) {
+      return formData.brandExpertise;
+    }
+    if (typeof formData.brandExpertise === "string") {
+      return formData.brandExpertise.split(",").map((b: string) => b.trim()).filter(Boolean);
+    }
+    return [];
+  };
+
+  const toggleBrand = (brand: string) => {
+    const brands = getSelectedBrands();
+    const updated = brands.includes(brand)
+      ? brands.filter((b: string) => b !== brand)
+      : [...brands, brand];
+    setFormData({ ...formData, brandExpertise: updated.join(", ") });
   };
 
   const handleAddService = async () => {
@@ -555,6 +583,37 @@ export function CreateGarageForm({ onCancel, onSave }: CreateGarageFormProps) {
 
       <Card>
         <CardHeader>
+          <CardTitle>Brand Expertise (American, Japanese, etc.)</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {CAR_ORIGINS.map((brand) => {
+              const isChecked = getSelectedBrands().includes(brand);
+              return (
+                <label
+                  key={brand}
+                  className={`flex items-center gap-3 p-4 rounded-lg border-2 transition-all cursor-pointer ${
+                    isChecked
+                      ? "border-blue-500 bg-blue-50 text-blue-700"
+                      : "border-gray-200 hover:border-gray-300 text-gray-700"
+                  }`}
+                >
+                  <input
+                    type="checkbox"
+                    checked={isChecked}
+                    onChange={() => toggleBrand(brand)}
+                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500 w-4 h-4"
+                  />
+                  <span className="text-sm font-medium">{brand}</span>
+                </label>
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
           <CardTitle>Description</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -574,29 +633,16 @@ export function CreateGarageForm({ onCancel, onSave }: CreateGarageFormProps) {
               {formData.description.length}/210 characters
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="certifications">Certifications</Label>
-              <Input
-                id="certifications"
-                value={formData.certifications}
-                onChange={(e) =>
-                  setFormData({ ...formData, certifications: e.target.value })
-                }
-                placeholder="ASE Certified, ISO 9001:2015"
-              />
-            </div>
-            <div>
-              <Label htmlFor="brandExpertise">Brand Expertise</Label>
-              <Input
-                id="brandExpertise"
-                value={formData.brandExpertise}
-                onChange={(e) =>
-                  setFormData({ ...formData, brandExpertise: e.target.value })
-                }
-                placeholder="BMW, Mercedes-Benz, Audi"
-              />
-            </div>
+          <div>
+            <Label htmlFor="certifications">Certifications</Label>
+            <Input
+              id="certifications"
+              value={formData.certifications}
+              onChange={(e) =>
+                setFormData({ ...formData, certifications: e.target.value })
+              }
+              placeholder="ASE Certified, ISO 9001:2015"
+            />
           </div>
         </CardContent>
       </Card>

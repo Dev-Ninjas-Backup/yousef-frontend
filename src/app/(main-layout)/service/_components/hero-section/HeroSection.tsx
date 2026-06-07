@@ -3,14 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { MapPin, Search } from "lucide-react";
+import { MapPin, Search, ChevronDown } from "lucide-react";
 import Image from "next/image";
 import garageBg from "@/assets/service/banner/section.png";
 import { useLanguage } from "@/context/LanguageContext";
@@ -48,6 +41,16 @@ export default function HeroSection({ onSearch, initialValues }: HeroSectionProp
     "Towing",
     "Transmission Service",
     "Van Doorstep Repair",
+  ];
+
+  const CANONICAL_EMIRATES = [
+    "Abu Dhabi",
+    "Dubai",
+    "Sharjah",
+    "Ajman",
+    "Umm Al Quwain",
+    "Ras Al Khaimah",
+    "Fujairah",
   ];
 
   // Use API data but filter to only canonical services to avoid duplicates/typos
@@ -113,38 +116,50 @@ export default function HeroSection({ onSearch, initialValues }: HeroSectionProp
                 <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
                   {trans.hero.yourLocation}
                 </label>
-                <Select value={emirate} onValueChange={setEmirate}>
-                  <SelectTrigger className="w-full border border-gray-300 rounded-lg px-3 py-5 appearance-none bg-white cursor-pointer text-gray-700">
-                    <SelectValue placeholder="Select Emirate" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all-emirates">{trans.hero.allEmirates}</SelectItem>
-                    {trans.hero.emirates.map((em: string, index: number) => (
-                      <SelectItem key={index} value={em}>{em}</SelectItem>
+                <div className="relative w-full">
+                  <select
+                    value={emirate}
+                    onChange={(e) => setEmirate(e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg pl-4 pr-10 py-3 appearance-none bg-white cursor-pointer text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm h-[50px]"
+                  >
+                    <option value="all-emirates">{trans.hero.allEmirates}</option>
+                    {CANONICAL_EMIRATES.map((em: string, index: number) => (
+                      <option key={index} value={em}>
+                        {trans.hero.emirates[index] || em}
+                      </option>
                     ))}
-                  </SelectContent>
-                </Select>
+                  </select>
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none flex items-center">
+                    <ChevronDown className="h-4 w-4 opacity-50 text-gray-500" />
+                  </div>
+                </div>
               </div>
               <div className="flex-1">
                 <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
                   {trans.hero.serviceType}
                 </label>
-                <Select value={serviceName} onValueChange={setServiceName}>
-                  <SelectTrigger className="w-full border border-gray-300 rounded-lg px-3 py-5 appearance-none bg-white cursor-pointer text-gray-700">
-                    <SelectValue placeholder={trans.hero.allServices} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all-services">All Services</SelectItem>
+                <div className="relative w-full">
+                  <select
+                    value={serviceName}
+                    onChange={(e) => setServiceName(e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg pl-4 pr-10 py-3 appearance-none bg-white cursor-pointer text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm h-[50px]"
+                  >
+                    <option value="all-services">{trans.hero.allServices}</option>
                     {services.map((service) => (
-                      <SelectItem key={service} value={service}>{service}</SelectItem>
+                      <option key={service} value={service}>
+                        {service}
+                      </option>
                     ))}
-                  </SelectContent>
-                </Select>
+                  </select>
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none flex items-center">
+                    <ChevronDown className="h-4 w-4 opacity-50 text-gray-500" />
+                  </div>
+                </div>
               </div>
               <div className="flex items-end">
                 <Button 
                   onClick={handleSearch}
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-lg py-5 flex items-center justify-center gap-2"
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-lg py-5 flex items-center justify-center gap-2 h-[50px]"
                 >
                   <Search size={18} />
                   {trans.hero.searchButton}

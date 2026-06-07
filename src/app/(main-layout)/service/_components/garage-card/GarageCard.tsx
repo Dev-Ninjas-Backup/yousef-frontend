@@ -36,6 +36,7 @@ interface GarageCardProps {
   };
   ownerId?: string;
   phone?: string;
+  brandExpertise?: string[];
 }
 
 export default function GarageCard({
@@ -54,6 +55,7 @@ export default function GarageCard({
   position,
   ownerId,
   phone,
+  brandExpertise = [],
 }: GarageCardProps) {
   const { isAuthenticated } = useAuth();
   const router = useRouter();
@@ -273,6 +275,22 @@ export default function GarageCard({
               </Badge>
             ))}
           </div>
+
+          {/* Brand Expertise */}
+          {brandExpertise.length > 0 && (
+            <div className="mb-3 flex flex-wrap gap-2 items-center">
+              <span className="text-xs font-semibold text-gray-500">Experts in:</span>
+              {brandExpertise.map((brand, index) => (
+                <Badge
+                  key={index}
+                  variant="default"
+                  className="text-xs bg-purple-50 text-purple-700 border border-purple-200 font-medium px-2 py-0.5 rounded-full"
+                >
+                  {brand}
+                </Badge>
+              ))}
+            </div>
+          )}
 
           {/* Description */}
           <p className="mb-4 text-sm text-gray-600">{description}</p>

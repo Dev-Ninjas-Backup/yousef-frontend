@@ -42,7 +42,11 @@ export default function StatsSection() {
               </div>
 
               {/* Dark glass card */}
-              <div className="bg-[#0f141e]/90 backdrop-blur-sm border border-white/10 rounded-2xl p-4 md:p-5 flex items-center gap-4 shadow-2xl w-fit min-w-[260px] transition-all duration-300 hover:scale-105 hover:bg-[#0f141e] hover:border-white/20 select-none">
+              <motion.div
+                className="bg-[#0f141e]/90 backdrop-blur-sm border border-white/10 rounded-2xl p-4 md:p-5 flex items-center gap-4 shadow-2xl w-fit min-w-[260px] select-none"
+                whileHover={{ scale: 1.05 }}
+                transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              >
                 <div className="flex-shrink-0">
                    <ShieldCheck className="w-7 h-7 text-blue-500" strokeWidth={2} />
                 </div>
@@ -51,7 +55,7 @@ export default function StatsSection() {
                    <p className="text-white font-bold text-[13px] leading-tight">No payments.</p>
                    <p className="text-blue-500 font-bold text-[13px] leading-tight">Just direct contact.</p>
                 </div>
-              </div>
+              </motion.div>
             </div>
           </motion.div>
 
@@ -87,15 +91,20 @@ export default function StatsSection() {
                 { icon: Truck, title: "Get towing near your location", desc: "24/7 towing services, available when you need them." },
                 { icon: Settings, title: "Browse parts & contact sellers", desc: "Discover spare parts and connect directly with sellers." }
               ].map((item, i) => (
-                <div key={i} className="flex items-center gap-4 p-4 md:px-5 md:py-4 rounded-[16px] border border-gray-100 bg-white hover:border-blue-100 hover:shadow-[0_8px_30px_rgb(37,99,235,0.06)] hover:-translate-y-0.5 transition-all duration-300 group cursor-default">
-                  <div className="w-[46px] h-[46px] rounded-full bg-[#f0f5ff] text-blue-600 flex items-center justify-center shrink-0 transition-colors duration-300 group-hover:bg-blue-600 group-hover:text-white">
+                <motion.div
+                  key={i}
+                  className="flex items-center gap-4 p-4 md:px-5 md:py-4 rounded-[16px] border border-gray-100 bg-white cursor-default"
+                  whileHover={{ y: -2 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                >
+                  <div className="w-[46px] h-[46px] rounded-full bg-[#f0f5ff] text-blue-600 flex items-center justify-center shrink-0 transition-colors duration-200 group-hover:bg-blue-600 group-hover:text-white">
                     <item.icon className="w-5 h-5" strokeWidth={1.5} />
                   </div>
                   <div>
-                    <h4 className="font-bold text-gray-900 text-[15px] mb-0.5 transition-colors duration-300 group-hover:text-blue-600">{item.title}</h4>
+                    <h4 className="font-bold text-gray-900 text-[15px] mb-0.5">{item.title}</h4>
                     <p className="text-gray-500 text-[13px]">{item.desc}</p>
                   </div>
-                </div>
+                </motion.div>
               ))}
             </div>
 

@@ -16,7 +16,7 @@ export const serviceTranslations = {
         "Sharjah",
         "Ajman",
         "Umm Al Quwain",
-        "Ras Al Khaimah",
+        "Ras Al-Khaimah",
         "Fujairah",
       ],
       services: {

@@ -3,6 +3,7 @@
 import { changeLanguage, isTranslateReady } from "@/hooks/useGoogleTranslate";
 import { useCallback, useEffect, useState } from "react";
 import { Globe, ChevronDown, Loader2 } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
 
 export interface Language {
     code: string;
@@ -20,6 +21,7 @@ interface LanguageDropdownProps {
 }
 
 export const LanguageDropdown = ({ onLanguageChange }: LanguageDropdownProps) => {
+    const { setLanguage } = useLanguage();
     const [selectedLanguage, setSelectedLanguage] = useState<Language>(languages[0]);
     const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
     const [ready, setReady] = useState(false);
@@ -57,6 +59,7 @@ export const LanguageDropdown = ({ onLanguageChange }: LanguageDropdownProps) =>
                 // Verify it's in our supported list
                 const foundLang = languages.find(l => l.code === lang.code) || languages[0];
                 setSelectedLanguage(foundLang);
+                setLanguage(foundLang.code as "en" | "ar" | "hi");
 
                 // Apply the saved language
                 setTimeout(() => {
@@ -75,7 +78,7 @@ export const LanguageDropdown = ({ onLanguageChange }: LanguageDropdownProps) =>
                 console.error('[LanguageDropdown] Failed to parse saved language:', e);
             }
         }
-    }, []);
+    }, [setLanguage]);
 
     const updateRTL = (code: string) => {
         const html = document.documentElement;
@@ -93,6 +96,7 @@ export const LanguageDropdown = ({ onLanguageChange }: LanguageDropdownProps) =>
 
         setSelectedLanguage(language);
         setIsDropdownOpen(false);
+        setLanguage(language.code as "en" | "ar" | "hi");
 
         try {
             localStorage.setItem('selectedLanguage', JSON.stringify(language));
@@ -123,10 +127,10 @@ export const LanguageDropdown = ({ onLanguageChange }: LanguageDropdownProps) =>
         } catch (error) {
             console.error('[LanguageDropdown] Error changing language:', error);
         }
-    }, [ready, onLanguageChange]);
+    }, [ready, onLanguageChange, setLanguage]);
 
     return (
-        <div className="relative">
+        <div className="relative notranslate" translate="no">
             <button
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                 className="flex items-center gap-2 px-3 py-2 rounded-full bg-black/40 hover:bg-black/50 shadow-[0_0_15px_rgba(255,255,255,0.1)] transition-all duration-300"

@@ -34,6 +34,7 @@ interface GarageOwnersTableProps {
   onGarageApprove: (garageId: string) => void;
   onGarageReject: (garageId: string) => void;
   onGarageView: (garage: GarageInfo) => void;
+  onReviewBrands?: (garage: GarageInfo) => void;
 }
 
 export default function GarageOwnersTable({
@@ -46,6 +47,7 @@ export default function GarageOwnersTable({
   onGarageApprove,
   onGarageReject,
   onGarageView,
+  onReviewBrands,
 }: GarageOwnersTableProps) {
   const [expandedOwners, setExpandedOwners] = useState<Set<string>>(new Set());
   const [sortField, setSortField] = useState<string | null>(null);
@@ -191,29 +193,42 @@ export default function GarageOwnersTable({
             {sortedGarageOwners.map((owner) => (
               <React.Fragment key={owner.userId}>
                 {/* Owner Row */}
-                <tr key={owner.userId} className="hover:bg-gray-50">
-                  <td className="py-4 px-6">
-                    <div className="flex items-center gap-3">
-                      <button
-                        onClick={() => toggleOwnerExpansion(owner.userId)}
-                        className="p-1 hover:bg-gray-200 rounded"
-                      >
-                        {expandedOwners.has(owner.userId) ? (
-                          <Minus className="w-4 h-4" />
-                        ) : (
-                          <Plus className="w-4 h-4" />
-                        )}
-                      </button>
-                      <div>
-                        <p className="font-medium text-gray-900">
-                          {owner.ownerName}
-                        </p>
-                        <p className="text-xs text-gray-500">
-                          {owner.Garage_Name}
-                        </p>
-                      </div>
-                    </div>
-                  </td>
+                {(() => {
+                  const totalPendingClaims = owner.garages?.reduce(
+                    (sum, g) => sum + (g.requestedBrandExpertise?.length || 0),
+                    0
+                  ) || 0;
+                  return (
+                    <tr key={owner.userId} className="hover:bg-gray-50">
+                      <td className="py-4 px-6">
+                        <div className="flex items-center gap-3">
+                          <button
+                            onClick={() => toggleOwnerExpansion(owner.userId)}
+                            className="p-1 hover:bg-gray-200 rounded"
+                          >
+                            {expandedOwners.has(owner.userId) ? (
+                              <Minus className="w-4 h-4" />
+                            ) : (
+                              <Plus className="w-4 h-4" />
+                            )}
+                          </button>
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <p className="font-medium text-gray-900">
+                                {owner.ownerName}
+                              </p>
+                              {totalPendingClaims > 0 && (
+                                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-yellow-100 text-yellow-800 text-[10px] font-bold rounded-full border border-yellow-200 animate-pulse">
+                                  ⚠️ {totalPendingClaims} Claim{totalPendingClaims > 1 ? "s" : ""}
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-xs text-gray-500">
+                              {owner.Garage_Name}
+                            </p>
+                          </div>
+                        </div>
+                      </td>
                   <td className="py-4 px-6">
                     <p className="text-sm">{owner.phone}</p>
                   </td>
@@ -305,6 +320,8 @@ export default function GarageOwnersTable({
                     </div>
                   </td>
                 </tr>
+              );
+            })()}
 
                 {/* Expanded Garages Table */}
                 {expandedOwners.has(owner.userId) && (
@@ -315,6 +332,7 @@ export default function GarageOwnersTable({
                         onGarageApprove={onGarageApprove}
                         onGarageReject={onGarageReject}
                         onGarageView={onGarageView}
+                        onReviewBrands={onReviewBrands}
                       />
                     </td>
                   </tr>

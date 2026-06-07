@@ -213,8 +213,8 @@ const FeaturedPromotions: React.FC = () => {
                 <button
                   key={promo.id}
                   onClick={() => handleShowDetails(promo.id)}
-                  className={`bg-white rounded-lg md:rounded-xl shadow-xs overflow-hidden hover:shadow-lg transition-all text-left flex-shrink-0 w-48 md:w-52 border ${
-                    idx === currentSlide ? "shadow-md ring-2 ring-blue-500" : ""
+                  className={`relative bg-white rounded-lg md:rounded-xl shadow-xs overflow-hidden hover:shadow-lg transition-all text-left flex-shrink-0 w-48 md:w-52 border ${
+                    idx === currentSlide ? "shadow-md" : ""
                   }`}
                 >
                   <div className="relative h-32 md:h-40">
@@ -249,6 +249,10 @@ const FeaturedPromotions: React.FC = () => {
                       </span>
                     </div>
                   </div>
+                  {/* Selected Highlight Overlay */}
+                  {idx === currentSlide && (
+                    <div className="absolute inset-0 border-2 border-blue-500 rounded-lg md:rounded-xl pointer-events-none z-10" />
+                  )}
                 </button>
               ))}
             </div>

@@ -66,15 +66,20 @@ export default function ValuesSection() {
             {values.map((value, index) => (
               <motion.div
                 key={index}
-                className={`group bg-white/5 backdrop-blur-sm border border-white/10 p-8 rounded-2xl hover:bg-white/8 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl ${value.glow} flex flex-col`}
+                className={`group bg-white/5 backdrop-blur-sm border border-white/10 p-8 rounded-2xl hover:shadow-2xl ${value.glow} flex flex-col`}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-60px" }}
                 transition={{ duration: 0.6, delay: index * 0.15, ease: "easeOut" }}
+                whileHover={{ y: -8 }}
               >
-                <div className={`bg-gradient-to-br ${value.gradient} w-14 h-14 rounded-xl flex items-center justify-center mb-6 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                <motion.div
+                  className={`bg-gradient-to-br ${value.gradient} w-14 h-14 rounded-xl flex items-center justify-center mb-6 shadow-lg`}
+                  whileHover={{ scale: 1.1 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                >
                   <value.icon className="w-7 h-7 text-white" />
-                </div>
+                </motion.div>
                 <h3 className="text-xl font-bold text-white mb-3">
                   {value.title}
                 </h3>

@@ -8,6 +8,7 @@ interface GarageSubTableProps {
   onGarageApprove: (garageId: string) => void;
   onGarageReject: (garageId: string) => void;
   onGarageView: (garage: GarageInfo) => void;
+  onReviewBrands?: (garage: GarageInfo) => void;
 }
 
 export default function GarageSubTable({
@@ -15,6 +16,7 @@ export default function GarageSubTable({
   onGarageApprove,
   onGarageReject,
   onGarageView,
+  onReviewBrands,
 }: GarageSubTableProps) {
   return (
     <div className="bg-gray-50 rounded-lg p-4 my-2">
@@ -34,6 +36,9 @@ export default function GarageSubTable({
               </th>
               <th className="text-left py-2 px-3 text-xs font-semibold text-gray-600 uppercase">
                 Status
+              </th>
+              <th className="text-left py-2 px-3 text-xs font-semibold text-gray-600 uppercase">
+                Expert Claims
               </th>
               <th className="text-left py-2 px-3 text-xs font-semibold text-gray-600 uppercase">
                 Actions
@@ -71,6 +76,19 @@ export default function GarageSubTable({
                   >
                     {garage.garageStatus}
                   </Badge>
+                </td>
+                <td className="py-2 px-3">
+                  {garage.requestedBrandExpertise && garage.requestedBrandExpertise.length > 0 ? (
+                    <button
+                      onClick={() => onReviewBrands?.(garage)}
+                      className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-yellow-100 hover:bg-yellow-200 text-yellow-800 text-xs font-semibold rounded-full border border-yellow-200 transition-colors shadow-sm animate-pulse"
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full bg-yellow-500 animate-ping"></span>
+                      {garage.requestedBrandExpertise.length} Pending
+                    </button>
+                  ) : (
+                    <span className="text-xs text-gray-400">—</span>
+                  )}
                 </td>
                 <td className="py-2 px-3">
                   <div className="flex items-center gap-1">

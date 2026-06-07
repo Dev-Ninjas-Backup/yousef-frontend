@@ -6,6 +6,10 @@ export interface GarageSearchParams {
   emirate?: string;
   serviceName?: string;
   search?: string;
+  brandExpertise?: string;
+  sortBy?: string;
+  userLat?: string;
+  userLng?: string;
 }
 
 export interface NearbyGarageParams {
@@ -84,6 +88,7 @@ export interface SingleGarageResponse {
 }
 
 export const garageApi = apiSlice.injectEndpoints({
+  overrideExisting: true,
   endpoints: (builder) => ({
     getGarages: builder.query<GaragesResponse, GarageSearchParams>({
       query: (params = {}) => ({
@@ -94,6 +99,10 @@ export const garageApi = apiSlice.injectEndpoints({
           emirate: params.emirate || undefined,
           serviceName: params.serviceName || undefined,
           search: params.search || undefined,
+          brandExpertise: params.brandExpertise || undefined,
+          sortBy: params.sortBy || undefined,
+          userLat: params.userLat || undefined,
+          userLng: params.userLng || undefined,
         },
       }),
       providesTags: ['Garage'],

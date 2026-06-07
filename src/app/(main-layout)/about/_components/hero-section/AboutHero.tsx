@@ -37,7 +37,9 @@ export default function AboutHero() {
           {/* Badge */}
           <motion.div
             variants={{ hidden: { opacity: 0, y: -20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5 } } }}
-            className="inline-flex items-center gap-2 mb-6 bg-white/10 backdrop-blur-md border border-white/20 px-4 py-2 rounded-full w-fit transition-all duration-300 hover:scale-105 hover:bg-white/25 hover:border-white/35 cursor-default select-none"
+            className="inline-flex items-center gap-2 mb-6 bg-white/10 backdrop-blur-md border border-white/20 px-4 py-2 rounded-full w-fit cursor-default select-none"
+            whileHover={{ scale: 1.05, backgroundColor: "rgba(255,255,255,0.25)" }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
           >
             <Sparkles className="w-4 h-4 text-yellow-400" />
             <span className="text-white text-sm font-semibold tracking-wide">{trans.hero.established}</span>
@@ -79,13 +81,15 @@ export default function AboutHero() {
               { icon: <Wrench className="w-4 h-4" />, label: "Verified Garages" },
               { icon: <Star className="w-4 h-4" />, label: "500+ Happy Users" },
             ].map((chip, i) => (
-              <div
+              <motion.div
                 key={i}
-                className="flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/15 text-white text-sm px-4 py-2 rounded-full transition-all duration-300 hover:scale-105 hover:bg-white/25 hover:border-white/35 cursor-default select-none shadow-sm hover:shadow-md"
+                className="flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/15 text-white text-sm px-4 py-2 rounded-full cursor-default select-none shadow-sm"
+                whileHover={{ scale: 1.05, backgroundColor: "rgba(255,255,255,0.25)" }}
+                transition={{ type: "spring", stiffness: 300, damping: 20 }}
               >
                 <span className="text-blue-300">{chip.icon}</span>
                 {chip.label}
-              </div>
+              </motion.div>
             ))}
           </motion.div>
         </motion.div>
