@@ -74,14 +74,10 @@ export default function GarageAuth() {
           {/* Header with Logo */}
           <div className="relative z-10 py-3 bg-white/95 shadow-md">
             <Link href="/">
-              <Image
-                src={scroll_logo}
+              <img
+                src={scroll_logo.src}
                 alt="SayaraHub"
-                width={150}
-                height={40}
-                className="!h-8 md:!h-10 w-auto ml-10 md:ml-20 cursor-pointer hover:opacity-80 transition-opacity"
-                style={{ width: "auto", height: "auto" }}
-                priority
+                className="h-8 md:h-10 w-auto ml-10 md:ml-20 cursor-pointer hover:opacity-80 transition-opacity"
               />
             </Link>
           </div>
@@ -257,8 +253,12 @@ export default function GarageAuth() {
         <div className="py-6 flex justify-between items-center text-xs text-gray-600">
           <p>{trans.common.copyright}</p>
           <div className="flex items-center gap-6">
-            <button className="hover:text-gray-800">{trans.common.privacyPolicy}</button>
-            <button className="hover:text-gray-800">{trans.common.termsConditions}</button>
+            <Link href="/privacy-policy" target="_blank" className="hover:text-gray-800">
+              {trans.common.privacyPolicy}
+            </Link>
+            <Link href="/terms" target="_blank" className="hover:text-gray-800">
+              {trans.common.termsConditions}
+            </Link>
           </div>
         </div>
       </div>

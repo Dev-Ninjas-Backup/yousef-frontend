@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import SparePartsHero from "./_components/spare-parts-hero/SparePartsHero";
 import SearchSection from "./_components/search-section/SearchSection";
 import ProductCard from "./_components/product-card/ProductCard";
@@ -14,6 +14,7 @@ import PaymentDialog from "./_components/sell-parts/PaymentDialog";
 import DuplicateDialog from "./_components/sell-parts/DuplicateDialog";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useSparePartsManagement } from "./_components/useSparePartsManagement";
+import { useGetProductsQuery } from "@/store/api/sparePartsApi";
 import { LayoutGrid, List, RotateCcw, Search, Users, MessageSquare, MessageSquareMore, MapPin, Handshake, MoveRight } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -114,6 +115,44 @@ export default function SparePartsPage() {
     clearFilters,
   } = useSparePartsManagement();
 
+  const { data: recentProductsData } = useGetProductsQuery({
+    sortBy: "newest",
+    limit: 6,
+    status: "APPROVED",
+  });
+  const recentProducts = recentProductsData?.data || [];
+
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+
+  const checkScroll = () => {
+    if (scrollContainerRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
+      setCanScrollLeft(scrollLeft > 5);
+      setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 5);
+    }
+  };
+
+  const scroll = (direction: "left" | "right") => {
+    if (scrollContainerRef.current) {
+      const scrollAmount = 400;
+      scrollContainerRef.current.scrollBy({
+        left: direction === "left" ? -scrollAmount : scrollAmount,
+        behavior: "smooth",
+      });
+    }
+  };
+
+  useEffect(() => {
+    const timer = setTimeout(checkScroll, 100);
+    window.addEventListener("resize", checkScroll);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("resize", checkScroll);
+    };
+  }, [recentProducts]);
+
   return (
     <div className="min-h-screen bg-gray-50">
       <SparePartsHero />
@@ -128,7 +167,7 @@ export default function SparePartsPage() {
       />
 
       {/* Main Content */}
-      <section className="">
+      <section id="catalog" className="">
         <div className="container mx-auto px-4">
           <div className="flex flex-col lg:flex-row gap-6">
             {/* Filter Sidebar */}
@@ -355,17 +394,29 @@ export default function SparePartsPage() {
                 <h2 className="text-2xl font-bold text-gray-900 mb-1">Recent Listings</h2>
                 <p className="text-gray-500 text-sm">See what sellers are offering right now</p>
               </div>
-              <button className="text-blue-600 font-semibold text-sm flex items-center hover:text-blue-700 transition">
+              <button
+                onClick={() => {
+                  clearFilters();
+                  const catalogSection = document.getElementById("catalog");
+                  if (catalogSection) {
+                    catalogSection.scrollIntoView({ behavior: "smooth" });
+                  }
+                }}
+                className="text-blue-600 font-semibold text-sm flex items-center hover:text-blue-700 transition"
+              >
                 View all parts <span className="ml-1">→</span>
               </button>
             </div>
 
             <div className="relative group">
               {/* Horizontal Scroll Container */}
-              <div className="flex overflow-x-auto gap-5 pb-6 snap-x snap-mandatory scrollbar-hide">
-                {products && products.length > 0 ? (
-                  // Show max 6 products from current fetch for demo purposes
-                  products.slice(0, 6).map((product) => (
+              <div
+                ref={scrollContainerRef}
+                onScroll={checkScroll}
+                className="flex overflow-x-auto gap-5 pb-6 snap-x snap-mandatory scrollbar-hide"
+              >
+                {recentProducts && recentProducts.length > 0 ? (
+                  recentProducts.map((product) => (
                     <div key={product.id} className="w-[280px] sm:w-[300px] flex-shrink-0 snap-start">
                       <ProductCard product={product} showViewDetails={false} />
                     </div>
@@ -377,11 +428,33 @@ export default function SparePartsPage() {
                 )}
               </div>
 
-              {/* Optional Right Scroll Button Overlay */}
-              {products && products.length > 4 && (
-                <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 hidden md:flex items-center justify-center w-12 h-12 bg-white rounded-full shadow-lg border border-gray-100 cursor-pointer text-blue-600 hover:bg-gray-50 transition z-10">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
-                </div>
+              {/* Optional Scroll Button Overlays */}
+              {recentProducts && recentProducts.length > 4 && (
+                <>
+                  <button
+                    onClick={() => scroll("left")}
+                    className={`absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 hidden md:flex items-center justify-center w-12 h-12 bg-white rounded-full shadow-lg border border-gray-100 text-blue-600 hover:bg-gray-50 transition-all duration-300 z-10 focus:outline-none ${
+                      canScrollLeft ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+                    }`}
+                    aria-label="Scroll left"
+                  >
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="m15 18-6-6 6-6" />
+                    </svg>
+                  </button>
+
+                  <button
+                    onClick={() => scroll("right")}
+                    className={`absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 hidden md:flex items-center justify-center w-12 h-12 bg-white rounded-full shadow-lg border border-gray-100 text-blue-600 hover:bg-gray-50 transition-all duration-300 z-10 focus:outline-none ${
+                      canScrollRight ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+                    }`}
+                    aria-label="Scroll right"
+                  >
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="m9 18 6-6-6-6" />
+                    </svg>
+                  </button>
+                </>
               )}
             </div>
           </motion.div>

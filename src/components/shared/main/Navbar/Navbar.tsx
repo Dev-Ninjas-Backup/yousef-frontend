@@ -1,6 +1,5 @@
 "use client";
 import Link from "next/link";
-import Image from "next/image";
 import { UserCircle, Globe, ChevronDown, LogOut, LayoutDashboard } from "lucide-react";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
@@ -86,14 +85,10 @@ const Navbar = () => {
       <div className="container mx-auto flex items-center justify-between gap-2 lg:gap-4">
         <Link href="/" className="flex items-center">
           <div className="bg-black/40 backdrop-blur-md rounded-full px-4 py-2 shadow-[0_0_15px_rgba(255,255,255,0.1)]">
-            <Image
-              src={scroll_logo}
+            <img
+              src={scroll_logo.src}
               alt="SayaraHub"
-              width={150}
-              height={40}
-              className="!h-8 md:!h-10 w-auto drop-shadow-md"
-              style={{ width: "auto", height: "auto" }}
-              priority
+              className="h-8 md:h-10 w-auto drop-shadow-md"
             />
           </div>
         </Link>
