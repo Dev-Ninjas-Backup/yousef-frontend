@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Lock } from "lucide-react";
+import { Lock, Eye, EyeOff } from "lucide-react";
 import { useLanguage, t } from "@/components/GoogleTranslationAPI";
 
 interface ResetPasswordFormProps {
@@ -33,6 +33,8 @@ export default function ResetPasswordForm({
   onBack,
 }: ResetPasswordFormProps) {
   const lang = useLanguage();
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   return (
     <div className="space-y-4">
@@ -74,12 +76,20 @@ export default function ResetPasswordForm({
           <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
           <Input
             id="newPassword"
-            type="password"
+            type={showPassword ? "text" : "password"}
             placeholder={t('Enter new password', lang)}
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
-            className="pl-10 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+            className="pl-10 pr-10 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
           />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-3 top-3 text-gray-400 hover:text-gray-600 transition-colors focus:outline-none"
+            aria-label={showPassword ? "Hide password" : "Show password"}
+          >
+            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+          </button>
         </div>
       </div>
 
@@ -91,12 +101,20 @@ export default function ResetPasswordForm({
           <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
           <Input
             id="confirmNewPassword"
-            type="password"
+            type={showConfirmPassword ? "text" : "password"}
             placeholder={t('Confirm new password', lang)}
             value={confirmNewPassword}
             onChange={(e) => setConfirmNewPassword(e.target.value)}
-            className="pl-10 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+            className="pl-10 pr-10 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
           />
+          <button
+            type="button"
+            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+            className="absolute right-3 top-3 text-gray-400 hover:text-gray-600 transition-colors focus:outline-none"
+            aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+          >
+            {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+          </button>
         </div>
       </div>
 

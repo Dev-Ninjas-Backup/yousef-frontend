@@ -1,13 +1,14 @@
 "use client";
-import React from 'react';
+import React, { useState } from 'react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { User, Mail, Phone, Lock, Building, MapPin, Upload } from "lucide-react";
+import { User, Mail, Phone, Lock, Building, MapPin, Upload, Eye, EyeOff } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { authTranslations } from "@/translations/auth";
+import Link from 'next/link';
 
 interface GarageSignupFormProps {
   formData: any;
@@ -30,6 +31,8 @@ const GarageSignupForm: React.FC<GarageSignupFormProps> = ({
 }) => {
   const { t } = useLanguage();
   const trans = t(authTranslations);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const serviceOptions = [
     { id: "Oil Change", label: "Oil Change" },
@@ -42,7 +45,7 @@ const GarageSignupForm: React.FC<GarageSignupFormProps> = ({
     { id: "Diagnostics", label: "Diagnostics" },
     { id: "Towing", label: "Towing" },
     { id: "Emergency Towing", label: "Emergency Towing" },
-    { id: "Van Doorstep Repair", label: "Van Doorstep Repair" },
+    { id: "Mobile Van Repair Service", label: "Mobile Van Repair Service (repair at customer's doorstep)" },
     { id: "Battery Replacement", label: "Battery Replacement" },
     { id: "Transmission Service", label: "Transmission Service" },
     { id: "Suspension Repair", label: "Suspension Repair" },
@@ -119,12 +122,20 @@ const GarageSignupForm: React.FC<GarageSignupFormProps> = ({
           <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
           <Input
             id="password"
-            type="password"
+            type={showPassword ? "text" : "password"}
             placeholder={trans.garage.signUp.passwordPlaceholder}
             value={formData.password}
             onChange={(e) => handleInputChange("password", e.target.value)}
-            className="pl-10 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+            className="pl-10 pr-10 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
           />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-3 top-3 text-gray-400 hover:text-gray-600 transition-colors focus:outline-none"
+            aria-label={showPassword ? "Hide password" : "Show password"}
+          >
+            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+          </button>
         </div>
       </div>
 
@@ -136,12 +147,20 @@ const GarageSignupForm: React.FC<GarageSignupFormProps> = ({
           <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
           <Input
             id="confirmPassword"
-            type="password"
+            type={showConfirmPassword ? "text" : "password"}
             placeholder={trans.garage.signUp.confirmPasswordPlaceholder}
             value={formData.confirmPassword}
             onChange={(e) => handleInputChange("confirmPassword", e.target.value)}
-            className="pl-10 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+            className="pl-10 pr-10 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
           />
+          <button
+            type="button"
+            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+            className="absolute right-3 top-3 text-gray-400 hover:text-gray-600 transition-colors focus:outline-none"
+            aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+          >
+            {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+          </button>
         </div>
       </div>
 
@@ -301,9 +320,9 @@ const GarageSignupForm: React.FC<GarageSignupFormProps> = ({
         />
         <Label htmlFor="terms" className="text-sm text-gray-600 leading-relaxed">
           {trans.garage.signUp.agreeTerms}{" "}
-          <button className="text-blue-600 hover:text-blue-700 font-medium">
+          <Link href="/terms" target="_blank" className="text-blue-600 hover:text-blue-700 font-medium">
             {trans.garage.signUp.termsConditions}
-          </button>
+          </Link>
         </Label>
       </div>
 

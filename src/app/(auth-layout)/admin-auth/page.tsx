@@ -91,14 +91,10 @@ export default function AdminAuth() {
           <div className="relative z-10 py-4 bg-black/20 backdrop-blur-sm border-b border-white/10">
             <div className="flex items-center justify-between px-10 md:px-20">
               <Link href="/">
-                <Image
-                  src={scroll_logo}
+                <img
+                  src={scroll_logo.src}
                   alt="SayaraHub"
-                  width={150}
-                  height={40}
-                  className="!h-8 md:!h-10 w-auto brightness-0 invert cursor-pointer hover:opacity-80 transition-opacity"
-                  style={{ width: "auto", height: "auto" }}
-                  priority
+                  className="h-8 md:h-10 w-auto brightness-0 invert cursor-pointer hover:opacity-80 transition-opacity"
                 />
               </Link>
               <div className="flex items-center gap-2 text-white/80">

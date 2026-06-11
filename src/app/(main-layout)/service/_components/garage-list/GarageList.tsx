@@ -48,12 +48,20 @@ export default function GarageList({ searchParams }: GarageListProps) {
 
   const { data: servicesData } = useGetServiceCategoriesQuery();
   const servicesList = servicesData?.serviceCategories || [
-    "Battery Replacement",
-    "Suspension Repair",
     "AC Service",
-    "Oil Change",
+    "Battery Replacement",
+    "Body Work",
+    "Brake Repair",
+    "Diagnostics",
+    "Electrical Repair",
+    "Emergency Towing",
     "Engine Repair",
+    "Oil Change",
+    "Suspension Repair",
     "Tire Service",
+    "Towing",
+    "Transmission Service",
+    "Mobile Van Repair Service",
   ];
 
   const limit = showMap ? 10 : 10;

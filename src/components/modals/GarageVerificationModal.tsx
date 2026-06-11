@@ -3,7 +3,6 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog";
 import { Clock, AlertCircle, Mail, Phone } from "lucide-react";
-import Image from "next/image";
 import scroll_logo from "@/assets/navbar/sayarahub_fill.svg";
 
 interface GarageVerificationModalProps {
@@ -18,14 +17,10 @@ export default function GarageVerificationModal({ isOpen, onClose }: GarageVerif
         {/* Header with Logo */}
         <DialogHeader className="p-6 pb-0">
           <div className="text-center">
-            <Image
-              src={scroll_logo}
+            <img
+              src={scroll_logo.src}
               alt="SayaraHub"
-              width={120}
-              height={32}
-              className="!h-8 w-auto mx-auto mb-4"
-              style={{ width: "auto", height: "auto" }}
-              priority
+              className="h-8 w-auto mx-auto mb-4"
             />
           </div>
         </DialogHeader>

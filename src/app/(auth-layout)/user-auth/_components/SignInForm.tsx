@@ -1,9 +1,9 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Mail, Lock } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { authTranslations } from "@/translations/auth";
 
@@ -29,6 +29,7 @@ export default function SignInForm({
 }: SignInFormProps) {
   const { t } = useLanguage();
   const trans = t(authTranslations);
+  const [showPassword, setShowPassword] = useState(false);
 
   return (
     <div className="space-y-4">
@@ -64,13 +65,22 @@ export default function SignInForm({
           <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
           <Input
             id="password"
-            type="password"
+            type={showPassword ? "text" : "password"}
             placeholder={trans.user.signIn.passwordPlaceholder}
             value={formData.password}
             onChange={(e) => handleInputChange("password", e.target.value)}
-            className="pl-10 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+            className="pl-10 pr-10 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
             disabled={isLoading}
           />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-3 top-3 text-gray-400 hover:text-gray-600 transition-colors focus:outline-none"
+            disabled={isLoading}
+            aria-label={showPassword ? "Hide password" : "Show password"}
+          >
+            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+          </button>
         </div>
       </div>
 

@@ -40,7 +40,7 @@ export default function HeroSection({ onSearch, initialValues }: HeroSectionProp
     "Tire Service",
     "Towing",
     "Transmission Service",
-    "Van Doorstep Repair",
+    "Mobile Van Repair Service",
   ];
 
   const CANONICAL_EMIRATES = [
