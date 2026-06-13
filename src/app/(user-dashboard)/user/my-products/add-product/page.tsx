@@ -16,10 +16,14 @@ import {
 import {
   useCreateProductMutation,
   useGetUserLimitQuery,
+  useCreatePromotionPaymentMutation,
+  useCreateMonthlyPaymentMutation,
+  useCreatePayPerPaymentMutation,
 } from "@/store/api/garageAdminApis/products/products";
 import { useGetCategoriesQuery } from "@/store/api/garageAdminApis/categoryApi";
 import { useGetPaymentConfigQuery } from "@/store/fetures/setting.api";
 import { useGetUserProfileQuery } from "@/store/api/userApi";
+import { openPaymentInNewTab } from "@/utils/paymentUtils";
 import { toast } from "sonner";
 import {
   Upload,
@@ -47,6 +51,15 @@ type PlanCardType = "FREE" | "PAY_PER" | "MONTHLY_BASIC" | "MONTHLY_PRO" | "MONT
 export default function AddProductPage() {
   const router = useRouter();
   const [createProduct, { isLoading }] = useCreateProductMutation();
+  const [createPromotionPayment, { isLoading: isPromoPaymentLoading }] =
+    useCreatePromotionPaymentMutation();
+  const [createMonthlyPayment, { isLoading: isMonthlyPaymentLoading }] =
+    useCreateMonthlyPaymentMutation();
+  const [createPayPerPayment, { isLoading: isPayPerPaymentLoading }] =
+    useCreatePayPerPaymentMutation();
+
+  const isPaymentProcessing =
+    isPromoPaymentLoading || isMonthlyPaymentLoading || isPayPerPaymentLoading;
 
   const { data: categoriesData, isLoading: categoriesLoading } =
     useGetCategoriesQuery();
@@ -186,6 +199,27 @@ export default function AddProductPage() {
       return;
     }
 
+    // Save form data to localStorage first so it's not lost in case of a page reload
+    if (isAnyPaymentNeeded) {
+      localStorage.setItem("productFormData", JSON.stringify(formData));
+      
+      try {
+        if (needsMonthlySubscription) {
+          const response = await createMonthlyPayment({ planType: selectedPlanCard }).unwrap();
+          openPaymentInNewTab(response.url);
+        } else if (needsPayPer) {
+          const response = await createPayPerPayment().unwrap();
+          openPaymentInNewTab(response.url);
+        } else if (needsPromotionPayment) {
+          const response = await createPromotionPayment({ duration: promoDuration }).unwrap();
+          openPaymentInNewTab(response.url);
+        }
+      } catch (error: any) {
+        toast.error(error?.data?.message || "Failed to create payment session");
+      }
+      return;
+    }
+
     try {
       await createProduct({
         partName: formData.partName,
@@ -198,7 +232,7 @@ export default function AddProductPage() {
         brand: formData.brand || undefined,
         description: formData.description || undefined,
         sellerName: formData.sellerName || undefined,
-        sellerEmail: formData.sellerEmail || undefined,
+        sellerEmail: formData.sellerEmail || profileData?.data?.email || undefined,
         sellerPhoneNumber: formData.sellerPhoneNumber || undefined,
         photos: photos.length > 0 ? photos : undefined,
         verificationImage: verificationImage || undefined,
@@ -1130,12 +1164,12 @@ export default function AddProductPage() {
             </Button>
             <Button
               type="submit"
-              disabled={isLoading || isAnyPaymentNeeded || !agreedToTerms}
+              disabled={isLoading || isPaymentProcessing || !agreedToTerms}
               className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-8 shadow-md shadow-indigo-100 flex items-center justify-center gap-2 transition-all disabled:opacity-50"
             >
-              {isLoading ? (
+              {isLoading || isPaymentProcessing ? (
                 <>
-                  <Spinner className="h-4 w-4" /> Creating...
+                  <Spinner className="h-4 w-4" /> {isPaymentProcessing ? "Processing..." : "Creating..."}
                 </>
               ) : isAnyPaymentNeeded ? (
                 "Complete Payment to Publish"

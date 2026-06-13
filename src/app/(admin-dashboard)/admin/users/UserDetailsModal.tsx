@@ -1,7 +1,8 @@
 "use client";
 
-import { Loader2, X, User, Mail, Phone, Calendar, Shield, Car, CheckCircle, XCircle } from "lucide-react";
-import { useGetUserByIdQuery } from "@/store/fetures/admin.user.api";
+import { useState, useEffect } from "react";
+import { Loader2, X, User, Mail, Phone, Calendar, Shield, Car, CheckCircle, XCircle, Sparkles } from "lucide-react";
+import { useGetUserByIdQuery, useUpdatePromotionCreditsMutation } from "@/store/fetures/admin.user.api";
 
 interface UserDetailsModalProps {
   userId: string | null;
@@ -15,10 +16,32 @@ export default function UserDetailsModal({
   const { data, isLoading, isError } = useGetUserByIdQuery(userId!, {
     skip: !userId,
   });
+  const [updatePromotionCredits, { isLoading: isUpdatingCredits }] = useUpdatePromotionCreditsMutation();
+  const [newCredits, setNewCredits] = useState<string>("");
 
   if (!userId) return null;
 
   const user = data?.data;
+
+  useEffect(() => {
+    if (user) {
+      setNewCredits((user.promotionCredits || 0).toString());
+    }
+  }, [user]);
+
+  const handleUpdateCredits = async () => {
+    const creditsNum = parseInt(newCredits, 10);
+    if (isNaN(creditsNum) || creditsNum < 0) {
+      alert("Please enter a valid non-negative number");
+      return;
+    }
+    try {
+      await updatePromotionCredits({ id: userId!, credits: creditsNum }).unwrap();
+      alert("Promotion credits updated successfully!");
+    } catch (err: any) {
+      alert(err?.data?.message || "Failed to update credits");
+    }
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
@@ -162,6 +185,45 @@ export default function UserDetailsModal({
                   <p className="text-gray-600 leading-relaxed">{user.bio}</p>
                 </div>
               )}
+
+              {/* Promotion Credits Management */}
+              <div className="bg-white border border-yellow-200 rounded-xl p-6 bg-yellow-50/10">
+                <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-yellow-600 animate-pulse" />
+                  Promotion Credits Management
+                </h4>
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                  <div className="flex-1 w-full">
+                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Available Credits</p>
+                    <div className="flex items-center gap-2">
+                      <span className="font-extrabold text-lg text-yellow-800 bg-yellow-100 border border-yellow-200 px-3 py-1 rounded-lg">
+                        {user.promotionCredits || 0}
+                      </span>
+                      <span className="text-xs text-gray-500 font-medium">credits currently active</span>
+                    </div>
+                  </div>
+                  <div className="w-full sm:w-auto flex items-center gap-2 mt-2 sm:mt-0">
+                    <div className="relative">
+                      <input
+                        type="number"
+                        id="newCredits"
+                        placeholder="0"
+                        min="0"
+                        value={newCredits}
+                        onChange={(e) => setNewCredits(e.target.value)}
+                        className="w-24 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <button
+                      onClick={handleUpdateCredits}
+                      disabled={isUpdatingCredits}
+                      className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-sm font-semibold rounded-lg transition-colors shrink-0"
+                    >
+                      {isUpdatingCredits ? "Updating..." : "Update"}
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
         </div>
