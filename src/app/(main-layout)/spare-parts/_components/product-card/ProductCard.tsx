@@ -1,8 +1,8 @@
 import { motion } from "framer-motion";
 import { MapPin, Eye } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 import { Product } from "@/store/api/sparePartsApi";
+import { useRouter } from "next/navigation";
 
 interface ProductCardProps {
   product: Product;
@@ -35,8 +35,21 @@ export default function ProductCard({
   showViewDetails = true,
   priority = false
 }: ProductCardProps) {
+  const router = useRouter();
   const condition = String(product.condition || "");
   const timeString = timeAgo(product.createdAt);
+
+  const handleCardClick = () => {
+    router.push(`/spare-parts/product/${product.id}`);
+  };
+
+  const handleSellerClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (product.createdBy?.id) {
+      router.push(`/spare-parts?userId=${product.createdBy.id}`);
+    }
+  };
 
   return (
     <motion.div
@@ -45,12 +58,12 @@ export default function ProductCard({
       viewport={{ once: true, margin: "-50px" }}
       transition={{ duration: 0.45, ease: "easeOut" }}
       whileHover={{ y: -4, transition: { duration: 0.2 } }}
-      className="h-full"
+      className="h-full cursor-pointer"
+      onClick={handleCardClick}
     >
-      <Link href={`/spare-parts/product/${product.id}`} className="block h-full group">
-        <div className={`h-full bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow overflow-hidden flex ${viewMode === 'list' ? 'flex-col sm:flex-row' : 'flex-col'}`}>
-          {/* Image */}
-          <div className={`relative bg-gray-50 overflow-hidden ${viewMode === 'list' ? 'h-[200px] sm:h-auto sm:w-[280px] shrink-0' : 'h-[180px]'}`}>
+      <div className={`h-full bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow overflow-hidden flex ${viewMode === 'list' ? 'flex-col sm:flex-row' : 'flex-col'}`}>
+        {/* Image */}
+        <div className={`relative bg-gray-50 overflow-hidden ${viewMode === 'list' ? 'h-[200px] sm:h-auto sm:w-[280px] shrink-0' : 'h-[180px]'}`}>
             <Image
               src={product.photos?.[0] || "/placeholder-product.jpg"}
               alt={product.partName || "Product"}
@@ -100,11 +113,57 @@ export default function ProductCard({
             </div>
 
             {/* Price */}
-            <div className="mb-3">
+            <div className="mb-2">
               <span className="text-base sm:text-lg font-extrabold text-blue-600">
                 AED {Number(product.price || 0).toLocaleString()}
               </span>
             </div>
+
+            {/* Seller profile info */}
+            {(product.createdBy?.fullName || product.seller?.name) && (
+              <div 
+                onClick={handleSellerClick}
+                className="flex items-center gap-2 mb-3 pt-2.5 border-t border-gray-50 hover:bg-gray-50/50 px-2 py-1.5 rounded-lg border border-transparent hover:border-gray-100/50 transition-all cursor-pointer"
+                title={`View listings by ${product.createdBy?.fullName || product.seller?.name}`}
+              >
+                {/* Photo/Avatar */}
+                <div className="relative w-6 h-6 rounded-full bg-blue-50 border border-gray-100 flex items-center justify-center overflow-hidden shrink-0">
+                  {(() => {
+                    const photoUrl = product.createdBy?.role === 'GARAGE_OWNER' 
+                      ? (product.createdBy.garageLogo || product.createdBy.profilePhoto)
+                      : product.createdBy?.profilePhoto;
+                    
+                    if (photoUrl) {
+                      return (
+                        <Image
+                          src={photoUrl}
+                          alt={product.createdBy?.fullName || "Seller"}
+                          fill
+                          className="object-cover"
+                        />
+                      );
+                    }
+                    
+                    // Fallback: styled initial
+                    const initial = (product.createdBy?.fullName || product.seller?.name || "S").charAt(0).toUpperCase();
+                    return (
+                      <span className="text-[10px] font-bold text-blue-600">{initial}</span>
+                    );
+                  })()}
+                </div>
+                
+                {/* Name and Type */}
+                <div className="flex flex-col min-w-0">
+                  <span className="text-[11px] font-bold text-gray-800 truncate leading-tight">
+                    {product.createdBy?.fullName || product.seller?.name}
+                  </span>
+                  <span className="text-[9px] font-semibold text-gray-400 uppercase tracking-wider leading-none mt-0.5">
+                    {product.createdBy?.role === 'GARAGE_OWNER' ? 'Garage' : 
+                     product.seller?.sellerType === 'VERIFIED_SUPPLIER' ? 'Supplier' : 'Individual'}
+                  </span>
+                </div>
+              </div>
+            )}
 
             {/* Footer row (Location & Time) */}
             <div className="flex items-center justify-between mt-auto pt-3 border-t border-gray-100 text-[11px] text-gray-400">
@@ -131,7 +190,6 @@ export default function ProductCard({
             )}
           </div>
         </div>
-      </Link>
-    </motion.div>
-  );
-}
+      </motion.div>
+    );
+  }

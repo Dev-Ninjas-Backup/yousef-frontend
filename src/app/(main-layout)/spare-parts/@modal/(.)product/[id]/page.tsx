@@ -44,7 +44,7 @@ export default function ProductModal({
 
   return (
     <Dialog open={true} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-6xl w-full max-h-[90vh] overflow-y-auto p-0">
+      <DialogContent className="sm:max-w-6xl w-full max-h-[95vh] overflow-y-auto p-0">
         <ProductDetailsContent
           product={product}
           isLoading={isLoading}

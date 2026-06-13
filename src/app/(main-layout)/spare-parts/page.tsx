@@ -110,6 +110,7 @@ export default function SparePartsPage() {
     handleSearch,
     handleCategoryFilter,
     handleConditionFilter,
+    handleUserFilter,
     handleSortChange,
     handlePageChange,
     clearFilters,
@@ -161,16 +162,17 @@ export default function SparePartsPage() {
         onSearch={handleSearch}
         onCategoryChange={handleCategoryFilter}
         onConditionChange={handleConditionFilter}
+        onUserChange={handleUserFilter}
         currentSearch={filters.search || ""}
         currentCategory={filters.category || ""}
         currentCondition={filters.condition || ""}
+        currentUserId={filters.userId || ""}
       />
 
       {/* Main Content */}
       <section id="catalog" className="">
         <div className="container mx-auto px-4">
           <div className="flex flex-col lg:flex-row gap-6">
-            {/* Filter Sidebar */}
             <FilterSidebar
               currentCategory={filters.category || ""}
               currentCondition={filters.condition || ""}
@@ -178,16 +180,23 @@ export default function SparePartsPage() {
               onConditionChange={handleConditionFilter}
               onClearFilters={clearFilters}
               products={products}
+              currentSearch={filters.search || ""}
             />
 
             {/* Products Area */}
             <div className="flex-1 min-w-0">
               {/* Toolbar */}
               <div className="bg-white rounded-xl border border-gray-100 shadow-sm px-5 py-3 flex items-center justify-between mb-5">
-                <p className="text-sm text-gray-600 font-medium">
+                <p className="text-sm text-gray-600 font-medium flex items-center flex-wrap gap-1">
                   <span className="text-gray-900 font-semibold">{pagination?.total ?? 0}</span> products found
                   {filters.search && (
                     <span className="text-gray-500 ml-1">for "{filters.search}"</span>
+                  )}
+                  {filters.userId && (
+                    <span className="text-blue-600 bg-blue-50 px-2.5 py-1 rounded-lg text-xs ml-2 border border-blue-100 font-semibold inline-flex items-center gap-1.5 shadow-sm">
+                      Listings by: <span className="font-bold text-blue-700">{products[0]?.createdBy?.fullName || products[0]?.seller?.name || "Seller"}</span>
+                      <button onClick={clearFilters} className="text-blue-400 hover:text-red-500 font-bold ml-1 text-sm leading-none" title="Clear seller filter">×</button>
+                    </span>
                   )}
                 </p>
 
