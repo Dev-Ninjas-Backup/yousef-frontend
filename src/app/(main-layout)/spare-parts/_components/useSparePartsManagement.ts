@@ -82,6 +82,12 @@ export function useSparePartsManagement() {
   const handlePageChange = useCallback(
     (page: number) => {
       updateFilter("page", page);
+      if (typeof window !== "undefined") {
+        const catalogSection = document.getElementById("catalog");
+        if (catalogSection) {
+          catalogSection.scrollIntoView({ behavior: "smooth" });
+        }
+      }
     },
     [updateFilter]
   );

@@ -8,6 +8,8 @@ import { useAuth } from "@/context/AuthContext";
 import { usePathname } from "next/navigation";
 import logoImg from "@/assets/logo.png";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { useLanguage } from "@/context/LanguageContext";
+import { navbarTranslations } from "@/translations/navbar";
 
 interface DashboardNavbarProps {
   onMenuToggle?: () => void;
@@ -15,7 +17,18 @@ interface DashboardNavbarProps {
 
 const DashboardNavbar = ({ onMenuToggle }: DashboardNavbarProps) => {
   const { user, logout, profile } = useAuth();
-  // const pathname = usePathname();
+  const pathname = usePathname();
+  const { t } = useLanguage();
+  const trans = t(navbarTranslations);
+
+  const menuItems = [
+    { label: trans.home, href: "/" },
+    { label: trans.service, href: "/service" },
+    { label: trans.spareParts, href: "/spare-parts" },
+    { label: trans.downloadApp, href: "/download-app" },
+    { label: trans.aboutUs, href: "/about" },
+    { label: trans.contactUs, href: "/contact-us" },
+  ];
 
   const isAdmin = user?.role === "SUPER_ADMIN";
 
@@ -45,12 +58,12 @@ const DashboardNavbar = ({ onMenuToggle }: DashboardNavbarProps) => {
             <div className="hidden sm:flex items-center border-l border-gray-300 pl-3">
               <div>
                 <p className="text-sm font-semibold text-gray-900">
-                  {isAdmin ? "Admin Dashboard" : "Premium Auto Parts LLC"}
+                  {isAdmin ? "Admin Dashboard" : (profile?.data?.garageName || "Garage Owner")}
                 </p>
                 <p className="text-xs text-gray-500">
                   {isAdmin
                     ? "SayaraHub"
-                    : profile?.data?.garageName || profile?.data?.fullName}
+                    : profile?.data?.fullName || user?.name || "Garage Admin"}
                 </p>
               </div>
               {!isAdmin && (
@@ -59,6 +72,24 @@ const DashboardNavbar = ({ onMenuToggle }: DashboardNavbarProps) => {
                 </span>
               )}
             </div>
+          </div>
+
+          {/* Center Navigation Links for Desktop */}
+          <div className="hidden lg:flex items-center gap-1 xl:gap-2">
+            {menuItems.map((item, index) => {
+              const isActive = pathname === item.href;
+              return (
+                <Link
+                  key={index}
+                  href={item.href}
+                  className={`relative text-gray-600 hover:text-[#0066FF] hover:bg-gray-50/80 transition-all duration-200 px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap ${
+                    isActive ? "text-[#0066FF] bg-blue-50/50 font-semibold" : ""
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
           </div>
 
           <div className="flex items-center gap-2 lg:gap-4">

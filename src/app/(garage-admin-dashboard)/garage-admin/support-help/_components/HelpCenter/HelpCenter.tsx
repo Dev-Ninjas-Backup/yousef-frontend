@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useGetPaymentConfigQuery } from "@/store/fetures/setting.api";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -66,7 +67,7 @@ const articles: HelpArticle[] = [
     title: "Subscription and plan information",
     category: "Plans & Billing",
     icon: CreditCard,
-    content: "SayaraHub offers a unified 'Garage Partner Plan' at AED 100/month. This plan provides your business with unlimited product listings, premium search indexation, highlighted contacts, and a Verified Badge. You can manage your payment methods, check the trial progress, or cancel your active subscription plan at any time through the 'Plans & Billing' tab.",
+    content: "SayaraHub offers a unified 'Garage Partner Plan' at AED 99/month. This plan provides your business with unlimited product listings, premium search indexation, highlighted contacts, and a Verified Badge. You can manage your payment methods, check the trial progress, or cancel your active subscription plan at any time through the 'Plans & Billing' tab.",
   },
   {
     id: "account",
@@ -88,8 +89,20 @@ const HelpCenter = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeArticleId, setActiveArticleId] = useState(articles[0].id);
+  const { data: configData } = useGetPaymentConfigQuery();
+  const price = configData?.data?.monthlyGaragePrice || "99";
 
-  const filteredArticles = articles.filter(
+  const dynamicArticles = articles.map(article => {
+    if (article.id === "plans") {
+      return {
+        ...article,
+        content: `SayaraHub offers a unified 'Garage Partner Plan' at AED ${price}/month. This plan provides your business with unlimited product listings, premium search indexation, highlighted contacts, and a Verified Badge. You can manage your payment methods, check the trial progress, or cancel your active subscription plan at any time through the 'Plans & Billing' tab.`
+      };
+    }
+    return article;
+  });
+
+  const filteredArticles = dynamicArticles.filter(
     (article) =>
       article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       article.content.toLowerCase().includes(searchQuery.toLowerCase()) ||

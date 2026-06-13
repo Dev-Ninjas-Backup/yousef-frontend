@@ -45,6 +45,28 @@ export function proxy(request: NextRequest) {
 
   // console.log("Token from Middleware :", token)
 
+  const authRoutesList = ["/user-auth", "/garage-auth", "/admin-auth"];
+  if (authRoutesList.includes(pathname)) {
+    if (token) {
+      try {
+        const payload = decodeJWT(token);
+        if (payload && payload.exp * 1000 > Date.now()) {
+          const userRole = payload.roles;
+          const roleRedirects: Record<string, string> = {
+            CAR_OWNER: "/user/dashboard",
+            MEMBER: "/user/dashboard",
+            GARAGE_OWNER: "/garage-admin/dashboard",
+            SUPER_ADMIN: "/admin/dashboard",
+          };
+          const correctDashboard = roleRedirects[userRole] || "/";
+          return NextResponse.redirect(new URL(correctDashboard, request.url));
+        }
+      } catch (e) {
+        // Fall through to login page if decoding fails
+      }
+    }
+  }
+
   const protectedRoutes: Record<string, string[]> = {
     "/user/dashboard": ["CAR_OWNER"],
     "/user/settings": ["CAR_OWNER"],

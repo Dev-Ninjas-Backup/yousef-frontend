@@ -19,6 +19,7 @@ import {
 } from "@/store/api/garageAdminApis/products/products";
 import { useGetCategoriesQuery } from "@/store/api/garageAdminApis/categoryApi";
 import { useGetPaymentConfigQuery } from "@/store/fetures/setting.api";
+import { useGetUserProfileQuery } from "@/store/api/userApi";
 import { toast } from "sonner";
 import {
   Upload,
@@ -53,6 +54,7 @@ export default function AddProductPage() {
     useGetUserLimitQuery();
   const { data: paymentConfigData } = useGetPaymentConfigQuery();
   const paymentConfig = paymentConfigData?.data;
+  const { data: profileData } = useGetUserProfileQuery();
 
   const [selectedPlanCard, setSelectedPlanCard] = useState<PlanCardType>("FREE");
   const [promoDuration, setPromoDuration] = useState<"3" | "7">("7");
@@ -109,6 +111,17 @@ export default function AddProductPage() {
       }
     }
   }, [userLimit]);
+
+  useEffect(() => {
+    if (profileData?.data) {
+      setFormData((prev) => ({
+        ...prev,
+        sellerName: profileData.data.fullName || "",
+        sellerEmail: prev.sellerEmail || profileData.data.email || "",
+        sellerPhoneNumber: prev.sellerPhoneNumber || profileData.data.phone || "",
+      }));
+    }
+  }, [profileData]);
 
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -394,7 +407,7 @@ export default function AddProductPage() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="INDIVIDUAL">Individual</SelectItem>
-                  <SelectItem value="VERIFIED_SUPPLIER">Verified Supplier</SelectItem>
+                  <SelectItem value="VERIFIED_SUPPLIER">Supplier</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -519,18 +532,18 @@ export default function AddProductPage() {
                 onChange={(e) =>
                   setFormData({ ...formData, sellerName: e.target.value })
                 }
-                className="mt-1.5 focus-visible:ring-indigo-500"
+                disabled
+                className="mt-1.5 focus-visible:ring-indigo-500 bg-gray-100 cursor-not-allowed"
               />
             </div>
 
             <div>
               <Label htmlFor="sellerEmail" className="font-semibold text-gray-700">
-                Seller Email *
+                Seller Email
               </Label>
               <Input
                 id="sellerEmail"
                 type="email"
-                required
                 placeholder="Enter email address"
                 value={formData.sellerEmail}
                 onChange={(e) =>
@@ -542,11 +555,12 @@ export default function AddProductPage() {
 
             <div>
               <Label htmlFor="sellerPhoneNumber" className="font-semibold text-gray-700">
-                Seller Phone Number
+                Seller Phone Number *
               </Label>
               <Input
                 id="sellerPhoneNumber"
                 placeholder="e.g. +971501234567"
+                required
                 value={formData.sellerPhoneNumber}
                 onChange={(e) =>
                   setFormData({ ...formData, sellerPhoneNumber: e.target.value })
