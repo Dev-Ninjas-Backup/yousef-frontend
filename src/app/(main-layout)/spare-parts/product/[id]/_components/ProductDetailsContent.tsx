@@ -26,6 +26,22 @@ export default function ProductDetailsContent({
   const router = useRouter();
   const currentUser = useAppSelector((state) => state.auth.user);
 
+  const handleSellerClick = () => {
+    if (product?.createdBy?.id) {
+      if (isModal) {
+        window.location.href = `/spare-parts?userId=${product.createdBy.id}`;
+      } else {
+        router.push(`/spare-parts?userId=${product.createdBy.id}`);
+      }
+    }
+  };
+
+  const getSellerBadgeLabel = () => {
+    if (product?.createdBy?.role === 'GARAGE_OWNER') return 'Garage';
+    if (product?.seller?.sellerType === 'VERIFIED_SUPPLIER') return 'Supplier';
+    return 'Individual';
+  };
+
   const handleContactSeller = async () => {
     if (!product?.createdBy?.id) return;
     
@@ -84,7 +100,7 @@ export default function ProductDetailsContent({
   }
 
   return (
-    <div className={`${isModal ? 'p-6 sm:p-8' : 'container mx-auto px-4 py-8'}`}>
+    <div className={`${isModal ? 'p-6 sm:p-8 pb-10 sm:pb-12' : 'container mx-auto px-4 py-8'}`}>
       {/* Back Button */}
       <div className="mb-6 sm:mb-8">
         <Button 
@@ -233,12 +249,41 @@ export default function ProductDetailsContent({
             
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
               <div className="flex items-start sm:items-center gap-4">
-                <div className="w-14 h-14 rounded-full bg-gradient-to-tr from-blue-100 to-indigo-50 flex items-center justify-center border-2 border-white shadow-sm shrink-0">
-                  <User className="w-6 h-6 text-blue-600" />
-                </div>
+                <button
+                  onClick={handleSellerClick}
+                  className="relative w-14 h-14 rounded-full bg-gradient-to-tr from-blue-100 to-indigo-50 flex items-center justify-center border-2 border-white shadow-sm shrink-0 cursor-pointer hover:scale-105 transition-all duration-200 overflow-hidden"
+                  title="View all listings from this seller"
+                >
+                  {(() => {
+                    const photoUrl = product?.createdBy?.role === 'GARAGE_OWNER'
+                      ? (product.createdBy.garageLogo || product.createdBy.profilePhoto)
+                      : product?.createdBy?.profilePhoto;
+
+                    if (photoUrl) {
+                      return (
+                        <Image
+                          src={photoUrl}
+                          alt={product?.createdBy?.fullName || "Seller"}
+                          fill
+                          className="object-cover"
+                        />
+                      );
+                    }
+                    return <User className="w-6 h-6 text-blue-600" />;
+                  })()}
+                </button>
                 <div>
-                  <div className="flex items-center gap-2 mb-1.5">
-                    <span className="text-lg font-bold text-gray-900">{product.seller?.name || "N/A"}</span>
+                  <div className="flex flex-wrap items-center gap-2 mb-1.5">
+                    <button
+                      onClick={handleSellerClick}
+                      className="text-lg font-bold text-gray-900 hover:text-blue-600 hover:underline transition-colors text-left"
+                      title="View all listings from this seller"
+                    >
+                      {product.seller?.name || "N/A"}
+                    </button>
+                    <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-100">
+                      {getSellerBadgeLabel()}
+                    </span>
                     {product.seller?.sellerType === 'VERIFIED_SUPPLIER' && (
                        <BadgeCheck className="w-4 h-4 text-blue-600" />
                     )}

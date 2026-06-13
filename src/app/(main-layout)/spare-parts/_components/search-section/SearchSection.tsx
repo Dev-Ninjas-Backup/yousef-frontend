@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,23 +14,28 @@ import { Search } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { sparePartsPageTranslations } from "@/translations/spareParts";
 import { useGetCategoriesQuery } from "@/store/api/garageAdminApis/categoryApi";
+import { useGetActiveSellersQuery } from "@/store/api/sparePartsApi";
 
 interface SearchSectionProps {
   onSearch: (searchTerm: string) => void;
   onCategoryChange: (category: string) => void;
   onConditionChange: (condition: string) => void;
+  onUserChange: (userId: string) => void;
   currentSearch: string;
   currentCategory: string;
   currentCondition: string;
+  currentUserId: string;
 }
 
 export default function SearchSection({
   onSearch,
   onCategoryChange,
   onConditionChange,
+  onUserChange,
   currentSearch,
   currentCategory,
   currentCondition,
+  currentUserId,
 }: SearchSectionProps) {
   const { t } = useLanguage();
   const trans = t(sparePartsPageTranslations);
@@ -39,6 +44,33 @@ export default function SearchSection({
   // Fetch dynamic categories
   const { data: categoryData } = useGetCategoriesQuery();
   const apiCategories = categoryData?.data?.data || [];
+
+  // Fetch active sellers for dropdown
+  const { data: sellersData } = useGetActiveSellersQuery();
+  const apiSellers = sellersData?.data || [];
+
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [sellerSearch, setSellerSearch] = useState("");
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const selectedSeller = apiSellers.find((s) => s.id === currentUserId);
+  const sellerButtonLabel = selectedSeller ? selectedSeller.fullName : "All Sellers";
+
+  const filteredSellers = apiSellers.filter((seller) =>
+    seller.fullName.toLowerCase().includes(sellerSearch.toLowerCase())
+  );
 
   const conditions = [
     { value: "all", label: trans.search.conditions.all },
@@ -79,6 +111,73 @@ export default function SearchSection({
                 onKeyPress={handleKeyPress}
                 className="w-full h-12 pl-10 pr-4 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
               />
+            </div>
+
+            {/* User/Seller Select (Searchable Dropdown) */}
+            <div className="w-full lg:w-48 flex-shrink-0 relative" ref={dropdownRef}>
+              <button
+                type="button"
+                onClick={() => setDropdownOpen(!dropdownOpen)}
+                className="w-full h-12 border border-gray-200 text-gray-600 bg-white rounded-lg px-3 flex items-center justify-between text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition text-left"
+              >
+                <span className="truncate">{sellerButtonLabel}</span>
+                <span className="text-gray-400 ml-1 text-xs">▼</span>
+              </button>
+
+              {dropdownOpen && (
+                <div className="absolute top-full left-0 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-xl z-50 p-2 space-y-1.5 min-w-[200px]">
+                  {/* Search input inside dropdown */}
+                  <div className="relative">
+                    <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400 pointer-events-none" />
+                    <input
+                      type="text"
+                      placeholder="Search seller..."
+                      value={sellerSearch}
+                      onChange={(e) => setSellerSearch(e.target.value)}
+                      className="w-full h-9 pl-8 pr-3 border border-gray-200 rounded text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                    />
+                  </div>
+
+                  {/* Sellers list */}
+                  <div className="max-h-48 overflow-y-auto space-y-0.5 scrollbar-thin">
+                    <div
+                      onClick={() => {
+                        onUserChange("");
+                        setDropdownOpen(false);
+                        setSellerSearch("");
+                      }}
+                      className={`cursor-pointer p-2 rounded text-xs transition-colors flex items-center ${
+                        !currentUserId
+                          ? "bg-blue-50 text-blue-600 font-semibold"
+                          : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+                      }`}
+                    >
+                      All Sellers
+                    </div>
+                    {filteredSellers.map((seller) => (
+                      <div
+                        key={seller.id}
+                        onClick={() => {
+                          onUserChange(seller.id);
+                          setDropdownOpen(false);
+                          setSellerSearch("");
+                        }}
+                        className={`cursor-pointer p-2 rounded text-xs transition-colors truncate ${
+                          currentUserId === seller.id
+                            ? "bg-blue-50 text-blue-600 font-semibold"
+                            : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+                        }`}
+                        title={seller.fullName}
+                      >
+                        {seller.fullName}
+                      </div>
+                    ))}
+                    {filteredSellers.length === 0 && (
+                      <p className="text-[11px] text-gray-400 italic p-2 text-center">No sellers found</p>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Category Select */}

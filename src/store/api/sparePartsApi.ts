@@ -23,6 +23,9 @@ export interface Product {
     id: string;
     email: string;
     fullName: string;
+    role?: "CAR_OWNER" | "GARAGE_OWNER" | "SUPER_ADMIN" | "MEMBER";
+    profilePhoto?: string;
+    garageLogo?: string;
   };
   category: {
     id: string;
@@ -52,6 +55,7 @@ export interface ProductsParams {
   sortBy?: string;
   limit?: number;
   page?: number;
+  userId?: string;
 }
 
 export const sparePartsApi = createApi({
@@ -87,7 +91,18 @@ export const sparePartsApi = createApi({
       query: (id) => `/products/${id}`,
       providesTags: (result, error, id) => [{ type: "Product", id }],
     }),
+    getProductsStats: builder.query<{ success: boolean; data: { categories: Record<string, number>; conditions: Record<string, number> } }, { search?: string } | void>({
+      query: (params) => ({
+        url: "/products/stats",
+        params: params || undefined,
+      }),
+      providesTags: ["Product"],
+    }),
+    getActiveSellers: builder.query<{ success: boolean; data: { id: string; fullName: string }[] }, void>({
+      query: () => "/products/sellers",
+      providesTags: ["Product"],
+    }),
   }),
 });
 
-export const { useGetProductsQuery, useGetMyProductsQuery, useGetProductByIdQuery } = sparePartsApi;
+export const { useGetProductsQuery, useGetMyProductsQuery, useGetProductByIdQuery, useGetProductsStatsQuery, useGetActiveSellersQuery } = sparePartsApi;

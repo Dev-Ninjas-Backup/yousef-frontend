@@ -1,9 +1,14 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useGetProductsQuery, ProductsParams } from "@/store/api/sparePartsApi";
+import { useSearchParams, useRouter } from "next/navigation";
 
 export function useSparePartsManagement() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const urlUserId = searchParams.get("userId") || undefined;
+
   const [filters, setFilters] = useState<ProductsParams>({
     search: "",
     category: "all",
@@ -12,7 +17,12 @@ export function useSparePartsManagement() {
     sortBy: "relevance",
     limit: 9,
     page: 1,
+    userId: urlUserId,
   });
+
+  useEffect(() => {
+    setFilters((prev) => ({ ...prev, userId: urlUserId, page: 1 }));
+  }, [urlUserId]);
 
   const { data, isLoading, error } = useGetProductsQuery({
     ...filters,
@@ -62,6 +72,13 @@ export function useSparePartsManagement() {
     [updateFilter]
   );
 
+  const handleUserFilter = useCallback(
+    (userId: string) => {
+      updateFilter("userId", userId);
+    },
+    [updateFilter]
+  );
+
   const handlePageChange = useCallback(
     (page: number) => {
       updateFilter("page", page);
@@ -85,8 +102,10 @@ export function useSparePartsManagement() {
       sortBy: "relevance",
       limit: 9,
       page: 1,
+      userId: undefined,
     });
-  }, []);
+    router.push("/spare-parts");
+  }, [router]);
 
   return {
     products: data?.data || [],
@@ -97,6 +116,7 @@ export function useSparePartsManagement() {
     handleSearch,
     handleCategoryFilter,
     handleConditionFilter,
+    handleUserFilter,
     handleSortChange,
     handlePageChange,
     clearFilters,

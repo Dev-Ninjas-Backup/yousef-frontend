@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { useGetCategoriesQuery } from "@/store/api/garageAdminApis/categoryApi";
-import { Product } from "@/store/api/sparePartsApi";
+import { Product, useGetProductsStatsQuery } from "@/store/api/sparePartsApi";
 
 interface FilterSidebarProps {
   currentCategory: string;
@@ -17,6 +17,7 @@ interface FilterSidebarProps {
   onConditionChange: (condition: string) => void;
   onClearFilters: () => void;
   products: Product[];
+  currentSearch?: string;
 }
 
 const conditions = [
@@ -62,6 +63,7 @@ export default function FilterSidebar({
   onConditionChange,
   onClearFilters,
   products,
+  currentSearch,
 }: FilterSidebarProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [categoryOpen, setCategoryOpen] = useState(true);
@@ -70,6 +72,12 @@ export default function FilterSidebar({
   // Fetch dynamic categories
   const { data: categoryData } = useGetCategoriesQuery();
   const apiCategories = categoryData?.data?.data || [];
+
+  // Fetch count stats from the dedicated backend statistics endpoint
+  const { data: statsResponse } = useGetProductsStatsQuery({
+    search: currentSearch || undefined,
+  });
+  const stats = statsResponse?.data;
 
   const hasActiveFilters =
     (currentCategory && currentCategory !== "all") ||
@@ -96,13 +104,16 @@ export default function FilterSidebar({
 
   // Helper to calculate product counts
   const getCategoryCount = (categoryName: string) => {
-    return products.filter((p) => p.category?.name === categoryName).length;
+    if (!stats?.categories) return 0;
+    return stats.categories[categoryName] || 0;
   };
 
   const getConditionCount = (conditionLabel: string) => {
-    return products.filter(
-      (p) => String(p.condition).toLowerCase() === conditionLabel.toLowerCase()
-    ).length;
+    if (!stats?.conditions) return 0;
+    const matchingKey = Object.keys(stats.conditions).find(
+      (k) => k.toLowerCase() === conditionLabel.toLowerCase()
+    );
+    return matchingKey ? stats.conditions[matchingKey] : 0;
   };
 
   return (
