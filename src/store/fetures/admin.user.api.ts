@@ -17,6 +17,7 @@ export interface User {
   isDeleted: boolean;
   vehicles: number;
   promotionCredits?: number;
+  subscriptionType?: string;
 }
 
 export interface AllUsersResponse {
@@ -29,6 +30,14 @@ export interface AllUsersResponse {
       page: number;
       limit: number;
       totalPages: number;
+    };
+    stats?: {
+      totalUsers: number;
+      carOwners: number;
+      garageOwners: number;
+      activePaid: number;
+      activeTrial: number;
+      noSubscription: number;
     };
   };
 }

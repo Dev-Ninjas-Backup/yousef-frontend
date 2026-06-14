@@ -72,17 +72,10 @@ const PartsByCategories = ({
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
         </div>
       ) : chartData.length > 0 ? (
-        <div className="h-64 sm:h-72 lg:h-80 relative flex items-center justify-center">
-          <div className="w-full max-w-md relative">
-            <div className="relative w-full aspect-square max-w-[280px] mx-auto">
-              <PieChart
-                style={{
-                  width: "100%",
-                  maxWidth: "500px",
-                  maxHeight: "80vh",
-                  aspectRatio: 1,
-                }}
-              >
+        <div className="relative flex flex-col items-center justify-center">
+          <div className="w-full max-w-md relative flex flex-col items-center">
+            <div className="relative w-full aspect-square max-w-[200px] mx-auto flex items-center justify-center">
+              <PieChart width={200} height={200}>
                 <Pie
                   data={chartData}
                   labelLine={false}
@@ -90,6 +83,9 @@ const PartsByCategories = ({
                   fill="#8884d8"
                   dataKey="value"
                   isAnimationActive={isAnimationActive}
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={85}
                 >
                   {chartData.map((entry, index) => (
                     <Cell key={`cell-${entry.name}`} fill={entry.color} />
@@ -99,14 +95,14 @@ const PartsByCategories = ({
             </div>
 
             {/* Legend */}
-            <div className="mt-6 grid grid-cols-2 gap-2">
+            <div className="mt-6 w-full grid grid-cols-2 gap-x-4 gap-y-2 sm:gap-y-2.5 px-2">
               {chartData.map((entry) => (
-                <div key={entry.name} className="flex items-center gap-2">
+                <div key={entry.name} className="flex items-center gap-2 min-w-0">
                   <div
-                    className="w-3 h-3 rounded-full"
+                    className="w-2.5 h-2.5 rounded-full shrink-0"
                     style={{ backgroundColor: entry.color }}
                   />
-                  <span className="text-xs sm:text-sm text-gray-700">
+                  <span className="text-xs sm:text-sm text-gray-600 font-medium truncate" title={`${entry.name}: ${entry.value.toFixed(1)}%`}>
                     {entry.name}: {entry.value.toFixed(1)}%
                   </span>
                 </div>

@@ -57,6 +57,7 @@ export interface ProductsParams {
   page?: number;
   userId?: string;
   isPromoted?: boolean;
+  sellerType?: string;
 }
 
 export const sparePartsApi = createApi({

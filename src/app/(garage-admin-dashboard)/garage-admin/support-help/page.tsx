@@ -3,6 +3,7 @@
 import CustomerSupport from "./_components/CustomerSupport/CustomerSupport";
 import HelpCenter from "./_components/HelpCenter/HelpCenter";
 import FAQSection from "./_components/FAQSection/FAQSection";
+import SupportTicketsList from "./_components/SupportTicketsList/SupportTicketsList";
 
 export default function SupportHelpPage() {
   return (
@@ -18,6 +19,8 @@ export default function SupportHelpPage() {
         <CustomerSupport />
         <HelpCenter />
       </div>
+
+      <SupportTicketsList />
 
       <FAQSection />
     </div>

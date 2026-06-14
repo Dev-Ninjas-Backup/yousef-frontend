@@ -19,6 +19,7 @@ export function useSparePartsManagement() {
     page: 1,
     userId: urlUserId,
     isPromoted: undefined,
+    sellerType: "all",
   });
 
   useEffect(() => {
@@ -39,6 +40,7 @@ export function useSparePartsManagement() {
     isPromoted: filters.isPromoted ? true : undefined,
     status: "APPROVED",
     sortBy: filters.sortBy || "relevance",
+    sellerType: filters.sellerType === "all" || !filters.sellerType ? undefined : filters.sellerType,
   });
 
   const updateFilter = useCallback(
@@ -87,6 +89,13 @@ export function useSparePartsManagement() {
     },
     [updateFilter]
   );
+  
+  const handleSellerTypeFilter = useCallback(
+    (sellerType: string) => {
+      updateFilter("sellerType", sellerType);
+    },
+    [updateFilter]
+  );
 
   const handlePageChange = useCallback(
     (page: number) => {
@@ -119,6 +128,7 @@ export function useSparePartsManagement() {
       page: 1,
       userId: undefined,
       isPromoted: undefined,
+      sellerType: "all",
     });
     router.push("/spare-parts");
   }, [router]);
@@ -134,6 +144,7 @@ export function useSparePartsManagement() {
     handleConditionFilter,
     handlePromotedFilter,
     handleUserFilter,
+    handleSellerTypeFilter,
     handleSortChange,
     handlePageChange,
     clearFilters,

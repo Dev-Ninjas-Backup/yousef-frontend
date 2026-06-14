@@ -17,6 +17,8 @@ import { useSparePartsManagement } from "./_components/useSparePartsManagement";
 import { useGetProductsQuery } from "@/store/api/sparePartsApi";
 import { LayoutGrid, List, RotateCcw, Search, Users, MessageSquare, MessageSquareMore, MapPin, Handshake, MoveRight } from "lucide-react";
 import { motion } from "framer-motion";
+import { useLanguage } from "@/context/LanguageContext";
+import { sparePartsPageTranslations } from "@/translations/spareParts";
 
 const sortOptions = [
   { value: "relevance", label: "Relevance" },
@@ -96,6 +98,8 @@ const cardVariants = {
 };
 
 export default function SparePartsPage() {
+  const { t } = useLanguage();
+  const trans = t(sparePartsPageTranslations);
   const [sellFormOpen, setSellFormOpen] = useState(false);
   const [paymentOpen, setPaymentOpen] = useState(false);
   const [duplicateOpen, setDuplicateOpen] = useState(false);
@@ -112,6 +116,7 @@ export default function SparePartsPage() {
     handleConditionFilter,
     handlePromotedFilter,
     handleUserFilter,
+    handleSellerTypeFilter,
     handleSortChange,
     handlePageChange,
     clearFilters,
@@ -189,7 +194,7 @@ export default function SparePartsPage() {
             {/* Products Area */}
             <div className="flex-1 min-w-0">
               {/* Toolbar */}
-              <div className="bg-white rounded-xl border border-gray-100 shadow-sm px-5 py-3 flex items-center justify-between mb-5">
+              <div className="bg-white rounded-xl border border-gray-100 shadow-sm px-5 py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
                 <p className="text-sm text-gray-600 font-medium flex items-center flex-wrap gap-1">
                   <span className="text-gray-900 font-semibold">{pagination?.total ?? 0}</span> products found
                   {filters.search && (
@@ -203,14 +208,29 @@ export default function SparePartsPage() {
                   )}
                 </p>
 
-                <div className="flex items-center gap-3">
+                <div className="flex flex-wrap items-center gap-3 justify-between sm:justify-end w-full sm:w-auto">
+                  {/* User Type Filter */}
+                  <div className="flex items-center gap-2 flex-1 sm:flex-initial">
+                    <span className="text-xs text-gray-500 hidden sm:block">Seller Type:</span>
+                    <select
+                      value={filters.sellerType || "all"}
+                      onChange={(e) => handleSellerTypeFilter(e.target.value)}
+                      className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-700 cursor-pointer w-full sm:w-auto"
+                    >
+                      <option value="all">{trans.search.sellerTypes?.all || "All Sellers"}</option>
+                      <option value="GARAGE">{trans.search.sellerTypes?.garage || "Garage"}</option>
+                      <option value="SUPPLIER">{trans.search.sellerTypes?.supplier || "Supplier"}</option>
+                      <option value="INDIVIDUAL">{trans.search.sellerTypes?.individual || "Individual"}</option>
+                    </select>
+                  </div>
+
                   {/* Sort */}
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-1 sm:flex-initial">
                     <span className="text-xs text-gray-500 hidden sm:block">Sort by:</span>
                     <select
                       value={filters.sortBy || "relevance"}
                       onChange={(e) => handleSortChange(e.target.value)}
-                      className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-700 cursor-pointer"
+                      className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-700 cursor-pointer w-full sm:w-auto"
                     >
                       {sortOptions.map((opt) => (
                         <option key={opt.value} value={opt.value}>
@@ -221,7 +241,7 @@ export default function SparePartsPage() {
                   </div>
 
                   {/* View Toggle */}
-                  <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden">
+                  <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden shrink-0">
                     <button
                       onClick={() => setViewMode("grid")}
                       className={`p-2 transition-colors ${

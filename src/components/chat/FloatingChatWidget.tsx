@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { MessageCircle, X, Search, ArrowLeft, Send, Check, Paperclip, Image, FileText, Globe, Languages, ChevronDown } from "lucide-react";
+import { MessageCircle, X, Search, ArrowLeft, Send, Check, Paperclip, Image, FileText, Globe, Languages, ChevronDown, Headphones } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useGetConversationsQuery, Message } from "@/store/api/privateChatApi";
@@ -10,9 +10,11 @@ import { useAppSelector } from "@/store/hooks";
 import { motion, AnimatePresence } from "framer-motion";
 import { translationService } from "@/services/translation.service";
 import Cookies from "js-cookie";
+import { useGetAdminInfoQuery } from "@/store/api/userApi";
 
 export function FloatingChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<"chat" | "support">("chat");
   const [selectedChat, setSelectedChat] = useState<{
     id: string;
     name: string;
@@ -21,6 +23,7 @@ export function FloatingChatWidget() {
   const [hasUnread, setHasUnread] = useState(false);
 
   const currentUserId = useAppSelector((state) => state.auth.user?.id);
+  const { data: adminInfo } = useGetAdminInfoQuery(undefined, { skip: !currentUserId });
 
   // Translation states
   const [translatedMessages, setTranslatedMessages] = useState<Record<string, { text: string; lang: 'en' | 'ar' | 'hi' }>>({});
@@ -431,6 +434,46 @@ export function FloatingChatWidget() {
                   </Button>
                 </div>
 
+                {/* Tab bar */}
+                <div className="flex border-b border-gray-200 bg-white">
+                  <button
+                    onClick={() => setActiveTab("chat")}
+                    className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 text-xs font-semibold transition-all border-b-2 ${
+                      activeTab === "chat"
+                        ? "border-blue-500 text-blue-600 bg-blue-50/40"
+                        : "border-transparent text-gray-500 hover:text-gray-700"
+                    }`}
+                  >
+                    <MessageCircle className="w-3.5 h-3.5" />
+                    Chat
+                    {totalUnreadCount > 0 && (
+                      <span className="min-w-[16px] h-4 px-1 bg-red-500 rounded-full text-[9px] font-black text-white flex items-center justify-center">
+                        {totalUnreadCount}
+                      </span>
+                    )}
+                  </button>
+                  <button
+                    onClick={() => {
+                      setActiveTab("support");
+                      if (adminInfo?.data) {
+                        setSelectedChat({
+                          id: adminInfo.data.id,
+                          name: "SayaraHub Support",
+                        });
+                      }
+                    }}
+                    className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 text-xs font-semibold transition-all border-b-2 ${
+                      activeTab === "support"
+                        ? "border-green-500 text-green-600 bg-green-50/40"
+                        : "border-transparent text-gray-500 hover:text-gray-700"
+                    }`}
+                  >
+                    <Headphones className="w-3.5 h-3.5" />
+                    Live Support
+                  </button>
+                </div>
+
+                {/* Chat Tab: search + conversation list */}
                 <div className="p-3 border-b">
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />

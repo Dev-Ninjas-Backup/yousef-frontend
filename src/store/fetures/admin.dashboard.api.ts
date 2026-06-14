@@ -39,6 +39,33 @@ export interface RecentActivityItem {
   timeAgo: string;
 }
 
+export interface RecentActivityParams {
+  userPage?: number;
+  userLimit?: number;
+  garagePage?: number;
+  garageLimit?: number;
+}
+
+export interface RecentActivityResponse {
+  success: boolean;
+  data: {
+    users: RecentActivityItem[];
+    garages: RecentActivityItem[];
+    userMetadata: {
+      page: number;
+      limit: number;
+      total: number;
+      totalPage: number;
+    };
+    garageMetadata: {
+      page: number;
+      limit: number;
+      total: number;
+      totalPage: number;
+    };
+  };
+}
+
 export interface PartsCategoryStats {
   success: boolean;
   data: {
@@ -65,8 +92,16 @@ export const adminDashboardApi = apiSlice.injectEndpoints({
       providesTags: ['Admin'],
     }),
 
-    getRecentActivity: builder.query<RecentActivityItem[], void>({
-      query: () => '/admin-dashboard-overview/recent-activity',
+    getRecentActivity: builder.query<RecentActivityResponse, RecentActivityParams | void>({
+      query: (params) => ({
+        url: '/admin-dashboard-overview/recent-activity',
+        params: params ? {
+          userPage: params.userPage || 1,
+          userLimit: params.userLimit || 10,
+          garagePage: params.garagePage || 1,
+          garageLimit: params.garageLimit || 10,
+        } : undefined,
+      }),
       providesTags: ['Admin'],
     }),
 

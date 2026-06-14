@@ -15,7 +15,11 @@ import {
   LuTrash2,
   LuCheck,
   LuX,
+  LuChevronDown,
+  LuTrendingUp,
 } from "react-icons/lu";
+import { useGetPartsCategoriesQuery } from "@/store/fetures/partsCategory.api";
+import { useGetPartsCategoryQuery } from "@/store/fetures/admin.dashboard.api";
 import ProductDetailsModal from "./ProductDetailsModal";
 
 export default function SparePartsManagementPage() {
@@ -29,6 +33,25 @@ export default function SparePartsManagementPage() {
 
   const [sortField, setSortField] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+
+  // Fetch category list and stats dynamically
+  const { data: categoriesResponse } = useGetPartsCategoriesQuery({ limit: 100 });
+  const { data: categoryStatsRes } = useGetPartsCategoryQuery();
+
+  const dbCategories = categoriesResponse?.data?.data || [];
+  const categoryStats = categoryStatsRes?.data?.categoryStatistics || [];
+  const totalProducts = categoryStatsRes?.data?.totalProducts || 0;
+
+  // Create a map of categoryName -> count
+  const categoryCountMap = new Map<string, number>();
+  categoryStats.forEach((stat) => {
+    categoryCountMap.set(stat.categoryName.toLowerCase(), stat.productCount);
+  });
+
+  // Top category
+  const topCategory = categoryStats.length > 0
+    ? [...categoryStats].sort((a, b) => b.productCount - a.productCount)[0]
+    : null;
 
   const handleSort = (field: string) => {
     if (sortField === field) {
@@ -103,6 +126,9 @@ export default function SparePartsManagementPage() {
     } else if (sortField === "createdAt") {
       aValue = new Date(a.createdAt).getTime();
       bValue = new Date(b.createdAt).getTime();
+    } else if (sortField === "isPromoted") {
+      aValue = a.isPromoted ? 1 : 0;
+      bValue = b.isPromoted ? 1 : 0;
     }
 
     if (aValue < bValue) {
@@ -223,6 +249,9 @@ export default function SparePartsManagementPage() {
         } else if (sortField === "createdAt") {
           aValue = new Date(a.createdAt).getTime();
           bValue = new Date(b.createdAt).getTime();
+        } else if (sortField === "isPromoted") {
+          aValue = a.isPromoted ? 1 : 0;
+          bValue = b.isPromoted ? 1 : 0;
         }
 
         if (aValue < bValue) return sortDirection === "asc" ? -1 : 1;
@@ -333,6 +362,41 @@ export default function SparePartsManagementPage() {
         </button>
       </div>
 
+      {/* Stats Cards Section */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5">
+        <div className="bg-white rounded-xl p-5 border border-gray-100 shadow-sm flex items-center gap-4 hover:shadow-md transition-all duration-300">
+          <div className="p-3.5 bg-blue-50 text-blue-600 rounded-2xl">
+            <LuSearch className="w-6 h-6" />
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Total Listings</p>
+            <h3 className="text-2xl font-bold text-gray-950 mt-1">{totalProducts}</h3>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl p-5 border border-gray-100 shadow-sm flex items-center gap-4 hover:shadow-md transition-all duration-300">
+          <div className="p-3.5 bg-purple-50 text-purple-600 rounded-2xl">
+            <LuTrendingUp className="w-6 h-6" />
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Top Category</p>
+            <h3 className="text-lg sm:text-xl font-bold text-gray-950 mt-1 truncate max-w-[200px]" title={topCategory ? `${topCategory.categoryName} (${topCategory.productCount})` : "None"}>
+              {topCategory ? `${topCategory.categoryName} (${topCategory.productCount})` : "None"}
+            </h3>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl p-5 border border-gray-100 shadow-sm flex items-center gap-4 hover:shadow-md transition-all duration-300">
+          <div className="p-3.5 bg-green-50 text-green-600 rounded-2xl">
+            <LuCheck className="w-6 h-6" />
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Total Categories</p>
+            <h3 className="text-2xl font-bold text-gray-950 mt-1">{dbCategories.length}</h3>
+          </div>
+        </div>
+      </div>
+
       {/* Search and Filter Section */}
       <div className="bg-white rounded-xl p-4 sm:p-5 shadow-sm border border-gray-100">
         <form
@@ -355,12 +419,19 @@ export default function SparePartsManagementPage() {
               value={categoryFilter}
               onChange={(e) => handleCategoryChange(e.target.value)}
               title="Filter by category"
-              className="w-full appearance-none px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-700 focus:outline-none cursor-pointer"
+              className="w-full appearance-none pl-4 pr-10 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-700 focus:outline-none cursor-pointer"
             >
-              <option>All Categories</option>
-              <option>Engine Parts</option>
-              <option>Brakes</option>
+              <option value="All Categories">All Categories ({totalProducts})</option>
+              {dbCategories.map((cat) => {
+                const count = categoryCountMap.get(cat.name.toLowerCase()) || 0;
+                return (
+                  <option key={cat.id} value={cat.name}>
+                    {cat.name} ({count})
+                  </option>
+                );
+              })}
             </select>
+            <LuChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
           </div>
 
           <div className="relative sm:w-48">
@@ -368,13 +439,14 @@ export default function SparePartsManagementPage() {
               value={statusFilter}
               onChange={(e) => handleStatusChange(e.target.value)}
               title="Filter by status"
-              className="w-full appearance-none px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-700 focus:outline-none cursor-pointer"
+              className="w-full appearance-none pl-4 pr-10 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-700 focus:outline-none cursor-pointer"
             >
-              <option>All Status</option>
+              <option value="All Status">All Status</option>
               <option value="PENDING">Pending</option>
               <option value="APPROVED">Approved</option>
               <option value="REJECTED">Rejected</option>
             </select>
+            <LuChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
           </div>
 
           <div className="relative sm:w-48">
@@ -385,7 +457,7 @@ export default function SparePartsManagementPage() {
                 setPage(1);
               }}
               title="Filter by submission date"
-              className="w-full appearance-none px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-700 focus:outline-none cursor-pointer"
+              className="w-full appearance-none pl-4 pr-10 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-700 focus:outline-none cursor-pointer"
             >
               <option value="All Time">All Time</option>
               <option value="Today">Submitted Today</option>
@@ -393,6 +465,7 @@ export default function SparePartsManagementPage() {
               <option value="This Month">Submitted This Month</option>
               <option value="This Year">Submitted This Year</option>
             </select>
+            <LuChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
           </div>
         </form>
       </div>
@@ -464,6 +537,19 @@ export default function SparePartsManagementPage() {
                 </th>
                 <th
                   className="text-left py-4 px-5 text-xs font-semibold text-gray-600 uppercase cursor-pointer hover:bg-gray-100 select-none transition-colors"
+                  onClick={() => handleSort("isPromoted")}
+                >
+                  <div className="flex items-center gap-1.5">
+                    Promoted
+                    {sortField === "isPromoted" ? (
+                      sortDirection === "asc" ? <ArrowUp className="w-3.5 h-3.5 text-blue-600" /> : <ArrowDown className="w-3.5 h-3.5 text-blue-600" />
+                    ) : (
+                      <ArrowUpDown className="w-3.5 h-3.5 text-gray-400" />
+                    )}
+                  </div>
+                </th>
+                <th
+                  className="text-left py-4 px-5 text-xs font-semibold text-gray-600 uppercase cursor-pointer hover:bg-gray-100 select-none transition-colors"
                   onClick={() => handleSort("status")}
                 >
                   <div className="flex items-center gap-1.5">
@@ -515,6 +601,17 @@ export default function SparePartsManagementPage() {
                   </td>
                   <td className="py-4 px-5 text-sm text-gray-900">
                     {part.price} AED
+                  </td>
+                  <td className="py-4 px-5">
+                    <span
+                      className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${
+                        part.isPromoted
+                          ? "bg-purple-50 text-purple-700 border border-purple-100"
+                          : "bg-gray-50 text-gray-400 border border-gray-100"
+                      }`}
+                    >
+                      {part.isPromoted ? "Yes" : "No"}
+                    </span>
                   </td>
                   <td className="py-4 px-5">
                     <span
@@ -590,6 +687,27 @@ export default function SparePartsManagementPage() {
                 >
                   {part.status}
                 </span>
+              </div>
+
+              <div className="grid grid-cols-3 gap-3 mb-4 text-xs">
+                <div>
+                  <p className="text-gray-500 mb-0.5">Category</p>
+                  <p className="font-medium text-gray-900 truncate">{part.category?.name || "None"}</p>
+                </div>
+                <div>
+                  <p className="text-gray-500 mb-0.5">Price</p>
+                  <p className="font-medium text-gray-900">{part.price} AED</p>
+                </div>
+                <div>
+                  <p className="text-gray-500 mb-0.5">Promoted</p>
+                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium ${
+                    part.isPromoted
+                      ? "bg-purple-50 text-purple-700 border border-purple-100"
+                      : "bg-gray-50 text-gray-400 border border-gray-100"
+                  }`}>
+                    {part.isPromoted ? "Yes" : "No"}
+                  </span>
+                </div>
               </div>
 
               <div className="flex gap-2 pt-3 border-t">
