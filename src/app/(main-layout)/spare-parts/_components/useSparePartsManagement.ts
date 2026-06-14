@@ -18,6 +18,7 @@ export function useSparePartsManagement() {
     limit: 9,
     page: 1,
     userId: urlUserId,
+    isPromoted: undefined,
   });
 
   useEffect(() => {
@@ -35,12 +36,13 @@ export function useSparePartsManagement() {
       filters.condition === "all" || !filters.condition
         ? undefined
         : filters.condition,
+    isPromoted: filters.isPromoted ? true : undefined,
     status: "APPROVED",
     sortBy: filters.sortBy || "relevance",
   });
 
   const updateFilter = useCallback(
-    (key: keyof ProductsParams, value: string | number) => {
+    (key: keyof ProductsParams, value: string | number | boolean | undefined) => {
       console.log(`Updating filter ${key}:`, value);
       setFilters((prev) => ({
         ...prev,
@@ -68,6 +70,13 @@ export function useSparePartsManagement() {
   const handleConditionFilter = useCallback(
     (condition: string) => {
       updateFilter("condition", condition);
+    },
+    [updateFilter]
+  );
+
+  const handlePromotedFilter = useCallback(
+    (promotedOnly: boolean) => {
+      updateFilter("isPromoted", promotedOnly ? true : undefined);
     },
     [updateFilter]
   );
@@ -109,6 +118,7 @@ export function useSparePartsManagement() {
       limit: 9,
       page: 1,
       userId: undefined,
+      isPromoted: undefined,
     });
     router.push("/spare-parts");
   }, [router]);
@@ -122,6 +132,7 @@ export function useSparePartsManagement() {
     handleSearch,
     handleCategoryFilter,
     handleConditionFilter,
+    handlePromotedFilter,
     handleUserFilter,
     handleSortChange,
     handlePageChange,

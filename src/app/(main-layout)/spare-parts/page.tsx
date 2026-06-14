@@ -110,6 +110,7 @@ export default function SparePartsPage() {
     handleSearch,
     handleCategoryFilter,
     handleConditionFilter,
+    handlePromotedFilter,
     handleUserFilter,
     handleSortChange,
     handlePageChange,
@@ -176,8 +177,10 @@ export default function SparePartsPage() {
             <FilterSidebar
               currentCategory={filters.category || ""}
               currentCondition={filters.condition || ""}
+              currentPromotedOnly={filters.isPromoted || false}
               onCategoryChange={handleCategoryFilter}
               onConditionChange={handleConditionFilter}
+              onPromotedOnlyChange={handlePromotedFilter}
               onClearFilters={clearFilters}
               products={products}
               currentSearch={filters.search || ""}

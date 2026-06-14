@@ -111,7 +111,7 @@ export default function MessagesPage() {
     data?.data.map((item) => ({
       id: item.id,
       sender: `${item.FirstName} ${item.LastName}`,
-      subject: item.subject,
+      subject: item.subject === "OTHERS" && item.othersubject ? item.othersubject : item.subject,
       preview: item.message,
       date: new Date(item.createdAt).toLocaleDateString(),
       isUnread: !item.makeasClosed,
@@ -477,7 +477,9 @@ export default function MessagesPage() {
                   )}
                 </div>
                 <h2 className="text-xl font-bold text-gray-900 tracking-tight">
-                  {formatSubject(singleMessage.data.subject)}
+                  {singleMessage.data.subject === "OTHERS" && singleMessage.data.othersubject
+                    ? singleMessage.data.othersubject
+                    : formatSubject(singleMessage.data.subject)}
                 </h2>
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mt-3">
                   <p className="text-sm text-gray-600">

@@ -7,6 +7,7 @@ export interface ContactFormData {
   subject: "CAR_PARTS" | "CAR_SERVICE" | "OTHERS";
   message: string;
   othersubject?: string;
+  garageOwnerId?: string;
 }
 
 export const contactApi = apiSlice.injectEndpoints({

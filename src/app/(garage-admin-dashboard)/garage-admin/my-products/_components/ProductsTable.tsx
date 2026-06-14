@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Eye, Edit, Trash2, CheckCircle, Clock, Star } from "lucide-react";
+import { Eye, Edit, Trash2, CheckCircle, Clock, Star, ArrowUp, ArrowDown, ArrowUpDown } from "lucide-react";
 import ProductImage from "@/assets/garage-admin/my-products/product.jpg";
 import Image from "next/image";
 
@@ -26,6 +26,8 @@ interface Product {
 interface ProductsTableProps {
   products: Product[];
   categoryMap: Map<string, string>;
+  sortBy: string;
+  onSortByChange: (sort: string) => void;
   onView: (id: string) => void;
   onEdit: (id: string) => void;
   onDelete: (id: string) => void;
@@ -34,6 +36,8 @@ interface ProductsTableProps {
 export function ProductsTable({
   products,
   categoryMap,
+  sortBy,
+  onSortByChange,
   onView,
   onEdit,
   onDelete,
@@ -58,6 +62,53 @@ export function ProductsTable({
       <Clock className="w-3.5 h-3.5 mr-1" />
     );
   };
+
+  const handleSort = (field: string) => {
+    const fieldMap: Record<string, { asc: string; desc: string }> = {
+      product: { asc: "partName_asc", desc: "partName_desc" },
+      category: { asc: "category_asc", desc: "category_desc" },
+      condition: { asc: "condition_asc", desc: "condition_desc" },
+      price: { asc: "price_asc", desc: "price_desc" },
+      stock: { asc: "quantity_asc", desc: "quantity_desc" },
+      status: { asc: "status_asc", desc: "status_desc" },
+      views: { asc: "views_asc", desc: "views_desc" },
+      inquiries: { asc: "inquiries_asc", desc: "inquiries_desc" },
+    };
+
+    const keys = fieldMap[field];
+    if (!keys) return;
+
+    if (sortBy === keys.desc) {
+      onSortByChange(keys.asc);
+    } else {
+      onSortByChange(keys.desc);
+    }
+  };
+
+  const renderSortIcon = (field: string) => {
+    const fieldMap: Record<string, { asc: string; desc: string }> = {
+      product: { asc: "partName_asc", desc: "partName_desc" },
+      category: { asc: "category_asc", desc: "category_desc" },
+      condition: { asc: "condition_asc", desc: "condition_desc" },
+      price: { asc: "price_asc", desc: "price_desc" },
+      stock: { asc: "quantity_asc", desc: "quantity_desc" },
+      status: { asc: "status_asc", desc: "status_desc" },
+      views: { asc: "views_asc", desc: "views_desc" },
+      inquiries: { asc: "inquiries_asc", desc: "inquiries_desc" },
+    };
+
+    const keys = fieldMap[field];
+    if (!keys) return null;
+
+    if (sortBy === keys.asc) {
+      return <ArrowUp className="w-3.5 h-3.5 ml-1 text-blue-600 shrink-0" />;
+    }
+    if (sortBy === keys.desc) {
+      return <ArrowDown className="w-3.5 h-3.5 ml-1 text-blue-600 shrink-0" />;
+    }
+    return <ArrowUpDown className="w-3.5 h-3.5 ml-1 text-gray-400 opacity-50 group-hover:opacity-100 transition-opacity shrink-0" />;
+  };
+
   return (
     <div className="bg-white rounded-lg border overflow-hidden">
       {/* Desktop Table */}
@@ -65,31 +116,79 @@ export function ProductsTable({
         <table className="w-full">
           <thead className="bg-gray-50 border-b">
             <tr>
-              <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">
-                Product
+              <th 
+                onClick={() => handleSort("product")}
+                className="text-left py-3 px-4 text-sm font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 select-none transition-colors group"
+              >
+                <div className="flex items-center">
+                  Product
+                  {renderSortIcon("product")}
+                </div>
               </th>
-              <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">
-                Category
+              <th 
+                onClick={() => handleSort("category")}
+                className="text-left py-3 px-4 text-sm font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 select-none transition-colors group"
+              >
+                <div className="flex items-center">
+                  Category
+                  {renderSortIcon("category")}
+                </div>
               </th>
-              <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">
-                Condition
+              <th 
+                onClick={() => handleSort("condition")}
+                className="text-left py-3 px-4 text-sm font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 select-none transition-colors group"
+              >
+                <div className="flex items-center">
+                  Condition
+                  {renderSortIcon("condition")}
+                </div>
               </th>
-              <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">
-                Price (AED)
+              <th 
+                onClick={() => handleSort("price")}
+                className="text-left py-3 px-4 text-sm font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 select-none transition-colors group"
+              >
+                <div className="flex items-center">
+                  Price (AED)
+                  {renderSortIcon("price")}
+                </div>
               </th>
-              <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">
-                Stock
+              <th 
+                onClick={() => handleSort("stock")}
+                className="text-left py-3 px-4 text-sm font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 select-none transition-colors group"
+              >
+                <div className="flex items-center">
+                  Stock
+                  {renderSortIcon("stock")}
+                </div>
               </th>
-              <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">
-                Status
+              <th 
+                onClick={() => handleSort("status")}
+                className="text-left py-3 px-4 text-sm font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 select-none transition-colors group"
+              >
+                <div className="flex items-center">
+                  Status
+                  {renderSortIcon("status")}
+                </div>
               </th>
-              <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">
-                Views
+              <th 
+                onClick={() => handleSort("views")}
+                className="text-left py-3 px-4 text-sm font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 select-none transition-colors group"
+              >
+                <div className="flex items-center">
+                  Views
+                  {renderSortIcon("views")}
+                </div>
               </th>
-              <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">
-                Inquiries
+              <th 
+                onClick={() => handleSort("inquiries")}
+                className="text-left py-3 px-4 text-sm font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 select-none transition-colors group"
+              >
+                <div className="flex items-center">
+                  Inquiries
+                  {renderSortIcon("inquiries")}
+                </div>
               </th>
-              <th className="text-left py-3 px-4 text-sm font-medium text-gray-700">
+              <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 select-none">
                 Actions
               </th>
             </tr>

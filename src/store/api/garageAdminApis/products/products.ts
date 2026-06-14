@@ -171,8 +171,11 @@ export const productApi = apiSlice.injectEndpoints({
     }),
 
     // Get My Products
-    getMyProducts: builder.query<Product[], void>({
-      query: () => "/products/my-products",
+    getMyProducts: builder.query<any, void | Record<string, any>>({
+      query: (params) => ({
+        url: "/products/my-products",
+        params: params || undefined,
+      }),
       providesTags: ["Product"],
     }),
 

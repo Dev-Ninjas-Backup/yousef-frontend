@@ -10,7 +10,11 @@ export function SubscriptionAlert() {
   const { data, isLoading } = subscriptionApi.useGetCurrentPlanQuery();
 
   if (isLoading || !data) return null;
-  // if (data.planType === "PAID") return null;
+
+  const planType = data.planType;
+  const isPaid = planType === "PAID";
+  const isTrial = planType === "TRIAL";
+  const hasNoPlan = planType === "NONE" || !planType;
 
   const calculateProgress = () => {
     if (!data?.startDate || !data?.endDate) return 0;
@@ -22,10 +26,37 @@ export function SubscriptionAlert() {
     return Math.min(Math.max((elapsed / totalDuration) * 100, 0), 100);
   };
 
+  // Define themes depending on plan state
+  let theme = {
+    card: "bg-yellow-50 border-yellow-200",
+    iconContainer: "bg-yellow-600",
+    textHighlight: "text-yellow-600",
+    button: "border-yellow-600 text-yellow-700 hover:bg-yellow-100",
+    progress: "bg-blue-100 [&>div]:bg-blue-600",
+  };
+
+  if (isPaid) {
+    theme = {
+      card: "bg-indigo-50 border-indigo-200",
+      iconContainer: "bg-indigo-600",
+      textHighlight: "text-indigo-600",
+      button: "border-indigo-600 text-indigo-700 hover:bg-indigo-50",
+      progress: "bg-indigo-100 [&>div]:bg-indigo-600",
+    };
+  } else if (hasNoPlan) {
+    theme = {
+      card: "bg-red-50 border-red-200",
+      iconContainer: "bg-red-600",
+      textHighlight: "text-red-600",
+      button: "border-red-600 text-red-700 hover:bg-red-50",
+      progress: "bg-red-100 [&>div]:bg-red-600",
+    };
+  }
+
   return (
-    <Card className="p-6 bg-yellow-50 border-yellow-200">
+    <Card className={`p-6 border ${theme.card}`}>
       <div className="flex items-start gap-4">
-        <div className="bg-yellow-600 p-3 rounded-lg">
+        <div className={`${theme.iconContainer} p-3 rounded-lg`}>
           <CreditCard className="w-6 h-6 text-white" />
         </div>
         <div className="flex-1">
@@ -35,36 +66,58 @@ export function SubscriptionAlert() {
             </h3>
             <Info className="w-4 h-4 text-gray-400" />
           </div>
-          <p className="text-sm text-gray-700 mb-1">
-            You are currently enjoying a{" "}
-            <span className="font-semibold text-yellow-600">
-              {data.planType === "TRIAL" ? "free trial" : "subscription"}
-            </span>{" "}
-            of the platform.
-          </p>
-          <p className="text-xs text-gray-600 mb-3">{data.message}</p>
-          <div className="mb-2">
-            <div className="flex justify-between text-xs mb-1">
-              <span className="text-gray-600">Trial Progress</span>
-              <span className="font-semibold text-yellow-600">
-                {data.daysRemaining} days remaining
+
+          <div className="text-sm text-gray-700 mb-1">
+            {hasNoPlan ? (
+              <span>
+                You currently do not have an active{" "}
+                <span className={`font-semibold ${theme.textHighlight}`}>
+                  subscription or trial
+                </span>.
               </span>
-            </div>
-            <Progress
-              value={calculateProgress()}
-              className="h-2 bg-blue-100 [&>div]:bg-blue-600"
-            />
+            ) : (
+              <span>
+                You are currently enjoying a{" "}
+                <span className={`font-semibold ${theme.textHighlight}`}>
+                  {isPaid ? "subscription" : "free trial"}
+                </span>{" "}
+                of the platform.
+              </span>
+            )}
           </div>
+
+          <p className="text-xs text-gray-600 mb-3">{data.message}</p>
+
+          {!hasNoPlan && data.planType && (
+            <div className="mb-2">
+              <div className="flex justify-between text-xs mb-1">
+                <span className="text-gray-600">
+                  {isPaid ? "Subscription Progress" : "Trial Progress"}
+                </span>
+                <span className={`font-semibold ${theme.textHighlight}`}>
+                  {data.daysRemaining} days remaining
+                </span>
+              </div>
+              <Progress
+                value={calculateProgress()}
+                className={`h-2 ${theme.progress}`}
+              />
+            </div>
+          )}
+
           <p className="text-xs text-gray-600 mb-4">
-            You'll be notified before your free period expires. Keep your
-            billing active to continue receiving bookings, messages, and
-            sales inquiries.
+            {isPaid
+              ? "Your subscription will automatically renew or end on the expiration date. Keep your billing active to continue receiving bookings, messages, and sales inquiries."
+              : hasNoPlan
+              ? "Please select and activate a platform plan to publish products, view analytics, and manage inquiries."
+              : "You'll be notified before your free period expires. Keep your billing active to continue receiving bookings, messages, and sales inquiries."}
           </p>
+
           <Link href="/garage-admin/subscription">
             <Button
               variant="outline"
               size="sm"
-              className="border-yellow-600 text-yellow-700 hover:bg-yellow-100"
+              className={theme.button}
             >
               <CreditCard className="w-4 h-4" />
               Manage Plans & Billing

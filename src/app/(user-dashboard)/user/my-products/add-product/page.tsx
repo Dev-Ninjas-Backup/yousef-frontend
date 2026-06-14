@@ -1146,9 +1146,9 @@ export default function AddProductPage() {
             />
             <Label htmlFor="terms" className="cursor-pointer text-xs text-gray-600 leading-normal font-medium">
               I agree to the terms. By listing, you agree to SayaraHub's{" "}
-              <a href="/terms-conditions" className="text-indigo-600 hover:underline font-bold">Terms of Service</a>{" "}
+              <a href="/terms" target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline font-bold">Terms of Service</a>{" "}
               and{" "}
-              <a href="/community-guidelines" className="text-indigo-600 hover:underline font-bold">Community Guidelines</a>.
+              <a href="/legal" target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline font-bold">Community Guidelines</a>.
             </Label>
           </div>
 
