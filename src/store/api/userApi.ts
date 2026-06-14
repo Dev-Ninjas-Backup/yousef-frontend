@@ -131,6 +131,16 @@ export const userApi = createApi({
       },
       invalidatesTags: ["Profile"],
     }),
+    // Get admin info (for Live Support chat)
+    getAdminInfo: builder.query<
+      { success: boolean; data: { id: string; fullName: string; profilePhoto?: string; email: string }; message: string },
+      void
+    >({
+      query: () => ({
+        url: "/user/admin-info",
+        method: "GET",
+      }),
+    }),
   }),
 });
 
@@ -138,4 +148,5 @@ export const {
   useGetAllUsersQuery,
   useGetUserProfileQuery,
   useUpdateProfileMutation,
+  useGetAdminInfoQuery,
 } = userApi;

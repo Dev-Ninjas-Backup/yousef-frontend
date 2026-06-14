@@ -29,6 +29,13 @@ export const sparePartsPageTranslations = {
         used: "Used",
         refurbished: "Refurbished",
       },
+      sellerTypePlaceholder: "Select user type",
+      sellerTypes: {
+        all: "All User Types",
+        garage: "Garage",
+        supplier: "Supplier",
+        individual: "Individual",
+      },
     },
   },
   ar: {
@@ -61,6 +68,13 @@ export const sparePartsPageTranslations = {
         used: "مستعمل",
         refurbished: "مجدد",
       },
+      sellerTypePlaceholder: "اختر نوع المستخدم",
+      sellerTypes: {
+        all: "جميع أنواع المستخدمين",
+        garage: "كراج",
+        supplier: "مورد",
+        individual: "فرد",
+      },
     },
   },
   hi: {
@@ -91,6 +105,13 @@ export const sparePartsPageTranslations = {
         new: "नया",
         used: "इस्तेमाल किया",
         refurbished: "नवीनीकृत",
+      },
+      sellerTypePlaceholder: "उपयोगकर्ता प्रकार चुनें",
+      sellerTypes: {
+        all: "सभी उपयोगकर्ता प्रकार",
+        garage: "गैराज",
+        supplier: "आपूर्तिकर्ता",
+        individual: "व्यक्तिगत",
       },
     },
   },

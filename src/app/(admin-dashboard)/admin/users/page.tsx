@@ -3,7 +3,7 @@
 import { useDeleteUserMutation, useGetAllUsersQuery, useLazyGetAllUsersQuery } from "@/store/fetures/admin.user.api";
 import { Loader2, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { useState } from "react";
-import { LuSearch, LuDownload, LuEye, LuTrash2 } from "react-icons/lu";
+import { LuSearch, LuDownload, LuEye, LuTrash2, LuUsers, LuUserCheck, LuCreditCard, LuClock } from "react-icons/lu";
 import UserDetailsModal from "./UserDetailsModal";
 
 export default function UserManagementPage() {
@@ -42,6 +42,7 @@ export default function UserManagementPage() {
 
   const users = response?.data?.data || [];
   const pagination = response?.data?.pagination;
+  const stats = response?.data?.stats;
 
   const filteredUsers = users.filter((user) => {
     // Status filter
@@ -86,6 +87,9 @@ export default function UserManagementPage() {
     } else if (sortField === "isActive") {
       aValue = a.isActive ? 1 : 0;
       bValue = b.isActive ? 1 : 0;
+    } else if (sortField === "subscriptionType") {
+      aValue = a.subscriptionType || "";
+      bValue = b.subscriptionType || "";
     }
 
     if (aValue < bValue) {
@@ -159,6 +163,9 @@ export default function UserManagementPage() {
         } else if (sortField === "createdAt") {
           aValue = new Date(a.createdAt).getTime();
           bValue = new Date(b.createdAt).getTime();
+        } else if (sortField === "subscriptionType") {
+          aValue = a.subscriptionType || "";
+          bValue = b.subscriptionType || "";
         }
 
         if (aValue < bValue) return sortDirection === "asc" ? -1 : 1;
@@ -183,7 +190,8 @@ export default function UserManagementPage() {
         "Vehicles",
         "Verified",
         "Profile Photo Link",
-        "Join Date"
+        "Join Date",
+        "Subscription Type"
       ];
 
       const csvData = sortedAllUsers.map(user => [
@@ -204,7 +212,8 @@ export default function UserManagementPage() {
         (user.vehicles || 0).toString(),
         user.isVerified ? "Yes" : "No",
         getAbsoluteUrl(user.profilePhoto),
-        new Date(user.createdAt).toLocaleDateString()
+        new Date(user.createdAt).toLocaleDateString(),
+        user.subscriptionType || "None"
       ]);
 
       const csvContent = [csvHeaders, ...csvData]
@@ -272,6 +281,49 @@ export default function UserManagementPage() {
           <LuDownload className="w-4 h-4" />
           Export Data
         </button>
+      </div>
+
+      {/* Stats Cards Section */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+        <div className="bg-white rounded-xl p-5 border border-gray-100 shadow-sm flex items-center gap-4 hover:shadow-md transition-all duration-300">
+          <div className="p-3.5 bg-blue-50 text-blue-600 rounded-2xl">
+            <LuUsers className="w-6 h-6" />
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Total Users</p>
+            <h3 className="text-2xl font-bold text-gray-950 mt-1">{stats?.totalUsers ?? 0}</h3>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl p-5 border border-gray-100 shadow-sm flex items-center gap-4 hover:shadow-md transition-all duration-300">
+          <div className="p-3.5 bg-green-50 text-green-600 rounded-2xl">
+            <LuUserCheck className="w-6 h-6" />
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Car Owners</p>
+            <h3 className="text-2xl font-bold text-gray-950 mt-1">{stats?.carOwners ?? 0}</h3>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl p-5 border border-gray-100 shadow-sm flex items-center gap-4 hover:shadow-md transition-all duration-300">
+          <div className="p-3.5 bg-purple-50 text-purple-600 rounded-2xl">
+            <LuCreditCard className="w-6 h-6" />
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Paid Partners</p>
+            <h3 className="text-2xl font-bold text-gray-950 mt-1">{stats?.activePaid ?? 0}</h3>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl p-5 border border-gray-100 shadow-sm flex items-center gap-4 hover:shadow-md transition-all duration-300">
+          <div className="p-3.5 bg-amber-50 text-amber-600 rounded-2xl">
+            <LuClock className="w-6 h-6" />
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Trial Members</p>
+            <h3 className="text-2xl font-bold text-gray-950 mt-1">{stats?.activeTrial ?? 0}</h3>
+          </div>
+        </div>
       </div>
 
       {/* Search & Filter Section */}
@@ -401,6 +453,19 @@ export default function UserManagementPage() {
                 </th>
                 <th
                   className="text-left py-4 px-5 text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none transition-colors"
+                  onClick={() => handleSort("subscriptionType")}
+                >
+                  <div className="flex items-center gap-1.5">
+                    Subscription
+                    {sortField === "subscriptionType" ? (
+                      sortDirection === "asc" ? <ArrowUp className="w-3.5 h-3.5 text-blue-600" /> : <ArrowDown className="w-3.5 h-3.5 text-blue-600" />
+                    ) : (
+                      <ArrowUpDown className="w-3.5 h-3.5 text-gray-400" />
+                    )}
+                  </div>
+                </th>
+                <th
+                  className="text-left py-4 px-5 text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none transition-colors"
                   onClick={() => handleSort("isActive")}
                 >
                   <div className="flex items-center gap-1.5">
@@ -464,6 +529,17 @@ export default function UserManagementPage() {
                   </td>
                   <td className="py-4 px-5">
                     <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${
+                      user.subscriptionType === "Paid Monthly" || user.subscriptionType?.startsWith("Monthly")
+                        ? "bg-purple-50 text-purple-700 border border-purple-100"
+                        : user.subscriptionType === "Free Trial"
+                        ? "bg-amber-50 text-amber-700 border border-amber-100"
+                        : "bg-gray-50 text-gray-500 border border-gray-100"
+                    }`}>
+                      {user.subscriptionType || "None"}
+                    </span>
+                  </td>
+                  <td className="py-4 px-5">
+                    <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${
                       user.isActive ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"
                     }`}>
                       {user.isActive ? "Active" : "Inactive"}
@@ -515,7 +591,7 @@ export default function UserManagementPage() {
                   {user.isActive ? "Active" : "Inactive"}
                 </span>
               </div>
-              <div className="grid grid-cols-2 gap-3 mb-4">
+              <div className="grid grid-cols-3 gap-3 mb-4">
                 <div>
                   <p className="text-xs text-gray-500 mb-1">Contact</p>
                   <p className="text-sm text-gray-900 truncate">{user.email}</p>
@@ -523,6 +599,18 @@ export default function UserManagementPage() {
                 <div>
                   <p className="text-xs text-gray-500 mb-1">Vehicles</p>
                   <p className="text-sm font-medium text-gray-900">{user.vehicles}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500 mb-1">Subscription</p>
+                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium ${
+                    user.subscriptionType === "Paid Monthly" || user.subscriptionType?.startsWith("Monthly")
+                      ? "bg-purple-50 text-purple-700 border border-purple-100"
+                      : user.subscriptionType === "Free Trial"
+                      ? "bg-amber-50 text-amber-700 border border-amber-100"
+                      : "bg-gray-50 text-gray-500 border border-gray-100"
+                  }`}>
+                    {user.subscriptionType || "None"}
+                  </span>
                 </div>
               </div>
               <div className="flex items-center gap-2 pt-3 border-t border-gray-100">

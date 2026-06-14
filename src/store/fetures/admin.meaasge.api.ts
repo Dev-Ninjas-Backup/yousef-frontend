@@ -14,6 +14,14 @@ export interface AdminContact {
   updatedAt: string;
   garageOwnerId?: string | null;
   makeasClosed?: boolean;
+  messages?: {
+    id: string;
+    contactId: string;
+    isFromAdmin: boolean;
+    isForGrageAdmin: boolean;
+    content: string;
+    createdAt: string;
+  }[];
 }
 
 
