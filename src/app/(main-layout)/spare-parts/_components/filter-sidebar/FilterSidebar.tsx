@@ -13,8 +13,10 @@ import { Product, useGetProductsStatsQuery } from "@/store/api/sparePartsApi";
 interface FilterSidebarProps {
   currentCategory: string;
   currentCondition: string;
+  currentPromotedOnly?: boolean;
   onCategoryChange: (category: string) => void;
   onConditionChange: (condition: string) => void;
+  onPromotedOnlyChange: (promotedOnly: boolean) => void;
   onClearFilters: () => void;
   products: Product[];
   currentSearch?: string;
@@ -59,8 +61,10 @@ const getIconForCategory = (categoryName: string) => {
 export default function FilterSidebar({
   currentCategory,
   currentCondition,
+  currentPromotedOnly = false,
   onCategoryChange,
   onConditionChange,
+  onPromotedOnlyChange,
   onClearFilters,
   products,
   currentSearch,
@@ -68,6 +72,7 @@ export default function FilterSidebar({
   const [mobileOpen, setMobileOpen] = useState(false);
   const [categoryOpen, setCategoryOpen] = useState(true);
   const [conditionOpen, setConditionOpen] = useState(true);
+  const [promotionOpen, setPromotionOpen] = useState(true);
 
   // Fetch dynamic categories
   const { data: categoryData } = useGetCategoriesQuery();
@@ -81,7 +86,8 @@ export default function FilterSidebar({
 
   const hasActiveFilters =
     (currentCategory && currentCategory !== "all") ||
-    (currentCondition && currentCondition !== "all");
+    (currentCondition && currentCondition !== "all") ||
+    currentPromotedOnly;
 
   const selectedCategories = currentCategory && currentCategory !== "all" ? [currentCategory] : [];
   const selectedConditions = currentCondition && currentCondition !== "all" ? [currentCondition] : [];
@@ -127,8 +133,8 @@ export default function FilterSidebar({
           <Funnel className="h-5 w-5 text-blue-600" />
           <span className="font-semibold text-gray-900">Filter Results</span>
           {hasActiveFilters && (
-            <span className="bg-blue-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-              {selectedCategories.length + selectedConditions.length}
+            <span className="bg-blue-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-semibold text-[10px]">
+              {selectedCategories.length + selectedConditions.length + (currentPromotedOnly ? 1 : 0)}
             </span>
           )}
         </div>
@@ -207,6 +213,48 @@ export default function FilterSidebar({
                 {apiCategories.length === 0 && (
                   <p className="text-xs text-gray-500 italic px-2.5">No categories found</p>
                 )}
+              </div>
+            )}
+          </div>
+
+          {/* Promotion Section */}
+          <div className="px-5 py-4 border-b border-gray-100">
+            <button
+              className="flex items-center justify-between w-full mb-3"
+              onClick={() => setPromotionOpen(!promotionOpen)}
+            >
+              <span className="font-semibold text-sm text-gray-800">Promotion</span>
+              {promotionOpen ? (
+                <ChevronUp className="h-4 w-4 text-gray-400" />
+              ) : (
+                <ChevronDown className="h-4 w-4 text-gray-400" />
+              )}
+            </button>
+
+            {promotionOpen && (
+              <div className="space-y-1">
+                <label
+                  className={`flex items-center gap-3 px-2.5 py-2 rounded-lg cursor-pointer group transition-all duration-200 ${
+                    currentPromotedOnly
+                      ? "bg-blue-50/50 text-blue-600"
+                      : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+                  }`}
+                >
+                  <input
+                    type="checkbox"
+                    checked={currentPromotedOnly}
+                    onChange={(e) => onPromotedOnlyChange(e.target.checked)}
+                    className="w-4 h-4 rounded border-gray-300 accent-blue-600 cursor-pointer"
+                  />
+                  <span className={`flex-1 text-sm transition-colors ${currentPromotedOnly ? "text-blue-600 font-semibold" : "text-gray-700 group-hover:text-gray-900"}`}>
+                    Promoted Only
+                  </span>
+                  {stats?.promoted !== undefined && (
+                    <span className={`text-xs font-semibold transition-colors ${currentPromotedOnly ? "text-blue-500" : "text-gray-400 group-hover:text-gray-500"}`}>
+                      {stats.promoted.toLocaleString()}
+                    </span>
+                  )}
+                </label>
               </div>
             )}
           </div>

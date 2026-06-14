@@ -78,10 +78,14 @@ export function InquiryCard({ inquiry, onMarkClosed }: InquiryCardProps) {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
         <div className="flex items-center gap-3 flex-wrap">
           <h3 className="font-semibold text-gray-900">
-            {inquiry.subject.replace("_", " ")}
+            {inquiry.subject === "OTHERS" && inquiry.othersubject
+              ? inquiry.othersubject
+              : inquiry.subject.replace("_", " ")}
           </h3>
           <Badge className={getSubjectBadge()}>
-            {inquiry.subject.replace("_", " ")}
+            {inquiry.subject === "OTHERS" && inquiry.othersubject
+              ? inquiry.othersubject
+              : inquiry.subject.replace("_", " ")}
           </Badge>
           {!isReplied && (
             <Badge className="bg-blue-100 text-blue-700">

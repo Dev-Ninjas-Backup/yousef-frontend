@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -23,6 +23,7 @@ import { useGetCategoriesQuery } from "@/store/api/garageAdminApis/categoryApi";
 import { toast } from "sonner";
 import { Upload, X } from "lucide-react";
 import Image from "next/image";
+import { useGetUserProfileQuery } from "@/store/api/userApi";
 
 interface AddProductModalProps {
   open: boolean;
@@ -33,6 +34,18 @@ export function AddProductModal({ open, onOpenChange }: AddProductModalProps) {
   const [createProduct, { isLoading }] = useCreateProductMutation();
   const { data: categoriesData, isLoading: categoriesLoading } =
     useGetCategoriesQuery();
+  const { data: profileData } = useGetUserProfileQuery();
+
+  useEffect(() => {
+    if (profileData?.data && open) {
+      setFormData((prev) => ({
+        ...prev,
+        sellerName: profileData.data.fullName || "",
+        sellerEmail: prev.sellerEmail || profileData.data.email || "",
+        sellerPhoneNumber: prev.sellerPhoneNumber || profileData.data.phone || "",
+      }));
+    }
+  }, [profileData, open]);
 
   const [formData, setFormData] = useState({
     partName: "",
@@ -273,10 +286,8 @@ export function AddProductModal({ open, onOpenChange }: AddProductModalProps) {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="INDIVIDUAL">Individual</SelectItem>
-                  <SelectItem value="VERIFIED_SUPPLIER">
-                    Verified Supplier
-                  </SelectItem>
+                  <SelectItem value="INDIVIDUAL">Garage</SelectItem>
+                  <SelectItem value="VERIFIED_SUPPLIER">Supplier</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -321,6 +332,8 @@ export function AddProductModal({ open, onOpenChange }: AddProductModalProps) {
                 onChange={(e) =>
                   setFormData({ ...formData, sellerName: e.target.value })
                 }
+                disabled
+                className="bg-gray-100 cursor-not-allowed"
               />
             </div>
 
@@ -338,10 +351,11 @@ export function AddProductModal({ open, onOpenChange }: AddProductModalProps) {
           </div>
 
           <div>
-            <Label htmlFor="sellerPhoneNumber">Seller Phone Number</Label>
+            <Label htmlFor="sellerPhoneNumber">Seller Phone Number *</Label>
             <Input
               id="sellerPhoneNumber"
               value={formData.sellerPhoneNumber}
+              required
               onChange={(e) =>
                 setFormData({ ...formData, sellerPhoneNumber: e.target.value })
               }

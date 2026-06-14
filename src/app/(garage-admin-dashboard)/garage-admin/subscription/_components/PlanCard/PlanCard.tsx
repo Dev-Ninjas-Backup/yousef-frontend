@@ -5,10 +5,14 @@ import { useCreateMonthlySubscriptionMutation } from "@/store/api/garageAdminApi
 import { CircleCheckBig, CreditCard } from "lucide-react";
 import { toast } from "sonner";
 import { openPaymentInNewTab } from "@/utils/paymentUtils";
+import { useGetPaymentConfigQuery } from "@/store/fetures/setting.api";
 
 const PlanCard = () => {
   const [createSubscription, { isLoading }] =
     useCreateMonthlySubscriptionMutation();
+
+  const { data: configData } = useGetPaymentConfigQuery();
+  const price = configData?.data?.monthlyGaragePrice || "99";
 
   const handleSubscribe = async () => {
     try {
@@ -47,7 +51,7 @@ const PlanCard = () => {
             <div className="flex items-baseline gap-1 sm:gap-2">
               <span className="text-xs sm:text-sm text-gray-600">AED</span>
               <span className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900">
-                100
+                {price}
               </span>
               <span className="text-xs sm:text-sm text-gray-600">/month</span>
             </div>
@@ -79,7 +83,7 @@ const PlanCard = () => {
         >
           <CreditCard className="w-4 h-4" />{" "}
           <span className="line-clamp-1">
-            {isLoading ? "Processing..." : "Activate Monthly Plan - AED 100"}
+            {isLoading ? "Processing..." : `Activate Monthly Plan - AED ${price}`}
           </span>
         </Button>
       </div>

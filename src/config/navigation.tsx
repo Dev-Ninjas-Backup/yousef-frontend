@@ -17,6 +17,7 @@ import {
   LuBox,
   LuDollarSign,
   LuStarHalf,
+  LuBell,
 } from "react-icons/lu";
 
 export interface NavItem {
@@ -95,10 +96,15 @@ export const garageAdminNavItems: NavItem[] = [
     icon: <LuShoppingCart className="text-lg" />,
   },
   {
-    label: "Notifications",
+    label: "Messages",
     path: "/garage-admin/messages",
-    // qty: 2,
     icon: <LuMessageSquare className="text-lg" />,
+  },
+  {
+    label: "Notifications",
+    path: "/garage-admin/notifications",
+    // qty: 2,
+    icon: <LuBell className="text-lg" />,
   },
   {
     label: "Plans & Billing",

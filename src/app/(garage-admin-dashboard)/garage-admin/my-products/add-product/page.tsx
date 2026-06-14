@@ -16,9 +16,14 @@ import {
 import {
   useCreateProductMutation,
   useGetUserLimitQuery,
+  useCreatePromotionPaymentMutation,
+  useCreateMonthlyPaymentMutation,
+  useCreatePayPerPaymentMutation,
 } from "@/store/api/garageAdminApis/products/products";
 import { useGetCategoriesQuery } from "@/store/api/garageAdminApis/categoryApi";
 import { useGetPaymentConfigQuery } from "@/store/fetures/setting.api";
+import { useGetUserProfileQuery } from "@/store/api/userApi";
+import { openPaymentInNewTab } from "@/utils/paymentUtils";
 import { toast } from "sonner";
 import {
   Upload,
@@ -46,6 +51,15 @@ type PlanCardType = "FREE" | "PAY_PER" | "MONTHLY_BASIC" | "MONTHLY_PRO" | "MONT
 export default function AddProductPage() {
   const router = useRouter();
   const [createProduct, { isLoading }] = useCreateProductMutation();
+  const [createPromotionPayment, { isLoading: isPromoPaymentLoading }] =
+    useCreatePromotionPaymentMutation();
+  const [createMonthlyPayment, { isLoading: isMonthlyPaymentLoading }] =
+    useCreateMonthlyPaymentMutation();
+  const [createPayPerPayment, { isLoading: isPayPerPaymentLoading }] =
+    useCreatePayPerPaymentMutation();
+
+  const isPaymentProcessing =
+    isPromoPaymentLoading || isMonthlyPaymentLoading || isPayPerPaymentLoading;
 
   const { data: categoriesData, isLoading: categoriesLoading } =
     useGetCategoriesQuery();
@@ -53,6 +67,7 @@ export default function AddProductPage() {
     useGetUserLimitQuery();
   const { data: paymentConfigData } = useGetPaymentConfigQuery();
   const paymentConfig = paymentConfigData?.data;
+  const { data: profileData } = useGetUserProfileQuery();
 
   const [selectedPlanCard, setSelectedPlanCard] = useState<PlanCardType>("FREE");
   const [promoDuration, setPromoDuration] = useState<"3" | "7">("7");
@@ -102,6 +117,17 @@ export default function AddProductPage() {
     setSelectedPlanCard("MONTHLY_GARAGE");
     setFormData((prev) => ({ ...prev, plan: "MONTHLY" }));
   }, [userLimit]);
+
+  useEffect(() => {
+    if (profileData?.data) {
+      setFormData((prev) => ({
+        ...prev,
+        sellerName: profileData.data.fullName || "",
+        sellerEmail: prev.sellerEmail || profileData.data.email || "",
+        sellerPhoneNumber: prev.sellerPhoneNumber || profileData.data.phone || "",
+      }));
+    }
+  }, [profileData]);
 
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -166,6 +192,27 @@ export default function AddProductPage() {
       return;
     }
 
+    // Save form data to localStorage first so it's not lost in case of a page reload
+    if (isAnyPaymentNeeded) {
+      localStorage.setItem("productFormData", JSON.stringify(formData));
+      
+      try {
+        if (needsMonthlySubscription) {
+          const response = await createMonthlyPayment({ planType: selectedPlanCard }).unwrap();
+          openPaymentInNewTab(response.url);
+        } else if (needsPayPer) {
+          const response = await createPayPerPayment().unwrap();
+          openPaymentInNewTab(response.url);
+        } else if (needsPromotionPayment) {
+          const response = await createPromotionPayment({ duration: promoDuration }).unwrap();
+          openPaymentInNewTab(response.url);
+        }
+      } catch (error: any) {
+        toast.error(error?.data?.message || "Failed to create payment session");
+      }
+      return;
+    }
+
     try {
       await createProduct({
         partName: formData.partName,
@@ -178,7 +225,7 @@ export default function AddProductPage() {
         brand: formData.brand || undefined,
         description: formData.description || undefined,
         sellerName: formData.sellerName || undefined,
-        sellerEmail: formData.sellerEmail || undefined,
+        sellerEmail: formData.sellerEmail || profileData?.data?.email || undefined,
         sellerPhoneNumber: formData.sellerPhoneNumber || undefined,
         photos: photos.length > 0 ? photos : undefined,
         verificationImage: verificationImage || undefined,
@@ -383,8 +430,8 @@ export default function AddProductPage() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="INDIVIDUAL">Individual</SelectItem>
-                  <SelectItem value="VERIFIED_SUPPLIER">Verified Supplier</SelectItem>
+                  <SelectItem value="INDIVIDUAL">Garage</SelectItem>
+                  <SelectItem value="VERIFIED_SUPPLIER">Supplier</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -509,18 +556,18 @@ export default function AddProductPage() {
                 onChange={(e) =>
                   setFormData({ ...formData, sellerName: e.target.value })
                 }
-                className="mt-1.5 focus-visible:ring-indigo-500"
+                disabled
+                className="mt-1.5 focus-visible:ring-indigo-500 bg-gray-100 cursor-not-allowed"
               />
             </div>
 
             <div>
               <Label htmlFor="sellerEmail" className="font-semibold text-gray-700">
-                Seller Email *
+                Seller Email
               </Label>
               <Input
                 id="sellerEmail"
                 type="email"
-                required
                 placeholder="Enter email address"
                 value={formData.sellerEmail}
                 onChange={(e) =>
@@ -532,11 +579,12 @@ export default function AddProductPage() {
 
             <div>
               <Label htmlFor="sellerPhoneNumber" className="font-semibold text-gray-700">
-                Seller Phone Number
+                Seller Phone Number *
               </Label>
               <Input
                 id="sellerPhoneNumber"
                 placeholder="e.g. +971501234567"
+                required
                 value={formData.sellerPhoneNumber}
                 onChange={(e) =>
                   setFormData({ ...formData, sellerPhoneNumber: e.target.value })
@@ -839,9 +887,9 @@ export default function AddProductPage() {
             />
             <Label htmlFor="terms" className="cursor-pointer text-xs text-gray-600 leading-normal font-medium">
               I agree to the terms. By listing, you agree to SayaraHub's{" "}
-              <a href="/terms-conditions" className="text-indigo-600 hover:underline font-bold">Terms of Service</a>{" "}
+              <a href="/terms" target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline font-bold">Terms of Service</a>{" "}
               and{" "}
-              <a href="/community-guidelines" className="text-indigo-600 hover:underline font-bold">Community Guidelines</a>.
+              <a href="/legal" target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline font-bold">Community Guidelines</a>.
             </Label>
           </div>
 
@@ -857,12 +905,12 @@ export default function AddProductPage() {
             </Button>
             <Button
               type="submit"
-              disabled={isLoading || isAnyPaymentNeeded || !agreedToTerms}
+              disabled={isLoading || isPaymentProcessing || !agreedToTerms}
               className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-8 shadow-md shadow-indigo-100 flex items-center justify-center gap-2 transition-all disabled:opacity-50"
             >
-              {isLoading ? (
+              {isLoading || isPaymentProcessing ? (
                 <>
-                  <Spinner className="h-4 w-4" /> Creating...
+                  <Spinner className="h-4 w-4" /> {isPaymentProcessing ? "Processing..." : "Creating..."}
                 </>
               ) : isAnyPaymentNeeded ? (
                 "Complete Payment to Publish"

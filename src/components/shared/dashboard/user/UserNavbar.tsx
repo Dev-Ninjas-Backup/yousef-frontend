@@ -3,6 +3,9 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
+import { useLanguage } from "@/context/LanguageContext";
+import { navbarTranslations } from "@/translations/navbar";
 import { useGetUserProfileQuery } from "@/store/api/userApi";
 import { useAuth } from "@/context/AuthContext";
 import logo from "@/assets/footer/sayarahub.svg";
@@ -14,6 +17,18 @@ const UserNavbar = () => {
   const { data: profileData } = useGetUserProfileQuery();
   const user = profileData?.data;
   const { logout } = useAuth();
+  const pathname = usePathname();
+  const { t } = useLanguage();
+  const trans = t(navbarTranslations);
+
+  const menuItems = [
+    { label: trans.home, href: "/" },
+    { label: trans.service, href: "/service" },
+    { label: trans.spareParts, href: "/spare-parts" },
+    { label: trans.downloadApp, href: "/download-app" },
+    { label: trans.aboutUs, href: "/about" },
+    { label: trans.contactUs, href: "/contact-us" },
+  ];
 
   const { data: conversations } = useGetConversationsQuery(
     undefined,
@@ -68,6 +83,24 @@ const UserNavbar = () => {
               priority
             />
           </Link>
+
+          {/* Center Navigation Links for Desktop */}
+          <div className="hidden lg:flex items-center gap-1 xl:gap-2">
+            {menuItems.map((item, index) => {
+              const isActive = pathname === item.href;
+              return (
+                <Link
+                  key={index}
+                  href={item.href}
+                  className={`relative text-gray-600 hover:text-[#0066FF] hover:bg-gray-50/80 transition-all duration-200 px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap ${
+                    isActive ? "text-[#0066FF] bg-blue-50/50 font-semibold" : ""
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
+          </div>
 
           {/* Header Actions */}
           <div className="flex items-center gap-3 sm:gap-4">
@@ -149,6 +182,31 @@ const UserNavbar = () => {
                       <Settings className="w-4 h-4 text-gray-400" />
                       Settings
                     </Link>
+                  </div>
+
+                  {/* Divider for Main Site Links on Mobile */}
+                  <div className="border-t border-gray-100 lg:hidden" />
+                  
+                  {/* Main Site Links for Mobile */}
+                  <div className="py-1.5 lg:hidden">
+                    <p className="px-4 py-1.5 text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Main Site</p>
+                    {menuItems.map((item, index) => {
+                      const isActive = pathname === item.href;
+                      return (
+                        <Link
+                          key={index}
+                          href={item.href}
+                          onClick={() => setIsDropdownOpen(false)}
+                          className={`flex items-center gap-2 px-4 py-2 text-sm transition-colors ${
+                            isActive 
+                              ? "text-[#0066FF] bg-blue-50/50 font-semibold" 
+                              : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+                          }`}
+                        >
+                          {item.label}
+                        </Link>
+                      );
+                    })}
                   </div>
 
                   {/* Logout Button */}

@@ -16,6 +16,7 @@ export interface User {
   isVerified: boolean;
   isDeleted: boolean;
   vehicles: number;
+  promotionCredits?: number;
 }
 
 export interface AllUsersResponse {
@@ -81,6 +82,21 @@ export const adminApiSlice = apiSlice.enhanceEndpoints({ addTagTypes: ['Admin'] 
         { type: 'Admin', id },
       ],
     }),
+
+    updatePromotionCredits: builder.mutation<
+      { success: boolean; message: string },
+      { id: string; credits: number }
+    >({
+      query: ({ id, credits }) => ({
+        url: `/user-management/user/${id}/promotion-credits`,
+        method: "PATCH",
+        body: { credits },
+      }),
+      invalidatesTags: (result, error, { id }) => [
+        { type: "Admin", id: "USER_LIST" },
+        { type: "Admin", id },
+      ],
+    }),
   }),
 });
 
@@ -89,4 +105,5 @@ export const {
   useLazyGetAllUsersQuery,
   useGetUserByIdQuery,
   useDeleteUserMutation,
+  useUpdatePromotionCreditsMutation,
 } = adminApiSlice;

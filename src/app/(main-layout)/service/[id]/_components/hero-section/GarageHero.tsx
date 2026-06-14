@@ -3,10 +3,11 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Star, Phone, MessageCircle, BadgeCheck, Clock, Navigation } from "lucide-react";
+import { MapPin, Star, Phone, MessageCircle, BadgeCheck, Clock, Navigation, ClipboardList } from "lucide-react";
 import Image from "next/image";
 import garageBg from "@/assets/service/garage/technical_checking_car_transmission.jpg";
 import ChatDialog from "../chat/ChatDialog";
+import InquiryModal from "../inquiry/InquiryModal";
 import { useLanguage } from "@/context/LanguageContext";
 import { serviceDetailsTranslations } from "@/translations/serviceDetails";
 import { useAuth } from "@/context/AuthContext";
@@ -44,6 +45,7 @@ export default function GarageHero({
   const { t } = useLanguage();
   const trans = t(serviceDetailsTranslations);
   const [chatOpen, setChatOpen] = useState(false);
+  const [inquiryOpen, setInquiryOpen] = useState(false);
   const { isAuthenticated } = useAuth();
   const router = useRouter();
 
@@ -176,6 +178,22 @@ export default function GarageHero({
               <MapPin className="w-5 h-5 mr-2" />
               See Location
             </Button>
+
+            <Button 
+              onClick={() => {
+                if (!isAuthenticated) {
+                  toast.error("Please login to send an inquiry to this garage.");
+                  router.push("/user-auth");
+                  return;
+                }
+                setInquiryOpen(true);
+              }}
+              variant="outline"
+              className="bg-white border border-indigo-200 hover:bg-indigo-50 text-indigo-600 font-bold rounded-xl px-6 h-12 text-sm md:text-base transition-colors"
+            >
+              <ClipboardList className="w-5 h-5 mr-2" />
+              Send Inquiry
+            </Button>
             
             <Button 
               onClick={handleMessage}
@@ -201,6 +219,13 @@ export default function GarageHero({
       <ChatDialog
         open={chatOpen}
         onOpenChange={setChatOpen}
+        garageName={name}
+      />
+
+      <InquiryModal
+        open={inquiryOpen}
+        onOpenChange={setInquiryOpen}
+        garageOwnerId={ownerId || ""}
         garageName={name}
       />
     </section>

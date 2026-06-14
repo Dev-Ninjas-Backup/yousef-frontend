@@ -1,6 +1,10 @@
 import { Card, CardContent } from "@/components/ui/card";
+import { useGetPaymentConfigQuery } from "@/store/fetures/setting.api";
 
 const FAQSection = () => {
+  const { data: configData } = useGetPaymentConfigQuery();
+  const price = configData?.data?.monthlyGaragePrice || "99";
+
   const faqs = [
     {
       question: "How do I set up and manage my garage profile?",
@@ -15,7 +19,7 @@ const FAQSection = () => {
     {
       question: "What listing plan do I have as a garage owner?",
       answer:
-        "All registered Garage Partners use the Garage Partner Plan (AED 100/month). This tier provides you with unlimited product listings, premium search placement, a 'Verified' badge, and direct customer contact options.",
+        `All registered Garage Partners use the Garage Partner Plan (AED ${price}/month). This tier provides you with unlimited product listings, premium search placement, a 'Verified' badge, and direct customer contact options.`,
     },
     {
       question: "How do I respond to customer inquiries?",

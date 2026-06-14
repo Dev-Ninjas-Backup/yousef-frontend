@@ -10,6 +10,8 @@ import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
 import { NavItem } from "@/config/navigation";
 import { Badge } from "@/components/ui/badge";
+import { useLanguage } from "@/context/LanguageContext";
+import { navbarTranslations } from "@/translations/navbar";
 
 interface DashboardSidebarProps {
   navItems: NavItem[];
@@ -28,6 +30,17 @@ const DashboardSidebar = ({
 }: DashboardSidebarProps) => {
   const pathname = usePathname();
   const { logout, user } = useAuth();
+  const { t } = useLanguage();
+  const trans = t(navbarTranslations);
+
+  const menuItems = [
+    { label: trans.home, href: "/" },
+    { label: trans.service, href: "/service" },
+    { label: trans.spareParts, href: "/spare-parts" },
+    { label: trans.downloadApp, href: "/download-app" },
+    { label: trans.aboutUs, href: "/about" },
+    { label: trans.contactUs, href: "/contact-us" },
+  ];
 
   useEffect(() => {
     if (isOpen) {
@@ -119,6 +132,35 @@ const DashboardSidebar = ({
               );
             })}
           </ul>
+
+          {/* Divider for Main Site Links on Mobile */}
+          <div className="border-t border-gray-100 my-4 pt-4 lg:hidden" />
+          
+          {/* Main Site Links for Mobile */}
+          <div className="lg:hidden">
+            <p className="px-4 py-1 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Main Site</p>
+            <ul className="space-y-2">
+              {menuItems.map((item, index) => {
+                const isActive = pathname === item.href;
+                return (
+                  <li key={index}>
+                    <Link
+                      href={item.href}
+                      onClick={closeMobileMenu}
+                      className={cn(
+                        "flex items-center gap-3 px-4 sm:px-5 py-2.5 sm:py-3 rounded-lg transition-all duration-200 text-sm sm:text-base font-medium",
+                        isActive
+                          ? "bg-blue-50 text-[#0066FF] font-semibold"
+                          : "text-gray-700 hover:bg-gray-50"
+                      )}
+                    >
+                      <span className="truncate">{item.label}</span>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
         </nav>
 
         {/* Logout Button */}

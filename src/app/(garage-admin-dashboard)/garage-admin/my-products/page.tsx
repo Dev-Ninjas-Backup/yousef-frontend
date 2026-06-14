@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { ProductsHeader } from "./_components/ProductsHeader";
 import { ProductsTable } from "./_components/ProductsTable";
@@ -9,6 +9,7 @@ import { EditProductModal } from "./_components/EditProductModal";
 import { DeleteProductModal } from "./_components/DeleteProductModal";
 import { useGetMyProductsQuery } from "@/store/api/garageAdminApis/products/products";
 import { useGetCategoriesQuery } from "@/store/api/garageAdminApis/categoryApi";
+import Pagination from "@/app/(admin-dashboard)/admin/garages/_components/Pagination";
 
 export default function MyProductsPage() {
   const router = useRouter();
@@ -22,15 +23,34 @@ export default function MyProductsPage() {
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
   const [sortBy, setSortBy] = useState("newest");
+  const [page, setPage] = useState(1);
+  const limit = 10;
 
-  const { data, isLoading } = useGetMyProductsQuery();
+  const { data: responseData, isLoading } = useGetMyProductsQuery({
+    page,
+    limit,
+    search: searchQuery || undefined,
+    status: statusFilter || undefined,
+    condition: conditionFilter || undefined,
+    stock: stockFilter || undefined,
+    categoryId: categoryFilter || undefined,
+    minPrice: minPrice || undefined,
+    maxPrice: maxPrice || undefined,
+    sortBy,
+  });
   const { data: categoriesData } = useGetCategoriesQuery();
+
+  const products = responseData?.data || [];
+  const pagination = responseData?.pagination;
+
+  // Reset page to 1 whenever filters change
+  useEffect(() => {
+    setPage(1);
+  }, [searchQuery, statusFilter, conditionFilter, stockFilter, categoryFilter, minPrice, maxPrice, sortBy]);
 
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
-
-  const products = data || [];
 
   // Generate category map for quick ID-to-name lookup
   const categoryMap = useMemo(() => {
@@ -54,70 +74,7 @@ export default function MyProductsPage() {
     return [];
   }, [categoriesData]);
 
-  // Combined Search, Filtering, and Sorting logic
-  const filteredProducts = useMemo(() => {
-    // 1. Filter
-    const filtered = products.filter((product) => {
-      const matchesSearch =
-        product.partName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (product.brand?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
-        (product.description?.toLowerCase() || "").includes(searchQuery.toLowerCase());
-
-      const matchesStatus =
-        statusFilter === "all" ||
-        product.status.toLowerCase() === statusFilter.toLowerCase();
-
-      const matchesCondition =
-        conditionFilter === "all" ||
-        product.condition.toLowerCase() === conditionFilter.toLowerCase();
-
-      const matchesStock =
-        stockFilter === "all" ||
-        (stockFilter === "instock" && product.quantity > 0) ||
-        (stockFilter === "outofstock" && product.quantity === 0);
-
-      const matchesCategory =
-        categoryFilter === "all" ||
-        product.categoryId === categoryFilter;
-
-      const priceNum = Number(product.price);
-      const matchesMinPrice = !minPrice || priceNum >= Number(minPrice);
-      const matchesMaxPrice = !maxPrice || priceNum <= Number(maxPrice);
-
-      return (
-        matchesSearch &&
-        matchesStatus &&
-        matchesCondition &&
-        matchesStock &&
-        matchesCategory &&
-        matchesMinPrice &&
-        matchesMaxPrice
-      );
-    });
-
-    // 2. Sort
-    return filtered.sort((a, b) => {
-      if (sortBy === "newest") {
-        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-      }
-      if (sortBy === "oldest") {
-        return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
-      }
-      if (sortBy === "price_asc") {
-        return Number(a.price) - Number(b.price);
-      }
-      if (sortBy === "price_desc") {
-        return Number(b.price) - Number(a.price);
-      }
-      if (sortBy === "most_viewed") {
-        return (b.views || 0) - (a.views || 0);
-      }
-      if (sortBy === "most_inquiries") {
-        return (b.inquiries || 0) - (a.inquiries || 0);
-      }
-      return 0;
-    });
-  }, [products, searchQuery, statusFilter, conditionFilter, stockFilter, categoryFilter, minPrice, maxPrice, sortBy]);
+  const filteredProducts = products;
 
   const handleAddProduct = () => {
     router.push("/garage-admin/my-products/add-product");
@@ -128,7 +85,7 @@ export default function MyProductsPage() {
   };
 
   const handleEdit = (id: string) => {
-    const product = products.find((p) => p.id === id);
+    const product = products.find((p: any) => p.id === id);
     if (product) {
       setSelectedProduct(product);
       setShowEditModal(true);
@@ -136,7 +93,7 @@ export default function MyProductsPage() {
   };
 
   const handleDelete = (id: string) => {
-    const product = products.find((p) => p.id === id);
+    const product = products.find((p: any) => p.id === id);
     if (product) {
       setSelectedProduct(product);
       setShowDeleteModal(true);
@@ -198,13 +155,26 @@ export default function MyProductsPage() {
         onResetFilters={handleResetFilters}
       />
       {filteredProducts.length > 0 ? (
-        <ProductsTable
-          products={filteredProducts}
-          categoryMap={categoryMap}
-          onView={handleView}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-        />
+        <div className="space-y-4">
+          <ProductsTable
+            products={filteredProducts}
+            categoryMap={categoryMap}
+            sortBy={sortBy}
+            onSortByChange={setSortBy}
+            onView={handleView}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+          />
+          {pagination && (
+            <Pagination
+              currentPage={page}
+              totalPages={pagination.totalPages}
+              total={pagination.total}
+              limit={limit}
+              onPageChange={setPage}
+            />
+          )}
+        </div>
       ) : isAnyFilterApplied ? (
         <div className="bg-white rounded-lg border p-12 text-center shadow-sm">
           <p className="text-gray-600 font-medium">

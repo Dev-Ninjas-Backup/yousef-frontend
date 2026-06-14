@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Calendar, Eye, Package, DollarSign } from "lucide-react";
+import { Calendar, Eye, Package, Tag } from "lucide-react";
 import Image from "next/image";
 import ProductImage from "@/assets/garage-admin/my-products/product.jpg";
 
@@ -80,7 +80,7 @@ const PromotionalAdCard = ({ product, onPreview }: PromotionalAdCardProps) => {
 
             <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-gray-600">
               <div className="flex items-center gap-1">
-                <DollarSign className="w-4 h-4 shrink-0" />
+                <Tag className="w-4 h-4 shrink-0" />
                 <span>AED {product.price}</span>
               </div>
               <div className="flex items-center gap-1">

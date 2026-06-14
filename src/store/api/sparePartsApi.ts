@@ -56,6 +56,7 @@ export interface ProductsParams {
   limit?: number;
   page?: number;
   userId?: string;
+  isPromoted?: boolean;
 }
 
 export const sparePartsApi = createApi({
@@ -83,15 +84,18 @@ export const sparePartsApi = createApi({
       }),
       providesTags: ["Product"],
     }),
-    getMyProducts: builder.query<Product[], void>({
-      query: () => "/products/my-products",
+    getMyProducts: builder.query<Product[], void | Record<string, any>>({
+      query: (params) => ({
+        url: "/products/my-products",
+        params: params || undefined,
+      }),
       providesTags: ["Product"],
     }),
     getProductById: builder.query<Product, string>({
       query: (id) => `/products/${id}`,
       providesTags: (result, error, id) => [{ type: "Product", id }],
     }),
-    getProductsStats: builder.query<{ success: boolean; data: { categories: Record<string, number>; conditions: Record<string, number> } }, { search?: string } | void>({
+    getProductsStats: builder.query<{ success: boolean; data: { categories: Record<string, number>; conditions: Record<string, number>; promoted?: number } }, { search?: string } | void>({
       query: (params) => ({
         url: "/products/stats",
         params: params || undefined,
