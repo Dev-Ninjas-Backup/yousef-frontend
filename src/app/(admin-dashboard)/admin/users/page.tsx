@@ -3,7 +3,7 @@
 import { useDeleteUserMutation, useGetAllUsersQuery, useLazyGetAllUsersQuery } from "@/store/fetures/admin.user.api";
 import { Loader2, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { useState } from "react";
-import { LuSearch, LuDownload, LuEye, LuTrash2, LuUsers, LuUserCheck, LuCreditCard, LuClock } from "react-icons/lu";
+import { LuSearch, LuDownload, LuEye, LuTrash2, LuUsers, LuUserCheck, LuCreditCard, LuClock, LuUser } from "react-icons/lu";
 import UserDetailsModal from "./UserDetailsModal";
 
 export default function UserManagementPage() {
@@ -297,31 +297,33 @@ export default function UserManagementPage() {
 
         <div className="bg-white rounded-xl p-5 border border-gray-100 shadow-sm flex items-center gap-4 hover:shadow-md transition-all duration-300">
           <div className="p-3.5 bg-green-50 text-green-600 rounded-2xl">
-            <LuUserCheck className="w-6 h-6" />
+            <LuCreditCard className="w-6 h-6" />
           </div>
           <div>
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Car Owners</p>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Subscribed Users</p>
+            <h3 className="text-2xl font-bold text-gray-950 mt-1">
+              {stats?.activePaid ?? 0}
+            </h3>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl p-5 border border-gray-100 shadow-sm flex items-center gap-4 hover:shadow-md transition-all duration-300">
+          <div className="p-3.5 bg-sky-50 text-sky-600 rounded-2xl">
+            <LuUser className="w-6 h-6" />
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Normal Users</p>
             <h3 className="text-2xl font-bold text-gray-950 mt-1">{stats?.carOwners ?? 0}</h3>
           </div>
         </div>
 
         <div className="bg-white rounded-xl p-5 border border-gray-100 shadow-sm flex items-center gap-4 hover:shadow-md transition-all duration-300">
           <div className="p-3.5 bg-purple-50 text-purple-600 rounded-2xl">
-            <LuCreditCard className="w-6 h-6" />
+            <LuUserCheck className="w-6 h-6" />
           </div>
           <div>
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Paid Partners</p>
-            <h3 className="text-2xl font-bold text-gray-950 mt-1">{stats?.activePaid ?? 0}</h3>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl p-5 border border-gray-100 shadow-sm flex items-center gap-4 hover:shadow-md transition-all duration-300">
-          <div className="p-3.5 bg-amber-50 text-amber-600 rounded-2xl">
-            <LuClock className="w-6 h-6" />
-          </div>
-          <div>
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Trial Members</p>
-            <h3 className="text-2xl font-bold text-gray-950 mt-1">{stats?.activeTrial ?? 0}</h3>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Garage Users</p>
+            <h3 className="text-2xl font-bold text-gray-950 mt-1">{stats?.garageOwners ?? 0}</h3>
           </div>
         </div>
       </div>
@@ -350,7 +352,6 @@ export default function UserManagementPage() {
             <option value="CAR_OWNER">Car Owner</option>
             <option value="GARAGE_OWNER">Garage Owner</option>
             <option value="SUPER_ADMIN">Main Admin</option>
-            <option value="MEMBER">Member</option>
           </select>
           <select
             value={statusFilter}

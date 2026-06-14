@@ -37,6 +37,7 @@ export interface AllUsersResponse {
       garageOwners: number;
       activePaid: number;
       activeTrial: number;
+      subscribedUsers?: number;
       noSubscription: number;
     };
   };
