@@ -111,12 +111,25 @@ export default function TestimonialsSection() {
   const trans = t(testimonialsTranslations);
   const { data: apiReviews, isLoading } = useGetAllClientReviewsQuery();
 
+  const formatRole = (role?: string) => {
+    if (!role) return "User";
+    if (role === "CAR_OWNER") return "Car Owner";
+    if (role === "GARAGE_OWNER") return "Garage Owner";
+    if (role === "SUPER_ADMIN") return "Admin";
+    return role
+      .replace(/_/g, " ")
+      .toLowerCase()
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  };
+
   const reviews =
     apiReviews && apiReviews.length > 0
       ? apiReviews.map((r) => ({
           id: r.id,
           name: r.user?.fullName || "Anonymous",
-          role: r.user?.role || "User",
+          role: formatRole(r.user?.role),
           avatar: r.user?.profilePhoto || "",
           rating: Number(r.rating),
           text: r.reviewText,

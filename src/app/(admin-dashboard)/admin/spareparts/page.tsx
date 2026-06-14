@@ -6,7 +6,8 @@ import {
   useGetProductsQuery,
   useLazyGetProductsQuery,
 } from "@/store/fetures/admin.parts.api";
-import { Loader2, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
+import { Loader2, ArrowUpDown, ArrowUp, ArrowDown, Package, Zap, Disc, Settings, Wind, Thermometer, Wrench, Layers, Cpu } from "lucide-react";
+import Image from "next/image";
 import { useState } from "react";
 import {
   LuSearch,
@@ -21,6 +22,101 @@ import {
 import { useGetPartsCategoriesQuery } from "@/store/fetures/partsCategory.api";
 import { useGetPartsCategoryQuery } from "@/store/fetures/admin.dashboard.api";
 import ProductDetailsModal from "./ProductDetailsModal";
+
+// Helper functions for category icons and styles
+const getCategoryIcon = (categoryName: string, iconClass: string = "w-5 h-5") => {
+  const name = categoryName.toLowerCase();
+  if (name.includes("engine")) return <Cpu className={iconClass} />;
+  if (name.includes("brake")) return <Disc className={iconClass} />;
+  if (name.includes("suspension")) return <Layers className={iconClass} />;
+  if (name.includes("electrical")) return <Zap className={iconClass} />;
+  if (name.includes("transmission")) return <Settings className={iconClass} />;
+  if (name.includes("exhaust")) return <Wind className={iconClass} />;
+  if (name.includes("cooling")) return <Thermometer className={iconClass} />;
+  if (name.includes("tyre") || name.includes("wheel")) return <Disc className={iconClass} />;
+  return <Wrench className={iconClass} />;
+};
+
+const getCategoryStyles = (categoryName: string) => {
+  const name = categoryName.toLowerCase();
+  if (name.includes("engine")) {
+    return {
+      bg: "bg-red-50 hover:bg-red-100/80 hover:border-red-300",
+      text: "text-red-600",
+      border: "border-red-100",
+      active: "ring-2 ring-red-500 ring-offset-2 border-red-300 bg-red-100/90 shadow-sm",
+    };
+  }
+  if (name.includes("brake")) {
+    return {
+      bg: "bg-orange-50 hover:bg-orange-100/80 hover:border-orange-300",
+      text: "text-orange-600",
+      border: "border-orange-100",
+      active: "ring-2 ring-orange-500 ring-offset-2 border-orange-300 bg-orange-100/90 shadow-sm",
+    };
+  }
+  if (name.includes("suspension")) {
+    return {
+      bg: "bg-amber-50 hover:bg-amber-100/80 hover:border-amber-300",
+      text: "text-amber-600",
+      border: "border-amber-100",
+      active: "ring-2 ring-amber-500 ring-offset-2 border-amber-300 bg-amber-100/90 shadow-sm",
+    };
+  }
+  if (name.includes("electrical")) {
+    return {
+      bg: "bg-yellow-50 hover:bg-yellow-100/80 hover:border-yellow-300",
+      text: "text-yellow-600",
+      border: "border-yellow-100",
+      active: "ring-2 ring-yellow-500 ring-offset-2 border-yellow-300 bg-yellow-100/90 shadow-sm",
+    };
+  }
+  if (name.includes("transmission")) {
+    return {
+      bg: "bg-purple-50 hover:bg-purple-100/80 hover:border-purple-300",
+      text: "text-purple-600",
+      border: "border-purple-100",
+      active: "ring-2 ring-purple-500 ring-offset-2 border-purple-300 bg-purple-100/90 shadow-sm",
+    };
+  }
+  if (name.includes("exhaust")) {
+    return {
+      bg: "bg-pink-50 hover:bg-pink-100/80 hover:border-pink-300",
+      text: "text-pink-600",
+      border: "border-pink-100",
+      active: "ring-2 ring-pink-500 ring-offset-2 border-pink-300 bg-pink-100/90 shadow-sm",
+    };
+  }
+  if (name.includes("cooling")) {
+    return {
+      bg: "bg-blue-50 hover:bg-blue-100/80 hover:border-blue-300",
+      text: "text-blue-600",
+      border: "border-blue-100",
+      active: "ring-2 ring-blue-500 ring-offset-2 border-blue-300 bg-blue-100/90 shadow-sm",
+    };
+  }
+  if (name.includes("tyre") || name.includes("wheel")) {
+    return {
+      bg: "bg-teal-50 hover:bg-teal-100/80 hover:border-teal-300",
+      text: "text-teal-600",
+      border: "border-teal-100",
+      active: "ring-2 ring-teal-500 ring-offset-2 border-teal-300 bg-teal-100/90 shadow-sm",
+    };
+  }
+  return {
+    bg: "bg-emerald-50 hover:bg-emerald-100/80 hover:border-emerald-300",
+    text: "text-emerald-600",
+    border: "border-emerald-100",
+    active: "ring-2 ring-emerald-500 ring-offset-2 border-emerald-300 bg-emerald-100/90 shadow-sm",
+  };
+};
+
+const allCategoriesStyle = {
+  bg: "bg-slate-50 hover:bg-slate-100/80 hover:border-slate-300",
+  text: "text-slate-700",
+  border: "border-slate-100",
+  active: "ring-2 ring-slate-500 ring-offset-2 border-slate-300 bg-slate-100/90 shadow-sm",
+};
 
 export default function SparePartsManagementPage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -93,7 +189,7 @@ export default function SparePartsManagementPage() {
       const now = new Date();
       const diffTime = Math.abs(now.getTime() - subDate.getTime());
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      
+
       if (dateFilter === "Today" && diffDays > 1) return false;
       if (dateFilter === "This Week" && diffDays > 7) return false;
       if (dateFilter === "This Month" && diffDays > 30) return false;
@@ -211,7 +307,7 @@ export default function SparePartsManagementPage() {
           const now = new Date();
           const diffTime = Math.abs(now.getTime() - subDate.getTime());
           const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-          
+
           if (dateFilter === "Today" && diffDays > 1) return false;
           if (dateFilter === "This Week" && diffDays > 7) return false;
           if (dateFilter === "This Month" && diffDays > 30) return false;
@@ -343,7 +439,7 @@ export default function SparePartsManagementPage() {
   };
 
   return (
-    <div className="w-full space-y-5 sm:space-y-6">
+    <div className="w-full max-w-full overflow-x-hidden space-y-5 sm:space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-xl sm:text-2xl font-semibold text-gray-900">
@@ -586,11 +682,24 @@ export default function SparePartsManagementPage() {
                   className="hover:bg-gray-50 transition-colors"
                 >
                   <td className="py-4 px-5">
-                    <div>
-                      <p className="text-sm font-medium text-gray-900">
-                        {part.partName}
-                      </p>
-                      <p className="text-xs text-gray-500">{part.brand}</p>
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-gray-50 border border-gray-100 flex-shrink-0 flex items-center justify-center overflow-hidden">
+                        {part.photos && part.photos.length > 0 ? (
+                          <img
+                            src={part.photos[0]}
+                            alt={part.partName}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <Package className="w-5 h-5 text-gray-400" />
+                        )}
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">
+                          {part.partName}
+                        </p>
+                        <p className="text-xs text-gray-500">{part.brand}</p>
+                      </div>
                     </div>
                   </td>
                   <td className="py-4 px-5 text-sm text-gray-900">
@@ -604,24 +713,22 @@ export default function SparePartsManagementPage() {
                   </td>
                   <td className="py-4 px-5">
                     <span
-                      className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${
-                        part.isPromoted
+                      className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${part.isPromoted
                           ? "bg-purple-50 text-purple-700 border border-purple-100"
                           : "bg-gray-50 text-gray-400 border border-gray-100"
-                      }`}
+                        }`}
                     >
                       {part.isPromoted ? "Yes" : "No"}
                     </span>
                   </td>
                   <td className="py-4 px-5">
                     <span
-                      className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${
-                        part.status === "APPROVED"
+                      className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${part.status === "APPROVED"
                           ? "bg-green-50 text-green-700"
                           : part.status === "PENDING"
-                          ? "bg-yellow-50 text-yellow-700"
-                          : "bg-red-50 text-red-700"
-                      }`}
+                            ? "bg-yellow-50 text-yellow-700"
+                            : "bg-red-50 text-red-700"
+                        }`}
                     >
                       {part.status}
                     </span>
@@ -674,19 +781,36 @@ export default function SparePartsManagementPage() {
         <div className="lg:hidden divide-y divide-gray-100">
           {sortedSpareParts.map((part) => (
             <div key={part.id} className="p-4 sm:p-5 hover:bg-gray-50">
-              <div className="flex justify-between mb-3">
-                <h3 className="text-base font-semibold text-gray-900">
-                  {part.partName}
-                </h3>
-                <span
-                  className={`px-2.5 py-1 rounded-full text-xs font-medium ${
-                    part.status === "APPROVED"
-                      ? "bg-green-50 text-green-700"
-                      : "bg-yellow-50 text-yellow-700"
-                  }`}
-                >
-                  {part.status}
-                </span>
+              <div className="flex gap-3 mb-3">
+                <div className="w-12 h-12 rounded-lg bg-gray-50 border border-gray-100 flex-shrink-0 flex items-center justify-center overflow-hidden">
+                  {part.photos && part.photos.length > 0 ? (
+                    <img
+                      src={part.photos[0]}
+                      alt={part.partName}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <Package className="w-6 h-6 text-gray-400" />
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex justify-between items-start">
+                    <h3 className="text-sm sm:text-base font-semibold text-gray-900 truncate">
+                      {part.partName}
+                    </h3>
+                    <span
+                      className={`px-2.5 py-1 rounded-full text-xs font-medium ml-2 flex-shrink-0 ${part.status === "APPROVED"
+                          ? "bg-green-50 text-green-700"
+                          : part.status === "PENDING"
+                            ? "bg-yellow-50 text-yellow-700"
+                            : "bg-red-50 text-red-700"
+                        }`}
+                    >
+                      {part.status}
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-0.5">{part.brand}</p>
+                </div>
               </div>
 
               <div className="grid grid-cols-3 gap-3 mb-4 text-xs">
@@ -700,11 +824,10 @@ export default function SparePartsManagementPage() {
                 </div>
                 <div>
                   <p className="text-gray-500 mb-0.5">Promoted</p>
-                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium ${
-                    part.isPromoted
+                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium ${part.isPromoted
                       ? "bg-purple-50 text-purple-700 border border-purple-100"
                       : "bg-gray-50 text-gray-400 border border-gray-100"
-                  }`}>
+                    }`}>
                     {part.isPromoted ? "Yes" : "No"}
                   </span>
                 </div>
@@ -755,8 +878,8 @@ export default function SparePartsManagementPage() {
 
       {/* Pagination - Same style as admin users page */}
       {pagination && pagination.totalPages > 1 && (
-        <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-          <div className="flex items-center justify-between">
+        <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 mb-8">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
             <div className="text-sm text-gray-500">
               Showing {(page - 1) * limit + 1} to{" "}
               {Math.min(page * limit, pagination.total)} of {pagination.total}{" "}
@@ -766,17 +889,17 @@ export default function SparePartsManagementPage() {
               <button
                 onClick={() => setPage(page - 1)}
                 disabled={page === 1}
-                className="px-3 py-1 text-sm border rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                className="px-3 py-1 text-sm border rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 bg-white"
               >
                 Previous
               </button>
-              <span className="px-3 py-1 text-sm bg-blue-50 text-blue-600 rounded-lg">
+              <span className="px-3 py-1 text-sm bg-blue-50 text-blue-600 rounded-lg whitespace-nowrap">
                 {page} of {pagination.totalPages}
               </span>
               <button
                 onClick={() => setPage(page + 1)}
                 disabled={page === pagination.totalPages}
-                className="px-3 py-1 text-sm border rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                className="px-3 py-1 text-sm border rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 bg-white"
               >
                 Next
               </button>

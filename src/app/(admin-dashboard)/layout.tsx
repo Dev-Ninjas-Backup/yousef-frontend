@@ -5,6 +5,7 @@ import DashboardSidebar from "@/components/shared/DashboardSidebar";
 import DashboardNavbar from "@/components/shared/dashboard/DashboardNavbar";
 import { adminNavItems } from "@/config/navigation";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import { FloatingChatWidget } from "@/components/chat/FloatingChatWidget";
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -21,9 +22,10 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           isOpen={isSidebarOpen}
           onClose={() => setIsSidebarOpen(false)}
         />
-        <main className="flex-1 lg:ml-80 pt-16 p-4 sm:p-6 lg:p-8 md:mt-20 mt-5">
+        <main className="flex-1 min-w-0 lg:ml-80 pt-16 p-4 sm:p-6 lg:p-8 md:mt-20 mt-5 overflow-x-hidden">
           <div className="max-w-7xl mx-auto">{children}</div>
         </main>
+        <FloatingChatWidget />
       </div>
     </ProtectedRoute>
   );

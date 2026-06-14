@@ -728,7 +728,7 @@ export default function MessagesPage() {
       <div className="flex border-b border-gray-200 bg-white px-2 rounded-t-xl">
         {(
           [
-            { key: "customer", label: "Customer Inquiries", badge: customerInquiries.length, color: "blue", extra: "Prioritized" as string | undefined, icon: undefined as React.ReactNode },
+            { key: "customer", label: "Customer Inquiries", badge: customerInquiries.length, color: "blue", extra: undefined as string | undefined, icon: undefined as React.ReactNode },
             { key: "garage", label: "Garage Messages", badge: businessMessages.length as number | null, color: "purple", extra: undefined as string | undefined, icon: undefined as React.ReactNode },
             { key: "system", label: "System Alerts", badge: sortedSystemNotifications.length as number | null, color: "gray", extra: undefined as string | undefined, icon: undefined as React.ReactNode },
             { key: "live", label: "Live Messages", badge: liveUnreadCount > 0 ? liveUnreadCount : null as number | null, color: "green", extra: undefined as string | undefined, icon: <Headphones className="w-4 h-4" /> as React.ReactNode },
@@ -983,7 +983,7 @@ export default function MessagesPage() {
                   </div>
 
                   {singleMessage.data.messages && singleMessage.data.messages.length > 0 && (
-                    <div className="contents">
+                    <>
                       {singleMessage.data.messages.map((reply: any, index: number) => {
                         const isReplyFromAdmin = reply.isFromAdmin;
                         return (
@@ -1013,7 +1013,7 @@ export default function MessagesPage() {
                           </div>
                         );
                       })}
-                    </div>
+                    </>
                   )}
                 </div>
 

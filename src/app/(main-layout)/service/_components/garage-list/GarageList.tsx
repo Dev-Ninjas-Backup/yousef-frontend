@@ -77,7 +77,7 @@ export default function GarageList({ searchParams }: GarageListProps) {
           });
         },
         (error) => {
-          console.error("Error getting geolocation", error);
+          console.warn("Geolocation not available or permission denied:", error.message);
         }
       );
     }

@@ -260,7 +260,9 @@ useEffect(() => {
         <h2 className="text-base sm:text-lg font-semibold text-gray-900 mb-5">Manage Listing & Plan Settings</h2>
         
         {/* Row 1: General Limits */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
+          {/* Commented out Spare Parts Monthly Fee (AED) field since front-end tier pricing uses Basic/Pro/Garage Monthly Tiers instead */}
+          {/* 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Spare Parts Monthly Fee (AED)</label>
             <input
@@ -270,6 +272,7 @@ useEffect(() => {
               className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
             />
           </div>
+          */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Per Listing Price (AED)</label>
             <input
