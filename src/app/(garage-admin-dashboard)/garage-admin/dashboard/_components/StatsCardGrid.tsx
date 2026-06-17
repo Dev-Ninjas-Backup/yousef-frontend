@@ -10,8 +10,12 @@ import {
 import { overView } from "@/store/api/garageAdminApis/dashboard/overview";
 import { StatsCardSkeleton } from "./loadings/StatsCardSkeleton";
 
-const StatsCardGrid = () => {
-  const { data, isLoading } = overView.useGetStatsQuery();
+interface StatsCardGridProps {
+  garageId?: string;
+}
+
+const StatsCardGrid = ({ garageId }: StatsCardGridProps) => {
+  const { data, isLoading } = overView.useGetStatsQuery(garageId);
   if (isLoading) {
     return <StatsCardSkeleton />;
   }

@@ -87,6 +87,7 @@ export default function AddProductPage() {
     sellerEmail: "",
     sellerPhoneNumber: "",
     isPromoted: false,
+    garageId: "",
   });
 
   const [photos, setPhotos] = useState<File[]>([]);
@@ -125,6 +126,7 @@ export default function AddProductPage() {
         sellerName: profileData.data.fullName || "",
         sellerEmail: prev.sellerEmail || profileData.data.email || "",
         sellerPhoneNumber: prev.sellerPhoneNumber || profileData.data.phone || "",
+        garageId: prev.garageId || profileData.data.garages?.[0]?.id || "",
       }));
     }
   }, [profileData]);
@@ -232,6 +234,7 @@ export default function AddProductPage() {
         isPromoted: formData.isPromoted,
         listingPlan: selectedPlanCard,
         promotedDuration: promoDuration,
+        garageId: formData.garageId || undefined,
       }).unwrap();
 
       toast.success("Product created successfully!");
@@ -351,6 +354,31 @@ export default function AddProductPage() {
                 </SelectContent>
               </Select>
             </div>
+
+            {profileData?.data?.garages && profileData.data.garages.length > 0 && (
+              <div>
+                <Label htmlFor="garageId" className="font-semibold text-gray-700">
+                  Select Garage
+                </Label>
+                <Select
+                  value={formData.garageId}
+                  onValueChange={(value) =>
+                    setFormData({ ...formData, garageId: value })
+                  }
+                >
+                  <SelectTrigger className="mt-1.5 w-full focus:ring-indigo-500">
+                    <SelectValue placeholder="Select a garage" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {profileData.data.garages.map((garage) => (
+                      <SelectItem key={garage.id} value={garage.id}>
+                        {garage.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">

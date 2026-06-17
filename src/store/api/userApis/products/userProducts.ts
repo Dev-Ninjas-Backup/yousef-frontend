@@ -77,6 +77,7 @@ interface CreateProductRequest {
   photos?: File[];
   verificationImage?: File;
   status?: string;
+  garageId?: string;
 }
 
 // Response Interfaces
@@ -145,6 +146,7 @@ export const userProductApi = apiSlice.injectEndpoints({
         if (data.sellerEmail) formData.append("sellerEmail", data.sellerEmail);
         if (data.sellerPhoneNumber)
           formData.append("sellerPhoneNumber", data.sellerPhoneNumber);
+        if (data.garageId) formData.append("garageId", data.garageId);
 
         // Photos (max 5)
         if (data.photos && data.photos.length > 0) {

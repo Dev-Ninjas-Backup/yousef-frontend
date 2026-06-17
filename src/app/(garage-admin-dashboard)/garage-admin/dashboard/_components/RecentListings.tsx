@@ -5,8 +5,12 @@ import RecentListingParts from "@/assets/garage-admin/dashboard/recent-listing/r
 import Image from "next/image";
 import { overView } from "@/store/api/garageAdminApis/dashboard/overview";
 
-export function RecentListings() {
-  const { data, isLoading } = overView.useGetRecentListingsQuery();
+interface RecentListingsProps {
+  garageId?: string;
+}
+
+export function RecentListings({ garageId }: RecentListingsProps) {
+  const { data, isLoading } = overView.useGetRecentListingsQuery(garageId);
 
   const getStatusConfig = (status: string) => {
     switch (status) {

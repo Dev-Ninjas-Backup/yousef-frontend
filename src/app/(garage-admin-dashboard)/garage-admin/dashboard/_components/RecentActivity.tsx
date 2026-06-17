@@ -4,8 +4,12 @@ import { Spinner } from "@/components/ui/spinner";
 import { overView } from "@/store/api/garageAdminApis/dashboard/overview";
 import { CheckCircle, Clock, Package } from "lucide-react";
 
-export function RecentActivity() {
-  const { data, isLoading } = overView.useGetRecentActivityQuery();
+interface RecentActivityProps {
+  garageId?: string;
+}
+
+export function RecentActivity({ garageId }: RecentActivityProps) {
+  const { data, isLoading } = overView.useGetRecentActivityQuery(garageId);
 
   const getStatusConfig = (status: string) => {
     switch (status.toUpperCase()) {
