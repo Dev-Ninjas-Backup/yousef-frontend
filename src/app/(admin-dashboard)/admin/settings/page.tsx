@@ -36,7 +36,6 @@ export default function PlatformSettingsPage() {
   // Local State for Forms
   const [platformName, setPlatformName] = useState("");
   const [supportEmail, setSupportEmail] = useState("");
-  const [platformDescription, setPlatformDescription] = useState("");
   const [sparePartsMonthly, setSparePartsMonthly] = useState("");
   const [perListingPrice, setPerListingPrice] = useState("");
   const [freePromotionalListings, setFreePromotionalListings] = useState("");
@@ -60,7 +59,6 @@ useEffect(() => {
       console.log("Setting Platform State:", platformData.data);
       setPlatformName(platformData.data.platformName || "");
       setSupportEmail(platformData.data.supportEmail || "");
-      setPlatformDescription(platformData.data.PlatformDescription || "");
     }
   }, [platformData]); // Run when platformData changes
 
@@ -93,7 +91,7 @@ useEffect(() => {
       await updatePlatform({
         platformName,
         supportEmail,
-        PlatformDescription: platformDescription
+        PlatformDescription: ""
       }).unwrap();
 
       await updatePayment({
@@ -171,15 +169,6 @@ useEffect(() => {
               className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
             />
           </div>
-        </div>
-        <div className="mt-5">
-          <label className="block text-sm font-medium text-gray-700 mb-2">Platform Description</label>
-          <textarea
-            value={platformDescription}
-            onChange={(e) => setPlatformDescription(e.target.value)}
-            rows={3}
-            className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm resize-none focus:ring-2 focus:ring-blue-500 outline-none"
-          />
         </div>
       </div>
 

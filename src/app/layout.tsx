@@ -9,6 +9,7 @@ import { GoogleTranslateWrapper } from "@/components/shared/GoogleTranslateWrapp
 import { ScrollToTop } from "@/components/shared/ScrollToTop";
 import {ToastContainer} from "react-toastify"
 import { Toaster } from "@/components/ui/sonner";
+import { PlatformTitle } from "@/components/shared/PlatformTitle";
 
 const outfit = Outfit({
   variable: "--font-outfit",
@@ -41,6 +42,7 @@ export default function RootLayout({
           <TranslationProvider>
             <AuthProvider>
               <GoogleTranslateWrapper>
+                <PlatformTitle />
                 {children}
                 <ScrollToTop />
               </GoogleTranslateWrapper>

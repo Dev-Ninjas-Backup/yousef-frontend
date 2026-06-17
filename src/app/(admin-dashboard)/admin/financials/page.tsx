@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   LuDollarSign,
   LuTrendingUp,
@@ -59,6 +59,26 @@ const StatCard = ({
   </div>
 );
 
+const formatBillingType = (type: string, planType?: string) => {
+  if (!type) return "N/A";
+  switch (type) {
+    case "GARAGE_SUBSCRIPTION":
+      return "Garage Subscription";
+    case "MONTHLY_PEY_PRODUCT":
+      return planType?.toUpperCase() === "BASIC" ? "Basic Seller Subscription" : "Pro Seller Subscription";
+    case "PAY_PER_PRODUCT":
+      return "Pay Per Listing";
+    case "PRODUCT_PROMOTION":
+      return "Product Promotion";
+    case "PRODUCT_PROMOTION_CREDIT":
+      return "Promotion Credit";
+    case "GENERAL":
+      return "General Charge";
+    default:
+      return type.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+  }
+};
+
 export default function FinancialOverviewPage() {
   const [dateFilter, setDateFilter] = useState("Last 30 Days");
   const [selectedTrx, setSelectedTrx] = useState<Transaction | null>(null);
@@ -70,6 +90,15 @@ export default function FinancialOverviewPage() {
 
   const [sortField, setSortField] = useState<string | null>("date");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
+
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
+  // Reset to page 1 on filter changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, typeFilter, statusFilter, dateFilter]);
 
   const handleSort = (field: string) => {
     if (sortField === field) {
@@ -227,6 +256,7 @@ export default function FinancialOverviewPage() {
       trx.customerName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       trx.customerEmail?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       trx.type?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      trx.customerId?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       trx.id?.toLowerCase().includes(searchQuery.toLowerCase());
     if (!matchesSearch) return false;
 
@@ -245,6 +275,9 @@ export default function FinancialOverviewPage() {
     if (sortField === "type") {
       aValue = a.type || "";
       bValue = b.type || "";
+    } else if (sortField === "customerId") {
+      aValue = a.customerId || "";
+      bValue = b.customerId || "";
     } else if (sortField === "customerName") {
       aValue = a.customerName || "";
       bValue = b.customerName || "";
@@ -268,6 +301,73 @@ export default function FinancialOverviewPage() {
     return 0;
   });
 
+  // Pagination calculations
+  const totalEntries = sortedTransactions.length;
+  const totalPages = Math.ceil(totalEntries / pageSize);
+  const startIndex = (currentPage - 1) * pageSize;
+  const endIndex = Math.min(startIndex + pageSize, totalEntries);
+  const paginatedTransactions = sortedTransactions.slice(startIndex, startIndex + pageSize);
+
+  const renderPageNumbers = () => {
+    const pages = [];
+    const maxVisiblePages = 5;
+    
+    if (totalPages <= maxVisiblePages) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      pages.push(1);
+      
+      let start = Math.max(2, currentPage - 1);
+      let end = Math.min(totalPages - 1, currentPage + 1);
+      
+      if (currentPage <= 2) {
+        end = 3;
+      }
+      if (currentPage >= totalPages - 1) {
+        start = totalPages - 2;
+      }
+      
+      if (start > 2) {
+        pages.push("ellipsis-start");
+      }
+      
+      for (let i = start; i <= end; i++) {
+        pages.push(i);
+      }
+      
+      if (end < totalPages - 1) {
+        pages.push("ellipsis-end");
+      }
+      
+      pages.push(totalPages);
+    }
+    
+    return pages.map((page, idx) => {
+      if (typeof page === "string") {
+        return (
+          <span key={`ellipsis-${idx}`} className="px-2 text-gray-400 select-none">
+            ...
+          </span>
+        );
+      }
+      return (
+        <button
+          key={`page-${page}`}
+          onClick={() => setCurrentPage(page)}
+          className={`w-8 h-8 flex items-center justify-center rounded-lg text-xs font-bold transition-all select-none ${
+            currentPage === page
+              ? "bg-blue-600 text-white shadow-md shadow-blue-500/20"
+              : "border border-transparent text-gray-750 hover:bg-gray-100 hover:border-gray-200"
+          }`}
+        >
+          {page}
+        </button>
+      );
+    });
+  };
+
   // Clean export CSV matching filtered and sorted list
   const handleExportData = () => {
     if (!sortedTransactions.length) {
@@ -279,6 +379,7 @@ export default function FinancialOverviewPage() {
       "Charge ID",
       "Billing Type",
       "Plan Tier",
+      "Customer ID",
       "Customer Name",
       "Customer Email",
       "Amount (AED)",
@@ -289,8 +390,9 @@ export default function FinancialOverviewPage() {
 
     const csvData = sortedTransactions.map(trx => [
       trx.id || "",
-      trx.type ? trx.type.replace(/_/g, " ") : "",
+      formatBillingType(trx.type, trx.planType),
       trx.planType || (trx.type === "MONTHLY_PEY_PRODUCT" ? "PRO" : ""),
+      trx.customerId || "",
       trx.customerName || "",
       trx.customerEmail || "",
       trx.amount ? (trx.amount / 100).toFixed(2) : "0.00",
@@ -508,6 +610,19 @@ export default function FinancialOverviewPage() {
                   </div>
                 </th>
                 <th
+                  onClick={() => handleSort("customerId")}
+                  className="text-left py-4 px-5 text-xs font-semibold text-gray-600 uppercase cursor-pointer hover:bg-gray-100 select-none transition-colors"
+                >
+                  <div className="flex items-center gap-1.5">
+                    Customer ID
+                    {sortField === "customerId" ? (
+                      sortDirection === "asc" ? <ArrowUp className="w-3.5 h-3.5 text-blue-600" /> : <ArrowDown className="w-3.5 h-3.5 text-blue-600" />
+                    ) : (
+                      <ArrowUpDown className="w-3.5 h-3.5 text-gray-400" />
+                    )}
+                  </div>
+                </th>
+                <th
                   onClick={() => handleSort("amount")}
                   className="text-left py-4 px-5 text-xs font-semibold text-gray-600 uppercase cursor-pointer hover:bg-gray-100 select-none transition-colors"
                 >
@@ -550,19 +665,19 @@ export default function FinancialOverviewPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {sortedTransactions.map((trx) => (
+              {paginatedTransactions.map((trx) => (
                 <tr key={trx.id} className="hover:bg-gray-50 transition-colors">
                   <td className="py-4 px-5 text-sm text-gray-900">
-                    {trx.type === "MONTHLY_PEY_PRODUCT"
-                      ? (trx.planType?.toUpperCase() === "BASIC" ? "Basic Seller Subscription" : "Pro Seller Subscription")
-                      : (trx.type ? trx.type.replace(/_/g, " ") : "")
-                    }
+                    {formatBillingType(trx.type, trx.planType)}
                   </td>
-                  <td className="py-4 px-5 text-sm text-gray-950">
+                  <td className="py-4 px-5 text-sm text-gray-955">
                     <div>
                       <p className="font-medium text-gray-900">{trx.customerName}</p>
                       <p className="text-xs text-gray-400 mt-0.5">{trx.customerEmail}</p>
                     </div>
+                  </td>
+                  <td className="py-4 px-5 text-xs text-gray-500 font-mono max-w-[140px] truncate" title={trx.customerId}>
+                    {trx.customerId || "N/A"}
                   </td>
                   <td className="py-4 px-5 text-sm font-semibold text-gray-900">
                     {formatAED((trx.amount || 0) / 100)}
@@ -593,16 +708,14 @@ export default function FinancialOverviewPage() {
 
         {/* Mobile View */}
         <div className="lg:hidden divide-y divide-gray-100">
-          {sortedTransactions.map((trx) => (
+          {paginatedTransactions.map((trx) => (
             <div key={trx.id} className="p-4 sm:p-5 hover:bg-gray-50">
               <div className="flex items-start justify-between mb-3">
                 <div className="flex-1">
                   <h3 className="text-base font-semibold text-gray-900">{trx.customerName}</h3>
+                  <p className="text-[10px] text-gray-400 font-mono mt-0.5">ID: {trx.customerId || "N/A"}</p>
                   <p className="text-xs text-gray-500 mt-1">
-                    {trx.type === "MONTHLY_PEY_PRODUCT"
-                      ? (trx.planType?.toUpperCase() === "BASIC" ? "Basic Seller Subscription" : "Pro Seller Subscription")
-                      : (trx.type ? trx.type.replace(/_/g, " ") : "")
-                    } • {trx.date}
+                    {formatBillingType(trx.type, trx.planType)} • {trx.date}
                   </p>
                 </div>
                 <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${
@@ -625,6 +738,53 @@ export default function FinancialOverviewPage() {
             </div>
           )}
         </div>
+
+        {/* Pagination Controls */}
+        {totalEntries > 0 && (
+          <div className="px-4 py-4 sm:px-6 border-t border-gray-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-gray-50/50">
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-gray-550 font-medium">Rows per page:</span>
+              <select
+                value={pageSize}
+                onChange={(e) => {
+                  setPageSize(Number(e.target.value));
+                  setCurrentPage(1);
+                }}
+                className="px-2 py-1 bg-white border border-gray-200 rounded-lg text-xs font-medium text-gray-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
+              >
+                <option value={5}>5</option>
+                <option value={10}>10</option>
+                <option value={20}>20</option>
+                <option value={50}>50</option>
+              </select>
+              <p className="text-xs text-gray-500 font-medium ml-4">
+                Showing <span className="font-semibold text-gray-900">{totalEntries === 0 ? 0 : startIndex + 1}</span> to{" "}
+                <span className="font-semibold text-gray-900">{endIndex}</span> of{" "}
+                <span className="font-semibold text-gray-900">{totalEntries}</span> entries
+              </p>
+            </div>
+            
+            <div className="flex items-center justify-end gap-1">
+              <button
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                className="px-3 py-1.5 border border-gray-200 rounded-lg text-xs font-semibold text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none transition-colors shadow-sm select-none"
+              >
+                Previous
+              </button>
+              
+              {renderPageNumbers()}
+              
+              <button
+                disabled={currentPage === totalPages || totalPages === 0}
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                className="px-3 py-1.5 border border-gray-200 rounded-lg text-xs font-semibold text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none transition-colors shadow-sm select-none"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Transaction Details Modal */}
@@ -654,10 +814,7 @@ export default function FinancialOverviewPage() {
                 </span>
                 <h4 className="text-3xl font-extrabold text-gray-900">{formatAED((selectedTrx.amount || 0) / 100)}</h4>
                 <p className="text-sm text-gray-500 mt-1">
-                  {selectedTrx.type === "MONTHLY_PEY_PRODUCT"
-                    ? (selectedTrx.planType?.toUpperCase() === "BASIC" ? "Basic Seller Subscription" : "Pro Seller Subscription")
-                    : (selectedTrx.type ? selectedTrx.type.replace(/_/g, " ") : "")
-                  }
+                  {formatBillingType(selectedTrx.type, selectedTrx.planType)}
                 </p>
               </div>
 
@@ -682,6 +839,10 @@ export default function FinancialOverviewPage() {
                 <div className="col-span-2 sm:col-span-1">
                   <p className="text-xs text-gray-400 font-medium uppercase tracking-wider">Payment Method</p>
                   <p className="text-gray-900 font-semibold mt-1 capitalize">{selectedTrx.method || "card"}</p>
+                </div>
+                <div className="col-span-2">
+                  <p className="text-xs text-gray-400 font-medium uppercase tracking-wider">Customer ID</p>
+                  <p className="text-gray-900 font-mono text-xs mt-1 select-all" title={selectedTrx.customerId}>{selectedTrx.customerId || "N/A"}</p>
                 </div>
                 {selectedTrx.type === "MONTHLY_PEY_PRODUCT" && (
                   <div className="col-span-2 sm:col-span-1">
