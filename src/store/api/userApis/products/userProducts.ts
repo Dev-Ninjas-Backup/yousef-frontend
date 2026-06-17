@@ -76,6 +76,7 @@ interface CreateProductRequest {
   sellerPhoneNumber?: string;
   photos?: File[];
   verificationImage?: File;
+  status?: string;
 }
 
 // Response Interfaces
@@ -225,6 +226,18 @@ export const userProductApi = apiSlice.injectEndpoints({
       invalidatesTags: ["Product"],
     }),
 
+    // Delete Product Permanently
+    deleteUserProductPermanently: builder.mutation<
+      { success: boolean; message: string },
+      string
+    >({
+      query: (id) => ({
+        url: `/products/${id}/permanent`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Product"],
+    }),
+
     // Create Promotion Payment
     createUserPromotionPayment: builder.mutation<PaymentResponse, void>({
       query: () => ({
@@ -260,6 +273,7 @@ export const {
   useGetUserProductQuery,
   useUpdateUserProductMutation,
   useDeleteUserProductMutation,
+  useDeleteUserProductPermanentlyMutation,
   useCreateUserPromotionPaymentMutation,
   useCreateUserMonthlyPaymentMutation,
   useCreateUserPayPerPaymentMutation,

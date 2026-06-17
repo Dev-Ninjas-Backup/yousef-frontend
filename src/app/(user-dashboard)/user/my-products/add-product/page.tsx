@@ -714,9 +714,16 @@ export default function AddProductPage() {
             >
               <div>
                 <div className="flex items-center justify-between">
-                  <span className="bg-green-100 text-green-800 text-xs font-bold px-2.5 py-1 rounded-full uppercase">
-                    Free Plan
-                  </span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="bg-green-100 text-green-800 text-xs font-bold px-2.5 py-1 rounded-full uppercase">
+                      Free Plan
+                    </span>
+                    {!userLimit?.hasProductMonthly && freeProductsLeft > 0 && (
+                      <span className="bg-green-100 text-green-800 text-[9px] font-bold px-1.5 py-0.5 rounded flex items-center gap-0.5">
+                        <Check className="w-2.5 h-2.5" /> Current plan
+                      </span>
+                    )}
+                  </div>
                   <input
                     type="radio"
                     name="listingPlan"
@@ -886,7 +893,7 @@ export default function AddProductPage() {
                       <li className="flex items-center gap-1">✓ Up to 10 listings</li>
                       <li className="flex items-center gap-1">✓ Active for 60 days</li>
                       <li className="flex items-center gap-1">✓ Standard visibility</li>
-                      <li className="flex items-center gap-1">✓ Promotion available</li>
+                      <li className="flex items-center gap-1 text-red-500 font-medium">✗ No promotion included</li>
                     </ul>
                   </div>
                 </div>

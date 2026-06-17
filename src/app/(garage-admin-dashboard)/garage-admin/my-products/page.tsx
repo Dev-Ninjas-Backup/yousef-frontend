@@ -7,9 +7,10 @@ import { ProductsTable } from "./_components/ProductsTable";
 import { EmptyProductsState } from "./_components/EmptyProductsState";
 import { EditProductModal } from "./_components/EditProductModal";
 import { DeleteProductModal } from "./_components/DeleteProductModal";
-import { useGetMyProductsQuery } from "@/store/api/garageAdminApis/products/products";
+import { useGetMyProductsQuery, useUpdateProductMutation } from "@/store/api/garageAdminApis/products/products";
 import { useGetCategoriesQuery } from "@/store/api/garageAdminApis/categoryApi";
 import Pagination from "@/app/(admin-dashboard)/admin/garages/_components/Pagination";
+import { toast } from "sonner";
 
 export default function MyProductsPage() {
   const router = useRouter();
@@ -48,8 +49,10 @@ export default function MyProductsPage() {
     setPage(1);
   }, [searchQuery, statusFilter, conditionFilter, stockFilter, categoryFilter, minPrice, maxPrice, sortBy]);
 
+  const [updateProduct] = useUpdateProductMutation();
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isPermanentDelete, setIsPermanentDelete] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
 
   // Generate category map for quick ID-to-name lookup
@@ -92,11 +95,21 @@ export default function MyProductsPage() {
     }
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = (id: string, isPermanent = false) => {
     const product = products.find((p: any) => p.id === id);
     if (product) {
       setSelectedProduct(product);
+      setIsPermanentDelete(isPermanent);
       setShowDeleteModal(true);
+    }
+  };
+
+  const handleRepost = async (product: any) => {
+    try {
+      await updateProduct({ id: product.id, data: { status: "PENDING" } }).unwrap();
+      toast.success("Listing reposted successfully! It is now pending admin approval.");
+    } catch (error: any) {
+      toast.error(error?.data?.message || "Failed to repost listing");
     }
   };
 
@@ -164,6 +177,7 @@ export default function MyProductsPage() {
             onView={handleView}
             onEdit={handleEdit}
             onDelete={handleDelete}
+            onRepost={handleRepost}
           />
           {pagination && (
             <Pagination
@@ -203,6 +217,7 @@ export default function MyProductsPage() {
             onOpenChange={setShowDeleteModal}
             productId={selectedProduct.id}
             productName={selectedProduct.partName}
+            isPermanent={isPermanentDelete}
           />
         </>
       )}

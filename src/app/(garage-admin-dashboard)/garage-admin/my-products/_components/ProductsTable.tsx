@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Eye, Edit, Trash2, CheckCircle, Clock, Star, ArrowUp, ArrowDown, ArrowUpDown } from "lucide-react";
+import { Eye, Edit, Trash2, CheckCircle, Clock, Star, ArrowUp, ArrowDown, ArrowUpDown, RefreshCw } from "lucide-react";
 import ProductImage from "@/assets/garage-admin/my-products/product.jpg";
 import Image from "next/image";
 
@@ -30,7 +30,8 @@ interface ProductsTableProps {
   onSortByChange: (sort: string) => void;
   onView: (id: string) => void;
   onEdit: (id: string) => void;
-  onDelete: (id: string) => void;
+  onDelete: (id: string, isPermanent?: boolean) => void;
+  onRepost: (product: Product) => void;
 }
 
 export function ProductsTable({
@@ -41,6 +42,7 @@ export function ProductsTable({
   onView,
   onEdit,
   onDelete,
+  onRepost,
 }: ProductsTableProps) {
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -262,14 +264,38 @@ export function ProductsTable({
                     >
                       <Edit className="w-4 h-4" />
                     </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon-sm"
-                      onClick={() => onDelete(product.id)}
-                      className="text-red-600 hover:text-red-700"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
+                    {product.status === "DRAFT" ? (
+                      <>
+                        <Button
+                          variant="ghost"
+                          size="icon-sm"
+                          onClick={() => onRepost(product)}
+                          className="text-green-600 hover:text-green-700 hover:bg-green-50"
+                          title="Publish / Repost"
+                        >
+                          <RefreshCw className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon-sm"
+                          onClick={() => onDelete(product.id, true)}
+                          className="text-red-700 hover:text-red-800 hover:bg-red-50"
+                          title="Delete Permanently"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </>
+                    ) : (
+                      <Button
+                        variant="ghost"
+                        size="icon-sm"
+                        onClick={() => onDelete(product.id)}
+                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                        title="Delete Listing"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    )}
                   </div>
                 </td>
               </tr>
@@ -355,14 +381,36 @@ export function ProductsTable({
                 <Edit className="w-4 h-4" />
                 Edit
               </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => onDelete(product.id)}
-                className="text-red-600 hover:text-red-700"
-              >
-                <Trash2 className="w-4 h-4" />
-              </Button>
+              {product.status === "DRAFT" ? (
+                <>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => onRepost(product)}
+                    className="flex-1 text-green-600 hover:text-green-700"
+                  >
+                    <RefreshCw className="w-4 h-4" />
+                    Repost
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => onDelete(product.id, true)}
+                    className="text-red-700 hover:text-red-800"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </>
+              ) : (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => onDelete(product.id)}
+                  className="text-red-600 hover:text-red-700"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              )}
             </div>
           </div>
         ))}

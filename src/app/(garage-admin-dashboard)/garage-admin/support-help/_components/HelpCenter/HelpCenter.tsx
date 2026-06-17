@@ -67,7 +67,7 @@ const articles: HelpArticle[] = [
     title: "Subscription and plan information",
     category: "Plans & Billing",
     icon: CreditCard,
-    content: "SayaraHub offers a unified 'Garage Partner Plan' at AED 99/month. This plan provides your business with unlimited product listings, premium search indexation, highlighted contacts, and a Verified Badge. You can manage your payment methods, check the trial progress, or cancel your active subscription plan at any time through the 'Plans & Billing' tab.",
+    content: "SayaraHub offers a unified 'Garage Partner Plan' at AED 99/month. This plan provides your business with unlimited product listings, premium search indexation, and a Verified Badge. You can manage your payment methods, check the trial progress, or cancel your active subscription plan at any time through the 'Plans & Billing' tab.",
   },
   {
     id: "account",
@@ -96,7 +96,7 @@ const HelpCenter = () => {
     if (article.id === "plans") {
       return {
         ...article,
-        content: `SayaraHub offers a unified 'Garage Partner Plan' at AED ${price}/month. This plan provides your business with unlimited product listings, premium search indexation, highlighted contacts, and a Verified Badge. You can manage your payment methods, check the trial progress, or cancel your active subscription plan at any time through the 'Plans & Billing' tab.`
+        content: `SayaraHub offers a unified 'Garage Partner Plan' at AED ${price}/month. This plan provides your business with unlimited product listings, premium search indexation, and a Verified Badge. You can manage your payment methods, check the trial progress, or cancel your active subscription plan at any time through the 'Plans & Billing' tab.`
       };
     }
     return article;
