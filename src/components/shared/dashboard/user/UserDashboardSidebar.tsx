@@ -73,7 +73,7 @@ export default function UserDashboardSidebar({ activePage }: UserDashboardSideba
     }
 
     if (limitData?.hasProductMonthly) {
-      const planType = user?.productMonthlyPlanType?.toUpperCase();
+      const planType = (limitData?.productMonthlyPlanType || user?.productMonthlyPlanType || "PRO").toUpperCase();
       const expiryDate = limitData?.productMonthlyEndsAt || user?.productMonthlyEndDate;
       
       if (planType === "BASIC") {
@@ -214,7 +214,7 @@ export default function UserDashboardSidebar({ activePage }: UserDashboardSideba
           }
         } else {
           // Fallback based on plan type if dates are missing
-          const planType = user?.productMonthlyPlanType?.toUpperCase();
+          const planType = (limitData?.productMonthlyPlanType || user?.productMonthlyPlanType || "PRO").toUpperCase();
           if (planType === "BASIC") {
             totalDays = 60;
           }
