@@ -93,6 +93,11 @@ export default function ProductCard({
               <span className="inline-block bg-amber-50 text-amber-700 text-[10px] font-semibold px-2 py-0.5 rounded border border-amber-100/50">
                 {condition.charAt(0).toUpperCase() + condition.slice(1).toLowerCase()}
               </span>
+              {product.createdBy?.productMonthlyActive && product.createdBy?.productMonthlyPlanType?.toUpperCase() === "PRO" && (
+                <span className="inline-block bg-indigo-50 text-indigo-700 text-[10px] font-bold px-2 py-0.5 rounded border border-indigo-100 flex items-center gap-0.5">
+                  ⭐ Pro Seller
+                </span>
+              )}
             </div>
 
             {/* Title */}

@@ -730,7 +730,8 @@ export default function AddProductPage() {
                 <div className="mt-4">
                   <h3 className="text-xl font-bold text-gray-900">First {paymentConfig?.freePromotionalListings || "3"} Listings Only</h3>
                   <p className="text-2xl font-extrabold text-green-600 mt-1">FREE</p>
-                  <p className="text-xs text-gray-500 mt-1">Active for 30 days</p>
+                  <p className="text-xs text-gray-750 font-bold">Use your free listings</p>
+                  <p className="text-xs text-gray-500 mt-0.5">Active for 30 days</p>
                 </div>
 
                 <ul className="mt-5 space-y-2.5 text-sm text-gray-600">
@@ -872,19 +873,20 @@ export default function AddProductPage() {
                   <div className="space-y-1 flex-1">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-1.5">
-                        <span className="font-bold text-gray-900 text-sm">Basic Plan</span>
+                        <span className="font-bold text-gray-900 text-sm">Basic</span>
                         {userLimit?.hasProductMonthly && activePlanType === "BASIC" && (
                           <span className="bg-green-100 text-green-800 text-[9px] font-bold px-1.5 py-0.5 rounded flex items-center gap-0.5">
                             <Check className="w-2.5 h-2.5" /> Current plan
                           </span>
                         )}
                       </div>
-                      <span className="text-blue-600 font-extrabold text-sm">{paymentConfig?.monthlyBasicPrice || "29"} AED/mo</span>
+                      <span className="text-blue-600 font-extrabold text-sm">{paymentConfig?.monthlyBasicPrice || "29"} AED/month</span>
                     </div>
-                    <p className="text-[11px] text-gray-500">Up to 10 listings • 60 days duration</p>
                     <ul className="text-[10px] text-gray-600 space-y-0.5 pt-1.5 border-t">
+                      <li className="flex items-center gap-1">✓ Up to 10 listings</li>
+                      <li className="flex items-center gap-1">✓ Active for 60 days</li>
                       <li className="flex items-center gap-1">✓ Standard visibility</li>
-                      <li className="flex items-center gap-1">✓ Promotion allowed</li>
+                      <li className="flex items-center gap-1">✓ Promotion available</li>
                     </ul>
                   </div>
                 </div>
@@ -917,29 +919,35 @@ export default function AddProductPage() {
                   <div className="space-y-1 flex-1">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-1.5">
-                        <span className="font-bold text-gray-900 text-sm">Pro Seller</span>
+                        <span className="font-bold text-gray-900 text-sm">Pro</span>
                         {userLimit?.hasProductMonthly && activePlanType === "PRO" && (
                           <span className="bg-green-100 text-green-800 text-[9px] font-bold px-1.5 py-0.5 rounded flex items-center gap-0.5">
                             <Check className="w-2.5 h-2.5" /> Current plan
                           </span>
                         )}
                       </div>
-                      <span className="text-indigo-600 font-extrabold text-sm">{paymentConfig?.monthlyProPrice || "59"} AED/mo</span>
+                      <span className="text-indigo-600 font-extrabold text-sm">{paymentConfig?.monthlyProPrice || "59"} AED/month</span>
                     </div>
-                    <p className="text-[11px] text-gray-500">Unlimited listings • 60 days duration</p>
                     <ul className="text-[10px] text-gray-600 space-y-0.5 pt-1.5 border-t">
-                      <li className="flex items-center gap-1">✓ Higher search ranking</li>
-                      <li className="flex items-center gap-1">✓ "Pro Seller" Badge</li>
+                      <li className="flex items-center gap-1">✓ Unlimited listings</li>
+                      <li className="flex items-center gap-1">✓ Active for 60 days</li>
+                      <li className="flex items-center gap-1">✓ Higher ranking in search</li>
+                      <li className="flex items-center gap-1">✓ "Pro Seller" badge</li>
+                      <li className="flex items-center gap-1">✓ Promotion available</li>
                     </ul>
                   </div>
                 </div>
               </div>
 
               <div className="mt-4 bg-blue-100/60 rounded-xl p-3 text-[11px] text-blue-900 space-y-1 border border-blue-200">
-                <p className="font-bold flex items-center gap-1">
-                  <Clock className="w-3.5 h-3.5" /> Monthly Expiry reminders:
+                <p className="font-bold flex items-center gap-1 text-[11px]">
+                  <Clock className="w-3.5 h-3.5" /> IMPORTANT Expiry reminders:
                 </p>
-                <p className="font-medium">Day 60 (10 days left), then 3 days & 1 day before expiry.</p>
+                <ul className="list-disc list-inside space-y-0.5 font-medium pl-1 text-[10px]">
+                  <li>Day 60 (10 days left)</li>
+                  <li>3 days before expiry</li>
+                  <li>1 day before expiry</li>
+                </ul>
               </div>
             </div>
           </div>
@@ -1049,11 +1057,11 @@ export default function AddProductPage() {
                   <ul className="text-xs text-gray-600 space-y-1.5 mt-3 pt-3 border-t">
                     <li className="flex items-center gap-1.5">
                       <Check className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-                      <span>Appear at top of search results</span>
+                      <span>Appear at top of search</span>
                     </li>
                     <li className="flex items-center gap-1.5">
                       <Check className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-                      <span>Higher exposure to local buyers</span>
+                      <span>Higher exposure</span>
                     </li>
                   </ul>
                 </div>
@@ -1077,11 +1085,19 @@ export default function AddProductPage() {
                   <ul className="text-xs text-gray-600 space-y-1.5 mt-3 pt-3 border-t">
                     <li className="flex items-center gap-1.5">
                       <Check className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-                      <span>Maximum premium search visibility</span>
+                      <span>Appear at top of search</span>
                     </li>
                     <li className="flex items-center gap-1.5">
                       <Check className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-                      <span>Best for quick selling of high value items</span>
+                      <span>Higher exposure</span>
+                    </li>
+                    <li className="flex items-center gap-1.5">
+                      <Check className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+                      <span>Maximum visibility</span>
+                    </li>
+                    <li className="flex items-center gap-1.5">
+                      <Check className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+                      <span>Best for quick selling</span>
                     </li>
                   </ul>
                 </div>

@@ -115,6 +115,7 @@ interface UserLimitResponse {
   hasGarageMonthly: boolean;
   hasProductMonthly: boolean;
   productMonthlyEndsAt: string | null;
+  productMonthlyPlanType?: string | null;
 }
 
 export const productApi = apiSlice.injectEndpoints({
