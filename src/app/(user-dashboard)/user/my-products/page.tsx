@@ -8,6 +8,7 @@ import UserDashboardHeader from "@/components/shared/dashboard/user/UserDashboar
 import { DeleteProductModal } from "./_components/DeleteProductModal";
 import {
   useGetUserMyProductsQuery,
+  useUpdateUserProductMutation,
   Product,
 } from "@/store/api/userApis/products/userProducts";
 import { useGetCategoriesQuery } from "@/store/api/garageAdminApis/categoryApi";
@@ -27,10 +28,12 @@ import {
   Plus,
   SlidersHorizontal,
   ChevronDown,
-  ArrowUpDown
+  ArrowUpDown,
+  RefreshCw
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
 
 // Product Details Modal Component
 function ProductDetailsModal({
@@ -253,8 +256,10 @@ export default function UserMyProductsPage() {
     }
     return map;
   }, [categoriesData]);
+  const [updateProduct] = useUpdateUserProductMutation();
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isPermanentDelete, setIsPermanentDelete] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [selectedProductForView, setSelectedProductForView] = useState<Product | null>(null);
 
@@ -280,8 +285,8 @@ export default function UserMyProductsPage() {
         (product.description?.toLowerCase() || "").includes(searchQuery.toLowerCase());
 
       const matchesStatus =
-        statusFilter === "all" ||
-        (statusFilter === "promoted" && product.isPromoted) ||
+        (statusFilter === "all" && product.status !== "DRAFT") ||
+        (statusFilter === "promoted" && product.isPromoted && product.status !== "DRAFT") ||
         product.status.toLowerCase() === statusFilter.toLowerCase();
 
       const matchesCondition =
@@ -350,9 +355,19 @@ export default function UserMyProductsPage() {
     setShowEditModal(true);
   };
 
-  const handleDelete = (product: Product) => {
+  const handleDelete = (product: Product, isPermanent = false) => {
     setSelectedProduct(product);
+    setIsPermanentDelete(isPermanent);
     setShowDeleteModal(true);
+  };
+
+  const handleRepost = async (product: Product) => {
+    try {
+      await updateProduct({ id: product.id, data: { status: "PENDING" } }).unwrap();
+      toast.success("Listing reposted successfully! It is now pending admin approval.");
+    } catch (error: any) {
+      toast.error(error?.data?.message || "Failed to repost listing");
+    }
   };
 
   const handleResetFilters = () => {
@@ -413,7 +428,6 @@ export default function UserMyProductsPage() {
 
           {/* Quick Filters */}
           <div className="flex flex-wrap gap-2.5 items-center">
-            {/* Status Filter */}
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
@@ -423,6 +437,7 @@ export default function UserMyProductsPage() {
               <option value="approved">Approved</option>
               <option value="pending">Pending</option>
               <option value="rejected">Rejected</option>
+              <option value="draft">Drafts</option>
               <option value="promoted">Promoted Only</option>
             </select>
 
@@ -599,7 +614,9 @@ export default function UserMyProductsPage() {
                           ? "bg-green-500 text-white"
                           : product.status === "PENDING"
                             ? "bg-amber-500 text-white"
-                            : "bg-red-500 text-white"
+                            : product.status === "DRAFT"
+                              ? "bg-gray-600 text-white"
+                              : "bg-red-500 text-white"
                       }`}
                     >
                       {product.status}
@@ -675,14 +692,35 @@ export default function UserMyProductsPage() {
                       >
                         <Edit className="w-3.5 h-3.5" />
                       </button>
-                      {/* Delete Button */}
-                      <button
-                        onClick={() => handleDelete(product)}
-                        className="p-1.5 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg transition-colors"
-                        title="Delete Listing"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
+                      {product.status === "DRAFT" ? (
+                        <>
+                          {/* Publish/Repost Button */}
+                          <button
+                            onClick={() => handleRepost(product)}
+                            className="p-1.5 bg-green-50 text-green-700 hover:bg-green-100 rounded-lg transition-colors"
+                            title="Publish / Repost"
+                          >
+                            <RefreshCw className="w-3.5 h-3.5" />
+                          </button>
+                          {/* Permanent Delete Button */}
+                          <button
+                            onClick={() => handleDelete(product, true)}
+                            className="p-1.5 bg-red-100 text-red-700 hover:bg-red-200 rounded-lg transition-colors"
+                            title="Delete Permanently"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </>
+                      ) : (
+                        /* Delete Button */
+                        <button
+                          onClick={() => handleDelete(product)}
+                          className="p-1.5 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg transition-colors"
+                          title="Delete Listing"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -747,7 +785,9 @@ export default function UserMyProductsPage() {
                                   ? "bg-green-550 bg-green-50 text-green-700"
                                   : product.status === "PENDING"
                                     ? "bg-amber-50 text-amber-700"
-                                    : "bg-red-50 text-red-700"
+                                    : product.status === "DRAFT"
+                                      ? "bg-gray-100 text-gray-700"
+                                      : "bg-red-50 text-red-700"
                               }`}
                             >
                               {product.status}
@@ -830,13 +870,32 @@ export default function UserMyProductsPage() {
                             <Edit className="w-3.5 h-3.5" />
                             Edit
                           </button>
-                          <button
-                            onClick={() => handleDelete(product)}
-                            className="px-2.5 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-semibold rounded-lg transition-colors flex items-center gap-1"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                            Delete
-                          </button>
+                          {product.status === "DRAFT" ? (
+                            <>
+                              <button
+                                onClick={() => handleRepost(product)}
+                                className="px-2.5 py-1.5 bg-green-550 bg-green-50 hover:bg-green-100 text-green-700 text-xs font-semibold rounded-lg transition-colors flex items-center gap-1"
+                              >
+                                <RefreshCw className="w-3.5 h-3.5" />
+                                Repost
+                              </button>
+                              <button
+                                onClick={() => handleDelete(product, true)}
+                                className="px-2.5 py-1.5 bg-red-100 hover:bg-red-200 text-red-700 text-xs font-semibold rounded-lg transition-colors flex items-center gap-1"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                                Permanent
+                              </button>
+                            </>
+                          ) : (
+                            <button
+                              onClick={() => handleDelete(product)}
+                              className="px-2.5 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-semibold rounded-lg transition-colors flex items-center gap-1"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                              Delete
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -886,6 +945,7 @@ export default function UserMyProductsPage() {
             onOpenChange={setShowDeleteModal}
             productId={selectedProduct.id}
             productName={selectedProduct.partName}
+            isPermanent={isPermanentDelete}
           />
         </>
       )}

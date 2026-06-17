@@ -46,7 +46,7 @@ import PaymentMonthly from "./_components/PaymentMonthly";
 import PaymentPayPer from "./_components/PaymentPayPer";
 import PaymentPromotion from "./_components/PaymentPromotion";
 
-type PlanCardType = "FREE" | "PAY_PER" | "MONTHLY_BASIC" | "MONTHLY_PRO" | "MONTHLY_GARAGE";
+type PlanCardType = "FREE" | "PAY_PER" | "MONTHLY_BASIC" | "MONTHLY_PRO";
 
 export default function AddProductPage() {
   const router = useRouter();
@@ -87,6 +87,7 @@ export default function AddProductPage() {
     sellerEmail: "",
     sellerPhoneNumber: "",
     isPromoted: false,
+    garageId: "",
   });
 
   const [photos, setPhotos] = useState<File[]>([]);
@@ -115,7 +116,16 @@ export default function AddProductPage() {
 
   useEffect(() => {
     if (userLimit) {
-      if (userLimit.freeProductsRemaining > 0) {
+      if (userLimit.hasProductMonthly) {
+        const activePlan = (userLimit.productMonthlyPlanType || profileData?.data?.productMonthlyPlanType || "PRO").toUpperCase();
+        if (activePlan === "BASIC") {
+          setSelectedPlanCard("MONTHLY_BASIC");
+          setFormData((prev) => ({ ...prev, plan: "MONTHLY" }));
+        } else {
+          setSelectedPlanCard("MONTHLY_PRO");
+          setFormData((prev) => ({ ...prev, plan: "MONTHLY" }));
+        }
+      } else if (userLimit.freeProductsRemaining > 0) {
         setSelectedPlanCard("FREE");
         setFormData((prev) => ({ ...prev, plan: "PAY_PER" }));
       } else {
@@ -123,7 +133,7 @@ export default function AddProductPage() {
         setFormData((prev) => ({ ...prev, plan: "PAY_PER" }));
       }
     }
-  }, [userLimit]);
+  }, [userLimit, profileData]);
 
   useEffect(() => {
     if (profileData?.data) {
@@ -132,6 +142,7 @@ export default function AddProductPage() {
         sellerName: profileData.data.fullName || "",
         sellerEmail: prev.sellerEmail || profileData.data.email || "",
         sellerPhoneNumber: prev.sellerPhoneNumber || profileData.data.phone || "",
+        garageId: prev.garageId || profileData.data.garages?.[0]?.id || "",
       }));
     }
   }, [profileData]);
@@ -205,7 +216,8 @@ export default function AddProductPage() {
       
       try {
         if (needsMonthlySubscription) {
-          const response = await createMonthlyPayment({ planType: selectedPlanCard }).unwrap();
+          const cleanPlanType = selectedPlanCard.replace("MONTHLY_", "");
+          const response = await createMonthlyPayment({ planType: cleanPlanType }).unwrap();
           openPaymentInNewTab(response.url);
         } else if (needsPayPer) {
           const response = await createPayPerPayment().unwrap();
@@ -239,6 +251,7 @@ export default function AddProductPage() {
         isPromoted: formData.isPromoted,
         listingPlan: selectedPlanCard,
         promotedDuration: promoDuration,
+        garageId: formData.garageId || undefined,
       }).unwrap();
 
       toast.success("Product created successfully!");
@@ -252,10 +265,17 @@ export default function AddProductPage() {
   const freeProductsUsed = userLimit?.freeProductsUsed || 0;
   const freeProductsLeft = userLimit?.freeProductsRemaining || 0;
 
+  const activePlanType = (userLimit?.productMonthlyPlanType || profileData?.data?.productMonthlyPlanType || "PRO").toUpperCase();
+
+  const isFreeDisabled = freeProductsLeft === 0 || !!userLimit?.hasProductMonthly;
+  const isPayPerDisabled = !!userLimit?.hasProductMonthly;
+  const isBasicDisabled = !!userLimit?.hasProductMonthly && activePlanType !== "BASIC";
+
   // Determine if specific plan requires payment redirect
   const needsMonthlySubscription =
-    ["MONTHLY_BASIC", "MONTHLY_PRO", "MONTHLY_GARAGE"].includes(selectedPlanCard) &&
-    !userLimit?.hasProductMonthly;
+    ["MONTHLY_BASIC", "MONTHLY_PRO"].includes(selectedPlanCard) &&
+    (!userLimit?.hasProductMonthly ||
+      (selectedPlanCard === "MONTHLY_PRO" && activePlanType === "BASIC"));
 
   const needsPayPer =
     selectedPlanCard === "PAY_PER" && (!userLimit || userLimit.productCredits <= 0);
@@ -361,6 +381,31 @@ export default function AddProductPage() {
                 </SelectContent>
               </Select>
             </div>
+
+            {profileData?.data?.garages && profileData.data.garages.length > 0 && (
+              <div>
+                <Label htmlFor="garageId" className="font-semibold text-gray-700">
+                  Select Garage
+                </Label>
+                <Select
+                  value={formData.garageId}
+                  onValueChange={(value) =>
+                    setFormData({ ...formData, garageId: value })
+                  }
+                >
+                  <SelectTrigger className="mt-1.5 w-full focus:ring-indigo-500">
+                    <SelectValue placeholder="Select a garage" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {profileData.data.garages.map((garage) => (
+                      <SelectItem key={garage.id} value={garage.id}>
+                        {garage.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
@@ -686,9 +731,9 @@ export default function AddProductPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 pt-2">
             {/* Free Plan Card */}
             <div
-              onClick={() => freeProductsLeft > 0 && selectPlan("FREE")}
+              onClick={() => !isFreeDisabled && selectPlan("FREE")}
               className={`relative rounded-2xl border p-5 transition-all flex flex-col justify-between cursor-pointer ${
-                freeProductsLeft === 0
+                isFreeDisabled
                   ? "opacity-50 cursor-not-allowed bg-gray-50 border-gray-200"
                   : selectedPlanCard === "FREE"
                   ? "border-2 border-green-500 bg-green-50/5 ring-1 ring-green-500 shadow-sm"
@@ -697,14 +742,21 @@ export default function AddProductPage() {
             >
               <div>
                 <div className="flex items-center justify-between">
-                  <span className="bg-green-100 text-green-800 text-xs font-bold px-2.5 py-1 rounded-full uppercase">
-                    Free Plan
-                  </span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="bg-green-100 text-green-800 text-xs font-bold px-2.5 py-1 rounded-full uppercase">
+                      Free Plan
+                    </span>
+                    {!userLimit?.hasProductMonthly && freeProductsLeft > 0 && (
+                      <span className="bg-green-100 text-green-800 text-[9px] font-bold px-1.5 py-0.5 rounded flex items-center gap-0.5">
+                        <Check className="w-2.5 h-2.5" /> Current plan
+                      </span>
+                    )}
+                  </div>
                   <input
                     type="radio"
                     name="listingPlan"
                     checked={selectedPlanCard === "FREE"}
-                    disabled={freeProductsLeft === 0}
+                    disabled={isFreeDisabled}
                     onChange={() => selectPlan("FREE")}
                     className="h-4.5 w-4.5 text-green-600 focus:ring-green-500 border-gray-300"
                   />
@@ -713,7 +765,8 @@ export default function AddProductPage() {
                 <div className="mt-4">
                   <h3 className="text-xl font-bold text-gray-900">First {paymentConfig?.freePromotionalListings || "3"} Listings Only</h3>
                   <p className="text-2xl font-extrabold text-green-600 mt-1">FREE</p>
-                  <p className="text-xs text-gray-500 mt-1">Active for 30 days</p>
+                  <p className="text-xs text-gray-750 font-bold">Use your free listings</p>
+                  <p className="text-xs text-gray-500 mt-0.5">Active for 30 days</p>
                 </div>
 
                 <ul className="mt-5 space-y-2.5 text-sm text-gray-600">
@@ -733,9 +786,13 @@ export default function AddProductPage() {
               </div>
 
               <div className="mt-8 border-t pt-4">
-                {freeProductsLeft === 0 ? (
+                {freeProductsLeft === 0 && !userLimit?.hasProductMonthly ? (
                   <p className="text-xs font-semibold text-red-500 flex items-center gap-1.5">
                     <BadgeAlert className="w-4 h-4" /> No free listings remaining
+                  </p>
+                ) : userLimit?.hasProductMonthly ? (
+                  <p className="text-xs font-semibold text-gray-500 flex items-center gap-1.5">
+                    <Lock className="w-4 h-4" /> Disabled on Monthly Plan
                   </p>
                 ) : (
                   <div className="space-y-2">
@@ -756,9 +813,11 @@ export default function AddProductPage() {
 
             {/* Pay Per Listing Card */}
             <div
-              onClick={() => selectPlan("PAY_PER")}
+              onClick={() => !isPayPerDisabled && selectPlan("PAY_PER")}
               className={`relative rounded-2xl border p-5 transition-all flex flex-col justify-between cursor-pointer ${
-                selectedPlanCard === "PAY_PER"
+                isPayPerDisabled
+                  ? "opacity-50 cursor-not-allowed bg-gray-50 border-gray-200"
+                  : selectedPlanCard === "PAY_PER"
                   ? "border-2 border-amber-500 bg-amber-50/5 ring-1 ring-amber-500 shadow-sm"
                   : "border-gray-200 hover:border-amber-300 hover:bg-amber-50/10"
               }`}
@@ -772,6 +831,7 @@ export default function AddProductPage() {
                     type="radio"
                     name="listingPlan"
                     checked={selectedPlanCard === "PAY_PER"}
+                    disabled={isPayPerDisabled}
                     onChange={() => selectPlan("PAY_PER")}
                     className="h-4.5 w-4.5 text-amber-600 focus:ring-amber-500 border-gray-300"
                   />
@@ -800,14 +860,22 @@ export default function AddProductPage() {
               </div>
 
               <div className="mt-6 bg-amber-50 border border-amber-200 rounded-xl p-3.5 space-y-1.5 text-xs text-amber-800">
-                <p className="font-bold flex items-center gap-1.5">
-                  <Clock className="w-4 h-4" /> Expiry reminders:
-                </p>
-                <ul className="list-disc list-inside pl-1 space-y-0.5 font-medium">
-                  <li>15 days left (on Day 15)</li>
-                  <li>3 days before expiry</li>
-                  <li>1 day before expiry</li>
-                </ul>
+                {isPayPerDisabled ? (
+                  <p className="font-semibold text-gray-500 flex items-center gap-1.5">
+                    <Lock className="w-4 h-4" /> Disabled on Monthly Plan
+                  </p>
+                ) : (
+                  <>
+                    <p className="font-bold flex items-center gap-1.5">
+                      <Clock className="w-4 h-4" /> Expiry reminders:
+                    </p>
+                    <ul className="list-disc list-inside pl-1 space-y-0.5 font-medium">
+                      <li>15 days left (on Day 15)</li>
+                      <li>3 days before expiry</li>
+                      <li>1 day before expiry</li>
+                    </ul>
+                  </>
+                )}
               </div>
             </div>
 
@@ -820,29 +888,40 @@ export default function AddProductPage() {
               <div className="space-y-4 pt-2">
                 {/* Basic Card */}
                 <div
-                  onClick={() => selectPlan("MONTHLY_BASIC")}
-                  className={`rounded-2xl border p-4 bg-white transition-all cursor-pointer flex items-start gap-3 ${
-                    selectedPlanCard === "MONTHLY_BASIC"
+                  onClick={() => !isBasicDisabled && selectPlan("MONTHLY_BASIC")}
+                  className={`relative rounded-2xl border p-4 bg-white transition-all flex items-start gap-3 ${
+                    isBasicDisabled
+                      ? "opacity-50 cursor-not-allowed bg-gray-50 border-gray-200"
+                      : selectedPlanCard === "MONTHLY_BASIC"
                       ? "border-2 border-blue-500 shadow-sm ring-1 ring-blue-500"
-                      : "border-gray-200 hover:border-blue-300"
+                      : "border-gray-200 hover:border-blue-300 cursor-pointer"
                   }`}
                 >
                   <input
                     type="radio"
                     name="listingPlan"
                     checked={selectedPlanCard === "MONTHLY_BASIC"}
+                    disabled={isBasicDisabled}
                     onChange={() => selectPlan("MONTHLY_BASIC")}
                     className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 shrink-0"
                   />
                   <div className="space-y-1 flex-1">
                     <div className="flex items-center justify-between">
-                      <span className="font-bold text-gray-900 text-sm">Basic Plan</span>
-                      <span className="text-blue-600 font-extrabold text-sm">{paymentConfig?.monthlyBasicPrice || "29"} AED/mo</span>
+                      <div className="flex items-center gap-1.5">
+                        <span className="font-bold text-gray-900 text-sm">Basic</span>
+                        {userLimit?.hasProductMonthly && activePlanType === "BASIC" && (
+                          <span className="bg-green-100 text-green-800 text-[9px] font-bold px-1.5 py-0.5 rounded flex items-center gap-0.5">
+                            <Check className="w-2.5 h-2.5" /> Current plan
+                          </span>
+                        )}
+                      </div>
+                      <span className="text-blue-600 font-extrabold text-sm">{paymentConfig?.monthlyBasicPrice || "29"} AED/month</span>
                     </div>
-                    <p className="text-[11px] text-gray-500">Up to 10 listings • 60 days duration</p>
                     <ul className="text-[10px] text-gray-600 space-y-0.5 pt-1.5 border-t">
+                      <li className="flex items-center gap-1">✓ Up to 10 listings</li>
+                      <li className="flex items-center gap-1">✓ Active for 60 days</li>
                       <li className="flex items-center gap-1">✓ Standard visibility</li>
-                      <li className="flex items-center gap-1">✓ Promotion allowed</li>
+                      <li className="flex items-center gap-1 text-red-500 font-medium">✗ No promotion included</li>
                     </ul>
                   </div>
                 </div>
@@ -856,9 +935,15 @@ export default function AddProductPage() {
                       : "border-gray-200 hover:border-indigo-300"
                   }`}
                 >
-                  <span className="absolute -top-2 right-4 bg-indigo-600 text-white text-[8px] font-black px-1.5 py-0.5 rounded-full uppercase">
-                    ⭐ Best Value
-                  </span>
+                  {userLimit?.hasProductMonthly && activePlanType === "BASIC" ? (
+                    <span className="absolute -top-2 right-4 bg-orange-600 text-white text-[8px] font-black px-1.5 py-0.5 rounded-full uppercase shadow-sm">
+                      ⚡ Upgrade Available
+                    </span>
+                  ) : (
+                    <span className="absolute -top-2 right-4 bg-indigo-600 text-white text-[8px] font-black px-1.5 py-0.5 rounded-full uppercase">
+                      ⭐ Best Value
+                    </span>
+                  )}
                   <input
                     type="radio"
                     name="listingPlan"
@@ -868,52 +953,36 @@ export default function AddProductPage() {
                   />
                   <div className="space-y-1 flex-1">
                     <div className="flex items-center justify-between">
-                      <span className="font-bold text-gray-900 text-sm">Pro Seller</span>
-                      <span className="text-indigo-600 font-extrabold text-sm">{paymentConfig?.monthlyProPrice || "59"} AED/mo</span>
+                      <div className="flex items-center gap-1.5">
+                        <span className="font-bold text-gray-900 text-sm">Pro</span>
+                        {userLimit?.hasProductMonthly && activePlanType === "PRO" && (
+                          <span className="bg-green-100 text-green-800 text-[9px] font-bold px-1.5 py-0.5 rounded flex items-center gap-0.5">
+                            <Check className="w-2.5 h-2.5" /> Current plan
+                          </span>
+                        )}
+                      </div>
+                      <span className="text-indigo-600 font-extrabold text-sm">{paymentConfig?.monthlyProPrice || "59"} AED/month</span>
                     </div>
-                    <p className="text-[11px] text-gray-500">Unlimited listings • 60 days duration</p>
                     <ul className="text-[10px] text-gray-600 space-y-0.5 pt-1.5 border-t">
-                      <li className="flex items-center gap-1">✓ Higher search ranking</li>
-                      <li className="flex items-center gap-1">✓ "Pro Seller" Badge</li>
-                    </ul>
-                  </div>
-                </div>
-
-                {/* Garage Card */}
-                <div
-                  onClick={() => selectPlan("MONTHLY_GARAGE")}
-                  className={`rounded-2xl border p-4 bg-white transition-all cursor-pointer flex items-start gap-3 ${
-                    selectedPlanCard === "MONTHLY_GARAGE"
-                      ? "border-2 border-orange-500 shadow-sm ring-1 ring-orange-500"
-                      : "border-gray-200 hover:border-orange-300"
-                  }`}
-                >
-                  <input
-                    type="radio"
-                    name="listingPlan"
-                    checked={selectedPlanCard === "MONTHLY_GARAGE"}
-                    onChange={() => selectPlan("MONTHLY_GARAGE")}
-                    className="mt-1 h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 shrink-0"
-                  />
-                  <div className="space-y-1 flex-1">
-                    <div className="flex items-center justify-between">
-                      <span className="font-bold text-gray-900 text-sm">Garage / Biz</span>
-                      <span className="text-orange-600 font-extrabold text-sm">{paymentConfig?.monthlyGaragePrice || "99"} AED/mo</span>
-                    </div>
-                    <p className="text-[11px] text-gray-500">Unlimited listings • 60 days duration</p>
-                    <ul className="text-[10px] text-gray-600 space-y-0.5 pt-1.5 border-t">
-                      <li className="flex items-center gap-1">✓ Priority visibility & highlighted contact</li>
-                      <li className="flex items-center gap-1">✓ Active Seller Badge</li>
+                      <li className="flex items-center gap-1">✓ Unlimited listings</li>
+                      <li className="flex items-center gap-1">✓ Active for 60 days</li>
+                      <li className="flex items-center gap-1">✓ Higher ranking in search</li>
+                      <li className="flex items-center gap-1">✓ "Pro Seller" badge</li>
+                      <li className="flex items-center gap-1">✓ Promotion available</li>
                     </ul>
                   </div>
                 </div>
               </div>
 
               <div className="mt-4 bg-blue-100/60 rounded-xl p-3 text-[11px] text-blue-900 space-y-1 border border-blue-200">
-                <p className="font-bold flex items-center gap-1">
-                  <Clock className="w-3.5 h-3.5" /> Monthly Expiry reminders:
+                <p className="font-bold flex items-center gap-1 text-[11px]">
+                  <Clock className="w-3.5 h-3.5" /> IMPORTANT Expiry reminders:
                 </p>
-                <p className="font-medium">Day 60 (10 days left), then 3 days & 1 day before expiry.</p>
+                <ul className="list-disc list-inside space-y-0.5 font-medium pl-1 text-[10px]">
+                  <li>Day 60 (10 days left)</li>
+                  <li>3 days before expiry</li>
+                  <li>1 day before expiry</li>
+                </ul>
               </div>
             </div>
           </div>
@@ -946,7 +1015,7 @@ export default function AddProductPage() {
               </div>
               <div className="space-y-1">
                 <h4 className="font-bold text-gray-900">3. Monthly plans</h4>
-                <p>Basic ({paymentConfig?.monthlyBasicPrice || "29"} AED), Pro ({paymentConfig?.monthlyProPrice || "59"} AED), and Garage ({paymentConfig?.monthlyGaragePrice || "99"} AED) plans for unlimited/higher volume.</p>
+                <p>Basic ({paymentConfig?.monthlyBasicPrice || "29"} AED) and Pro ({paymentConfig?.monthlyProPrice || "59"} AED) plans for unlimited/higher volume.</p>
               </div>
               <div className="space-y-1">
                 <h4 className="font-bold text-gray-900">4. Expiry reminders</h4>
@@ -1023,11 +1092,11 @@ export default function AddProductPage() {
                   <ul className="text-xs text-gray-600 space-y-1.5 mt-3 pt-3 border-t">
                     <li className="flex items-center gap-1.5">
                       <Check className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-                      <span>Appear at top of search results</span>
+                      <span>Appear at top of search</span>
                     </li>
                     <li className="flex items-center gap-1.5">
                       <Check className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-                      <span>Higher exposure to local buyers</span>
+                      <span>Higher exposure</span>
                     </li>
                   </ul>
                 </div>
@@ -1051,11 +1120,19 @@ export default function AddProductPage() {
                   <ul className="text-xs text-gray-600 space-y-1.5 mt-3 pt-3 border-t">
                     <li className="flex items-center gap-1.5">
                       <Check className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-                      <span>Maximum premium search visibility</span>
+                      <span>Appear at top of search</span>
                     </li>
                     <li className="flex items-center gap-1.5">
                       <Check className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-                      <span>Best for quick selling of high value items</span>
+                      <span>Higher exposure</span>
+                    </li>
+                    <li className="flex items-center gap-1.5">
+                      <Check className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+                      <span>Maximum visibility</span>
+                    </li>
+                    <li className="flex items-center gap-1.5">
+                      <Check className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+                      <span>Best for quick selling</span>
                     </li>
                   </ul>
                 </div>

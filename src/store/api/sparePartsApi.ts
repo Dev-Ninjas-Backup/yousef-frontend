@@ -26,6 +26,8 @@ export interface Product {
     role?: "CAR_OWNER" | "GARAGE_OWNER" | "SUPER_ADMIN" | "MEMBER";
     profilePhoto?: string;
     garageLogo?: string;
+    productMonthlyActive?: boolean;
+    productMonthlyPlanType?: string;
   };
   category: {
     id: string;
