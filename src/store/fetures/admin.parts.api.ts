@@ -57,6 +57,13 @@ approveProduct: builder.mutation<
         { type: 'Product', id },
       ],
     }),
+
+    exportProducts: builder.query<{ data: Product[] }, void>({
+      query: () => ({
+        url: '/spareparts-financials/parts/export',
+        method: 'GET',
+      }),
+    }),
   }),
 });
 
@@ -66,4 +73,5 @@ export const {
   useGetProductByIdQuery,
   useApproveProductMutation,
   useDeleteProductMutation,
+  useLazyExportProductsQuery,
 } = adminApiSlice;

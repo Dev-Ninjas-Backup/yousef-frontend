@@ -4,7 +4,7 @@ import {
   useApproveProductMutation,
   useDeleteProductMutation,
   useGetProductsQuery,
-  useLazyGetProductsQuery,
+  useLazyExportProductsQuery,
 } from "@/store/fetures/admin.parts.api";
 import { Loader2, ArrowUpDown, ArrowUp, ArrowDown, Package, Zap, Disc, Settings, Wind, Thermometer, Wrench, Layers, Cpu } from "lucide-react";
 import Image from "next/image";
@@ -172,7 +172,7 @@ export default function SparePartsManagementPage() {
   const [approveProduct, { isLoading: isApproving }] =
     useApproveProductMutation();
   const [deleteProduct, { isLoading: isDeleting }] = useDeleteProductMutation();
-  const [triggerGetProducts] = useLazyGetProductsQuery();
+  const [triggerExportProducts] = useLazyExportProductsQuery();
   const [isExporting, setIsExporting] = useState(false);
 
   const spareParts = response?.data || [];
@@ -282,12 +282,7 @@ export default function SparePartsManagementPage() {
   const handleExportData = async () => {
     try {
       setIsExporting(true);
-      const res = await triggerGetProducts({
-        search: searchQuery || undefined,
-        category: categoryFilter === "All Categories" ? undefined : categoryFilter,
-        page: 1,
-        limit: 10000,
-      }).unwrap();
+      const res = await triggerExportProducts().unwrap();
 
       const allParts = res?.data || [];
       if (!allParts.length) {
