@@ -134,8 +134,12 @@ export default function FinancialOverviewPage() {
     .filter(trx => trx.type === "GARAGE_SUBSCRIPTION")
     .reduce((sum, trx) => sum + (trx.amount || 0), 0) / 100;
 
-  const sellerSubRevenue = completedFilter
-    .filter(trx => trx.type === "MONTHLY_PEY_PRODUCT")
+  const basicSubRevenue = completedFilter
+    .filter(trx => trx.type === "MONTHLY_PEY_PRODUCT" && trx.planType?.toUpperCase() === "BASIC")
+    .reduce((sum, trx) => sum + (trx.amount || 0), 0) / 100;
+
+  const proSubRevenue = completedFilter
+    .filter(trx => trx.type === "MONTHLY_PEY_PRODUCT" && trx.planType?.toUpperCase() !== "BASIC")
     .reduce((sum, trx) => sum + (trx.amount || 0), 0) / 100;
 
   const payPerListingRevenue = completedFilter
@@ -274,6 +278,7 @@ export default function FinancialOverviewPage() {
     const csvHeaders = [
       "Charge ID",
       "Billing Type",
+      "Plan Tier",
       "Customer Name",
       "Customer Email",
       "Amount (AED)",
@@ -285,6 +290,7 @@ export default function FinancialOverviewPage() {
     const csvData = sortedTransactions.map(trx => [
       trx.id || "",
       trx.type ? trx.type.replace(/_/g, " ") : "",
+      trx.planType || (trx.type === "MONTHLY_PEY_PRODUCT" ? "PRO" : ""),
       trx.customerName || "",
       trx.customerEmail || "",
       trx.amount ? (trx.amount / 100).toFixed(2) : "0.00",
@@ -354,7 +360,7 @@ export default function FinancialOverviewPage() {
         </div>
       </div>
 
-      {/* Dynamic 6-Card Specific Revenue Grid */}
+      {/* Dynamic 7-Card Specific Revenue Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
         <StatCard
           icon={LuDollarSign}
@@ -374,10 +380,18 @@ export default function FinancialOverviewPage() {
         />
         <StatCard
           icon={LuUserCheck}
-          value={formatAED(sellerSubRevenue)}
-          label={`Seller Subscriptions (${dateFilter})`}
+          value={formatAED(proSubRevenue)}
+          label={`Pro Seller Subscriptions (${dateFilter})`}
           iconBg="bg-purple-50"
           iconColor="text-purple-600"
+          trendIcon={LuTrendingUp}
+        />
+        <StatCard
+          icon={LuUserCheck}
+          value={formatAED(basicSubRevenue)}
+          label={`Basic Seller Subscriptions (${dateFilter})`}
+          iconBg="bg-indigo-50"
+          iconColor="text-indigo-600"
           trendIcon={LuTrendingUp}
         />
         <StatCard
@@ -538,7 +552,12 @@ export default function FinancialOverviewPage() {
             <tbody className="divide-y divide-gray-100">
               {sortedTransactions.map((trx) => (
                 <tr key={trx.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="py-4 px-5 text-sm text-gray-900">{trx.type ? trx.type.replace(/_/g, " ") : ""}</td>
+                  <td className="py-4 px-5 text-sm text-gray-900">
+                    {trx.type === "MONTHLY_PEY_PRODUCT"
+                      ? (trx.planType?.toUpperCase() === "BASIC" ? "Basic Seller Subscription" : "Pro Seller Subscription")
+                      : (trx.type ? trx.type.replace(/_/g, " ") : "")
+                    }
+                  </td>
                   <td className="py-4 px-5 text-sm text-gray-950">
                     <div>
                       <p className="font-medium text-gray-900">{trx.customerName}</p>
@@ -579,7 +598,12 @@ export default function FinancialOverviewPage() {
               <div className="flex items-start justify-between mb-3">
                 <div className="flex-1">
                   <h3 className="text-base font-semibold text-gray-900">{trx.customerName}</h3>
-                  <p className="text-xs text-gray-500 mt-1">{trx.type ? trx.type.replace(/_/g, " ") : ""} • {trx.date}</p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    {trx.type === "MONTHLY_PEY_PRODUCT"
+                      ? (trx.planType?.toUpperCase() === "BASIC" ? "Basic Seller Subscription" : "Pro Seller Subscription")
+                      : (trx.type ? trx.type.replace(/_/g, " ") : "")
+                    } • {trx.date}
+                  </p>
                 </div>
                 <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${
                   trx.status === "COMPLETED" ? "bg-green-50 text-green-700" : "bg-yellow-50 text-yellow-700"
@@ -629,7 +653,12 @@ export default function FinancialOverviewPage() {
                   {selectedTrx.status}
                 </span>
                 <h4 className="text-3xl font-extrabold text-gray-900">{formatAED((selectedTrx.amount || 0) / 100)}</h4>
-                <p className="text-sm text-gray-500 mt-1">{selectedTrx.type ? selectedTrx.type.replace(/_/g, " ") : ""}</p>
+                <p className="text-sm text-gray-500 mt-1">
+                  {selectedTrx.type === "MONTHLY_PEY_PRODUCT"
+                    ? (selectedTrx.planType?.toUpperCase() === "BASIC" ? "Basic Seller Subscription" : "Pro Seller Subscription")
+                    : (selectedTrx.type ? selectedTrx.type.replace(/_/g, " ") : "")
+                  }
+                </p>
               </div>
 
               {/* Detail Sections */}
@@ -654,6 +683,12 @@ export default function FinancialOverviewPage() {
                   <p className="text-xs text-gray-400 font-medium uppercase tracking-wider">Payment Method</p>
                   <p className="text-gray-900 font-semibold mt-1 capitalize">{selectedTrx.method || "card"}</p>
                 </div>
+                {selectedTrx.type === "MONTHLY_PEY_PRODUCT" && (
+                  <div className="col-span-2 sm:col-span-1">
+                    <p className="text-xs text-gray-400 font-medium uppercase tracking-wider">Plan Tier</p>
+                    <p className="text-gray-900 font-semibold mt-1 uppercase">{selectedTrx.planType || "PRO"}</p>
+                  </div>
+                )}
                 {selectedTrx.productID && (
                   <div className="col-span-2 sm:col-span-1">
                     <p className="text-xs text-gray-400 font-medium uppercase tracking-wider">Product ID</p>

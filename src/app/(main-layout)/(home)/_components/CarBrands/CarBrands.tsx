@@ -4,8 +4,8 @@ import Image from "next/image";
 import Marquee from "react-fast-marquee";
 import Subaru from "@/assets/home/CarBrands/Subaru.svg";
 import Nissan from "@/assets/home/CarBrands/Nissan.svg";
-import Chery from "@/assets/home/CarBrands/chery.svg";
-import Suzuki from "@/assets/home/CarBrands/suzuki.svg";
+import Chery from "@/assets/home/CarBrands/Chery.svg";
+import Suzuki from "@/assets/home/CarBrands/Suzuki.svg";
 import Datsun from "@/assets/home/CarBrands/Datsun.svg";
 import Hyundai from "@/assets/home/CarBrands/Hyundai.jpg";
 import Honda from "@/assets/home/CarBrands/Honda.svg";
@@ -113,9 +113,8 @@ const CarBrands: React.FC = () => {
         {brands.map((brand, index) => (
           <div
             key={`${brand.name}-${index}`}
-            className={`relative flex items-center justify-center mx-4 sm:mx-8 h-14 sm:h-20 shrink-0 ${
-              'wide' in brand && brand.wide ? "w-36 sm:w-44" : "w-24 sm:w-32"
-            }`}
+            className={`relative flex items-center justify-center mx-4 sm:mx-8 h-14 sm:h-20 shrink-0 ${'wide' in brand && brand.wide ? "w-36 sm:w-44" : "w-24 sm:w-32"
+              }`}
             style={{ transform: 'scale' in brand ? `scale(${brand.scale})` : "none" }}
           >
             <Image
