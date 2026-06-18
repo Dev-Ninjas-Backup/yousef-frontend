@@ -4,6 +4,7 @@ export interface User {
   id: string;
   fullName: string;
   profilePhoto: string;
+  role?: string;
 }
 
 export interface Message {

@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { useGetCustomInquiriesQuery, useReplyInquiryMutation } from "@/store/api/garageAdminApis/myGarage/garageInquiryApi";
 import {
   Search,
@@ -27,8 +28,29 @@ const formatSubject = (subject: string | null | undefined) => {
 };
 
 export default function InquiriesPage() {
+  return (
+    <Suspense fallback={
+      <div className="p-6 space-y-6 bg-gray-50 rounded-xl">
+        <div className="animate-pulse space-y-4">
+          <div className="h-8 bg-gray-200 rounded w-1/4"></div>
+          <div className="h-32 bg-gray-200 rounded"></div>
+          <div className="h-32 bg-gray-200 rounded"></div>
+        </div>
+      </div>
+    }>
+      <InquiriesContent />
+    </Suspense>
+  );
+}
+
+function InquiriesContent() {
   const { data: inquiries = [], error, isLoading } = useGetCustomInquiriesQuery();
   const [replyInquiry, { isLoading: isReplying }] = useReplyInquiryMutation();
+
+  const searchParams = useSearchParams();
+  const inquiryIdParam = searchParams.get("inquiryId");
+  const emailParam = searchParams.get("email");
+  const [hasInitialized, setHasInitialized] = useState(false);
 
   // Selected Inquiry State
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -103,12 +125,34 @@ export default function InquiriesPage() {
     return inquiries.find((inq) => inq.id === selectedId) || null;
   }, [inquiries, selectedId]);
 
-  // Automatically select the first item on load/filter changes
+  // Handle URL parameter initialization and selection
   useEffect(() => {
-    if (processedInquiries.length > 0 && !selectedId) {
+    if (processedInquiries.length > 0 && !hasInitialized) {
+      let targetId: string | null = null;
+      if (inquiryIdParam) {
+        const match = inquiries.find((inq) => inq.id === inquiryIdParam);
+        if (match) targetId = match.id;
+      }
+      if (!targetId && emailParam) {
+        const match = inquiries.find((inq) => inq.email.toLowerCase() === emailParam.toLowerCase());
+        if (match) targetId = match.id;
+      }
+
+      if (targetId) {
+        setSelectedId(targetId);
+      } else {
+        setSelectedId(processedInquiries[0].id);
+      }
+      setHasInitialized(true);
+    }
+  }, [processedInquiries, inquiries, inquiryIdParam, emailParam, hasInitialized]);
+
+  // Automatically select the first item on load/filter changes if initialized
+  useEffect(() => {
+    if (processedInquiries.length > 0 && !selectedId && hasInitialized) {
       setSelectedId(processedInquiries[0].id);
     }
-  }, [processedInquiries, selectedId]);
+  }, [processedInquiries, selectedId, hasInitialized]);
 
   const handleSendReply = async () => {
     if (!selectedId || !replyText.trim()) return;
