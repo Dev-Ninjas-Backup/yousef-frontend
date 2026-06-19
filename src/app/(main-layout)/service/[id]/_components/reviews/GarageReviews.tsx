@@ -18,6 +18,7 @@ function formatDate(dateStr: string): string {
 interface GarageReviewsProps {
   garageId: string;
   garageName: string;
+  ownerId?: string;
 }
 
 const STAR_COLORS: Record<number, string> = {
@@ -34,9 +35,10 @@ const SUB_RATINGS = [
   { key: "valueForMoney" as const, label: "Value for Money" },
 ];
 
-export default function GarageReviews({ garageId, garageName }: GarageReviewsProps) {
+export default function GarageReviews({ garageId, garageName, ownerId }: GarageReviewsProps) {
   const router = useRouter();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
+  const isOwner = isAuthenticated && user?.id === ownerId;
 
   const [page, setPage] = useState(1);
   const [ratingFilter, setRatingFilter] = useState<number | undefined>(undefined);
@@ -91,13 +93,19 @@ export default function GarageReviews({ garageId, garageName }: GarageReviewsPro
               </span>
             )}
           </div>
-          <button
-            onClick={handleWriteReview}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition-all duration-150 shadow-sm hover:shadow active:scale-95"
-          >
-            <MessageSquarePlus className="h-4 w-4" />
-            Write a Review
-          </button>
+          {isOwner ? (
+            <span className="text-xs font-semibold text-slate-500 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-lg">
+              You own this garage
+            </span>
+          ) : (
+            <button
+              onClick={handleWriteReview}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition-all duration-150 shadow-sm hover:shadow active:scale-95"
+            >
+              <MessageSquarePlus className="h-4 w-4" />
+              Write a Review
+            </button>
+          )}
         </div>
 
         {/* Stats Panel */}
@@ -179,14 +187,20 @@ export default function GarageReviews({ garageId, garageName }: GarageReviewsPro
           <div className="py-12 px-6 text-center border-b border-slate-100">
             <Star className="h-10 w-10 text-gray-200 fill-gray-200 mx-auto mb-3" />
             <p className="text-slate-700 font-semibold">No reviews yet</p>
-            <p className="text-slate-400 text-sm mt-1">Be the first to share your experience!</p>
-            <button
-              onClick={handleWriteReview}
-              className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 transition-colors"
-            >
-              <MessageSquarePlus className="h-4 w-4" />
-              Write the First Review
-            </button>
+            {isOwner ? (
+              <p className="text-slate-400 text-sm mt-1">Customers haven't reviewed your garage yet.</p>
+            ) : (
+              <>
+                <p className="text-slate-400 text-sm mt-1">Be the first to share your experience!</p>
+                <button
+                  onClick={handleWriteReview}
+                  className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 transition-colors"
+                >
+                  <MessageSquarePlus className="h-4 w-4" />
+                  Write the First Review
+                </button>
+              </>
+            )}
           </div>
         ) : null}
 

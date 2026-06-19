@@ -8,6 +8,7 @@ import { SubscriptionAlert } from "@/app/(garage-admin-dashboard)/garage-admin/d
 import { PerformanceSummary } from "@/app/(garage-admin-dashboard)/garage-admin/dashboard/_components/PerformanceSummary";
 import { RecentActivity } from "@/app/(garage-admin-dashboard)/garage-admin/dashboard/_components/RecentActivity";
 import { RecentListings } from "@/app/(garage-admin-dashboard)/garage-admin/dashboard/_components/RecentListings";
+import ReviewForm from "@/app/(user-dashboard)/user/dashboard/_components/ReviewForm";
 
 import ProtectedRoute from "@/components/ProtectedRoute";
 import StatsCardGrid from "./_components/StatsCardGrid";
@@ -82,6 +83,8 @@ function GarageAdminDashboardContent() {
         <RecentActivity garageId={activeGarageId} />
         <RecentListings garageId={activeGarageId} />
       </div>
+
+      <ReviewForm />
     </div>
   );
 }

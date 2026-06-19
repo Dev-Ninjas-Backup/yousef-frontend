@@ -1,4 +1,5 @@
 import { Badge } from "@/components/ui/badge";
+import { Star } from "lucide-react";
 
 interface GarageCardProps {
   garage: any;
@@ -6,6 +7,11 @@ interface GarageCardProps {
 }
 
 export function GarageCard({ garage, onClick }: GarageCardProps) {
+  const totalReviews = garage.reviews?.length || 0;
+  const averageRating = totalReviews > 0
+    ? garage.reviews.reduce((sum: number, r: any) => sum + r.overallExperience, 0) / totalReviews
+    : 0;
+
   const getStatusColor = () => {
     switch (garage.status) {
       case "APPROVE":
@@ -32,17 +38,26 @@ export function GarageCard({ garage, onClick }: GarageCardProps) {
         />
       </div>
       <div className="p-4">
-        <div className="flex items-start justify-between mb-2">
-          <h3 className="font-semibold text-lg text-gray-900">
+        <div className="flex items-start justify-between mb-2 gap-2">
+          <h3 className="font-semibold text-base text-gray-900 truncate">
             {garage.name}
           </h3>
           <Badge className={getStatusColor()}>
             {garage.status}
           </Badge>
         </div>
-        <p className="text-sm text-gray-600 mb-2">
-          📍 {garage.city}, {garage.emirate}
-        </p>
+        
+        <div className="flex items-center flex-wrap gap-x-3 gap-y-1 mb-3">
+          <div className="flex items-center gap-1 text-yellow-500">
+            <Star className="w-3.5 h-3.5 fill-current" />
+            <span className="text-xs font-bold text-slate-800">{averageRating.toFixed(1)}</span>
+            <span className="text-slate-400 text-[10px]">({totalReviews} reviews)</span>
+          </div>
+          <span className="text-slate-200 text-xs">•</span>
+          <span className="text-slate-500 text-xs">
+            📍 {garage.city}, {garage.emirate}
+          </span>
+        </div>
         <p className="text-sm text-gray-500 line-clamp-2">
           {garage.description}
         </p>

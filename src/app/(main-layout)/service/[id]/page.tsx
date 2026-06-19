@@ -205,7 +205,11 @@ export default function GarageDetailsPage({ params }: GarageDetailsPageProps) {
             )}
 
             {/* Reviews Section */}
-            <GarageReviews garageId={id} garageName={garageData.name} />
+            <GarageReviews
+              garageId={id}
+              garageName={garageData.name}
+              ownerId={(garage as any).userId}
+            />
           </div>
 
           {/* Sidebar Right Column */}
