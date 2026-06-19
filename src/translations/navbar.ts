@@ -1,7 +1,7 @@
 export const navbarTranslations = {
   en: {
     home: "Home",
-    service: "Service",
+    service: "Car Service & Towing",
     spareParts: "Spare Parts",
     downloadApp: "Download App",
     aboutUs: "About Us",
@@ -15,7 +15,7 @@ export const navbarTranslations = {
   },
   ar: {
     home: "الرئيسية",
-    service: "الخدمة",
+    service: "خدمة وسحب السيارات",
     spareParts: "قطع الغيار",
     downloadApp: "تحميل التطبيق",
     aboutUs: "من نحن",
@@ -29,7 +29,7 @@ export const navbarTranslations = {
   },
   hi: {
     home: "होम",
-    service: "सेवा",
+    service: "कार सर्विस और टोइंग",
     spareParts: "स्पेयर पार्ट्स",
     downloadApp: "ऐप डाउनलोड करें",
     aboutUs: "हमारे बारे में",
