@@ -55,21 +55,21 @@ interface AvailableListingResponse {
 
 export const overView = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    getStats: builder.query<StatsResponse, void>({
-      query: () => "/garage-admin-overview/stats",
+    getStats: builder.query<StatsResponse, string | undefined>({
+      query: (garageId) => garageId ? `/garage-admin-overview/stats?garageId=${garageId}` : "/garage-admin-overview/stats",
       providesTags: ["GarageAdminOverviewStats"],
     }),
-    getPerformanceSummary: builder.query<PerformanceSummaryResponse, void>({
-      query: () => "/garage-admin-overview/performance-summary",
+    getPerformanceSummary: builder.query<PerformanceSummaryResponse, string | undefined>({
+      query: (garageId) => garageId ? `/garage-admin-overview/performance-summary?garageId=${garageId}` : "/garage-admin-overview/performance-summary",
       providesTags: ["GarageAdminOverviewPerformanceSummary"],
     }),
     // not used yet...........
-    getRecentActivity: builder.query<RecentActivityResponse, void>({
-      query: () => "/garage-admin-overview/recent-activity",
+    getRecentActivity: builder.query<RecentActivityResponse, string | undefined>({
+      query: (garageId) => garageId ? `/garage-admin-overview/recent-activity?garageId=${garageId}` : "/garage-admin-overview/recent-activity",
       providesTags: ["GarageAdminOverviewRecentActivity"],
     }),
-    getRecentListings: builder.query<ListingsResponse, void>({
-      query: () => "/garage-admin-overview/recent-listings",
+    getRecentListings: builder.query<ListingsResponse, string | undefined>({
+      query: (garageId) => garageId ? `/garage-admin-overview/recent-listings?garageId=${garageId}` : "/garage-admin-overview/recent-listings",
       providesTags: ["GarageAdminOverviewRecentListings"],
     }),
     getAvailableListing: builder.query<AvailableListingResponse, void>({

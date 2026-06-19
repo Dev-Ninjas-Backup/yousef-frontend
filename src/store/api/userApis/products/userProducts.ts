@@ -76,6 +76,8 @@ interface CreateProductRequest {
   sellerPhoneNumber?: string;
   photos?: File[];
   verificationImage?: File;
+  status?: string;
+  garageId?: string;
 }
 
 // Response Interfaces
@@ -144,6 +146,7 @@ export const userProductApi = apiSlice.injectEndpoints({
         if (data.sellerEmail) formData.append("sellerEmail", data.sellerEmail);
         if (data.sellerPhoneNumber)
           formData.append("sellerPhoneNumber", data.sellerPhoneNumber);
+        if (data.garageId) formData.append("garageId", data.garageId);
 
         // Photos (max 5)
         if (data.photos && data.photos.length > 0) {
@@ -225,6 +228,18 @@ export const userProductApi = apiSlice.injectEndpoints({
       invalidatesTags: ["Product"],
     }),
 
+    // Delete Product Permanently
+    deleteUserProductPermanently: builder.mutation<
+      { success: boolean; message: string },
+      string
+    >({
+      query: (id) => ({
+        url: `/products/${id}/permanent`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Product"],
+    }),
+
     // Create Promotion Payment
     createUserPromotionPayment: builder.mutation<PaymentResponse, void>({
       query: () => ({
@@ -260,6 +275,7 @@ export const {
   useGetUserProductQuery,
   useUpdateUserProductMutation,
   useDeleteUserProductMutation,
+  useDeleteUserProductPermanentlyMutation,
   useCreateUserPromotionPaymentMutation,
   useCreateUserMonthlyPaymentMutation,
   useCreateUserPayPerPaymentMutation,

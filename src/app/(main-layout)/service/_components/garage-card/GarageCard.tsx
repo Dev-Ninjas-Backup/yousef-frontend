@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -16,6 +18,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import Cookies from "js-cookie";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 interface GarageCardProps {
   id: string;
@@ -37,6 +40,7 @@ interface GarageCardProps {
   ownerId?: string;
   phone?: string;
   brandExpertise?: string[];
+  profileImage?: string | null;
 }
 
 export default function GarageCard({
@@ -56,9 +60,16 @@ export default function GarageCard({
   ownerId,
   phone,
   brandExpertise = [],
+  profileImage,
 }: GarageCardProps) {
   const { isAuthenticated } = useAuth();
   const router = useRouter();
+  const [showAllServices, setShowAllServices] = useState(false);
+  const [isCallModalOpen, setIsCallModalOpen] = useState(false);
+
+  const SERVICES_LIMIT = 4;
+  const visibleServices = showAllServices ? services : services.slice(0, SERVICES_LIMIT);
+  const hiddenCount = services.length - SERVICES_LIMIT;
 
   const getStatusColor = () => {
     switch (status) {
@@ -141,7 +152,7 @@ export default function GarageCard({
     }
   };
 
-  const handleMessage = async (e: React.MouseEvent) => {
+  const handleMessage = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     if (!ownerId) return;
@@ -151,46 +162,22 @@ export default function GarageCard({
       return;
     }
     
-    try {
-      const token = Cookies.get("token");
-      // Create or get existing conversation with garage owner
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/private-chat/send-message/${ownerId}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          content: `Hi! I'm interested in your garage services at ${name}. Can you provide more information?`,
-          recipientId: ownerId
-        })
-      });
-      
-      const data = await response.json();
-      
-      if (data.success) {
-        // Trigger FloatingChatWidget to open with this conversation
-        const event = new CustomEvent('openChat', {
-          detail: {
-            userId: ownerId,
-            userName: name
-          }
-        });
-        window.dispatchEvent(event);
-      } else {
-        toast.error(data.message || "Failed to start conversation.");
+    // Trigger FloatingChatWidget to open with this conversation and pre-filled message
+    const event = new CustomEvent('openChat', {
+      detail: {
+        userId: ownerId,
+        userName: name,
+        prefilledMessage: `Hi! I'm interested in your garage services at ${name}. Can you provide more information?`
       }
-    } catch (error) {
-      console.error('Failed to start conversation:', error);
-      toast.error("Failed to start conversation. Please try again.");
-    }
+    });
+    window.dispatchEvent(event);
   };
 
   const handleCall = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     if (phone) {
-      window.location.href = `tel:${phone}`;
+      setIsCallModalOpen(true);
     }
   };
   return (
@@ -210,11 +197,24 @@ export default function GarageCard({
               {/* Info */}
 
               <div className="flex gap-4">
-                {/* Icon */}
+                {/* Icon or Profile Image */}
                 <div
-                  className={`flex h-12 w-12 md:h-20 md:w-20 items-center justify-center rounded-lg ${getIconBgColor()}`}
+                  className={`flex h-12 w-12 md:h-20 md:w-20 items-center justify-center rounded-lg overflow-hidden flex-shrink-0 ${!profileImage ? getIconBgColor() : ""}`}
                 >
-                  {renderIcon()}
+                  {profileImage ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={profileImage}
+                      alt={name}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).style.display = "none";
+                        (e.target as HTMLImageElement).parentElement!.classList.add(...getIconBgColor().split(" "));
+                      }}
+                    />
+                  ) : (
+                    renderIcon()
+                  )}
                 </div>
                 <div>
                   {" "}
@@ -264,8 +264,8 @@ export default function GarageCard({
           </div>
 
           {/* Services */}
-          <div className="mb-3 flex flex-wrap gap-2">
-            {services.map((service, index) => (
+          <div className="mb-3 flex flex-wrap gap-1.5 items-center">
+            {visibleServices.map((service, index) => (
               <Badge
                 key={index}
                 variant="default"
@@ -274,6 +274,24 @@ export default function GarageCard({
                 {service}
               </Badge>
             ))}
+            {!showAllServices && hiddenCount > 0 && (
+              <button
+                type="button"
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShowAllServices(true); }}
+                className="text-xs text-blue-600 hover:text-blue-800 font-medium px-2 py-0.5 rounded-full bg-blue-50 hover:bg-blue-100 transition-colors cursor-pointer whitespace-nowrap"
+              >
+                +{hiddenCount} more
+              </button>
+            )}
+            {showAllServices && services.length > SERVICES_LIMIT && (
+              <button
+                type="button"
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShowAllServices(false); }}
+                className="text-xs text-gray-500 hover:text-gray-700 font-medium px-2 py-0.5 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors cursor-pointer whitespace-nowrap"
+              >
+                Show less
+              </button>
+            )}
           </div>
 
           {/* Brand Expertise */}
@@ -338,6 +356,50 @@ export default function GarageCard({
         </div>
       </div>
     </Card>
+
+    {/* Call Confirmation Dialog */}
+    <Dialog open={isCallModalOpen} onOpenChange={setIsCallModalOpen}>
+      <DialogContent className="max-w-xs sm:max-w-sm rounded-2xl bg-white border border-slate-100 p-6 shadow-xl z-[9999]" onOpenAutoFocus={(e) => e.preventDefault()}>
+        <DialogHeader className="flex flex-col items-center text-center">
+          <div className="w-12 h-12 rounded-full bg-green-50 text-green-600 flex items-center justify-center mb-4">
+            <Phone className="w-6 h-6" />
+          </div>
+          <DialogTitle className="text-lg font-bold text-slate-900">Call Garage</DialogTitle>
+          <DialogDescription className="text-slate-500 text-sm mt-1">
+            Are you sure you want to call {name}?
+          </DialogDescription>
+        </DialogHeader>
+        <div className="py-4 text-center">
+          <p className="text-xl font-bold text-slate-800 font-mono tracking-wide">{phone}</p>
+        </div>
+        <DialogFooter className="flex gap-2 sm:gap-0 sm:flex-row justify-center mt-2">
+          <Button
+            variant="outline"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setIsCallModalOpen(false);
+            }}
+            className="flex-1 rounded-xl border-slate-205 hover:bg-slate-50 text-slate-600 font-semibold"
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              if (phone) {
+                window.location.href = `tel:${phone}`;
+              }
+              setIsCallModalOpen(false);
+            }}
+            className="flex-1 rounded-xl bg-green-600 hover:bg-green-700 text-white font-semibold"
+          >
+            Call
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
     </motion.div>
   );
 }

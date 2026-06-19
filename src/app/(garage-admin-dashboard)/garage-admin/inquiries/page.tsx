@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { useGetCustomInquiriesQuery, useReplyInquiryMutation } from "@/store/api/garageAdminApis/myGarage/garageInquiryApi";
 import {
   Search,
@@ -27,8 +28,29 @@ const formatSubject = (subject: string | null | undefined) => {
 };
 
 export default function InquiriesPage() {
+  return (
+    <Suspense fallback={
+      <div className="p-6 space-y-6 bg-gray-50 rounded-xl">
+        <div className="animate-pulse space-y-4">
+          <div className="h-8 bg-gray-200 rounded w-1/4"></div>
+          <div className="h-32 bg-gray-200 rounded"></div>
+          <div className="h-32 bg-gray-200 rounded"></div>
+        </div>
+      </div>
+    }>
+      <InquiriesContent />
+    </Suspense>
+  );
+}
+
+function InquiriesContent() {
   const { data: inquiries = [], error, isLoading } = useGetCustomInquiriesQuery();
   const [replyInquiry, { isLoading: isReplying }] = useReplyInquiryMutation();
+
+  const searchParams = useSearchParams();
+  const inquiryIdParam = searchParams.get("inquiryId");
+  const emailParam = searchParams.get("email");
+  const [hasInitialized, setHasInitialized] = useState(false);
 
   // Selected Inquiry State
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -103,12 +125,34 @@ export default function InquiriesPage() {
     return inquiries.find((inq) => inq.id === selectedId) || null;
   }, [inquiries, selectedId]);
 
-  // Automatically select the first item on load/filter changes
+  // Handle URL parameter initialization and selection
   useEffect(() => {
-    if (processedInquiries.length > 0 && !selectedId) {
+    if (processedInquiries.length > 0 && !hasInitialized) {
+      let targetId: string | null = null;
+      if (inquiryIdParam) {
+        const match = inquiries.find((inq) => inq.id === inquiryIdParam);
+        if (match) targetId = match.id;
+      }
+      if (!targetId && emailParam) {
+        const match = inquiries.find((inq) => inq.email.toLowerCase() === emailParam.toLowerCase());
+        if (match) targetId = match.id;
+      }
+
+      if (targetId) {
+        setSelectedId(targetId);
+      } else {
+        setSelectedId(processedInquiries[0].id);
+      }
+      setHasInitialized(true);
+    }
+  }, [processedInquiries, inquiries, inquiryIdParam, emailParam, hasInitialized]);
+
+  // Automatically select the first item on load/filter changes if initialized
+  useEffect(() => {
+    if (processedInquiries.length > 0 && !selectedId && hasInitialized) {
       setSelectedId(processedInquiries[0].id);
     }
-  }, [processedInquiries, selectedId]);
+  }, [processedInquiries, selectedId, hasInitialized]);
 
   const handleSendReply = async () => {
     if (!selectedId || !replyText.trim()) return;
@@ -130,6 +174,7 @@ export default function InquiriesPage() {
     const colors: Record<string, string> = {
       CAR_PARTS: "bg-blue-100 text-blue-700 border border-blue-200",
       CAR_SERVICE: "bg-green-100 text-green-700 border border-green-200",
+      LIMITED_TIME_OFFER: "bg-orange-100 text-orange-700 border border-orange-200",
       OTHERS: "bg-purple-100 text-purple-700 border border-purple-200",
     };
     return colors[subject] || "bg-gray-100 text-gray-700 border border-gray-200";
@@ -230,6 +275,7 @@ export default function InquiriesPage() {
                 <option value="all">All Subjects</option>
                 <option value="CAR_SERVICE">Car Service</option>
                 <option value="CAR_PARTS">Car Parts</option>
+                <option value="LIMITED_TIME_OFFER">Limited Time Offer</option>
                 <option value="OTHERS">Others</option>
               </select>
             </div>

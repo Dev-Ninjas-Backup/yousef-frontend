@@ -10,6 +10,7 @@ import ServicesOffered from "./_components/services-offered/ServicesOffered";
 import GarageOverview from "./_components/garage-overview/GarageOverview";
 import OperatingHours from "./_components/operating-hours/OperatingHours";
 import LocationMap from "./_components/location-map/LocationMap";
+import GarageReviews from "./_components/reviews/GarageReviews";
 import { useGetGarageByIdQuery } from "@/store/api/garageApi";
 import { Card } from "@/components/ui/card";
 
@@ -202,6 +203,13 @@ export default function GarageDetailsPage({ params }: GarageDetailsPageProps) {
                 </Card>
               </motion.div>
             )}
+
+            {/* Reviews Section */}
+            <GarageReviews
+              garageId={id}
+              garageName={garageData.name}
+              ownerId={(garage as any).userId}
+            />
           </div>
 
           {/* Sidebar Right Column */}

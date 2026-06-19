@@ -3,7 +3,7 @@ import { LucideIcon } from "lucide-react";
 
 interface StatsCardProps {
   icon: LucideIcon;
-  value: number;
+  value: number | string;
   label: string;
   iconColor: string;
   bgColor: string;
@@ -24,6 +24,7 @@ export function StatsCard({
     "bg-green-50": "bg-green-50",
     "bg-yellow-50": "bg-yellow-50",
     "bg-purple-50": "bg-purple-50",
+    "bg-indigo-50": "bg-indigo-50",
   };
 
   const iconBgMap: Record<string, string> = {
@@ -31,6 +32,7 @@ export function StatsCard({
     "bg-green-50": "bg-green-600",
     "bg-yellow-50": "bg-yellow-600",
     "bg-purple-50": "bg-purple-600",
+    "bg-indigo-50": "bg-indigo-600",
   };
 
   const trendIconMap: Record<string, string> = {
@@ -38,6 +40,7 @@ export function StatsCard({
     "bg-green-50": "text-green-600",
     "bg-yellow-50": "text-yellow-600",
     "bg-purple-50": "text-purple-600",
+    "bg-indigo-50": "text-indigo-600",
   };
 
   return (

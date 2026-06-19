@@ -12,6 +12,8 @@ import { toast } from "sonner";
 import { useState } from "react";
 import { EditGarageModal } from "../_components/EditGarageModal";
 import { DeleteGarageModal } from "../_components/DeleteGarageModal";
+import { useGetGarageReviewsQuery } from "@/store/api/reviewApi";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default function GarageDetailsPage() {
   const params = useParams();
@@ -22,6 +24,12 @@ export default function GarageDetailsPage() {
   const [deleteGarage, { isLoading: deleting }] = useDeleteGarageMutation();
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+
+  const { data: reviewsResponse } = useGetGarageReviewsQuery(
+    { garageId: id, page: 1, limit: 5 },
+    { skip: !id }
+  );
+  const reviews = reviewsResponse?.data?.reviews || [];
 
   const handleDelete = async () => {
     try {
@@ -170,6 +178,69 @@ export default function GarageDetailsPage() {
               </div>
             </div>
           )}
+
+          {/* Customer Reviews Section */}
+          <div className="border-t border-slate-100 pt-6 mt-6 space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="font-bold text-lg flex items-center gap-2 text-slate-800">
+                <Star className="w-5 h-5 text-yellow-500 fill-current" />
+                Customer Reviews
+              </h3>
+              {reviews.length > 0 && (
+                <span className="text-xs text-slate-500 font-semibold bg-slate-50 border border-slate-200 px-2 py-1 rounded-lg">
+                  Showing latest {reviews.length} reviews
+                </span>
+              )}
+            </div>
+
+            {reviews.length > 0 ? (
+              <div className="divide-y divide-slate-100">
+                {reviews.map((review: any) => (
+                  <div key={review.id} className="py-4 first:pt-0 last:pb-0">
+                    <div className="flex items-start gap-3">
+                      <Avatar className="w-8 h-8 shrink-0">
+                        <AvatarImage src={review.user.profilePhoto || ""} alt={review.user.fullName} />
+                        <AvatarFallback className="bg-blue-50 text-blue-600 font-bold text-xs">
+                          {review.user.fullName.charAt(0).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between gap-2 flex-wrap">
+                          <div>
+                            <span className="text-sm font-semibold text-slate-850">
+                              {review.user.fullName}
+                            </span>
+                            <div className="flex items-center gap-1.5 mt-0.5">
+                              <div className="flex">
+                                {[1, 2, 3, 4, 5].map((star) => (
+                                  <Star
+                                    key={star}
+                                    className={`w-3 h-3 ${
+                                      star <= review.overallExperience
+                                        ? "text-yellow-400 fill-yellow-400"
+                                        : "text-gray-200 fill-gray-200"
+                                    }`}
+                                  />
+                                ))}
+                              </div>
+                              <span className="text-xs text-slate-400">
+                                {new Date(review.createdAt).toLocaleDateString()}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                        <p className="text-sm text-slate-600 mt-2 leading-relaxed">
+                          {review.comment}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-slate-400 italic">No reviews yet for this garage.</p>
+            )}
+          </div>
         </div>
       </div>
 

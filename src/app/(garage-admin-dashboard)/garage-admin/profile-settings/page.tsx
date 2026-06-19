@@ -2,6 +2,7 @@
 
 import GarageInformation from "./_components/GarageInformation/GarageInformation";
 import NotificationSettings from "./_components/NotificationSettings/NotificationSettings";
+import ReviewForm from "@/app/(user-dashboard)/user/dashboard/_components/ReviewForm";
 
 export default function ProfileSettingsPage() {
   return (
@@ -17,6 +18,7 @@ export default function ProfileSettingsPage() {
 
       <GarageInformation />
       <NotificationSettings />
+      <ReviewForm />
     </div>
   );
 }

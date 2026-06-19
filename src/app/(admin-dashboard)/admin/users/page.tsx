@@ -12,6 +12,8 @@ export default function UserManagementPage() {
   const [roleFilter, setRoleFilter] = useState<string>("");
   const [statusFilter, setStatusFilter] = useState<string>("All Status");
   const [dateFilter, setDateFilter] = useState<string>("All Time");
+  const [startDate, setStartDate] = useState<string>("");
+  const [endDate, setEndDate] = useState<string>("");
   const [page, setPage] = useState(1);
   const limit = 10;
 
@@ -54,14 +56,28 @@ export default function UserManagementPage() {
     // Date filter
     if (dateFilter !== "All Time") {
       const joinDate = new Date(user.createdAt);
-      const now = new Date();
-      const diffTime = Math.abs(now.getTime() - joinDate.getTime());
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
       
-      if (dateFilter === "Today" && diffDays > 1) return false;
-      if (dateFilter === "This Week" && diffDays > 7) return false;
-      if (dateFilter === "This Month" && diffDays > 30) return false;
-      if (dateFilter === "This Year" && diffDays > 365) return false;
+      if (dateFilter === "Custom Range") {
+        if (startDate) {
+          const start = new Date(startDate);
+          start.setHours(0, 0, 0, 0);
+          if (joinDate < start) return false;
+        }
+        if (endDate) {
+          const end = new Date(endDate);
+          end.setHours(23, 59, 59, 999);
+          if (joinDate > end) return false;
+        }
+      } else {
+        const now = new Date();
+        const diffTime = Math.abs(now.getTime() - joinDate.getTime());
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        
+        if (dateFilter === "Today" && diffDays > 1) return false;
+        if (dateFilter === "This Week" && diffDays > 7) return false;
+        if (dateFilter === "This Month" && diffDays > 30) return false;
+        if (dateFilter === "This Year" && diffDays > 365) return false;
+      }
     }
     return true;
   });
@@ -125,14 +141,28 @@ export default function UserManagementPage() {
         
         if (dateFilter !== "All Time") {
           const joinDate = new Date(user.createdAt);
-          const now = new Date();
-          const diffTime = Math.abs(now.getTime() - joinDate.getTime());
-          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
           
-          if (dateFilter === "Today" && diffDays > 1) return false;
-          if (dateFilter === "This Week" && diffDays > 7) return false;
-          if (dateFilter === "This Month" && diffDays > 30) return false;
-          if (dateFilter === "This Year" && diffDays > 365) return false;
+          if (dateFilter === "Custom Range") {
+            if (startDate) {
+              const start = new Date(startDate);
+              start.setHours(0, 0, 0, 0);
+              if (joinDate < start) return false;
+            }
+            if (endDate) {
+              const end = new Date(endDate);
+              end.setHours(23, 59, 59, 999);
+              if (joinDate > end) return false;
+            }
+          } else {
+            const now = new Date();
+            const diffTime = Math.abs(now.getTime() - joinDate.getTime());
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            if (dateFilter === "Today" && diffDays > 1) return false;
+            if (dateFilter === "This Week" && diffDays > 7) return false;
+            if (dateFilter === "This Month" && diffDays > 30) return false;
+            if (dateFilter === "This Year" && diffDays > 365) return false;
+          }
         }
         return true;
       });
@@ -349,9 +379,8 @@ export default function UserManagementPage() {
             className="px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">All Roles</option>
-            <option value="CAR_OWNER">Car Owner</option>
-            <option value="GARAGE_OWNER">Garage Owner</option>
-            <option value="SUPER_ADMIN">Main Admin</option>
+            <option value="CAR_OWNER">User</option>
+            <option value="GARAGE_OWNER">Garage</option>
           </select>
           <select
             value={statusFilter}
@@ -378,12 +407,44 @@ export default function UserManagementPage() {
             className="px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="All Time">All Time</option>
-            <option value="Today">Joined Today</option>
-            <option value="This Week">Joined This Week</option>
-            <option value="This Month">Joined This Month</option>
-            <option value="This Year">Joined This Year</option>
+            <option value="Today">Today</option>
+            <option value="This Week">This Week</option>
+            <option value="This Month">This Month</option>
+            <option value="This Year">This Year</option>
+            <option value="Custom Range">Custom Range</option>
           </select>
         </form>
+
+        {dateFilter === "Custom Range" && (
+          <div className="flex flex-col sm:flex-row gap-4 mt-4 pt-4 border-t border-gray-100">
+            <div className="flex flex-col gap-1.5 flex-1 max-w-[200px]">
+              <label htmlFor="startDate" className="text-xs font-semibold text-gray-600">From Date</label>
+              <input
+                id="startDate"
+                type="date"
+                value={startDate}
+                onChange={(e) => {
+                  setStartDate(e.target.value);
+                  setPage(1);
+                }}
+                className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div className="flex flex-col gap-1.5 flex-1 max-w-[200px]">
+              <label htmlFor="endDate" className="text-xs font-semibold text-gray-600">To Date</label>
+              <input
+                id="endDate"
+                type="date"
+                value={endDate}
+                onChange={(e) => {
+                  setEndDate(e.target.value);
+                  setPage(1);
+                }}
+                className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Table Section */}

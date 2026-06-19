@@ -21,6 +21,7 @@ export const contactTranslations = {
       subjects: {
         carParts: "Car Parts",
         carService: "Car Service", 
+        limitedTimeOffer: "Limited Time Offer",
         others: "Others",
       },
       otherSubject: "Other Subject",
@@ -49,6 +50,7 @@ export const contactTranslations = {
       subjects: {
         carParts: "قطع غيار السيارات",
         carService: "خدمة السيارات",
+        limitedTimeOffer: "عرض لفترة محدودة",
         others: "أخرى",
       },
       otherSubject: "موضوع آخر",
@@ -77,6 +79,7 @@ export const contactTranslations = {
       subjects: {
         carParts: "कार पार्ट्स",
         carService: "कार सेवा",
+        limitedTimeOffer: "सीमित समय का ऑफर",
         others: "अन्य",
       },
       otherSubject: "अन्य विषय",

@@ -28,6 +28,7 @@ const SearchGarages: React.FC = () => {
   const [customRadius, setCustomRadius] = useState("");
   const [nearbyResults, setNearbyResults] = useState<any[]>([]);
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
+  const [searchedRadius, setSearchedRadius] = useState<number | null>(null);
 
   const [getNearbyGarages, { isLoading: isLoadingNearby }] =
     useLazyGetNearbyGaragesQuery();
@@ -55,7 +56,12 @@ const SearchGarages: React.FC = () => {
           }).unwrap();
 
           const garages = result.garages || [];
-          setNearbyResults(garages.slice(0, 5));
+          if (searchRadius === 100000) {
+            setNearbyResults(garages);
+          } else {
+            setNearbyResults(garages.slice(0, 5));
+          }
+          setSearchedRadius(searchRadius);
           setShowNearbySearch(true);
           toast.success(
             searchRadius === 100000
@@ -188,7 +194,9 @@ const SearchGarages: React.FC = () => {
             <div className="mt-6 space-y-3">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-semibold text-gray-900">
-                  Nearby Garages (Top 5)
+                  {searchedRadius === 100000
+                    ? "Nearby Garages"
+                    : "Nearby Garages (Top 5)"}
                 </h3>
                 <Button
                   variant="link"
@@ -198,19 +206,21 @@ const SearchGarages: React.FC = () => {
                   View All
                 </Button>
               </div>
-              <div className="space-y-3">
+              <div className="space-y-3 max-h-[380px] overflow-y-auto pr-1">
                 {nearbyResults.map((garage) => (
                   <div
                     key={garage.id}
-                    onClick={() => handleGarageClick(garage.id)}
-                    className="p-4 border rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
+                    className="p-4 border rounded-lg transition-colors bg-white"
                   >
                     <div className="flex items-start gap-4">
                       {/* Left: Main Info */}
                       <div className="flex-1">
                         <div className="flex items-start justify-between mb-2">
                           <div>
-                            <h4 className="font-semibold text-gray-900 text-lg">
+                            <h4
+                              onClick={() => handleGarageClick(garage.id)}
+                              className="font-semibold text-gray-900 text-lg cursor-pointer hover:text-blue-700 hover:underline transition-colors inline-block"
+                            >
                               {garage.name}
                             </h4>
                             <p className="text-sm text-gray-600 mt-1">
@@ -268,7 +278,14 @@ const SearchGarages: React.FC = () => {
                             <span>⏰ {garage.weekdaysHours}</span>
                           )}
                           {garage.user?.phone && (
-                            <span>📞 {garage.user.phone}</span>
+                            <a
+                              href={`tel:${garage.user.phone}`}
+                              onClick={(e) => e.stopPropagation()}
+                              className="inline-flex items-center gap-1 hover:text-blue-700 hover:underline transition-colors"
+                            >
+                              <span>📞</span>
+                              <span>{garage.user.phone}</span>
+                            </a>
                           )}
                         </div>
                       </div>

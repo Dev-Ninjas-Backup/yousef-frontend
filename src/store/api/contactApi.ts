@@ -4,7 +4,7 @@ export interface ContactFormData {
   FirstName: string;
   LastName: string;
   email: string;
-  subject: "CAR_PARTS" | "CAR_SERVICE" | "OTHERS";
+  subject: "CAR_PARTS" | "CAR_SERVICE" | "LIMITED_TIME_OFFER" | "OTHERS";
   message: string;
   othersubject?: string;
   garageOwnerId?: string;

@@ -23,7 +23,7 @@ interface DashboardSidebarProps {
 
 const DashboardSidebar = ({
   navItems,
-  title = "Florida Yacht Trader",
+  title = "",
   isOpen = false,
 
   onClose,

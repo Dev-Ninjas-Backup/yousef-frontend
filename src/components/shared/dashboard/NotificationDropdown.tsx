@@ -144,11 +144,20 @@ export default function NotificationDropdown() {
 
     socketInstance.on("customer-inquiry-alert", (data: any) => {
       console.log("📨 Received Inquiry socket event:", data);
+      const inquiryId = data.meta?.inquiryId;
+      const senderEmail = data.meta?.senderEmail;
+      let link = "/garage-admin/inquiries";
+      if (inquiryId) {
+        link += `?inquiryId=${inquiryId}`;
+      } else if (senderEmail) {
+        link += `?email=${encodeURIComponent(senderEmail)}`;
+      }
+
       addNotification(
         "CustomerInquiryAlert",
         data.title || "New Customer Inquiry",
         data.message || "A customer has inquired about your spare part.",
-        "/garage-admin/inquiries"
+        link
       );
     });
 
@@ -164,7 +173,9 @@ export default function NotificationDropdown() {
 
     socketInstance.on("new-message", (data: any) => {
       console.log("💬 Received Message event:", data);
-      const link = user?.role === "GARAGE_OWNER" ? "/garage-admin/messages" : "/user/messages";
+      const partnerId = data.meta?.fromUserId;
+      const baseLink = user?.role === "GARAGE_OWNER" ? "/garage-admin/messages" : "/user/messages";
+      const link = partnerId ? `${baseLink}?userId=${partnerId}` : baseLink;
       addNotification(
         "NewMessage",
         data.title || "New Message Received",

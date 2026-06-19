@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion } from "framer-motion";
-import { Loader2, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, SlidersHorizontal } from "lucide-react";
+import { Loader2, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, SlidersHorizontal, Search } from "lucide-react";
 import GarageCard from "../garage-card/GarageCard";
 import MapSection from "../map-section/MapSection";
 import {
@@ -12,6 +12,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import {
   Pagination,
@@ -24,6 +26,118 @@ import {
 import { useLanguage } from "@/context/LanguageContext";
 import { serviceTranslations } from "@/translations/service";
 import { useGetGaragesQuery, useGetServiceCategoriesQuery } from "@/store/api/garageApi";
+
+interface SearchableSelectProps {
+  value: string | null;
+  onChange: (value: string | null) => void;
+  options: string[];
+  placeholder: string;
+  searchPlaceholder: string;
+  emptyMessage?: string;
+  allLabel?: string;
+}
+
+function SearchableSelect({
+  value,
+  onChange,
+  options,
+  placeholder,
+  searchPlaceholder,
+  emptyMessage = "No results found.",
+  allLabel = "All Services",
+}: SearchableSelectProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const filteredOptions = options.filter((option) =>
+    option.toLowerCase().includes(search.toLowerCase())
+  );
+
+  return (
+    <div className="relative w-full sm:w-[180px]" ref={dropdownRef}>
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full bg-white border rounded-lg h-10 px-3 py-2 flex items-center justify-between text-sm shadow-sm text-left hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+      >
+        <span className="truncate text-gray-900 font-medium">
+          {value || placeholder}
+        </span>
+        <ChevronDown className={`h-4 w-4 text-gray-500 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
+      </button>
+
+      {isOpen && (
+        <div className="absolute left-0 mt-1.5 w-full bg-white border rounded-lg shadow-lg z-50 p-1.5 flex flex-col max-h-[300px] min-w-[200px]">
+          <div className="relative mb-1.5">
+            <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-gray-400" />
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder={searchPlaceholder}
+              className="pl-8 pr-3 py-1 w-full bg-gray-50 border rounded-md text-xs h-8 outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+              autoFocus
+            />
+          </div>
+          <div className="overflow-y-auto flex-1 max-h-[220px] scrollbar-thin scrollbar-thumb-gray-200">
+            {search === "" && (
+              <button
+                type="button"
+                onClick={() => {
+                  onChange(null);
+                  setIsOpen(false);
+                }}
+                className={`w-full text-left px-2.5 py-1.5 text-xs rounded-md cursor-pointer transition-colors ${
+                  value === null
+                    ? "bg-blue-50 text-blue-600 font-semibold"
+                    : "text-gray-700 hover:bg-gray-50"
+                }`}
+              >
+                {allLabel}
+              </button>
+            )}
+
+            {filteredOptions.length > 0 ? (
+              filteredOptions.map((option) => (
+                <button
+                  type="button"
+                  key={option}
+                  onClick={() => {
+                    onChange(option);
+                    setIsOpen(false);
+                    setSearch("");
+                  }}
+                  className={`w-full text-left px-2.5 py-1.5 text-xs rounded-md cursor-pointer transition-colors block truncate ${
+                    value === option
+                      ? "bg-blue-50 text-blue-600 font-semibold"
+                      : "text-gray-700 hover:bg-gray-50"
+                  }`}
+                >
+                  {option}
+                </button>
+              ))
+            ) : (
+              <div className="px-2.5 py-2 text-xs text-gray-500 text-center">
+                {emptyMessage}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 interface GarageListProps {
   searchParams: {
@@ -46,6 +160,20 @@ export default function GarageList({ searchParams }: GarageListProps) {
   const [userCoords, setUserCoords] = useState<{ lat: number; lng: number } | null>(null);
   const observerTarget = useRef(null);
 
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 400);
+    return () => clearTimeout(handler);
+  }, [searchQuery]);
+
+  useEffect(() => {
+    setSelectedService(searchParams.serviceName || null);
+  }, [searchParams.serviceName]);
+
   const { data: servicesData } = useGetServiceCategoriesQuery();
   const servicesList = servicesData?.serviceCategories || [
     "AC Service",
@@ -63,6 +191,16 @@ export default function GarageList({ searchParams }: GarageListProps) {
     "Transmission Service",
     "Mobile Van Repair Service",
   ];
+
+  const servicesToExclude = [
+    "Emergency Towing",
+    "Mobile Van Repair Service",
+    "Car Van Mobile Service",
+    "Van Doorstep Repair"
+  ];
+  const filteredServicesList = servicesList.filter(
+    (service: string) => !servicesToExclude.includes(service)
+  );
 
   const limit = showMap ? 10 : 10;
 
@@ -93,18 +231,19 @@ export default function GarageList({ searchParams }: GarageListProps) {
     page: currentPage,
     limit,
     emirate: searchParams.emirate || undefined,
-    serviceName: selectedService || searchParams.serviceName || undefined,
+    serviceName: selectedService || undefined,
+    search: debouncedSearch || undefined,
     brandExpertise: selectedExpertise || undefined,
     sortBy: sortBy || undefined,
     userLat: userCoords ? userCoords.lat.toString() : undefined,
     userLng: userCoords ? userCoords.lng.toString() : undefined,
   });
 
-  // Reset when showMap, search params, filters or sorting change
+  // Reset when showMap, search params, filters, sorting, or garage search query change
   useEffect(() => {
     setCurrentPage(1);
     setHasMore(true);
-  }, [searchParams, showMap, selectedService, selectedExpertise, sortBy]);
+  }, [searchParams, showMap, selectedService, selectedExpertise, sortBy, debouncedSearch]);
 
   // Transform and accumulate garages for infinite scroll
   useEffect(() => {
@@ -121,6 +260,7 @@ export default function GarageList({ searchParams }: GarageListProps) {
         priceRange: "AED 150-300",
         status: "Open Now",
         position: { lat: garage.garageLat, lng: garage.garageLng },
+        profileImage: garage.profileImage || null,
         icon: "wrench",
         iconColor: "red",
         phone: garage.garagePhone,
@@ -216,86 +356,128 @@ export default function GarageList({ searchParams }: GarageListProps) {
       <div className="container mx-auto px-4">
         {/* Header */}
         <motion.div
-          className="mb-6 flex flex-col gap-8 md:flex-row md:items-center"
+          className="mb-6 flex flex-col gap-4 border-b border-gray-100 pb-6"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <div>
-            <h2 className="text-2xl font-bold">
-              {totalGarages} {trans.list.garagesFound}
-            </h2>
-            <p className="text-sm text-gray-600">
-              {searchParams.emirate && `in ${searchParams.emirate}`}
-              {searchParams.serviceName && ` for ${searchParams.serviceName}`}
-            </p>
-          </div>
+          {/* Top Row: Title + Map Toggle */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h2 className="text-2xl font-extrabold text-gray-900 tracking-tight">
+                {totalGarages} {trans.list.garagesFound}
+              </h2>
+              <p className="text-sm text-gray-500 mt-0.5">
+                {searchParams.emirate && `in ${searchParams.emirate}`}
+                {searchParams.serviceName && ` for ${searchParams.serviceName}`}
+              </p>
+            </div>
 
-          <div className="grid grid-cols-1 sm:flex sm:flex-wrap items-center gap-3 w-full sm:w-auto">
-            {/* Sort */}
-            <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className="w-full sm:w-[180px] bg-white">
-                <SelectValue placeholder={trans.list.sortBy} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="distance">{trans.list.sortBy}</SelectItem>
-                <SelectItem value="rating">
-                  {trans.list.sortByRating}
-                </SelectItem>
-              </SelectContent>
-            </Select>
-
-            {/* Service Filter */}
-            <Select
-              value={selectedService || "all"}
-              onValueChange={(val) => setSelectedService(val === "all" ? null : val)}
-            >
-              <SelectTrigger className="w-full sm:w-[180px] bg-white">
-                <SelectValue placeholder="All Services" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Services</SelectItem>
-                {servicesList.map((service: string) => (
-                  <SelectItem key={service} value={service}>
-                    {service}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            {/* Brand Expertise Filter */}
-            <Select
-              value={selectedExpertise || "all"}
-              onValueChange={(val) => setSelectedExpertise(val === "all" ? null : val)}
-            >
-              <SelectTrigger className="w-full sm:w-[180px] bg-white">
-                <SelectValue placeholder="Experts In" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Expertises</SelectItem>
-                {[
-                  "American cars",
-                  "Japanese cars",
-                  "British cars",
-                  "German cars",
-                  "Korean cars",
-                  "French cars",
-                  "Italian cars",
-                ].map((origin) => (
-                  <SelectItem key={origin} value={origin}>
-                    {origin}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            <div className="flex items-center justify-between sm:justify-start gap-2 bg-white px-3 py-2.5 rounded-lg border sm:border-0 sm:bg-transparent sm:px-0 sm:py-0 w-full sm:w-auto">
-              <span className="text-sm font-medium text-gray-700 sm:text-gray-900">{trans.list.showMap}</span>
+            {/* Show Map Switch */}
+            <div className="flex items-center justify-between sm:justify-start gap-3 bg-white px-4 py-2 rounded-lg border border-gray-200 shadow-xs h-10 w-full sm:w-auto">
+              <span className="text-sm font-medium text-gray-700 whitespace-nowrap">{trans.list.showMap}</span>
               <Switch
                 checked={showMap}
                 onCheckedChange={setShowMap}
                 className="bg-blue-600 data-[state=checked]:bg-blue-600"
               />
+            </div>
+          </div>
+
+          {/* Bottom Row: Filters + Quick Action Buttons */}
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 pt-2">
+            {/* Filter Dropdowns Group */}
+            <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto">
+              {/* Garage Name Search Bar (Moved here, first in group) */}
+              <div className="relative w-full sm:w-[280px]">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                <Input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder={trans.filters?.searchGarage || "Search for specific garage..."}
+                  className="pl-9 pr-4 w-full bg-white border border-gray-200 shadow-xs rounded-lg h-10 text-sm focus-visible:ring-1 focus-visible:ring-blue-500 focus-visible:border-blue-500 transition-all"
+                />
+              </div>
+
+              {/* Sort */}
+              <Select value={sortBy} onValueChange={setSortBy}>
+                <SelectTrigger className="w-full sm:w-[180px] bg-white border-gray-200 shadow-xs h-10">
+                  <SelectValue placeholder={trans.list.sortBy} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="distance">{trans.list.sortBy}</SelectItem>
+                  <SelectItem value="rating">
+                    {trans.list.sortByRating}
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+
+              {/* Service Filter (Searchable) */}
+              <SearchableSelect
+                value={selectedService}
+                onChange={setSelectedService}
+                options={filteredServicesList}
+                placeholder={trans.filters?.allServices || "All Services"}
+                searchPlaceholder={trans.filters?.searchService || "Search services..."}
+                allLabel={trans.filters?.allServices || "All Services"}
+              />
+
+              {/* Brand Expertise Filter */}
+              <Select
+                value={selectedExpertise || "all"}
+                onValueChange={(val) => setSelectedExpertise(val === "all" ? null : val)}
+              >
+                <SelectTrigger className="w-full sm:w-[180px] bg-white border-gray-200 shadow-xs h-10">
+                  <SelectValue placeholder={trans.filters?.expertsIn || "Experts In"} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">{trans.filters?.allExpertises || "All Expertises"}</SelectItem>
+                  {[
+                    "American cars",
+                    "Japanese cars",
+                    "British cars",
+                    "German cars",
+                    "Korean cars",
+                    "French cars",
+                    "Italian cars",
+                  ].map((origin) => (
+                    <SelectItem key={origin} value={origin}>
+                      {origin}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Quick Action Filter Buttons */}
+            <div className="flex flex-col sm:flex-row items-center gap-3 w-full lg:w-auto">
+              {/* Emergency Towing Button */}
+              <Button
+                variant={selectedService === "Emergency Towing" ? "default" : "outline"}
+                onClick={() => setSelectedService(selectedService === "Emergency Towing" ? null : "Emergency Towing")}
+                className={`h-10 px-5 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2 shadow-xs w-full sm:w-auto ${
+                  selectedService === "Emergency Towing"
+                    ? "bg-red-600 text-white hover:bg-red-700 border border-red-600 shadow-inner"
+                    : "bg-white text-red-600 border border-red-200 hover:bg-rose-50 hover:border-red-300"
+                }`}
+              >
+                <span className="w-2 h-2 rounded-full bg-current animate-pulse mr-1"></span>
+                {trans.filters?.emergencyTowing || "Emergency Towing"}
+              </Button>
+
+              {/* Mobile Home Car Service Button */}
+              <Button
+                variant={selectedService === "Mobile Van Repair Service" ? "default" : "outline"}
+                onClick={() => setSelectedService(selectedService === "Mobile Van Repair Service" ? null : "Mobile Van Repair Service")}
+                className={`h-10 px-5 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2 shadow-xs w-full sm:w-auto ${
+                  selectedService === "Mobile Van Repair Service"
+                    ? "bg-blue-600 text-white hover:bg-blue-700 border border-blue-600 shadow-inner"
+                    : "bg-white text-blue-600 border border-blue-200 hover:bg-blue-50 hover:border-blue-300"
+                }`}
+              >
+                {trans.filters?.mobileHomeService || "Mobile Home Car Service"}
+              </Button>
             </div>
           </div>
         </motion.div>

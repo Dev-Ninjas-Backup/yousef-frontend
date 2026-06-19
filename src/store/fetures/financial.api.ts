@@ -22,6 +22,8 @@ export interface Transaction {
   customerEmail: string;
   amount: number;
   type: string;
+  planType?: string;
+  customerId?: string;
   method: string;
   status: string;
   source?: string;

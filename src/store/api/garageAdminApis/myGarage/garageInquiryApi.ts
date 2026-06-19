@@ -11,7 +11,7 @@ interface Inquiry {
   FirstName: string;
   LastName: string;
   email: string;
-  subject: "CAR_PARTS" | "CAR_SERVICE" | "OTHERS";
+  subject: "CAR_PARTS" | "CAR_SERVICE" | "LIMITED_TIME_OFFER" | "OTHERS";
   message: string;
   createdAt: string;
   othersubject?: string;
@@ -23,7 +23,7 @@ interface CreateInquiryRequest {
   FirstName: string;
   LastName: string;
   email: string;
-  subject: "CAR_PARTS" | "CAR_SERVICE" | "OTHERS";
+  subject: "CAR_PARTS" | "CAR_SERVICE" | "LIMITED_TIME_OFFER" | "OTHERS";
   message: string;
   othersubject?: string;
   garageOwnerId: string;

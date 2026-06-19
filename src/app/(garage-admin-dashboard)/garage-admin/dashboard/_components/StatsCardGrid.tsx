@@ -6,17 +6,37 @@ import {
   MessageSquare,
   Package,
   TrendingUp,
+  Coins,
 } from "lucide-react";
 import { overView } from "@/store/api/garageAdminApis/dashboard/overview";
+import { useGetUserProfileQuery } from "@/store/api/userApi";
 import { StatsCardSkeleton } from "./loadings/StatsCardSkeleton";
 
-const StatsCardGrid = () => {
-  const { data, isLoading } = overView.useGetStatsQuery();
-  if (isLoading) {
-    return <StatsCardSkeleton />;
+interface StatsCardGridProps {
+  garageId?: string;
+}
+
+const StatsCardGrid = ({ garageId }: StatsCardGridProps) => {
+  const { data, isLoading } = overView.useGetStatsQuery(garageId);
+  const { data: profileData, isLoading: isProfileLoading } = useGetUserProfileQuery();
+
+  if (isLoading || isProfileLoading) {
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        <StatsCardSkeleton count={5} />
+      </div>
+    );
   }
+
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+      <StatsCard
+        icon={Coins}
+        value={`${profileData?.data?.promotionCredits || 0} AED`}
+        label="Promotion Credits"
+        iconColor="text-indigo-600"
+        bgColor="bg-indigo-50"
+      />
       <StatsCard
         icon={Package}
         value={data?.totalProducts!}

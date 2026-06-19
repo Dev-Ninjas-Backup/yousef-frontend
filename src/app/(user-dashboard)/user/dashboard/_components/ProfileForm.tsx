@@ -89,7 +89,7 @@ export default function ProfileForm({
 
   return (
     <div className="p-6 sm:p-8">
-      <div className="space-y-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
         {/* Full Name */}
         <div>
           <Label htmlFor="fullName">Full Name</Label>
@@ -101,19 +101,6 @@ export default function ProfileForm({
             placeholder="Enter your full name"
           />
         </div>
-
-        {/* Bio */}
-        {/* <div>
-          <Label htmlFor="bio">Bio</Label>
-          <Textarea
-            id="bio"
-            value={formData.bio}
-            onChange={(e) => onInputChange("bio", e.target.value)}
-            disabled={!isEditing}
-            placeholder="Tell us about yourself"
-            rows={3}
-          />
-        </div> */}
 
         {/* Email (Read-only) */}
         <div>
@@ -145,8 +132,31 @@ export default function ProfileForm({
           </div>
         </div>
 
-        {/* Address */}
+        {/* Emirate */}
         <div>
+          <Label htmlFor="emirate">Emirate</Label>
+          <Select
+            value={formData.emirate}
+            onValueChange={(value) => onInputChange("emirate", value)}
+            disabled={!isEditing}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select emirate" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="dubai">Dubai</SelectItem>
+              <SelectItem value="abu-dhabi">Abu Dhabi</SelectItem>
+              <SelectItem value="sharjah">Sharjah</SelectItem>
+              <SelectItem value="ajman">Ajman</SelectItem>
+              <SelectItem value="ras-al-khaimah">Ras Al Khaimah</SelectItem>
+              <SelectItem value="fujairah">Fujairah</SelectItem>
+              <SelectItem value="umm-al-quwain">Umm Al Quwain</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Address */}
+        <div className="sm:col-span-2">
           <Label htmlFor="address">Address</Label>
           <div className="relative">
             {isLoadingLocation ? (
@@ -167,53 +177,6 @@ export default function ProfileForm({
               placeholder="1234 Main Street"
               className="pl-10"
             />
-          </div>
-        </div>
-
-        {/* City & Emirate */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {/* <div>
-            <Label htmlFor="city">City</Label>
-            <Select
-              value={formData.city}
-              onValueChange={(value) => onInputChange("city", value)}
-              disabled={!isEditing}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select city" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="dubai">Dubai</SelectItem>
-                <SelectItem value="abu-dhabi">Abu Dhabi</SelectItem>
-                <SelectItem value="sharjah">Sharjah</SelectItem>
-                <SelectItem value="ajman">Ajman</SelectItem>
-                <SelectItem value="rak">Ras Al Khaimah</SelectItem>
-                <SelectItem value="fujairah">Fujairah</SelectItem>
-                <SelectItem value="uaq">Umm Al Quwain</SelectItem>
-              </SelectContent>
-            </Select>
-          </div> */}
-
-          <div>
-            <Label htmlFor="emirate">Emirate</Label>
-            <Select
-              value={formData.emirate}
-              onValueChange={(value) => onInputChange("emirate", value)}
-              disabled={!isEditing}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select emirate" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="dubai">Dubai</SelectItem>
-                <SelectItem value="abu-dhabi">Abu Dhabi</SelectItem>
-                <SelectItem value="sharjah">Sharjah</SelectItem>
-                <SelectItem value="ajman">Ajman</SelectItem>
-                <SelectItem value="ras-al-khaimah">Ras Al Khaimah</SelectItem>
-                <SelectItem value="fujairah">Fujairah</SelectItem>
-                <SelectItem value="umm-al-quwain">Umm Al Quwain</SelectItem>
-              </SelectContent>
-            </Select>
           </div>
         </div>
       </div>

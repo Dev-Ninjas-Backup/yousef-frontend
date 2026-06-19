@@ -70,7 +70,7 @@ export default function AddProductPage() {
   const { data: profileData } = useGetUserProfileQuery();
 
   const [selectedPlanCard, setSelectedPlanCard] = useState<PlanCardType>("FREE");
-  const [promoDuration, setPromoDuration] = useState<"3" | "7">("7");
+  const [promoDuration, setPromoDuration] = useState<"7" | "30">("30");
   const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -87,6 +87,7 @@ export default function AddProductPage() {
     sellerEmail: "",
     sellerPhoneNumber: "",
     isPromoted: false,
+    garageId: "",
   });
 
   const [photos, setPhotos] = useState<File[]>([]);
@@ -141,6 +142,7 @@ export default function AddProductPage() {
         sellerName: profileData.data.fullName || "",
         sellerEmail: prev.sellerEmail || profileData.data.email || "",
         sellerPhoneNumber: prev.sellerPhoneNumber || profileData.data.phone || "",
+        garageId: prev.garageId || profileData.data.garages?.[0]?.id || "",
       }));
     }
   }, [profileData]);
@@ -249,6 +251,7 @@ export default function AddProductPage() {
         isPromoted: formData.isPromoted,
         listingPlan: selectedPlanCard,
         promotedDuration: promoDuration,
+        garageId: formData.garageId || undefined,
       }).unwrap();
 
       toast.success("Product created successfully!");
@@ -277,11 +280,16 @@ export default function AddProductPage() {
   const needsPayPer =
     selectedPlanCard === "PAY_PER" && (!userLimit || userLimit.productCredits <= 0);
 
-  const hasPromotionCredit =
-    userLimit?.promotionCredits && userLimit.promotionCredits > 0;
+  const promoPrice = promoDuration === "7"
+    ? Number(paymentConfig?.promotionalAdPrice3Days || 49)
+    : Number(paymentConfig?.promotionalAdPrice7Days || 99);
+
+  const userCredits = userLimit?.promotionCredits || 0;
+  const promoDeduction = Math.min(promoPrice, userCredits);
+  const remainingPromoCost = promoPrice - promoDeduction;
 
   const needsPromotionPayment =
-    formData.isPromoted && !hasPromotionCredit && selectedPlanCard !== "FREE";
+    formData.isPromoted && remainingPromoCost > 0 && selectedPlanCard !== "FREE";
 
   const isAnyPaymentNeeded =
     needsMonthlySubscription || needsPayPer || needsPromotionPayment;
@@ -378,6 +386,31 @@ export default function AddProductPage() {
                 </SelectContent>
               </Select>
             </div>
+
+            {profileData?.data?.garages && profileData.data.garages.length > 0 && (
+              <div>
+                <Label htmlFor="garageId" className="font-semibold text-gray-700">
+                  Select Garage
+                </Label>
+                <Select
+                  value={formData.garageId}
+                  onValueChange={(value) =>
+                    setFormData({ ...formData, garageId: value })
+                  }
+                >
+                  <SelectTrigger className="mt-1.5 w-full focus:ring-indigo-500">
+                    <SelectValue placeholder="Select a garage" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {profileData.data.garages.map((garage) => (
+                      <SelectItem key={garage.id} value={garage.id}>
+                        {garage.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
@@ -439,6 +472,7 @@ export default function AddProductPage() {
                 <SelectContent>
                   <SelectItem value="New">New</SelectItem>
                   <SelectItem value="Used">Used</SelectItem>
+                  <SelectItem value="Refurbished">Refurbished</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -714,9 +748,16 @@ export default function AddProductPage() {
             >
               <div>
                 <div className="flex items-center justify-between">
-                  <span className="bg-green-100 text-green-800 text-xs font-bold px-2.5 py-1 rounded-full uppercase">
-                    Free Plan
-                  </span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="bg-green-100 text-green-800 text-xs font-bold px-2.5 py-1 rounded-full uppercase">
+                      Free Plan
+                    </span>
+                    {!userLimit?.hasProductMonthly && freeProductsLeft > 0 && (
+                      <span className="bg-green-100 text-green-800 text-[9px] font-bold px-1.5 py-0.5 rounded flex items-center gap-0.5">
+                        <Check className="w-2.5 h-2.5" /> Current plan
+                      </span>
+                    )}
+                  </div>
                   <input
                     type="radio"
                     name="listingPlan"
@@ -886,7 +927,7 @@ export default function AddProductPage() {
                       <li className="flex items-center gap-1">✓ Up to 10 listings</li>
                       <li className="flex items-center gap-1">✓ Active for 60 days</li>
                       <li className="flex items-center gap-1">✓ Standard visibility</li>
-                      <li className="flex items-center gap-1">✓ Promotion available</li>
+                      <li className="flex items-center gap-1 text-red-500 font-medium">✗ No promotion included</li>
                     </ul>
                   </div>
                 </div>
@@ -1041,17 +1082,17 @@ export default function AddProductPage() {
                     : ""
                 }`}
               >
-                {/* 3 Days Option */}
+                {/* 7 Days Option */}
                 <div
-                  onClick={() => setPromoDuration("3")}
+                  onClick={() => setPromoDuration("7")}
                   className={`border rounded-xl p-4 flex flex-col justify-between cursor-pointer transition-all ${
-                    promoDuration === "3" && formData.isPromoted
+                    promoDuration === "7" && formData.isPromoted
                       ? "border-2 border-indigo-600 bg-indigo-50/5 ring-1 ring-indigo-600"
                       : "border-gray-200 hover:border-indigo-300"
                   }`}
                 >
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-gray-950 text-sm">3 Days Promotion</span>
+                    <span className="font-bold text-gray-955 text-sm">7 Days Promotion</span>
                     <span className="font-black text-indigo-600 text-base">{paymentConfig?.promotionalAdPrice3Days || "49"} AED</span>
                   </div>
                   <ul className="text-xs text-gray-600 space-y-1.5 mt-3 pt-3 border-t">
@@ -1066,11 +1107,11 @@ export default function AddProductPage() {
                   </ul>
                 </div>
 
-                {/* 7 Days Option */}
+                {/* 30 Days Option */}
                 <div
-                  onClick={() => setPromoDuration("7")}
+                  onClick={() => setPromoDuration("30")}
                   className={`border rounded-xl p-4 flex flex-col justify-between cursor-pointer transition-all relative ${
-                    promoDuration === "7" && formData.isPromoted
+                    promoDuration === "30" && formData.isPromoted
                       ? "border-2 border-indigo-600 bg-indigo-50/5 ring-1 ring-indigo-600"
                       : "border-gray-200 hover:border-indigo-300"
                   }`}
@@ -1079,7 +1120,7 @@ export default function AddProductPage() {
                     Recommended
                   </span>
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-gray-950 text-sm">7 Days Promotion</span>
+                    <span className="font-bold text-gray-955 text-sm">30 Days Promotion</span>
                     <span className="font-black text-indigo-600 text-base">{paymentConfig?.promotionalAdPrice7Days || "99"} AED</span>
                   </div>
                   <ul className="text-xs text-gray-600 space-y-1.5 mt-3 pt-3 border-t">
@@ -1110,7 +1151,7 @@ export default function AddProductPage() {
                     <TrendingUp className="w-4 h-4 text-indigo-600" /> How Promotion Works
                   </h4>
                   <ol className="list-decimal list-inside space-y-1 pl-1">
-                    <li>Select promotion duration (3 or 7 days)</li>
+                    <li>Select promotion duration (7 or 30 days)</li>
                     <li>Pay or consume 1 promotion credit</li>
                     <li>Your product gets a "Promoted" badge on active listing list</li>
                     <li>Your listing appears higher in searches</li>
@@ -1137,14 +1178,27 @@ export default function AddProductPage() {
                     <h3 className="font-bold text-gray-900 text-xs uppercase tracking-wider">Your Promotion Status</h3>
                     
                     {formData.isPromoted ? (
-                      <div className="bg-indigo-50 border border-indigo-100 rounded-xl p-3.5 text-indigo-900 space-y-1 text-xs">
-                        <p className="font-bold flex items-center gap-1.5">
+                      <div className="bg-indigo-50 border border-indigo-100 rounded-xl p-3.5 text-indigo-900 space-y-2 text-xs">
+                        <p className="font-bold flex items-center gap-1.5 border-b pb-1.5 border-indigo-100">
                           <span className="h-2 w-2 rounded-full bg-indigo-600 animate-ping" />
                           Promotion Selected: {promoDuration} Days
                         </p>
-                        <p className="text-[11px] text-indigo-800/80 font-medium">
-                          Will consume 1 promotion credit. Will expire {promoDuration} days after approval.
-                        </p>
+                        <div className="space-y-1.5 text-[11px] font-medium text-indigo-800">
+                          <div className="flex justify-between">
+                            <span>Promotion Cost:</span>
+                            <span>{promoPrice} AED</span>
+                          </div>
+                          {promoDeduction > 0 && (
+                            <div className="flex justify-between text-emerald-700 font-semibold">
+                              <span>Credit Deduction:</span>
+                              <span>-{promoDeduction} AED</span>
+                            </div>
+                          )}
+                          <div className="flex justify-between border-t pt-1.5 border-indigo-200 font-extrabold text-indigo-950">
+                            <span>Total to Pay:</span>
+                            <span>{remainingPromoCost} AED</span>
+                          </div>
+                        </div>
                       </div>
                     ) : (
                       <div className="bg-gray-100 border rounded-xl p-3.5 text-gray-700 text-xs">
@@ -1159,7 +1213,7 @@ export default function AddProductPage() {
                         <div className="flex items-center justify-between font-medium text-gray-700">
                           <span>Available promotion credits:</span>
                           <span className="font-extrabold text-indigo-600 bg-indigo-50 border border-indigo-100 px-2 py-0.5 rounded-full">
-                            {userLimit?.promotionCredits || 0}
+                            {userLimit?.promotionCredits || 0} AED
                           </span>
                         </div>
                       )}
@@ -1168,7 +1222,14 @@ export default function AddProductPage() {
 
                   {needsPromotionPayment && (
                     <div className="pt-4 border-t">
-                      <PaymentPromotion formData={formData} duration={promoDuration} />
+                      <PaymentPromotion 
+                        formData={formData} 
+                        duration={promoDuration} 
+                        availableCredits={userCredits}
+                        deduction={promoDeduction}
+                        remainingCost={remainingPromoCost}
+                        price={promoPrice}
+                      />
                     </div>
                   )}
                 </div>

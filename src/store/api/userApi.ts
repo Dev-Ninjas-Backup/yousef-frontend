@@ -38,6 +38,7 @@ export interface User {
   productMonthlyStartDate?: string;
   productMonthlyEndDate?: string;
   productMonthlyPlanType?: string;
+  promotionCredits?: number;
 }
 
 export interface UpdateProfileRequest {

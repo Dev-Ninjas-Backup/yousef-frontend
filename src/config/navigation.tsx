@@ -101,6 +101,11 @@ export const garageAdminNavItems: NavItem[] = [
     icon: <LuMessageSquare className="text-lg" />,
   },
   {
+    label: "Garage Reviews",
+    path: "/garage-admin/reviews",
+    icon: <LuStar className="text-lg" />,
+  },
+  {
     label: "Notifications",
     path: "/garage-admin/notifications",
     // qty: 2,

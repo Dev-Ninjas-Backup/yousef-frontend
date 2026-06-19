@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import React, { useState, useEffect, useRef, useMemo, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
   X,
@@ -29,7 +30,18 @@ import Cookies from "js-cookie";
 import { translationService } from "@/services/translation.service";
 
 export default function UserMessagesPage() {
+  return (
+    <Suspense fallback={<div className="p-8 text-center text-gray-500">Loading messages...</div>}>
+      <UserMessagesContent />
+    </Suspense>
+  );
+}
+
+function UserMessagesContent() {
   const currentUserId = useAppSelector((state) => state.auth.user?.id);
+  const searchParams = useSearchParams();
+  const userIdParam = searchParams.get("userId");
+  const [activeTab, setActiveTab] = useState<"seller" | "garage">("seller");
   const [selectedChat, setSelectedChat] = useState<{
     id: string;
     name: string;
@@ -105,6 +117,24 @@ export default function UserMessagesPage() {
       pollingInterval: 15000, // Poll every 15s for new messages/chats
     }
   );
+
+  // Handle auto-selection via search parameters
+  useEffect(() => {
+    if (userIdParam && conversations && conversations.length > 0) {
+      const conv = conversations.find((c) => c.participant.id === userIdParam);
+      if (conv) {
+        setSelectedChat({
+          id: conv.participant.id,
+          name: conv.participant.fullName,
+          avatar: conv.participant.profilePhoto
+        });
+        setIsMobileChatOpen(true);
+        // Switch tab based on participant role
+        const isGarage = conv.participant.role === "GARAGE_OWNER";
+        setActiveTab(isGarage ? "garage" : "seller");
+      }
+    }
+  }, [userIdParam, conversations]);
 
   // Current active conversation helper
   const activeConversation = useMemo(() => {
@@ -345,13 +375,16 @@ export default function UserMessagesPage() {
     handleTyping();
   };
 
-  // Filter conversation list based on query
+  // Filter conversation list based on query and active tab
   const filteredConversations = useMemo(() => {
     if (!conversations) return [];
-    return conversations.filter((conv) =>
-      conv.participant.fullName.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  }, [conversations, searchQuery]);
+    return conversations.filter((conv) => {
+      const matchesSearch = conv.participant.fullName.toLowerCase().includes(searchQuery.toLowerCase());
+      const isGarage = conv.participant.role === "GARAGE_OWNER";
+      const matchesTab = activeTab === "garage" ? isGarage : !isGarage;
+      return matchesSearch && matchesTab;
+    });
+  }, [conversations, searchQuery, activeTab]);
 
   const activeUserStatus = selectedChat ? getUserStatus(selectedChat.id) : null;
   const isOnline = activeUserStatus?.isOnline ?? false;
@@ -414,6 +447,30 @@ export default function UserMessagesPage() {
                     className="pl-9 h-10 bg-white border-gray-200 focus-visible:ring-blue-500 rounded-xl"
                   />
                 </div>
+              </div>
+
+              {/* Tab Selectors */}
+              <div className="flex border-b border-gray-100 bg-gray-50/50">
+                <button
+                  onClick={() => setActiveTab("seller")}
+                  className={`flex-1 py-3 text-xs font-bold text-center border-b border-t-0 border-x-0 transition-all cursor-pointer ${
+                    activeTab === "seller"
+                      ? "border-blue-600 text-blue-600 bg-white border-b-2"
+                      : "border-transparent text-gray-500 hover:text-gray-900 border-b"
+                  }`}
+                >
+                  Sellers
+                </button>
+                <button
+                  onClick={() => setActiveTab("garage")}
+                  className={`flex-1 py-3 text-xs font-bold text-center border-b border-t-0 border-x-0 transition-all cursor-pointer ${
+                    activeTab === "garage"
+                      ? "border-blue-600 text-blue-600 bg-white border-b-2"
+                      : "border-transparent text-gray-500 hover:text-gray-900 border-b"
+                  }`}
+                >
+                  Garages
+                </button>
               </div>
 
               <div className="flex-1 overflow-y-auto divide-y divide-gray-50">

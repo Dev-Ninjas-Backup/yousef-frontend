@@ -232,6 +232,7 @@ const GetInTouch: React.FC = () => {
                 <SelectContent className="rounded-xl border-gray-100 shadow-xl">
                   <SelectItem value="CAR_PARTS" className="cursor-pointer"><span>{trans.form.subjects.carParts}</span></SelectItem>
                   <SelectItem value="CAR_SERVICE" className="cursor-pointer"><span>{trans.form.subjects.carService}</span></SelectItem>
+                  <SelectItem value="LIMITED_TIME_OFFER" className="cursor-pointer"><span>{trans.form.subjects.limitedTimeOffer}</span></SelectItem>
                   <SelectItem value="OTHERS" className="cursor-pointer"><span>{trans.form.subjects.others}</span></SelectItem>
                 </SelectContent>
               </Select>

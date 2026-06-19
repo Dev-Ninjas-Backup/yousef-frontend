@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/select";
 import { useUpdateProductMutation } from "@/store/api/garageAdminApis/products/products";
 import { useGetCategoriesQuery } from "@/store/api/garageAdminApis/categoryApi";
+import { useGetUserProfileQuery } from "@/store/api/userApi";
 import { toast } from "sonner";
 import { Upload, X } from "lucide-react";
 import Image from "next/image";
@@ -38,6 +39,7 @@ export function EditProductModal({
   const [updateProduct, { isLoading }] = useUpdateProductMutation();
   const { data: categoriesData, isLoading: categoriesLoading } =
     useGetCategoriesQuery();
+  const { data: profileData } = useGetUserProfileQuery();
 
   const [formData, setFormData] = useState({
     partName: "",
@@ -47,6 +49,7 @@ export function EditProductModal({
     quantity: "",
     brand: "",
     description: "",
+    garageId: "",
   });
 
   const [photos, setPhotos] = useState<File[]>([]);
@@ -63,6 +66,7 @@ export function EditProductModal({
         quantity: product.quantity?.toString() || "",
         brand: product.brand || "",
         description: product.description || "",
+        garageId: product.garageId || "",
       });
 
       // Reset states when product changes
@@ -135,6 +139,8 @@ export function EditProductModal({
         updateData.brand = formData.brand || "";
       if (formData.description !== product.description)
         updateData.description = formData.description || "";
+      if (formData.garageId !== product.garageId)
+        updateData.garageId = formData.garageId || null;
 
       // Photos - only if new photos added
       if (photos.length > 0) {
@@ -225,7 +231,7 @@ export function EditProductModal({
                 </SelectContent>
               </Select>
             </div>
-
+ 
             <div>
               <Label htmlFor="condition">Condition *</Label>
               <Select
@@ -245,6 +251,32 @@ export function EditProductModal({
               </Select>
             </div>
           </div>
+
+          {profileData?.data?.garages && profileData.data.garages.length > 0 && (
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="editGarageId">Select Garage</Label>
+                <Select
+                  value={formData.garageId || "none"}
+                  onValueChange={(value) =>
+                    setFormData({ ...formData, garageId: value === "none" ? "" : value })
+                  }
+                >
+                  <SelectTrigger id="editGarageId">
+                    <SelectValue placeholder="No Garage (Individual)" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">No Garage (Individual)</SelectItem>
+                    {profileData.data.garages.map((garage) => (
+                      <SelectItem key={garage.id} value={garage.id}>
+                        {garage.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          )}
 
           <div className="grid grid-cols-2 gap-4">
             <div>

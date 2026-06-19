@@ -9,10 +9,13 @@ import { Input } from "@/components/ui/input";
 import { useLanguage } from "@/context/LanguageContext";
 import { footerTranslations } from "@/translations/footer";
 import { Instagram } from "lucide-react";
+import { useGetPlatformSettingPublicQuery } from "@/store/fetures/setting.api";
 
 const Footer: React.FC = () => {
   const { t } = useLanguage();
   const trans = t(footerTranslations);
+  const { data: platformData } = useGetPlatformSettingPublicQuery();
+  const platformName = platformData?.data?.platformName || "SayaraHub";
 
   const currentYear = new Date().getFullYear();
 
@@ -22,7 +25,7 @@ const Footer: React.FC = () => {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-10 lg:gap-12 mb-12">
           {/* Column 1 */}
           <div className="col-span-2 md:col-span-1 flex flex-col items-start space-y-4">
-            <Image src={sayarahublogo} alt="SayaraHub" className="w-40 h-auto" />
+            <Image src={sayarahublogo} alt={platformName} className="w-40 h-auto" />
             <p className="text-sm text-gray-500 max-w-[220px]">
               Connecting buyers and sellers of spare parts across the UAE.
             </p>
@@ -85,8 +88,8 @@ const Footer: React.FC = () => {
         {/* Bottom Bar */}
         <div className="flex flex-col lg:flex-row justify-between items-center lg:items-end py-6 border-t border-gray-200 text-xs text-gray-400 gap-6">
           <div className="text-center lg:text-left">
-            <p className="mb-1">SayaraHub connects buyers and sellers. Transactions are handled directly between users.</p>
-            <p>© {currentYear} SayaraHub. All rights reserved.</p>
+            <p className="mb-1">{platformName} connects buyers and sellers. Transactions are handled directly between users.</p>
+            <p>© {currentYear} {platformName}. All rights reserved.</p>
           </div>
         </div>
       </div>

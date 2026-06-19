@@ -31,7 +31,7 @@ export default function InquiryModal({
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
-  const [subject, setSubject] = useState<"CAR_PARTS" | "CAR_SERVICE" | "OTHERS">("CAR_SERVICE");
+  const [subject, setSubject] = useState<"CAR_PARTS" | "CAR_SERVICE" | "LIMITED_TIME_OFFER" | "OTHERS">("CAR_SERVICE");
   const [otherSubject, setOtherSubject] = useState("");
   const [message, setMessage] = useState("");
 
@@ -134,14 +134,15 @@ export default function InquiryModal({
             <Label htmlFor="subject" className="text-xs font-bold text-gray-700">Inquiry Subject <span className="text-red-500">*</span></Label>
             <Select
               value={subject}
-              onValueChange={(val) => setSubject(val as "CAR_PARTS" | "CAR_SERVICE" | "OTHERS")}
+              onValueChange={(val) => setSubject(val as "CAR_PARTS" | "CAR_SERVICE" | "LIMITED_TIME_OFFER" | "OTHERS")}
             >
-              <SelectTrigger id="subject" className="bg-gray-50 border-gray-200 h-10 rounded-xl text-sm">
+              <SelectTrigger id="subject" className="bg-gray-550 bg-gray-50 border-gray-200 h-10 rounded-xl text-sm">
                 <SelectValue placeholder="Select Inquiry Subject" />
               </SelectTrigger>
               <SelectContent className="rounded-xl border-gray-100 shadow-xl">
                 <SelectItem value="CAR_SERVICE" className="cursor-pointer">Car Service Request</SelectItem>
                 <SelectItem value="CAR_PARTS" className="cursor-pointer">Car Parts Sourcing</SelectItem>
+                <SelectItem value="LIMITED_TIME_OFFER" className="cursor-pointer">Limited Time Offer</SelectItem>
                 <SelectItem value="OTHERS" className="cursor-pointer">Others</SelectItem>
               </SelectContent>
             </Select>

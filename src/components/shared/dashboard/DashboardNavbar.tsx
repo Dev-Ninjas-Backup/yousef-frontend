@@ -11,6 +11,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useLanguage } from "@/context/LanguageContext";
 import { navbarTranslations } from "@/translations/navbar";
 import { useGetConversationsQuery } from "@/store/api/privateChatApi";
+import { useGetPlatformSettingPublicQuery } from "@/store/fetures/setting.api";
 
 interface DashboardNavbarProps {
   onMenuToggle?: () => void;
@@ -21,6 +22,8 @@ const DashboardNavbar = ({ onMenuToggle }: DashboardNavbarProps) => {
   const pathname = usePathname();
   const { t } = useLanguage();
   const trans = t(navbarTranslations);
+  const { data: platformData } = useGetPlatformSettingPublicQuery();
+  const platformName = platformData?.data?.platformName || "SayaraHub";
 
   const { data: conversations } = useGetConversationsQuery(
     undefined,
@@ -75,7 +78,7 @@ const DashboardNavbar = ({ onMenuToggle }: DashboardNavbarProps) => {
                 </p>
                 <p className="text-xs text-gray-500">
                   {isAdmin
-                    ? "SayaraHub"
+                    ? platformName
                     : profile?.data?.fullName || user?.name || "Garage Admin"}
                 </p>
               </div>
