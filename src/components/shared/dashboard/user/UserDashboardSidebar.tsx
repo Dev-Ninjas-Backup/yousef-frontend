@@ -9,11 +9,8 @@ import {
   Check, 
   Settings, 
   Zap, 
-  FolderKanban, 
-  MessageSquare,
   Crown,
-  ClipboardCheck,
-  Plus
+  ClipboardCheck
 } from "lucide-react";
 import { useGetUserProfileQuery } from "@/store/api/userApi";
 import { useGetMyProductsQuery } from "@/store/api/sparePartsApi";
@@ -423,67 +420,6 @@ export default function UserDashboardSidebar({ activePage }: UserDashboardSideba
           >
             <Zap className="w-3.5 h-3.5" />
             Upgrade Plan
-          </Link>
-        </div>
-      </div>
-
-      {/* Quick Actions Card */}
-      <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
-        <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4 flex items-center gap-1.5">
-          <Zap className="w-4 h-4 text-amber-500 fill-amber-500" />
-          Quick Actions
-        </h3>
-
-        <div className="space-y-3">
-          {/* Add Product Action */}
-          <Link
-            href="/user/my-products/add-product"
-            className="flex items-center justify-between p-3 rounded-xl border border-gray-50 hover:border-amber-100 hover:bg-amber-50/10 transition-all group"
-          >
-            <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-[#FEF3C7] text-[#D97706] rounded-lg group-hover:bg-[#FDE68A] transition-colors">
-                <Plus className="w-4 h-4" />
-              </div>
-              <div>
-                <h4 className="text-xs font-bold text-gray-800">Add Product</h4>
-                <p className="text-[10px] text-gray-400">List a new spare part</p>
-              </div>
-            </div>
-            <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-amber-600 transition-colors" />
-          </Link>
-
-          {/* Listings Action */}
-          <Link
-            href="/user/my-products"
-            className="flex items-center justify-between p-3 rounded-xl border border-gray-50 hover:border-amber-100 hover:bg-amber-50/10 transition-all group"
-          >
-            <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-[#FEF3C7] text-[#D97706] rounded-lg group-hover:bg-[#FDE68A] transition-colors">
-                <FolderKanban className="w-4 h-4" />
-              </div>
-              <div>
-                <h4 className="text-xs font-bold text-gray-800">My Listings</h4>
-                <p className="text-[10px] text-gray-400">View and manage your products</p>
-              </div>
-            </div>
-            <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-amber-600 transition-colors" />
-          </Link>
-
-          {/* Messages Action */}
-          <Link
-            href="/user/messages"
-            className="flex items-center justify-between p-3 rounded-xl border border-gray-50 hover:border-amber-100 hover:bg-amber-50/10 transition-all group"
-          >
-            <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-[#FEF3C7] text-[#D97706] rounded-lg group-hover:bg-[#FDE68A] transition-colors">
-                <MessageSquare className="w-4 h-4" />
-              </div>
-              <div>
-                <h4 className="text-xs font-bold text-gray-800">Messages</h4>
-                <p className="text-[10px] text-gray-400">Check your buyer conversations</p>
-              </div>
-            </div>
-            <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-amber-600 transition-colors" />
           </Link>
         </div>
       </div>
