@@ -318,7 +318,7 @@ useEffect(() => {
         <h3 className="text-sm font-bold text-gray-800 mb-3 border-t pt-4">Promotion Durations</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">3 Days Promotion Price (AED)</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">7 Days Promotion Price (AED)</label>
             <input
               type="text"
               value={promotionalAdPrice3Days}
@@ -327,7 +327,7 @@ useEffect(() => {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">7 Days Promotion Price (AED)</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">30 Days Promotion Price (AED)</label>
             <input
               type="text"
               value={promotionalAdPrice7Days}

@@ -70,7 +70,7 @@ export default function AddProductPage() {
   const { data: profileData } = useGetUserProfileQuery();
 
   const [selectedPlanCard, setSelectedPlanCard] = useState<PlanCardType>("FREE");
-  const [promoDuration, setPromoDuration] = useState<"3" | "7">("7");
+  const [promoDuration, setPromoDuration] = useState<"7" | "30">("30");
   const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -1077,17 +1077,17 @@ export default function AddProductPage() {
                     : ""
                 }`}
               >
-                {/* 3 Days Option */}
+                {/* 7 Days Option */}
                 <div
-                  onClick={() => setPromoDuration("3")}
+                  onClick={() => setPromoDuration("7")}
                   className={`border rounded-xl p-4 flex flex-col justify-between cursor-pointer transition-all ${
-                    promoDuration === "3" && formData.isPromoted
+                    promoDuration === "7" && formData.isPromoted
                       ? "border-2 border-indigo-600 bg-indigo-50/5 ring-1 ring-indigo-600"
                       : "border-gray-200 hover:border-indigo-300"
                   }`}
                 >
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-gray-950 text-sm">3 Days Promotion</span>
+                    <span className="font-bold text-gray-955 text-sm">7 Days Promotion</span>
                     <span className="font-black text-indigo-600 text-base">{paymentConfig?.promotionalAdPrice3Days || "49"} AED</span>
                   </div>
                   <ul className="text-xs text-gray-600 space-y-1.5 mt-3 pt-3 border-t">
@@ -1102,11 +1102,11 @@ export default function AddProductPage() {
                   </ul>
                 </div>
 
-                {/* 7 Days Option */}
+                {/* 30 Days Option */}
                 <div
-                  onClick={() => setPromoDuration("7")}
+                  onClick={() => setPromoDuration("30")}
                   className={`border rounded-xl p-4 flex flex-col justify-between cursor-pointer transition-all relative ${
-                    promoDuration === "7" && formData.isPromoted
+                    promoDuration === "30" && formData.isPromoted
                       ? "border-2 border-indigo-600 bg-indigo-50/5 ring-1 ring-indigo-600"
                       : "border-gray-200 hover:border-indigo-300"
                   }`}
@@ -1115,7 +1115,7 @@ export default function AddProductPage() {
                     Recommended
                   </span>
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-gray-950 text-sm">7 Days Promotion</span>
+                    <span className="font-bold text-gray-955 text-sm">30 Days Promotion</span>
                     <span className="font-black text-indigo-600 text-base">{paymentConfig?.promotionalAdPrice7Days || "99"} AED</span>
                   </div>
                   <ul className="text-xs text-gray-600 space-y-1.5 mt-3 pt-3 border-t">
@@ -1146,7 +1146,7 @@ export default function AddProductPage() {
                     <TrendingUp className="w-4 h-4 text-indigo-600" /> How Promotion Works
                   </h4>
                   <ol className="list-decimal list-inside space-y-1 pl-1">
-                    <li>Select promotion duration (3 or 7 days)</li>
+                    <li>Select promotion duration (7 or 30 days)</li>
                     <li>Pay or consume 1 promotion credit</li>
                     <li>Your product gets a "Promoted" badge on active listing list</li>
                     <li>Your listing appears higher in searches</li>
