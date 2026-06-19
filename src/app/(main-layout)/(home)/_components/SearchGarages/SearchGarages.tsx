@@ -206,7 +206,7 @@ const SearchGarages: React.FC = () => {
                   View All
                 </Button>
               </div>
-              <div className="space-y-3">
+              <div className="space-y-3 max-h-[380px] overflow-y-auto pr-1">
                 {nearbyResults.map((garage) => (
                   <div
                     key={garage.id}
