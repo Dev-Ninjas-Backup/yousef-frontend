@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -37,6 +39,7 @@ interface GarageCardProps {
   ownerId?: string;
   phone?: string;
   brandExpertise?: string[];
+  profileImage?: string | null;
 }
 
 export default function GarageCard({
@@ -56,9 +59,15 @@ export default function GarageCard({
   ownerId,
   phone,
   brandExpertise = [],
+  profileImage,
 }: GarageCardProps) {
   const { isAuthenticated } = useAuth();
   const router = useRouter();
+  const [showAllServices, setShowAllServices] = useState(false);
+
+  const SERVICES_LIMIT = 4;
+  const visibleServices = showAllServices ? services : services.slice(0, SERVICES_LIMIT);
+  const hiddenCount = services.length - SERVICES_LIMIT;
 
   const getStatusColor = () => {
     switch (status) {
@@ -210,11 +219,24 @@ export default function GarageCard({
               {/* Info */}
 
               <div className="flex gap-4">
-                {/* Icon */}
+                {/* Icon or Profile Image */}
                 <div
-                  className={`flex h-12 w-12 md:h-20 md:w-20 items-center justify-center rounded-lg ${getIconBgColor()}`}
+                  className={`flex h-12 w-12 md:h-20 md:w-20 items-center justify-center rounded-lg overflow-hidden flex-shrink-0 ${!profileImage ? getIconBgColor() : ""}`}
                 >
-                  {renderIcon()}
+                  {profileImage ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={profileImage}
+                      alt={name}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).style.display = "none";
+                        (e.target as HTMLImageElement).parentElement!.classList.add(...getIconBgColor().split(" "));
+                      }}
+                    />
+                  ) : (
+                    renderIcon()
+                  )}
                 </div>
                 <div>
                   {" "}
@@ -264,8 +286,8 @@ export default function GarageCard({
           </div>
 
           {/* Services */}
-          <div className="mb-3 flex flex-wrap gap-2">
-            {services.map((service, index) => (
+          <div className="mb-3 flex flex-wrap gap-1.5 items-center">
+            {visibleServices.map((service, index) => (
               <Badge
                 key={index}
                 variant="default"
@@ -274,6 +296,24 @@ export default function GarageCard({
                 {service}
               </Badge>
             ))}
+            {!showAllServices && hiddenCount > 0 && (
+              <button
+                type="button"
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShowAllServices(true); }}
+                className="text-xs text-blue-600 hover:text-blue-800 font-medium px-2 py-0.5 rounded-full bg-blue-50 hover:bg-blue-100 transition-colors cursor-pointer whitespace-nowrap"
+              >
+                +{hiddenCount} more
+              </button>
+            )}
+            {showAllServices && services.length > SERVICES_LIMIT && (
+              <button
+                type="button"
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShowAllServices(false); }}
+                className="text-xs text-gray-500 hover:text-gray-700 font-medium px-2 py-0.5 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors cursor-pointer whitespace-nowrap"
+              >
+                Show less
+              </button>
+            )}
           </div>
 
           {/* Brand Expertise */}

@@ -35,6 +35,15 @@ export const serviceTranslations = {
       sortByPrice: "Sort by Price",
       showMap: "Show Map",
     },
+    filters: {
+      searchGarage: "Search for specific garage...",
+      searchService: "Search services...",
+      emergencyTowing: "Emergency Towing",
+      mobileHomeService: "Mobile Home Car Service",
+      allServices: "All Services",
+      expertsIn: "Experts In",
+      allExpertises: "All Expertises",
+    },
     map: {
       enableLocation: "Enable Precise Location",
       updateLocation: "Update Location",
@@ -80,6 +89,15 @@ export const serviceTranslations = {
       sortByPrice: "ترتيب حسب السعر",
       showMap: "عرض الخريطة",
     },
+    filters: {
+      searchGarage: "ابحث عن ورشة معينة...",
+      searchService: "البحث عن الخدمات...",
+      emergencyTowing: "سحب طوارئ",
+      mobileHomeService: "خدمة صيانة سيارات متنقلة",
+      allServices: "جميع الخدمات",
+      expertsIn: "خبراء في",
+      allExpertises: "جميع التخصصات",
+    },
     map: {
       enableLocation: "تفعيل الموقع الدقيق",
       updateLocation: "تحديث الموقع",
@@ -123,6 +141,15 @@ export const serviceTranslations = {
       sortByRating: "रेटिंग से क्रमबद्ध करें",
       sortByPrice: "कीमत से क्रमबद्ध करें",
       showMap: "मैप दिखाएं",
+    },
+    filters: {
+      searchGarage: "विशिष्ट गैरेज खोजें...",
+      searchService: "सेवाएं खोजें...",
+      emergencyTowing: "आपातकालीन टोइंग",
+      mobileHomeService: "मोबाइल होम कार सर्विस",
+      allServices: "सभी सेवाएं",
+      expertsIn: "विशेषज्ञ",
+      allExpertises: "सभी विशेषज्ञता",
     },
     map: {
       enableLocation: "सटीक स्थान सक्षम करें",
