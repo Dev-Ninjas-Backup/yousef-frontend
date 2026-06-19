@@ -467,6 +467,7 @@ export default function AddProductPage() {
                 <SelectContent>
                   <SelectItem value="New">New</SelectItem>
                   <SelectItem value="Used">Used</SelectItem>
+                  <SelectItem value="Refurbished">Refurbished</SelectItem>
                 </SelectContent>
               </Select>
             </div>

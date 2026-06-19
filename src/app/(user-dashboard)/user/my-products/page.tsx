@@ -511,6 +511,7 @@ export default function UserMyProductsPage() {
                 <option value="all">All Conditions</option>
                 <option value="new">New</option>
                 <option value="used">Used</option>
+                <option value="refurbished">Refurbished</option>
               </select>
             </div>
 

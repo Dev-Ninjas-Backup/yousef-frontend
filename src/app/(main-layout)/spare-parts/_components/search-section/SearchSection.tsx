@@ -57,20 +57,51 @@ export default function SearchSection({
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setDropdownOpen(false);
+        const selected = apiSellers.find((s) => s.id === currentUserId);
+        if (selected) {
+          setSellerSearch(selected.fullName);
+        } else {
+          setSellerSearch("");
+        }
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, []);
+  }, [currentUserId, apiSellers]);
+
+  useEffect(() => {
+    const selected = apiSellers.find((s) => s.id === currentUserId);
+    if (selected) {
+      setSellerSearch(selected.fullName);
+    } else {
+      setSellerSearch("");
+    }
+  }, [currentUserId, apiSellers]);
+
+  const handleFocus = () => {
+    setDropdownOpen(true);
+    if (currentUserId) {
+      setSellerSearch("");
+    }
+  };
+
+  const handleClear = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onUserChange("");
+    setSellerSearch("");
+    setDropdownOpen(false);
+  };
 
   const selectedSeller = apiSellers.find((s) => s.id === currentUserId);
   const sellerButtonLabel = selectedSeller ? selectedSeller.fullName : "All Sellers";
 
-  const filteredSellers = apiSellers.filter((seller) =>
-    seller.fullName.toLowerCase().includes(sellerSearch.toLowerCase())
-  );
+  const filteredSellers = sellerSearch.trim() === ""
+    ? []
+    : apiSellers.filter((seller) =>
+        seller.fullName.toLowerCase().includes(sellerSearch.toLowerCase())
+      );
 
   const conditions = [
     { value: "all", label: trans.search.conditions.all },
@@ -113,31 +144,34 @@ export default function SearchSection({
               />
             </div>
 
-            {/* User/Seller Select (Searchable Dropdown) */}
+            {/* User/Seller Select (Autocomplete Input) */}
             <div className="w-full lg:w-48 flex-shrink-0 relative" ref={dropdownRef}>
-              <button
-                type="button"
-                onClick={() => setDropdownOpen(!dropdownOpen)}
-                className="w-full h-12 border border-gray-200 text-gray-600 bg-white rounded-lg px-3 flex items-center justify-between text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition text-left"
-              >
-                <span className="truncate">{sellerButtonLabel}</span>
-                <span className="text-gray-400 ml-1 text-xs">▼</span>
-              </button>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                <input
+                  type="text"
+                  placeholder="Search seller..."
+                  value={sellerSearch}
+                  onFocus={handleFocus}
+                  onChange={(e) => {
+                    setSellerSearch(e.target.value);
+                    setDropdownOpen(true);
+                  }}
+                  className="w-full h-12 pl-9 pr-8 border border-gray-200 text-gray-600 bg-white rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                />
+                {(sellerSearch || currentUserId) && (
+                  <button
+                    type="button"
+                    onClick={handleClear}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 p-0.5 rounded-full hover:bg-gray-100 transition"
+                  >
+                    <span className="text-xs">✕</span>
+                  </button>
+                )}
+              </div>
 
               {dropdownOpen && (
-                <div className="absolute top-full left-0 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-xl z-50 p-2 space-y-1.5 min-w-[200px]">
-                  {/* Search input inside dropdown */}
-                  <div className="relative">
-                    <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400 pointer-events-none" />
-                    <input
-                      type="text"
-                      placeholder="Search seller..."
-                      value={sellerSearch}
-                      onChange={(e) => setSellerSearch(e.target.value)}
-                      className="w-full h-9 pl-8 pr-3 border border-gray-200 rounded text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-                    />
-                  </div>
-
+                <div className="absolute top-full left-0 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-xl z-50 p-2 space-y-1 min-w-[200px]">
                   {/* Sellers list */}
                   <div className="max-h-48 overflow-y-auto space-y-0.5 scrollbar-thin">
                     <div
@@ -159,8 +193,8 @@ export default function SearchSection({
                         key={seller.id}
                         onClick={() => {
                           onUserChange(seller.id);
+                          setSellerSearch(seller.fullName);
                           setDropdownOpen(false);
-                          setSellerSearch("");
                         }}
                         className={`cursor-pointer p-2 rounded text-xs transition-colors truncate ${
                           currentUserId === seller.id
@@ -172,8 +206,11 @@ export default function SearchSection({
                         {seller.fullName}
                       </div>
                     ))}
-                    {filteredSellers.length === 0 && (
+                    {sellerSearch.trim() !== "" && filteredSellers.length === 0 && (
                       <p className="text-[11px] text-gray-400 italic p-2 text-center">No sellers found</p>
+                    )}
+                    {sellerSearch.trim() === "" && (
+                      <p className="text-[11px] text-gray-400 italic p-2 text-center">Type name to search...</p>
                     )}
                   </div>
                 </div>

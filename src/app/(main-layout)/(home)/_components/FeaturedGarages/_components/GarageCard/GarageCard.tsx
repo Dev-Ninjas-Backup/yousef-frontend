@@ -55,7 +55,7 @@ const GarageCard: React.FC<GarageCardProps> = ({
     }
   };
 
-  const handleMessage = async (e: React.MouseEvent) => {
+  const handleMessage = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     if (!garageOwnerId) return;
@@ -66,37 +66,14 @@ const GarageCard: React.FC<GarageCardProps> = ({
       return;
     }
 
-    try {
-      const token = Cookies.get("token");
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/private-chat/send-message/${garageOwnerId}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          content: `Hi! I'm interested in your garage services at ${name} (${location}). Could you please provide more information?`,
-          recipientId: garageOwnerId
-        })
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        const chatEvent = new CustomEvent('openChat', {
-          detail: {
-            userId: garageOwnerId,
-            userName: name
-          }
-        });
-        window.dispatchEvent(chatEvent);
-      } else {
-        toast.error(data.message || "Failed to start conversation.");
+    const chatEvent = new CustomEvent('openChat', {
+      detail: {
+        userId: garageOwnerId,
+        userName: name,
+        prefilledMessage: `Hi! I'm interested in your garage services at ${name} (${location}). Could you please provide more information?`
       }
-    } catch (error) {
-      console.error('Failed to start conversation:', error);
-      toast.error("Failed to start conversation. Please try again.");
-    }
+    });
+    window.dispatchEvent(chatEvent);
   };
 
   // Mock services if empty for demonstration of the design

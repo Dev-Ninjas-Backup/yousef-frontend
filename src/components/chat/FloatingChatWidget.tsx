@@ -64,12 +64,18 @@ export function FloatingChatWidget() {
   // Listen for custom openChat event
   useEffect(() => {
     const handleOpenChat = (event: CustomEvent) => {
-      const { userId, userName } = event.detail;
+      const { userId, userName, prefilledMessage } = event.detail;
       setIsOpen(true);
       setSelectedChat({
         id: userId,
         name: userName
       });
+      if (prefilledMessage) {
+        setMessage(prefilledMessage);
+      }
+      setTimeout(() => {
+        textareaRef.current?.focus();
+      }, 100);
     };
 
     window.addEventListener('openChat', handleOpenChat as EventListener);
@@ -176,7 +182,7 @@ export function FloatingChatWidget() {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const typingUsers = getTypingUsers();
-  const inputRef = useRef<HTMLInputElement | null>(null);
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const userStatus = selectedChat ? getUserStatus(selectedChat.id) : null;
   const isOnline = userStatus?.isOnline ?? false;
 
@@ -375,7 +381,7 @@ export function FloatingChatWidget() {
       setSelectedFiles([]);
       stopTyping(); // Stop typing indicator when message is sent
       setTimeout(() => {
-        inputRef.current?.focus();
+        textareaRef.current?.focus();
       }, 50);
     }
   };
@@ -383,6 +389,23 @@ export function FloatingChatWidget() {
   const handleMessageInput = (value: string) => {
     setMessage(value);
     handleTyping(); // Enable typing indicator
+  };
+
+  // Auto-resize textarea
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "36px";
+      const scrollHeight = textareaRef.current.scrollHeight;
+      const newHeight = Math.min(scrollHeight, 120);
+      textareaRef.current.style.height = `${newHeight}px`;
+    }
+  }, [message]);
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
   };
 
   const filteredConversations = conversations?.filter((conv) =>
@@ -854,7 +877,7 @@ export function FloatingChatWidget() {
                     </div>
                   )}
 
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-end gap-1.5">
                     {/* File attachment button */}
                     <input
                       type="file"
@@ -866,24 +889,26 @@ export function FloatingChatWidget() {
                     />
                     <label
                       htmlFor="file-input"
-                      className="cursor-pointer p-2 hover:bg-gray-100 rounded-full transition-colors"
+                      className="cursor-pointer p-2 hover:bg-gray-100 rounded-full transition-colors mb-0.5 shrink-0"
                     >
                       <Paperclip className="w-4 h-4 text-gray-500" />
                     </label>
 
-                    <Input
-                      ref={inputRef}
+                    <textarea
+                      ref={textareaRef}
                       value={message}
                       onChange={(e) => handleMessageInput(e.target.value)}
                       placeholder="Type message..."
-                      onKeyPress={(e) => e.key === "Enter" && handleSend()}
+                      onKeyDown={handleKeyDown}
                       disabled={!isConnected || isUploading}
-                      className="flex-1 h-9 rounded-full text-sm px-4"
+                      rows={1}
+                      className="flex-1 min-h-[36px] max-h-[120px] resize-none rounded-2xl border border-gray-200 bg-white px-4 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-50 scrollbar-hide py-2 shadow-sm"
+                      style={{ height: "36px" }}
                     />
                     <Button
                       onClick={handleSend}
                       disabled={!isConnected || isUploading || (!message.trim() && selectedFiles.length === 0)}
-                      className="h-9 w-9 rounded-full bg-blue-500 hover:bg-blue-600 p-0"
+                      className="h-9 w-9 rounded-full bg-blue-500 hover:bg-blue-600 p-0 mb-0.5 shrink-0"
                     >
                       {isUploading ? (
                         <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />

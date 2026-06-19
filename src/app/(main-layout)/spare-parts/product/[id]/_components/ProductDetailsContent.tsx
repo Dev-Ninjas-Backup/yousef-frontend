@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Product } from "@/store/api/sparePartsApi";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
@@ -9,6 +10,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useAppSelector } from "@/store/hooks";
 import Cookies from "js-cookie";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 interface ProductDetailsContentProps {
   product?: Product;
@@ -25,6 +27,7 @@ export default function ProductDetailsContent({
 }: ProductDetailsContentProps) {
   const router = useRouter();
   const currentUser = useAppSelector((state) => state.auth.user);
+  const [isCallModalOpen, setIsCallModalOpen] = useState(false);
 
   const handleSellerClick = () => {
     if (product?.createdBy?.id) {
@@ -42,44 +45,23 @@ export default function ProductDetailsContent({
     return 'Individual';
   };
 
-  const handleContactSeller = async () => {
+  const handleContactSeller = () => {
     if (!product?.createdBy?.id) return;
     
-    try {
-      const token = Cookies.get("token");
-      // Create or get existing conversation with seller
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/private-chat/send-message/${product.createdBy.id}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          content: `Hi! I'm interested in your ${product.partName}. Is it still available?`,
-          recipientId: product.createdBy.id
-        })
-      });
-      
-      const data = await response.json();
-      
-      if (data.success) {
-        // Trigger FloatingChatWidget to open with this conversation
-        const event = new CustomEvent('openChat', {
-          detail: {
-            userId: product.createdBy.id,
-            userName: product.createdBy.fullName
-          }
-        });
-        window.dispatchEvent(event);
+    // Trigger FloatingChatWidget to open with this conversation and prefilled message
+    const event = new CustomEvent('openChat', {
+      detail: {
+        userId: product.createdBy.id,
+        userName: product.createdBy.fullName,
+        prefilledMessage: `Hi! I'm interested in your ${product.partName}. Is it still available?`
       }
-    } catch (error) {
-      console.error('Failed to start conversation:', error);
-    }
+    });
+    window.dispatchEvent(event);
   };
 
   const handleCallSeller = () => {
     if (product?.seller?.phoneNumber) {
-      window.location.href = `tel:${product.seller.phoneNumber}`;
+      setIsCallModalOpen(true);
     }
   };
 
@@ -327,6 +309,44 @@ export default function ProductDetailsContent({
           </motion.div>
         </motion.div>
       </div>
+
+      {/* Call Confirmation Dialog */}
+      <Dialog open={isCallModalOpen} onOpenChange={setIsCallModalOpen}>
+        <DialogContent className="max-w-xs sm:max-w-sm rounded-2xl bg-white border border-slate-100 p-6 shadow-xl z-[9999]" onOpenAutoFocus={(e) => e.preventDefault()}>
+          <DialogHeader className="flex flex-col items-center text-center">
+            <div className="w-12 h-12 rounded-full bg-green-50 text-green-600 flex items-center justify-center mb-4">
+              <Phone className="w-6 h-6" />
+            </div>
+            <DialogTitle className="text-lg font-bold text-slate-900">Call Seller</DialogTitle>
+            <DialogDescription className="text-slate-500 text-sm mt-1">
+              Are you sure you want to call {product?.seller?.name || 'the seller'}?
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4 text-center">
+            <p className="text-xl font-bold text-slate-800 font-mono tracking-wide">{product?.seller?.phoneNumber}</p>
+          </div>
+          <DialogFooter className="flex gap-2 sm:gap-0 sm:flex-row justify-center mt-2">
+            <Button
+              variant="outline"
+              onClick={() => setIsCallModalOpen(false)}
+              className="flex-1 rounded-xl border-slate-200 hover:bg-slate-50 text-slate-600 font-semibold"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={() => {
+                if (product?.seller?.phoneNumber) {
+                  window.location.href = `tel:${product.seller.phoneNumber}`;
+                }
+                setIsCallModalOpen(false);
+              }}
+              className="flex-1 rounded-xl bg-green-600 hover:bg-green-700 text-white font-semibold"
+            >
+              Call
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

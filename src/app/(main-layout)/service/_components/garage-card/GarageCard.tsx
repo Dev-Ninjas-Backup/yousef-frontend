@@ -18,6 +18,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import Cookies from "js-cookie";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 interface GarageCardProps {
   id: string;
@@ -64,6 +65,7 @@ export default function GarageCard({
   const { isAuthenticated } = useAuth();
   const router = useRouter();
   const [showAllServices, setShowAllServices] = useState(false);
+  const [isCallModalOpen, setIsCallModalOpen] = useState(false);
 
   const SERVICES_LIMIT = 4;
   const visibleServices = showAllServices ? services : services.slice(0, SERVICES_LIMIT);
@@ -150,7 +152,7 @@ export default function GarageCard({
     }
   };
 
-  const handleMessage = async (e: React.MouseEvent) => {
+  const handleMessage = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     if (!ownerId) return;
@@ -160,46 +162,22 @@ export default function GarageCard({
       return;
     }
     
-    try {
-      const token = Cookies.get("token");
-      // Create or get existing conversation with garage owner
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/private-chat/send-message/${ownerId}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          content: `Hi! I'm interested in your garage services at ${name}. Can you provide more information?`,
-          recipientId: ownerId
-        })
-      });
-      
-      const data = await response.json();
-      
-      if (data.success) {
-        // Trigger FloatingChatWidget to open with this conversation
-        const event = new CustomEvent('openChat', {
-          detail: {
-            userId: ownerId,
-            userName: name
-          }
-        });
-        window.dispatchEvent(event);
-      } else {
-        toast.error(data.message || "Failed to start conversation.");
+    // Trigger FloatingChatWidget to open with this conversation and pre-filled message
+    const event = new CustomEvent('openChat', {
+      detail: {
+        userId: ownerId,
+        userName: name,
+        prefilledMessage: `Hi! I'm interested in your garage services at ${name}. Can you provide more information?`
       }
-    } catch (error) {
-      console.error('Failed to start conversation:', error);
-      toast.error("Failed to start conversation. Please try again.");
-    }
+    });
+    window.dispatchEvent(event);
   };
 
   const handleCall = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     if (phone) {
-      window.location.href = `tel:${phone}`;
+      setIsCallModalOpen(true);
     }
   };
   return (
@@ -378,6 +356,50 @@ export default function GarageCard({
         </div>
       </div>
     </Card>
+
+    {/* Call Confirmation Dialog */}
+    <Dialog open={isCallModalOpen} onOpenChange={setIsCallModalOpen}>
+      <DialogContent className="max-w-xs sm:max-w-sm rounded-2xl bg-white border border-slate-100 p-6 shadow-xl z-[9999]" onOpenAutoFocus={(e) => e.preventDefault()}>
+        <DialogHeader className="flex flex-col items-center text-center">
+          <div className="w-12 h-12 rounded-full bg-green-50 text-green-600 flex items-center justify-center mb-4">
+            <Phone className="w-6 h-6" />
+          </div>
+          <DialogTitle className="text-lg font-bold text-slate-900">Call Garage</DialogTitle>
+          <DialogDescription className="text-slate-500 text-sm mt-1">
+            Are you sure you want to call {name}?
+          </DialogDescription>
+        </DialogHeader>
+        <div className="py-4 text-center">
+          <p className="text-xl font-bold text-slate-800 font-mono tracking-wide">{phone}</p>
+        </div>
+        <DialogFooter className="flex gap-2 sm:gap-0 sm:flex-row justify-center mt-2">
+          <Button
+            variant="outline"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setIsCallModalOpen(false);
+            }}
+            className="flex-1 rounded-xl border-slate-205 hover:bg-slate-50 text-slate-600 font-semibold"
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              if (phone) {
+                window.location.href = `tel:${phone}`;
+              }
+              setIsCallModalOpen(false);
+            }}
+            className="flex-1 rounded-xl bg-green-600 hover:bg-green-700 text-white font-semibold"
+          >
+            Call
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
     </motion.div>
   );
 }
