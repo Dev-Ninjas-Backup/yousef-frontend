@@ -19,6 +19,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import Cookies from "js-cookie";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { getTodayHoursDescription } from "@/utils/schedule";
 
 interface GarageCardProps {
   id: string;
@@ -41,6 +42,8 @@ interface GarageCardProps {
   phone?: string;
   brandExpertise?: string[];
   profileImage?: string | null;
+  weekdaysHours?: string | null;
+  weekendsHours?: string | null;
 }
 
 export default function GarageCard({
@@ -61,6 +64,8 @@ export default function GarageCard({
   phone,
   brandExpertise = [],
   profileImage,
+  weekdaysHours,
+  weekendsHours,
 }: GarageCardProps) {
   const { isAuthenticated } = useAuth();
   const router = useRouter();
@@ -74,15 +79,15 @@ export default function GarageCard({
   const getStatusColor = () => {
     switch (status) {
       case "Open 24/7":
-        return "bg-green-200 text-green-800";
+        return "bg-green-100 text-green-700 border border-green-200";
       case "Emergency":
-        return "bg-red-200 text-red-800";
+        return "bg-red-100 text-red-700 border border-red-200";
       case "Open Now":
-        return "bg-blue-200 text-blue-800";
-      case "Closes 10 PM":
-        return "bg-orange-200 text-orange-800";
+        return "bg-green-100 text-green-700 border border-green-200";
+      case "Closed":
+        return "bg-rose-50 text-rose-600 border border-rose-100";
       default:
-        return "bg-gray-500 text-gray-800";
+        return "bg-slate-100 text-slate-600 border border-slate-200";
     }
   };
 
@@ -247,9 +252,19 @@ export default function GarageCard({
                       <span className="text-sm text-gray-400">No reviews yet</span>
                     )}
                   </div>
-                  {/* Location */}
-                  <p className="mt-1 text-sm text-gray-500">
-                    {distance} • {location}
+                  {/* Location & Hours */}
+                  <p className="mt-1 text-xs md:text-sm text-gray-500 flex flex-wrap items-center gap-1.5">
+                    <span>{distance}</span>
+                    <span>•</span>
+                    <span>{location}</span>
+                    {weekdaysHours && (
+                      <>
+                        <span>•</span>
+                        <span className="inline-flex items-center gap-1 font-medium text-slate-600 bg-slate-50 px-2 py-0.5 rounded-md border border-slate-100/80">
+                          ⏰ {getTodayHoursDescription(weekdaysHours, weekendsHours)}
+                        </span>
+                      </>
+                    )}
                   </p>
                 </div>
               </div>

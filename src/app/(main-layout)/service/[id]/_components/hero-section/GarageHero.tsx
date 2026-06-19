@@ -90,8 +90,22 @@ export default function GarageHero({
     }
   };
 
-  const currentStatus = operatingHours[0]?.status || "Open";
-  const currentHours = operatingHours[0]?.hours || "8:00 AM - 8:00 PM";
+  const getTodayHours = () => {
+    if (operatingHours.length === 7) {
+      const todayIdx = new Date().getDay();
+      return operatingHours[todayIdx] || operatingHours[0];
+    } else {
+      // Legacy 2-item array (Weekdays at 0, Weekends at 1)
+      const todayIdx = new Date().getDay();
+      const isWeekend = todayIdx === 0 || todayIdx === 6; // Sunday or Saturday
+      const index = isWeekend ? 1 : 0;
+      return operatingHours[index] || operatingHours[0];
+    }
+  };
+
+  const todayHoursObj = getTodayHours();
+  const currentStatus = todayHoursObj?.status || "Open";
+  const currentHours = todayHoursObj?.hours || "8:00 AM - 8:00 PM";
 
   return (
     <section className="bg-white pt-24 pb-6 border-b border-slate-100">

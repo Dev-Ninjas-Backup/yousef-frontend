@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { Loader2, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, SlidersHorizontal, Search } from "lucide-react";
 import GarageCard from "../garage-card/GarageCard";
 import MapSection from "../map-section/MapSection";
+import { isGarageCurrentlyOpen } from "@/utils/schedule";
 import {
   Select,
   SelectContent,
@@ -258,7 +259,7 @@ export default function GarageList({ searchParams }: GarageListProps) {
         services: garage.services || [],
         description: garage.description || "Professional automotive services",
         priceRange: "AED 150-300",
-        status: "Open Now",
+        status: isGarageCurrentlyOpen(garage.weekdaysHours, garage.weekendsHours) ? "Open Now" : "Closed",
         position: { lat: garage.garageLat, lng: garage.garageLng },
         profileImage: garage.profileImage || null,
         icon: "wrench",
@@ -266,6 +267,8 @@ export default function GarageList({ searchParams }: GarageListProps) {
         phone: garage.garagePhone,
         email: garage.email,
         address: garage.formattedAddress,
+        weekdaysHours: garage.weekdaysHours,
+        weekendsHours: garage.weekendsHours,
         hours: {
           weekdays: garage.weekdaysHours,
           weekends: garage.weekendsHours,

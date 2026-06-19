@@ -32,6 +32,8 @@ const FeaturedGarages: React.FC = () => {
     longitude: garage.garageLng,
     garageOwnerId: garage.user?.id,
     profileImage: garage.profileImage,
+    weekdaysHours: garage.weekdaysHours,
+    weekendsHours: garage.weekendsHours,
   })) || [];
 
   const scroll = (direction: 'left' | 'right') => {
@@ -118,6 +120,8 @@ const FeaturedGarages: React.FC = () => {
                   totalReviews={garage.totalReviews}
                   services={garage.services}
                   profileImage={garage.profileImage}
+                  weekdaysHours={garage.weekdaysHours}
+                  weekendsHours={garage.weekendsHours}
                 />
               </AnimateOnScroll>
             ))}

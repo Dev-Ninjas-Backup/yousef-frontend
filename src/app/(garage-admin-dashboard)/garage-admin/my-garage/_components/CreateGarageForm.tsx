@@ -36,6 +36,97 @@ import { toast } from "sonner";
 import Image from "next/image";
 import { LocationForm } from "@/components/LocationForm";
 
+interface DaySchedule {
+  isClosed: boolean;
+  openTime: string;
+  closeTime: string;
+}
+
+interface WeeklySchedule {
+  Sunday: DaySchedule;
+  Monday: DaySchedule;
+  Tuesday: DaySchedule;
+  Wednesday: DaySchedule;
+  Thursday: DaySchedule;
+  Friday: DaySchedule;
+  Saturday: DaySchedule;
+}
+
+const DAYS_OF_WEEK: (keyof WeeklySchedule)[] = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday"
+];
+
+const TIME_OPTIONS = [
+  "12:00 AM", "12:30 AM", "1:00 AM", "1:30 AM", "2:00 AM", "2:30 AM",
+  "3:00 AM", "3:30 AM", "4:00 AM", "4:30 AM", "5:00 AM", "5:30 AM",
+  "6:00 AM", "6:30 AM", "7:00 AM", "7:30 AM", "8:00 AM", "8:30 AM",
+  "9:00 AM", "9:30 AM", "10:00 AM", "10:30 AM", "11:00 AM", "11:30 AM",
+  "12:00 PM", "12:30 PM", "1:00 PM", "1:30 PM", "2:00 PM", "2:30 PM",
+  "3:00 PM", "3:30 PM", "4:00 PM", "4:30 PM", "5:00 PM", "5:30 PM",
+  "6:00 PM", "6:30 PM", "7:00 PM", "7:30 PM", "8:00 PM", "8:30 PM",
+  "9:00 PM", "9:30 PM", "10:00 PM", "10:30 PM", "11:00 PM", "11:30 PM"
+];
+
+const parseExistingSchedule = (weekdaysHours: string | null, weekendsHours: string | null): WeeklySchedule => {
+  try {
+    if (weekdaysHours && weekdaysHours.startsWith("{")) {
+      const parsed = JSON.parse(weekdaysHours);
+      const schedule: any = {};
+      DAYS_OF_WEEK.forEach((day) => {
+        const value = parsed[day] || "Closed";
+        if (value.toLowerCase() === "closed") {
+          schedule[day] = { isClosed: true, openTime: "9:00 AM", closeTime: "6:00 PM" };
+        } else {
+          const parts = value.split(" - ");
+          schedule[day] = {
+            isClosed: false,
+            openTime: parts[0] || "9:00 AM",
+            closeTime: parts[1] || "6:00 PM",
+          };
+        }
+      });
+      return schedule as WeeklySchedule;
+    }
+  } catch (e) {
+    console.error("Failed to parse JSON working hours in parseExistingSchedule", e);
+  }
+
+  const schedule: any = {};
+  DAYS_OF_WEEK.forEach((day) => {
+    const isWeekend = day === "Sunday" || day === "Saturday";
+    const oldVal = isWeekend ? weekendsHours : weekdaysHours;
+    const value = oldVal || (isWeekend ? "Closed" : "8:00 AM - 8:00 PM");
+
+    if (value.toLowerCase() === "closed") {
+      schedule[day] = { isClosed: true, openTime: "9:00 AM", closeTime: "6:00 PM" };
+    } else {
+      const parts = value.split(" - ");
+      schedule[day] = {
+        isClosed: false,
+        openTime: parts[0] || "9:00 AM",
+        closeTime: parts[1] || "6:00 PM",
+      };
+    }
+  });
+
+  return schedule as WeeklySchedule;
+};
+
+const serializeSchedule = (schedule: WeeklySchedule): string => {
+  const serialized: Record<string, string> = {};
+  DAYS_OF_WEEK.forEach((day) => {
+    const d = schedule[day];
+    serialized[day] = d.isClosed ? "Closed" : `${d.openTime} - ${d.closeTime}`;
+  });
+  return JSON.stringify(serialized);
+};
+
 interface CreateGarageFormProps {
   onCancel: () => void;
   onSave: (data: any) => void;
@@ -65,6 +156,10 @@ export function CreateGarageForm({ onCancel, onSave }: CreateGarageFormProps) {
   const [showAddService, setShowAddService] = useState(false);
   const [editingService, setEditingService] = useState<string | null>(null);
   const [editServiceName, setEditServiceName] = useState("");
+
+  const [schedule, setSchedule] = useState<WeeklySchedule>(() =>
+    parseExistingSchedule("8:00 AM - 8:00 PM", "9:00 AM - 6:00 PM")
+  );
 
   const [formData, setFormData] = useState<{
     name: string;
@@ -244,8 +339,9 @@ export function CreateGarageForm({ onCancel, onSave }: CreateGarageFormProps) {
     apiFormData.append("emirate", formData.emirate);
     apiFormData.append("phone", formData.phone);
     apiFormData.append("email", formData.email);
-    apiFormData.append("weekdaysHours", formData.weekdaysHours);
-    apiFormData.append("weekendsHours", formData.weekendsHours);
+    const scheduleStr = serializeSchedule(schedule);
+    apiFormData.append("weekdaysHours", scheduleStr);
+    apiFormData.append("weekendsHours", "JSON_SCHEDULE");
     apiFormData.append("description", formData.description);
     apiFormData.append("certifications", formData.certifications);
     apiFormData.append("brandExpertise", formData.brandExpertise);
@@ -443,27 +539,67 @@ export function CreateGarageForm({ onCancel, onSave }: CreateGarageFormProps) {
         <CardHeader>
           <CardTitle>Working Hours</CardTitle>
         </CardHeader>
-        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <Label htmlFor="weekdays">Weekdays</Label>
-            <Input
-              id="weekdays"
-              value={formData.weekdaysHours}
-              onChange={(e) =>
-                setFormData({ ...formData, weekdaysHours: e.target.value })
-              }
-            />
-          </div>
-          <div>
-            <Label htmlFor="weekends">Weekends</Label>
-            <Input
-              id="weekends"
-              value={formData.weekendsHours}
-              onChange={(e) =>
-                setFormData({ ...formData, weekendsHours: e.target.value })
-              }
-            />
-          </div>
+        <CardContent className="space-y-4">
+          {DAYS_OF_WEEK.map((day) => {
+            const daySched = schedule[day] || { isClosed: true, openTime: "9:00 AM", closeTime: "6:00 PM" };
+            return (
+              <div key={day} className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-3 rounded-lg border border-gray-100 bg-gray-50/50">
+                <span className="font-semibold text-gray-800 w-28 shrink-0">{day}</span>
+                <div className="flex flex-wrap items-center gap-4 flex-1">
+                  <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={daySched.isClosed}
+                      onChange={(e) => {
+                        const val = e.target.checked;
+                        setSchedule((prev) => ({
+                          ...prev,
+                          [day]: { ...prev[day], isClosed: val },
+                        }));
+                      }}
+                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500 w-4 h-4"
+                    />
+                    Closed
+                  </label>
+                  {!daySched.isClosed && (
+                    <div className="flex items-center gap-2">
+                      <select
+                        value={daySched.openTime}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setSchedule((prev) => ({
+                            ...prev,
+                            [day]: { ...prev[day], openTime: val },
+                          }));
+                        }}
+                        className="bg-white border border-gray-200 text-gray-700 text-xs font-semibold px-2.5 py-1.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                      >
+                        {TIME_OPTIONS.map((time) => (
+                          <option key={time} value={time}>{time}</option>
+                        ))}
+                      </select>
+                      <span className="text-gray-400 text-xs">to</span>
+                      <select
+                        value={daySched.closeTime}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setSchedule((prev) => ({
+                            ...prev,
+                            [day]: { ...prev[day], closeTime: val },
+                          }));
+                        }}
+                        className="bg-white border border-gray-200 text-gray-700 text-xs font-semibold px-2.5 py-1.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                      >
+                        {TIME_OPTIONS.map((time) => (
+                          <option key={time} value={time}>{time}</option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
         </CardContent>
       </Card>
 

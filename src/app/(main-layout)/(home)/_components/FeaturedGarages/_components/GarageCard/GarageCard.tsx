@@ -11,6 +11,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import Cookies from "js-cookie";
+import { isGarageCurrentlyOpen, getTodayHoursDescription } from "@/utils/schedule";
 
 interface GarageCardProps {
   id?: string;
@@ -24,6 +25,8 @@ interface GarageCardProps {
   totalReviews?: number;
   services?: any[];
   profileImage?: string;
+  weekdaysHours?: string | null;
+  weekendsHours?: string | null;
 }
 
 const GarageCard: React.FC<GarageCardProps> = ({ 
@@ -37,7 +40,9 @@ const GarageCard: React.FC<GarageCardProps> = ({
   garageOwnerId,
   totalReviews = 0,
   services,
-  profileImage
+  profileImage,
+  weekdaysHours,
+  weekendsHours,
 }) => {
   const { isAuthenticated } = useAuth();
   const router = useRouter();
@@ -97,8 +102,10 @@ const GarageCard: React.FC<GarageCardProps> = ({
           />
           {/* Open Now Badge */}
           <div className="absolute top-4 left-4 bg-white px-3 py-1.5 rounded-full flex items-center gap-2 shadow-sm z-10">
-             <div className="w-2 h-2 rounded-full bg-[#16A34A]"></div>
-             <span className="text-xs font-bold text-gray-800">Open Now</span>
+             <div className={`w-2 h-2 rounded-full ${(!weekdaysHours || isGarageCurrentlyOpen(weekdaysHours, weekendsHours)) ? "bg-[#16A34A]" : "bg-rose-500"}`}></div>
+             <span className="text-xs font-bold text-gray-800">
+               {(!weekdaysHours || isGarageCurrentlyOpen(weekdaysHours, weekendsHours)) ? "Open Now" : "Closed"}
+             </span>
           </div>
         </div>
 
@@ -155,9 +162,16 @@ const GarageCard: React.FC<GarageCardProps> = ({
           </div>
 
           {/* Status */}
-          <div className="bg-[#F0FDF4] rounded-lg px-4 py-2.5 flex items-center gap-2 mb-6 border border-green-50 mt-auto">
-             <Clock className="w-4 h-4 text-[#16A34A]" />
-             <span className="text-sm text-[#15803D] font-medium">Open • Closes 8:00 PM</span>
+          <div className={`rounded-lg px-4 py-2.5 flex items-center gap-2 mb-6 border mt-auto ${
+            (!weekdaysHours || isGarageCurrentlyOpen(weekdaysHours, weekendsHours))
+              ? "bg-[#F0FDF4] border-green-50 text-[#15803D]"
+              : "bg-rose-50 border-rose-100 text-rose-700"
+          }`}>
+             <Clock className={`w-4 h-4 ${(!weekdaysHours || isGarageCurrentlyOpen(weekdaysHours, weekendsHours)) ? "text-[#16A34A]" : "text-rose-500"}`} />
+             <span className="text-sm font-medium">
+               {(!weekdaysHours || isGarageCurrentlyOpen(weekdaysHours, weekendsHours)) ? "Open Now" : "Closed"}
+               {weekdaysHours && ` • ${getTodayHoursDescription(weekdaysHours, weekendsHours)}`}
+             </span>
           </div>
 
           <div className="flex gap-3 mt-auto">

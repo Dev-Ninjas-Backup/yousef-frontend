@@ -171,15 +171,37 @@ export function GarageDetailsView({ garage, onEdit, onBack }: GarageDetailsViewP
               <Clock className="w-5 h-5 text-blue-600" />
               <h3 className="font-semibold text-gray-900">Working Hours</h3>
             </div>
-            <div className="space-y-3">
-              <div>
-                <p className="text-xs text-gray-500 mb-1">Weekdays</p>
-                <p className="text-sm font-medium">{garage.weekdaysHours}</p>
-              </div>
-              <div>
-                <p className="text-xs text-gray-500 mb-1">Weekends</p>
-                <p className="text-sm font-medium">{garage.weekendsHours}</p>
-              </div>
+            <div className="space-y-2 max-h-64 overflow-y-auto pr-1 scrollbar-thin">
+              {(() => {
+                if (garage.weekdaysHours && garage.weekdaysHours.startsWith("{")) {
+                  try {
+                    const parsed = JSON.parse(garage.weekdaysHours);
+                    const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+                    return days.map((day) => (
+                      <div key={day} className="flex justify-between items-center text-sm border-b border-gray-100/50 pb-1">
+                        <span className="text-gray-500 font-medium">{day}</span>
+                        <span className={`font-semibold ${parsed[day]?.toLowerCase() === "closed" ? "text-rose-500" : "text-gray-700"}`}>
+                          {parsed[day]}
+                        </span>
+                      </div>
+                    ));
+                  } catch (e) {
+                    console.error("Failed to parse weekdaysHours in GarageDetailsView", e);
+                  }
+                }
+                return (
+                  <>
+                    <div>
+                      <p className="text-xs text-gray-500 mb-1">Weekdays</p>
+                      <p className="text-sm font-medium text-gray-700">{garage.weekdaysHours || "8:00 AM - 8:00 PM"}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500 mb-1">Weekends</p>
+                      <p className="text-sm font-medium text-gray-700">{garage.weekendsHours || "Closed"}</p>
+                    </div>
+                  </>
+                );
+              })()}
             </div>
           </CardContent>
         </Card>

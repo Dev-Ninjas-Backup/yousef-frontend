@@ -7,6 +7,7 @@ import { Loader2, MapPin, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useGetNearbyGaragesQuery } from "@/store/api/garageApi";
 import Image from "next/image";
+import { getTodayHoursDescription } from "@/utils/schedule";
 
 function SearchNearbyContent() {
   const searchParams = useSearchParams();
@@ -164,12 +165,21 @@ function SearchNearbyContent() {
                     </div>
                   )}
 
-                  {/* Hours */}
-                  {garage.weekdaysHours && (
-                    <p className="text-xs text-gray-500 mt-2">
-                      {garage.weekdaysHours}
-                    </p>
-                  )}
+                  {/* Open Status & Hours */}
+                  <div className="mt-3 pt-3 border-t border-gray-100 flex items-center justify-between">
+                    {garage.weekdaysHours && (
+                      <span className="text-xs text-gray-500">
+                        ⏰ {getTodayHoursDescription(garage.weekdaysHours, garage.weekendsHours)}
+                      </span>
+                    )}
+                    <span className={`px-2 py-0.5 text-[10px] font-bold rounded-full border ${
+                      garage.isOpenNow
+                        ? "bg-green-50 text-green-700 border-green-100"
+                        : "bg-rose-50 text-rose-600 border-rose-100"
+                    }`}>
+                      {garage.isOpenNow ? "Open Now" : "Closed"}
+                    </span>
+                  </div>
                 </div>
               </motion.div>
             ))}
