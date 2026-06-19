@@ -253,11 +253,16 @@ export default function AddProductPage() {
   const needsPayPer =
     selectedPlanCard === "PAY_PER" && (!userLimit || userLimit.productCredits <= 0);
 
-  const hasPromotionCredit =
-    userLimit?.promotionCredits && userLimit.promotionCredits > 0;
+  const promoPrice = promoDuration === "7"
+    ? Number(paymentConfig?.promotionalAdPrice3Days || 49)
+    : Number(paymentConfig?.promotionalAdPrice7Days || 99);
+
+  const userCredits = userLimit?.promotionCredits || 0;
+  const promoDeduction = Math.min(promoPrice, userCredits);
+  const remainingPromoCost = promoPrice - promoDeduction;
 
   const needsPromotionPayment =
-    formData.isPromoted && !hasPromotionCredit && selectedPlanCard !== "FREE";
+    formData.isPromoted && remainingPromoCost > 0 && selectedPlanCard !== "FREE";
 
   const isAnyPaymentNeeded =
     needsMonthlySubscription || needsPayPer || needsPromotionPayment;
@@ -866,14 +871,27 @@ export default function AddProductPage() {
                     <h3 className="font-bold text-gray-900 text-xs uppercase tracking-wider">Your Promotion Status</h3>
                     
                     {formData.isPromoted ? (
-                      <div className="bg-indigo-50 border border-indigo-100 rounded-xl p-3.5 text-indigo-900 space-y-1 text-xs">
-                        <p className="font-bold flex items-center gap-1.5">
+                      <div className="bg-indigo-50 border border-indigo-100 rounded-xl p-3.5 text-indigo-900 space-y-2 text-xs">
+                        <p className="font-bold flex items-center gap-1.5 border-b pb-1.5 border-indigo-100">
                           <span className="h-2 w-2 rounded-full bg-indigo-600 animate-ping" />
                           Promotion Selected: {promoDuration} Days
                         </p>
-                        <p className="text-[11px] text-indigo-800/80 font-medium">
-                          Will consume 1 promotion credit. Will expire {promoDuration} days after approval.
-                        </p>
+                        <div className="space-y-1.5 text-[11px] font-medium text-indigo-800">
+                          <div className="flex justify-between">
+                            <span>Promotion Cost:</span>
+                            <span>{promoPrice} AED</span>
+                          </div>
+                          {promoDeduction > 0 && (
+                            <div className="flex justify-between text-emerald-700 font-semibold">
+                              <span>Credit Deduction:</span>
+                              <span>-{promoDeduction} AED</span>
+                            </div>
+                          )}
+                          <div className="flex justify-between border-t pt-1.5 border-indigo-200 font-extrabold text-indigo-950">
+                            <span>Total to Pay:</span>
+                            <span>{remainingPromoCost} AED</span>
+                          </div>
+                        </div>
                       </div>
                     ) : (
                       <div className="bg-gray-100 border rounded-xl p-3.5 text-gray-700 text-xs">
@@ -888,7 +906,7 @@ export default function AddProductPage() {
                         <div className="flex items-center justify-between font-medium text-gray-700">
                           <span>Available promotion credits:</span>
                           <span className="font-extrabold text-indigo-600 bg-indigo-50 border border-indigo-100 px-2 py-0.5 rounded-full">
-                            {userLimit?.promotionCredits || 0}
+                            {userLimit?.promotionCredits || 0} AED
                           </span>
                         </div>
                       )}
@@ -897,7 +915,14 @@ export default function AddProductPage() {
 
                   {needsPromotionPayment && (
                     <div className="pt-4 border-t">
-                      <PaymentPromotion formData={formData} duration={promoDuration} />
+                      <PaymentPromotion 
+                        formData={formData} 
+                        duration={promoDuration} 
+                        availableCredits={userCredits}
+                        deduction={promoDeduction}
+                        remainingCost={remainingPromoCost}
+                        price={promoPrice}
+                      />
                     </div>
                   )}
                 </div>

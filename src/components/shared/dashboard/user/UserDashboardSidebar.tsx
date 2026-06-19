@@ -10,7 +10,8 @@ import {
   Settings, 
   Zap, 
   Crown,
-  ClipboardCheck
+  ClipboardCheck,
+  Coins
 } from "lucide-react";
 import { useGetUserProfileQuery } from "@/store/api/userApi";
 import { useGetMyProductsQuery } from "@/store/api/sparePartsApi";
@@ -287,6 +288,19 @@ export default function UserDashboardSidebar({ activePage }: UserDashboardSideba
 
         {/* Stats list */}
         <div className="w-full space-y-3.5 mb-6">
+          {/* Available Credits */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-[#EDE9FE] text-[#7C3AED] rounded-lg">
+                <Coins className="w-4 h-4" />
+              </div>
+              <span className="text-gray-600 font-medium text-sm">Available Credits</span>
+            </div>
+            <span className="bg-indigo-50 border border-indigo-100 text-indigo-700 font-extrabold px-2.5 py-0.5 rounded-full text-xs">
+              {limitData?.promotionCredits || user?.promotionCredits || 0} AED
+            </span>
+          </div>
+
           {/* Active Listings */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
