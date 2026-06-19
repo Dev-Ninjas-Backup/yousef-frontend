@@ -7,6 +7,7 @@ import {
   Package,
   TrendingUp,
   Coins,
+  FileText,
 } from "lucide-react";
 import { overView } from "@/store/api/garageAdminApis/dashboard/overview";
 import { useGetUserProfileQuery } from "@/store/api/userApi";
@@ -22,14 +23,14 @@ const StatsCardGrid = ({ garageId }: StatsCardGridProps) => {
 
   if (isLoading || isProfileLoading) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-        <StatsCardSkeleton count={5} />
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+        <StatsCardSkeleton count={6} />
       </div>
     );
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
       <StatsCard
         icon={Coins}
         value={`${profileData?.data?.promotionCredits || 0} AED`}
@@ -59,6 +60,13 @@ const StatsCardGrid = ({ garageId }: StatsCardGridProps) => {
         label="Pending Approval"
         iconColor="text-yellow-600"
         bgColor="bg-yellow-50"
+      />
+      <StatsCard
+        icon={FileText}
+        value={data?.totalDrafts || 0}
+        label="Total Drafts"
+        iconColor="text-gray-600"
+        bgColor="bg-gray-50"
       />
       <StatsCard
         icon={MessageSquare}

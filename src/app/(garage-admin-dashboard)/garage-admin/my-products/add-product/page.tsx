@@ -855,7 +855,7 @@ export default function AddProductPage() {
                   </h4>
                   <ol className="list-decimal list-inside space-y-1 pl-1">
                     <li>Select promotion duration (7 or 30 days)</li>
-                    <li>Pay or consume 1 promotion credit</li>
+                    <li>Pay or consume promotion credits (1 credit = 1 AED)</li>
                     <li>Your product gets a "Promoted" badge on active listing list</li>
                     <li>Your listing appears higher in searches</li>
                   </ol>
