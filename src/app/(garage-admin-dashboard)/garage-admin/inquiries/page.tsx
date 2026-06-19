@@ -174,6 +174,7 @@ function InquiriesContent() {
     const colors: Record<string, string> = {
       CAR_PARTS: "bg-blue-100 text-blue-700 border border-blue-200",
       CAR_SERVICE: "bg-green-100 text-green-700 border border-green-200",
+      LIMITED_TIME_OFFER: "bg-orange-100 text-orange-700 border border-orange-200",
       OTHERS: "bg-purple-100 text-purple-700 border border-purple-200",
     };
     return colors[subject] || "bg-gray-100 text-gray-700 border border-gray-200";
@@ -274,6 +275,7 @@ function InquiriesContent() {
                 <option value="all">All Subjects</option>
                 <option value="CAR_SERVICE">Car Service</option>
                 <option value="CAR_PARTS">Car Parts</option>
+                <option value="LIMITED_TIME_OFFER">Limited Time Offer</option>
                 <option value="OTHERS">Others</option>
               </select>
             </div>

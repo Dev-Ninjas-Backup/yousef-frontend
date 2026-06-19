@@ -19,7 +19,7 @@ interface Inquiry {
   FirstName: string;
   LastName: string;
   email: string;
-  subject: "CAR_PARTS" | "CAR_SERVICE" | "OTHERS";
+  subject: "CAR_PARTS" | "CAR_SERVICE" | "LIMITED_TIME_OFFER" | "OTHERS";
   message: string;
   createdAt: string;
   othersubject?: string;
@@ -50,6 +50,7 @@ export function InquiryCard({ inquiry, onMarkClosed }: InquiryCardProps) {
     const colors = {
       CAR_PARTS: "bg-blue-100 text-blue-700",
       CAR_SERVICE: "bg-green-100 text-green-700",
+      LIMITED_TIME_OFFER: "bg-orange-100 text-orange-700 border border-orange-200",
       OTHERS: "bg-purple-100 text-purple-700",
     };
     return colors[inquiry.subject] || "bg-gray-100 text-gray-700";
