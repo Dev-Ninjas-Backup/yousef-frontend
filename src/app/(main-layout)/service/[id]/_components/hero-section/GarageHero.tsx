@@ -103,9 +103,34 @@ export default function GarageHero({
     }
   };
 
+  const checkIfOpen = (hoursStr: string): boolean => {
+    if (!hoursStr || hoursStr.toLowerCase() === "closed") return false;
+    const match = hoursStr.match(
+      /(\d{1,2}):?(\d{0,2})\s*(am|pm)?\s*-\s*(\d{1,2}):?(\d{0,2})\s*(am|pm)?/i
+    );
+    if (!match) return false;
+
+    const parseTimeLocal = (h: string, m: string, p?: string): number => {
+      let hour = parseInt(h);
+      const min = parseInt(m || "0");
+      if (p?.toLowerCase() === "pm" && hour !== 12) hour += 12;
+      if (p?.toLowerCase() === "am" && hour === 12) hour = 0;
+      return hour + min / 60;
+    };
+
+    const open = parseTimeLocal(match[1], match[2], match[3]);
+    const close = parseTimeLocal(match[4], match[5], match[6]);
+    
+    const now = new Date();
+    const current = now.getHours() + now.getMinutes() / 60;
+
+    return current >= open && current < close;
+  };
+
   const todayHoursObj = getTodayHours();
-  const currentStatus = todayHoursObj?.status || "Open";
-  const currentHours = todayHoursObj?.hours || "8:00 AM - 8:00 PM";
+  const isCurrentlyOpen = todayHoursObj ? checkIfOpen(todayHoursObj.hours) : false;
+  const currentStatus = isCurrentlyOpen ? "Open" : "Closed";
+  const currentHours = todayHoursObj?.hours || "Closed";
 
   return (
     <section className="bg-white pt-24 pb-6 border-b border-slate-100">

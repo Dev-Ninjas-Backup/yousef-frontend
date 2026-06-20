@@ -89,7 +89,7 @@ export default function ServicesOffered({ services = [] }: ServicesOfferedProps)
           <p className="text-slate-500 text-sm mt-1">Specialized services equipped with advanced tools and experts.</p>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
           {displayServices.map((serviceName, index) => {
             const config = getServiceConfig(serviceName);
             const Icon = config.icon;
@@ -97,23 +97,23 @@ export default function ServicesOffered({ services = [] }: ServicesOfferedProps)
             return (
               <motion.div
                 key={index}
-                className="flex flex-col items-center gap-3 rounded-xl bg-slate-50/50 p-5 border border-slate-100 hover:shadow-sm hover:bg-slate-55 transition-all duration-200"
-                whileHover={{ y: -4, transition: { duration: 0.2 } }}
+                className="flex items-center gap-3 rounded-xl bg-slate-50/50 p-3 border border-slate-100/80 hover:shadow-sm hover:bg-slate-100/50 transition-all duration-200"
+                whileHover={{ y: -2, transition: { duration: 0.2 } }}
               >
-                <div className={`w-12 h-12 rounded-xl ${config.bg} flex items-center justify-center border ${config.border} shadow-inner`}>
+                <div className={`w-9 h-9 rounded-lg ${config.bg} flex items-center justify-center border ${config.border} shadow-inner shrink-0`}>
                   {config.isSvg ? (
                     <Image 
                       src={Icon} 
                       alt={serviceName} 
-                      width={24} 
-                      height={24} 
+                      width={18} 
+                      height={18} 
                       className="object-contain"
                     />
                   ) : (
-                    <Icon className={`w-5 h-5 ${config.iconColor || "text-gray-500"}`} />
+                    <Icon className={`w-4.5 h-4.5 ${config.iconColor || "text-gray-500"}`} />
                   )}
                 </div>
-                <span className="text-center text-xs md:text-sm font-bold text-slate-800 tracking-tight leading-tight">
+                <span className="text-left text-xs md:text-sm font-semibold text-slate-700 tracking-tight truncate" title={serviceName}>
                   {serviceName}
                 </span>
               </motion.div>

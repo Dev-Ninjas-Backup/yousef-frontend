@@ -183,6 +183,14 @@ export function EditGarageForm({
   const [profilePreview, setProfilePreview] = useState<string>(
     garage?.profileImage || "",
   );
+  const [certificationFile, setCertificationFile] = useState<File | null>(null);
+
+  const handleCertificationFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setCertificationFile(file);
+    }
+  };
 
   const toggleService = (serviceName: string) => {
     setFormData((prev: any) => ({
@@ -325,6 +333,9 @@ export function EditGarageForm({
     apiFormData.append("services", JSON.stringify(formData.services));
     if (coverPhoto) apiFormData.append("coverPhoto", coverPhoto);
     if (profileImage) apiFormData.append("profileImage", profileImage);
+    if (certificationFile) {
+      apiFormData.append("certificationFile", certificationFile);
+    }
 
     try {
       await updateGarage({ id: garage.id, formData: apiFormData }).unwrap();
@@ -683,8 +694,11 @@ export function EditGarageForm({
       </Card>
 
       <Card>
-        <CardHeader>
+        <CardHeader className="space-y-1">
           <CardTitle>Brand Expertise (American, Japanese, etc.)</CardTitle>
+          <p className="text-xs text-amber-600 font-medium bg-amber-50 border border-amber-200 rounded-md p-2 w-fit">
+            Note: Newly selected brands will undergo admin review before appearing on your profile.
+          </p>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -734,7 +748,7 @@ export function EditGarageForm({
               {formData.description.length}/210 characters
             </p>
           </div>
-          <div>
+          <div className="space-y-2">
             <Label htmlFor="certifications">Certifications</Label>
             <Input
               id="certifications"
@@ -744,6 +758,46 @@ export function EditGarageForm({
               }
               placeholder="ASE Certified, ISO 9001:2015"
             />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="certificationFile">Upload Certification Proof File (Image/PDF)</Label>
+            <div className="flex items-center gap-3">
+              <Input
+                id="certificationFile"
+                type="file"
+                accept="image/*,application/pdf"
+                onChange={handleCertificationFileChange}
+                className="cursor-pointer"
+              />
+              {certificationFile && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCertificationFile(null)}
+                  className="text-red-500 hover:text-red-700"
+                >
+                  Clear
+                </Button>
+              )}
+            </div>
+            {certificationFile ? (
+              <p className="text-xs text-gray-500">
+                Selected file: {certificationFile.name} ({(certificationFile.size / 1024 / 1024).toFixed(2)} MB)
+              </p>
+            ) : garage?.certificationFile ? (
+              <p className="text-xs text-blue-600 font-medium">
+                Current file:{" "}
+                <a
+                  href={garage.certificationFile}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline hover:text-blue-800"
+                >
+                  View proof document
+                </a>
+              </p>
+            ) : null}
           </div>
         </CardContent>
       </Card>

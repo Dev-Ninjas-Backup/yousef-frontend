@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Check, X, Eye } from "lucide-react";
+import { Check, X, Eye, Paperclip } from "lucide-react";
 import { GarageInfo } from "@/store/api/garageManagement";
 
 interface GarageSubTableProps {
@@ -53,6 +53,17 @@ export default function GarageSubTable({
                   <p className="text-xs text-gray-500">
                     ID: {garage.garageId.slice(0, 8)}...
                   </p>
+                  {garage.certificationFile && (
+                    <a
+                      href={garage.certificationFile}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-[10px] bg-green-50 text-green-700 border border-green-200 rounded px-1.5 py-0.5 mt-1 font-semibold hover:bg-green-100 transition-colors w-fit"
+                    >
+                      <Paperclip className="w-2.5 h-2.5" />
+                      <span>Cert Proof</span>
+                    </a>
+                  )}
                 </td>
                 <td className="py-2 px-3">
                   <p className="text-sm">

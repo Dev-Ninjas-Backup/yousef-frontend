@@ -203,6 +203,14 @@ export function CreateGarageForm({ onCancel, onSave }: CreateGarageFormProps) {
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const [coverPreview, setCoverPreview] = useState<string>("");
   const [profilePreview, setProfilePreview] = useState<string>("");
+  const [certificationFile, setCertificationFile] = useState<File | null>(null);
+
+  const handleCertificationFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setCertificationFile(file);
+    }
+  };
 
   const toggleService = (serviceName: string) => {
     setFormData((prev) => ({
@@ -355,6 +363,9 @@ export function CreateGarageForm({ onCancel, onSave }: CreateGarageFormProps) {
     apiFormData.append("services", JSON.stringify(formData.services));
     apiFormData.append("coverPhoto", coverPhoto);
     apiFormData.append("profileImage", profileImage);
+    if (certificationFile) {
+      apiFormData.append("certificationFile", certificationFile);
+    }
 
     try {
       await createGarage(apiFormData).unwrap();
@@ -718,8 +729,11 @@ export function CreateGarageForm({ onCancel, onSave }: CreateGarageFormProps) {
       </Card>
 
       <Card>
-        <CardHeader>
+        <CardHeader className="space-y-1">
           <CardTitle>Brand Expertise (American, Japanese, etc.)</CardTitle>
+          <p className="text-xs text-amber-600 font-medium bg-amber-50 border border-amber-200 rounded-md p-2 w-fit">
+            Note: Newly selected brands will undergo admin review before appearing on your profile.
+          </p>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -769,7 +783,7 @@ export function CreateGarageForm({ onCancel, onSave }: CreateGarageFormProps) {
               {formData.description.length}/210 characters
             </p>
           </div>
-          <div>
+          <div className="space-y-2">
             <Label htmlFor="certifications">Certifications</Label>
             <Input
               id="certifications"
@@ -779,6 +793,34 @@ export function CreateGarageForm({ onCancel, onSave }: CreateGarageFormProps) {
               }
               placeholder="ASE Certified, ISO 9001:2015"
             />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="certificationFile">Upload Certification Proof File (Image/PDF)</Label>
+            <div className="flex items-center gap-3">
+              <Input
+                id="certificationFile"
+                type="file"
+                accept="image/*,application/pdf"
+                onChange={handleCertificationFileChange}
+                className="cursor-pointer"
+              />
+              {certificationFile && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCertificationFile(null)}
+                  className="text-red-500 hover:text-red-700"
+                >
+                  Clear
+                </Button>
+              )}
+            </div>
+            {certificationFile && (
+              <p className="text-xs text-gray-500">
+                Selected file: {certificationFile.name} ({(certificationFile.size / 1024 / 1024).toFixed(2)} MB)
+              </p>
+            )}
           </div>
         </CardContent>
       </Card>
