@@ -13,6 +13,7 @@ import LocationMap from "./_components/location-map/LocationMap";
 import GarageReviews from "./_components/reviews/GarageReviews";
 import { useGetGarageByIdQuery } from "@/store/api/garageApi";
 import { Card } from "@/components/ui/card";
+import { getFormattedWeeklySchedule } from "@/utils/schedule";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -102,18 +103,7 @@ export default function GarageDetailsPage({ params }: GarageDetailsPageProps) {
     reviews: garage.totalReviews ?? 0,
     distance: "2.5 km away",
     services: garage.services || [],
-    operatingHours: [
-      {
-        day: "Weekdays",
-        hours: garage.weekdaysHours || "8:00 AM - 8:00 PM",
-        status: "Open" as const,
-      },
-      {
-        day: "Weekends",
-        hours: garage.weekendsHours || "9:00 AM - 6:00 PM",
-        status: "Open" as const,
-      },
-    ],
+    operatingHours: getFormattedWeeklySchedule(garage.weekdaysHours, garage.weekendsHours),
     description: garage.description
       ? [garage.description]
       : [

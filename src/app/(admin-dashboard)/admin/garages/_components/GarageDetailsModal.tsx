@@ -16,6 +16,7 @@ import {
   Award,
   Calendar,
   Wrench,
+  Paperclip,
 } from "lucide-react";
 import Image from "next/image";
 import { GarageInfo } from "@/store/api/garageManagement";
@@ -176,24 +177,48 @@ export default function GarageDetailsModal({
                   Operating Hours
                 </h3>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="p-3 bg-green-50 rounded-lg">
-                    <p className="text-sm font-medium text-gray-900">
-                      Weekdays
-                    </p>
-                    <p className="text-sm text-gray-600">
-                      {garage.weekdaysHours}
-                    </p>
-                  </div>
-                  <div className="p-3 bg-orange-50 rounded-lg">
-                    <p className="text-sm font-medium text-gray-900">
-                      Weekends
-                    </p>
-                    <p className="text-sm text-gray-600">
-                      {garage.weekendsHours}
-                    </p>
-                  </div>
-                </div>
+                {(() => {
+                  if (garage.weekdaysHours && garage.weekdaysHours.startsWith("{")) {
+                    try {
+                      const parsed = JSON.parse(garage.weekdaysHours);
+                      const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+                      return (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">
+                          {days.map((day) => (
+                            <div key={day} className="flex justify-between items-center text-sm border-b border-gray-100 pb-1.5 px-2">
+                              <span className="text-gray-500 font-medium">{day}</span>
+                              <span className={`font-semibold ${parsed[day]?.toLowerCase() === "closed" ? "text-rose-500" : "text-gray-700"}`}>
+                                {parsed[day]}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      );
+                    } catch (e) {
+                      console.error("Failed to parse weekdaysHours in GarageDetailsModal", e);
+                    }
+                  }
+                  return (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="p-3 bg-green-50 rounded-lg">
+                        <p className="text-sm font-medium text-gray-900">
+                          Weekdays
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          {garage.weekdaysHours || "8:00 AM - 8:00 PM"}
+                        </p>
+                      </div>
+                      <div className="p-3 bg-orange-50 rounded-lg">
+                        <p className="text-sm font-medium text-gray-900">
+                          Weekends
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          {garage.weekendsHours || "Closed"}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })()}
               </CardContent>
             </Card>
 
@@ -261,24 +286,39 @@ export default function GarageDetailsModal({
             </div>
 
             {/* Certifications */}
-            {garage.certifications.length > 0 && (
+            {(garage.certifications.length > 0 || garage.certificationFile) && (
               <Card>
-                <CardContent className="p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                <CardContent className="p-6 space-y-4">
+                  <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
                     <Award className="w-5 h-5 text-blue-600" />
                     Certifications
                   </h3>
-                  <div className="flex flex-wrap gap-2">
-                    {garage.certifications.map((cert, index) => (
-                      <Badge
-                        key={index}
-                        variant="outline"
-                        className="px-3 py-1 text-xs bg-green-50 text-green-700 border-green-200"
+                  {garage.certifications.length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                      {garage.certifications.map((cert, index) => (
+                        <Badge
+                          key={index}
+                          variant="outline"
+                          className="px-3 py-1 text-xs bg-green-50 text-green-700 border-green-200"
+                        >
+                          {cert}
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
+                  {garage.certificationFile && (
+                    <div className="pt-2 border-t border-gray-100">
+                      <a
+                        href={garage.certificationFile}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-semibold rounded-lg border border-blue-200 transition-colors"
                       >
-                        {cert}
-                      </Badge>
-                    ))}
-                  </div>
+                        <Paperclip className="w-3.5 h-3.5" />
+                        <span>View Proof Document</span>
+                      </a>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             )}

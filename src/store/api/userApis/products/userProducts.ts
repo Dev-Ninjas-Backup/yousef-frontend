@@ -38,6 +38,8 @@ export interface Product {
   inquiries: number;
   createdAt: string;
   updatedAt: string;
+  listingPlan?: string;
+  expiresAt?: string;
   seller?: {
     id: string;
     name: string;

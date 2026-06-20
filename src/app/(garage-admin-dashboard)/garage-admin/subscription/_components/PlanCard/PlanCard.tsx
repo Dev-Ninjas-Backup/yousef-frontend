@@ -1,7 +1,10 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { useCreateMonthlySubscriptionMutation } from "@/store/api/garageAdminApis/subscription/subscription";
+import {
+  useCreateMonthlySubscriptionMutation,
+  useGetCurrentPlanQuery,
+} from "@/store/api/garageAdminApis/subscription/subscription";
 import { CircleCheckBig, CreditCard } from "lucide-react";
 import { toast } from "sonner";
 import { openPaymentInNewTab } from "@/utils/paymentUtils";
@@ -14,7 +17,11 @@ const PlanCard = () => {
   const { data: configData } = useGetPaymentConfigQuery();
   const price = configData?.data?.monthlyGaragePrice || "99";
 
+  const { data: currentPlan } = useGetCurrentPlanQuery();
+  const isPlanActive = currentPlan?.planType === "PAID";
+
   const handleSubscribe = async () => {
+    if (isPlanActive) return;
     try {
       const response = await createSubscription().unwrap();
       console.log(response, "stripe response............");
@@ -23,6 +30,7 @@ const PlanCard = () => {
       toast.error(error?.data?.message || "Failed to create subscription");
     }
   };
+
   return (
     <div className="bg-white p-3 sm:p-4 md:p-6 rounded-xl border w-full">
       <div className="mb-4 sm:mb-6">
@@ -79,11 +87,20 @@ const PlanCard = () => {
 
         <Button
           onClick={handleSubscribe}
-          className="w-full text-white bg-blue-600 hover:bg-blue-700 gap-2 mt-4 sm:mt-6 h-10 sm:h-11 md:h-12 text-xs sm:text-sm md:text-base font-medium"
+          disabled={isPlanActive || isLoading}
+          className={`w-full gap-2 mt-4 sm:mt-6 h-10 sm:h-11 md:h-12 text-xs sm:text-sm md:text-base font-medium transition-colors ${
+            isPlanActive
+              ? "bg-gray-200 text-gray-500 cursor-not-allowed hover:bg-gray-200 border border-gray-300"
+              : "bg-blue-600 hover:bg-blue-700 text-white"
+          }`}
         >
           <CreditCard className="w-4 h-4" />{" "}
           <span className="line-clamp-1">
-            {isLoading ? "Processing..." : `Activate Monthly Plan - AED ${price}`}
+            {isPlanActive
+              ? "Plan Already Active"
+              : isLoading
+              ? "Processing..."
+              : `Activate Monthly Plan - AED ${price}`}
           </span>
         </Button>
       </div>

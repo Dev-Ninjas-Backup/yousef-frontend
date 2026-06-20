@@ -36,6 +36,7 @@ export interface GarageInfo {
   garageLng: number;
   description: string;
   certifications: string[];
+  certificationFile?: string;
   weekdaysHours: string;
   weekendsHours: string;
   brandExpertise: string[];
@@ -148,12 +149,12 @@ export const garageManagementApi = apiSlice.injectEndpoints({
     // Reject brand expertise claims
     rejectBrandExpertise: builder.mutation<
       any,
-      { garageId: string; brands: string[] }
+      { garageId: string; brands: string[]; reason?: string }
     >({
-      query: ({ garageId, brands }) => ({
+      query: ({ garageId, brands, reason }) => ({
         url: `/garage-management/reject-brands/${garageId}`,
         method: "PATCH",
-        body: { brands },
+        body: { brands, reason },
       }),
       invalidatesTags: ["Garage"],
     }),

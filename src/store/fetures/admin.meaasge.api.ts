@@ -13,6 +13,7 @@ export interface AdminContact {
   createdAt: string;
   updatedAt: string;
   garageOwnerId?: string | null;
+  userId?: string | null;
   makeasClosed?: boolean;
   messages?: {
     id: string;

@@ -35,79 +35,66 @@ export default function NotificationDropdown() {
 
   const userId = user?.id || "guest";
 
-  // Load notifications from local storage on mount/user change
-  useEffect(() => {
-    const saved = localStorage.getItem(`sayarahub_notifications_${userId}`);
-    if (saved) {
-      setNotifications(JSON.parse(saved));
-    } else {
-      // Seed initial dummy notifications to ensure it is not empty
-      let initial: NotificationItem[] = [];
-      if (user?.role === "SUPER_ADMIN") {
-        initial = [
-          {
-            id: "welcome-admin",
-            type: "System",
-            title: "Welcome Admin!",
-            message: "Welcome to SayaraHub Admin Portal. Monitor user registrations, garages, and spare parts approval.",
-            createdAt: new Date().toISOString(),
-            read: false,
-            link: "/admin/dashboard",
-          },
-          {
-            id: "pending-inquiry",
-            type: "CustomerInquiryAlert",
-            title: "Toyota Camry Brake Pads Inquiry",
-            message: "A customer has sent an inquiry regarding brake pads compatibility.",
-            createdAt: new Date(Date.now() - 900000).toISOString(),
-            read: false,
-            link: "/admin/messages?tab=customer",
-          },
-          {
-            id: "pending-garage",
-            type: "UserRegistration",
-            title: "Garage Registration Pending",
-            message: "A new garage profile has been uploaded and is waiting for your review and approval.",
-            createdAt: new Date(Date.now() - 1800000).toISOString(),
-            read: false,
-            link: "/admin/garages",
-          },
-          {
-            id: "pending-part",
-            type: "ProductApproveUpdate",
-            title: "Spare Part Pending Review",
-            message: "A new spare part listing has been submitted and requires admin approval.",
-            createdAt: new Date(Date.now() - 3600000).toISOString(),
-            read: false,
-            link: "/admin/spareparts",
-          }
-        ];
-      } else {
-        initial = [
-          {
-            id: "welcome",
-            type: "System",
-            title: "Welcome to SayaraHub!",
-            message: user?.role === "GARAGE_OWNER"
-              ? "Your Garage Partner Plan is now active with unlimited listings."
-              : "Welcome to SayaraHub Dashboard. Track your parts and profile here.",
-            createdAt: new Date().toISOString(),
-            read: false,
-            link: user?.role === "GARAGE_OWNER" ? "/garage-admin/subscription" : "/user/settings",
-          },
-          {
-            id: "inquiry-sample",
-            type: "CustomerInquiryAlert",
-            title: "Inquiries System Active",
-            message: "Potential buyers can now contact your business. All incoming inquiries will appear here.",
-            createdAt: new Date(Date.now() - 3600000).toISOString(),
-            read: false,
-            link: user?.role === "GARAGE_OWNER" ? "/garage-admin/inquiries" : "/user/dashboard",
-          }
-        ];
+  const getLinkForNotification = (type: string, meta: any) => {
+    switch (type) {
+      case "CustomerInquiryAlert": {
+        const inquiryId = meta?.inquiryId;
+        const senderEmail = meta?.senderEmail;
+        let link = "/garage-admin/inquiries";
+        if (inquiryId) {
+          link += `?inquiryId=${inquiryId}`;
+        } else if (senderEmail) {
+          link += `?email=${encodeURIComponent(senderEmail)}`;
+        }
+        return link;
       }
-      setNotifications(initial);
-      localStorage.setItem(`sayarahub_notifications_${userId}`, JSON.stringify(initial));
+      case "UserRegistration":
+        return "/admin/users";
+      case "NewMessage": {
+        const partnerId = meta?.fromUserId;
+        const baseLink = user?.role === "GARAGE_OWNER" ? "/garage-admin/messages" : "/user/messages";
+        return partnerId ? `${baseLink}?userId=${partnerId}` : baseLink;
+      }
+      case "ProductApproveUpdate":
+        return user?.role === "GARAGE_OWNER" ? "/garage-admin/my-products" : "/user/my-products";
+      default:
+        return "/";
+    }
+  };
+
+  // Fetch real notifications on mount/user change
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      const token = Cookies.get("token");
+      if (!token) return;
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/notification-setting/all-notifications`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const data = await res.json();
+        if (data.success && data.data?.notifications) {
+          const fetched: NotificationItem[] = data.data.notifications.map((n: any) => ({
+            id: n.id,
+            type: n.type,
+            title: n.title,
+            message: n.message,
+            createdAt: n.createdAt,
+            read: n.read || false,
+            link: getLinkForNotification(n.type, n.meta),
+          }));
+          setNotifications(fetched);
+        }
+      } catch (err) {
+        console.error("Failed to fetch notifications", err);
+      }
+    };
+    
+    if (user) {
+      fetchNotifications();
+    } else {
+      setNotifications([]);
     }
   }, [userId, user?.role]);
 
@@ -136,23 +123,13 @@ export default function NotificationDropdown() {
           read: false,
           link,
         };
-        const updated = [newItem, ...prev];
-        localStorage.setItem(`sayarahub_notifications_${userId}`, JSON.stringify(updated));
-        return updated;
+        return [newItem, ...prev];
       });
     };
 
     socketInstance.on("customer-inquiry-alert", (data: any) => {
       console.log("📨 Received Inquiry socket event:", data);
-      const inquiryId = data.meta?.inquiryId;
-      const senderEmail = data.meta?.senderEmail;
-      let link = "/garage-admin/inquiries";
-      if (inquiryId) {
-        link += `?inquiryId=${inquiryId}`;
-      } else if (senderEmail) {
-        link += `?email=${encodeURIComponent(senderEmail)}`;
-      }
-
+      const link = getLinkForNotification("CustomerInquiryAlert", data.meta);
       addNotification(
         "CustomerInquiryAlert",
         data.title || "New Customer Inquiry",
@@ -173,9 +150,7 @@ export default function NotificationDropdown() {
 
     socketInstance.on("new-message", (data: any) => {
       console.log("💬 Received Message event:", data);
-      const partnerId = data.meta?.fromUserId;
-      const baseLink = user?.role === "GARAGE_OWNER" ? "/garage-admin/messages" : "/user/messages";
-      const link = partnerId ? `${baseLink}?userId=${partnerId}` : baseLink;
+      const link = getLinkForNotification("NewMessage", data.meta);
       addNotification(
         "NewMessage",
         data.title || "New Message Received",
@@ -186,7 +161,7 @@ export default function NotificationDropdown() {
 
     socketInstance.on("product-approve-update", (data: any) => {
       console.log("📦 Received Product Approval update:", data);
-      const link = user?.role === "GARAGE_OWNER" ? "/garage-admin/my-products" : "/user/my-products";
+      const link = getLinkForNotification("ProductApproveUpdate", data.meta);
       const status = data.meta?.status ? data.meta.status.toLowerCase() : "updated";
       addNotification(
         "ProductApproveUpdate",
@@ -218,21 +193,55 @@ export default function NotificationDropdown() {
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 
-  const markAllRead = () => {
-    const updated = notifications.map((n) => ({ ...n, read: true }));
-    setNotifications(updated);
-    localStorage.setItem(`sayarahub_notifications_${userId}`, JSON.stringify(updated));
+  const markAllRead = async () => {
+    const token = Cookies.get("token");
+    if (!token) return;
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/notification-setting/read-all`, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+    } catch (err) {
+      console.error("Failed to mark all read", err);
+    }
   };
 
-  const clearAll = () => {
-    setNotifications([]);
-    localStorage.removeItem(`sayarahub_notifications_${userId}`);
+  const clearAll = async () => {
+    const token = Cookies.get("token");
+    if (!token) return;
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/notification-setting/delete-notification`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setNotifications([]);
+    } catch (err) {
+      console.error("Failed to clear all notifications", err);
+    }
   };
 
-  const handleNotificationClick = (item: NotificationItem) => {
-    const updated = notifications.map((n) => (n.id === item.id ? { ...n, read: true } : n));
-    setNotifications(updated);
-    localStorage.setItem(`sayarahub_notifications_${userId}`, JSON.stringify(updated));
+  const handleNotificationClick = async (item: NotificationItem) => {
+    const token = Cookies.get("token");
+    if (token && !item.read) {
+      try {
+        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/notification-setting/read/${item.id}`, {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+      } catch (err) {
+        console.error("Failed to mark notification as read", err);
+      }
+    }
+    setNotifications((prev) =>
+      prev.map((n) => (n.id === item.id ? { ...n, read: true } : n))
+    );
     setIsOpen(false);
     router.push(item.link);
   };

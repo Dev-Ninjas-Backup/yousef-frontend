@@ -111,14 +111,18 @@ function ProductDetailsModal({
                 <div className="flex items-center gap-2 mb-2">
                   <span
                     className={`px-2.5 py-1 text-xs font-semibold rounded-full ${
-                      product.status === "APPROVED"
-                        ? "bg-green-550 bg-green-50 text-green-700 border border-green-100"
-                        : product.status === "PENDING"
-                          ? "bg-yellow-50 text-yellow-700 border border-yellow-100"
-                          : "bg-red-50 text-red-700 border border-red-100"
+                      product.status === "APPROVED" && product.expiresAt && new Date(product.expiresAt) < new Date()
+                        ? "bg-gray-100 text-gray-700 border border-gray-200"
+                        : product.status === "APPROVED"
+                          ? "bg-green-550 bg-green-50 text-green-700 border border-green-100"
+                          : product.status === "PENDING"
+                            ? "bg-yellow-50 text-yellow-700 border border-yellow-100"
+                            : "bg-red-50 text-red-700 border border-red-100"
                     }`}
                   >
-                    {product.status}
+                    {product.status === "APPROVED" && product.expiresAt && new Date(product.expiresAt) < new Date()
+                      ? "EXPIRED"
+                      : product.status}
                   </span>
                   {product.isPromoted && (
                     <span className="px-2.5 py-1 text-xs font-semibold rounded-full bg-blue-50 text-blue-700 border border-blue-100">
@@ -284,10 +288,23 @@ export default function UserMyProductsPage() {
         (product.categoryId?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
         (product.description?.toLowerCase() || "").includes(searchQuery.toLowerCase());
 
-      const matchesStatus =
-        (statusFilter === "all" && product.status !== "DRAFT") ||
-        (statusFilter === "promoted" && product.isPromoted && product.status !== "DRAFT") ||
-        product.status.toLowerCase() === statusFilter.toLowerCase();
+      const isExpired =
+        product.status === "APPROVED" &&
+        !!product.expiresAt &&
+        new Date(product.expiresAt) < new Date();
+
+      let matchesStatus = false;
+      if (statusFilter === "all") {
+        matchesStatus = product.status !== "DRAFT" && !isExpired;
+      } else if (statusFilter === "promoted") {
+        matchesStatus = product.isPromoted && product.status !== "DRAFT" && !isExpired;
+      } else if (statusFilter === "approved") {
+        matchesStatus = product.status === "APPROVED" && !isExpired;
+      } else if (statusFilter === "expired") {
+        matchesStatus = isExpired;
+      } else {
+        matchesStatus = product.status.toLowerCase() === statusFilter.toLowerCase();
+      }
 
       const matchesCondition =
         conditionFilter === "all" ||
@@ -402,13 +419,26 @@ export default function UserMyProductsPage() {
             View, filter, sort, and manage all your spare parts listings.
           </p>
         </div>
-        <Button
-          onClick={handleAddProduct}
-          className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl px-4 py-2.5 shadow-md shadow-blue-500/10 flex items-center justify-center gap-1.5 transition-all active:scale-95 shrink-0"
-        >
-          <Plus className="w-4 h-4" />
-          Add New Product
-        </Button>
+        <div className="flex items-center gap-3 w-full sm:w-auto shrink-0">
+          <Button
+            onClick={() => setStatusFilter(statusFilter === "draft" ? "all" : "draft")}
+            variant={statusFilter === "draft" ? "default" : "outline"}
+            className={`w-full sm:w-auto font-semibold rounded-xl px-4 py-2.5 transition-all active:scale-95 flex items-center justify-center gap-1.5 ${
+              statusFilter === "draft"
+                ? "bg-gray-850 bg-gray-800 text-white hover:bg-gray-900 border-transparent"
+                : "border-gray-300 text-gray-700 hover:bg-gray-50 bg-white"
+            }`}
+          >
+            Drafts
+          </Button>
+          <Button
+            onClick={handleAddProduct}
+            className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl px-4 py-2.5 shadow-md shadow-blue-500/10 flex items-center justify-center gap-1.5 transition-all active:scale-95 shrink-0"
+          >
+            <Plus className="w-4 h-4" />
+            Add New Product
+          </Button>
+        </div>
       </div>
 
       {/* Main Filter & Search Control Bar */}
@@ -438,6 +468,7 @@ export default function UserMyProductsPage() {
               <option value="pending">Pending</option>
               <option value="rejected">Rejected</option>
               <option value="draft">Drafts</option>
+              <option value="expired">Expired / Ended</option>
               <option value="promoted">Promoted Only</option>
             </select>
 
@@ -611,16 +642,20 @@ export default function UserMyProductsPage() {
                   <div className="absolute top-2.5 right-2.5 flex flex-col gap-1.5 items-end">
                     <span
                       className={`inline-flex items-center px-2 py-0.5 text-[10px] font-bold rounded-full shadow-sm ${
-                        product.status === "APPROVED"
-                          ? "bg-green-500 text-white"
-                          : product.status === "PENDING"
-                            ? "bg-amber-500 text-white"
-                            : product.status === "DRAFT"
-                              ? "bg-gray-600 text-white"
-                              : "bg-red-500 text-white"
+                        product.status === "APPROVED" && product.expiresAt && new Date(product.expiresAt) < new Date()
+                          ? "bg-gray-500 text-white"
+                          : product.status === "APPROVED"
+                            ? "bg-green-500 text-white"
+                            : product.status === "PENDING"
+                              ? "bg-amber-500 text-white"
+                              : product.status === "DRAFT"
+                                ? "bg-gray-600 text-white"
+                                : "bg-red-500 text-white"
                       }`}
                     >
-                      {product.status}
+                      {product.status === "APPROVED" && product.expiresAt && new Date(product.expiresAt) < new Date()
+                        ? "EXPIRED"
+                        : product.status}
                     </span>
                     {product.isPromoted && (
                       <span className="inline-flex items-center px-2 py-0.5 text-[10px] font-bold rounded-full bg-blue-600 text-white shadow-sm">
@@ -693,12 +728,12 @@ export default function UserMyProductsPage() {
                       >
                         <Edit className="w-3.5 h-3.5" />
                       </button>
-                      {product.status === "DRAFT" ? (
+                      {product.status === "DRAFT" || (product.status === "APPROVED" && product.expiresAt && new Date(product.expiresAt) < new Date()) ? (
                         <>
                           {/* Publish/Repost Button */}
                           <button
                             onClick={() => handleRepost(product)}
-                            className="p-1.5 bg-green-50 text-green-700 hover:bg-green-100 rounded-lg transition-colors"
+                            className="p-1.5 bg-green-550 bg-green-50 text-green-700 hover:bg-green-150 rounded-lg transition-colors"
                             title="Publish / Repost"
                           >
                             <RefreshCw className="w-3.5 h-3.5" />
@@ -782,16 +817,20 @@ export default function UserMyProductsPage() {
                           <div className="flex items-center gap-1.5">
                             <span
                               className={`px-1.5 py-0.5 text-[9px] font-bold rounded-full ${
-                                product.status === "APPROVED"
-                                  ? "bg-green-550 bg-green-50 text-green-700"
-                                  : product.status === "PENDING"
-                                    ? "bg-amber-50 text-amber-700"
-                                    : product.status === "DRAFT"
-                                      ? "bg-gray-100 text-gray-700"
-                                      : "bg-red-50 text-red-700"
+                                product.status === "APPROVED" && product.expiresAt && new Date(product.expiresAt) < new Date()
+                                  ? "bg-gray-100 text-gray-700"
+                                  : product.status === "APPROVED"
+                                    ? "bg-green-550 bg-green-50 text-green-700"
+                                    : product.status === "PENDING"
+                                      ? "bg-amber-550 bg-amber-50 text-amber-700"
+                                      : product.status === "DRAFT"
+                                        ? "bg-gray-100 text-gray-700"
+                                        : "bg-red-50 text-red-700"
                               }`}
                             >
-                              {product.status}
+                              {product.status === "APPROVED" && product.expiresAt && new Date(product.expiresAt) < new Date()
+                                ? "EXPIRED"
+                                : product.status}
                             </span>
                             {product.isPromoted && (
                               <span className="px-1.5 py-0.5 text-[9px] font-bold rounded-full bg-blue-50 text-blue-700">
@@ -871,7 +910,7 @@ export default function UserMyProductsPage() {
                             <Edit className="w-3.5 h-3.5" />
                             Edit
                           </button>
-                          {product.status === "DRAFT" ? (
+                          {product.status === "DRAFT" || (product.status === "APPROVED" && product.expiresAt && new Date(product.expiresAt) < new Date()) ? (
                             <>
                               <button
                                 onClick={() => handleRepost(product)}

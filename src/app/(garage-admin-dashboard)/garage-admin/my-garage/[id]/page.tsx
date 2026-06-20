@@ -131,8 +131,34 @@ export default function GarageDetailsPage() {
                 <Clock className="w-5 h-5 text-gray-400 mt-0.5" />
                 <div>
                   <p className="text-sm text-gray-500">Working Hours</p>
-                  <p className="font-medium">Weekdays: {garage.weekdaysHours}</p>
-                  <p className="font-medium">Weekends: {garage.weekendsHours}</p>
+                  {(() => {
+                    if (garage.weekdaysHours && garage.weekdaysHours.startsWith("{")) {
+                      try {
+                        const parsed = JSON.parse(garage.weekdaysHours);
+                        const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+                        return (
+                          <div className="space-y-1.5 mt-2 max-w-xs">
+                            {days.map((day) => (
+                              <div key={day} className="flex justify-between items-center text-sm border-b border-gray-100 pb-1 gap-8">
+                                <span className="text-gray-500 font-medium">{day}</span>
+                                <span className={`font-semibold ${parsed[day]?.toLowerCase() === "closed" ? "text-rose-500" : "text-gray-700"}`}>
+                                  {parsed[day]}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        );
+                      } catch (e) {
+                        console.error("Failed to parse weekdaysHours", e);
+                      }
+                    }
+                    return (
+                      <>
+                        <p className="font-medium">Weekdays: {garage.weekdaysHours || "8:00 AM - 8:00 PM"}</p>
+                        <p className="font-medium">Weekends: {garage.weekendsHours || "Closed"}</p>
+                      </>
+                    );
+                  })()}
                 </div>
               </div>
 

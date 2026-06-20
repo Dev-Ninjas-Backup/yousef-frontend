@@ -39,6 +39,10 @@ export interface AllUsersResponse {
       activeTrial: number;
       subscribedUsers?: number;
       noSubscription: number;
+      subscribedGarages?: number;
+      nonSubscribedGarages?: number;
+      subscribedCarOwners?: number;
+      nonSubscribedCarOwners?: number;
     };
   };
 }

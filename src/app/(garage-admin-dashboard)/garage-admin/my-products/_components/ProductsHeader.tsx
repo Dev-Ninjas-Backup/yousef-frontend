@@ -65,13 +65,26 @@ export function ProductsHeader({
             Manage your spare parts listings
           </p>
         </div>
-        <Button
-          onClick={onAddProduct}
-          className="w-full sm:w-auto bg-blue-600 text-white hover:bg-blue-700 font-semibold rounded-xl px-4 py-2.5 shadow-md shadow-blue-500/10 flex items-center justify-center gap-1.5 transition-all active:scale-95 shrink-0"
-        >
-          <Plus className="w-4 h-4" />
-          Add New Product
-        </Button>
+        <div className="flex items-center gap-3 w-full sm:w-auto shrink-0">
+          <Button
+            onClick={() => onStatusFilterChange(statusFilter === "draft" ? "all" : "draft")}
+            variant={statusFilter === "draft" ? "default" : "outline"}
+            className={`w-full sm:w-auto font-semibold rounded-xl px-4 py-2.5 transition-all active:scale-95 flex items-center justify-center gap-1.5 ${
+              statusFilter === "draft"
+                ? "bg-gray-850 bg-gray-800 text-white hover:bg-gray-900 border-transparent"
+                : "border-gray-300 text-gray-700 hover:bg-gray-50 bg-white"
+            }`}
+          >
+            Drafts
+          </Button>
+          <Button
+            onClick={onAddProduct}
+            className="w-full sm:w-auto bg-blue-600 text-white hover:bg-blue-700 font-semibold rounded-xl px-4 py-2.5 shadow-md shadow-blue-500/10 flex items-center justify-center gap-1.5 transition-all active:scale-95 shrink-0"
+          >
+            <Plus className="w-4 h-4" />
+            Add New Product
+          </Button>
+        </div>
       </div>
 
       {/* Main Filter & Search Control Bar */}
@@ -102,6 +115,7 @@ export function ProductsHeader({
               <option value="pending">Pending</option>
               <option value="rejected">Rejected</option>
               <option value="draft">Draft</option>
+              <option value="expired">Expired / Ended</option>
             </select>
 
             {/* Sort Dropdown */}

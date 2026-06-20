@@ -18,6 +18,7 @@ import { searchGaragesTranslations } from "@/translations/searchGarages";
 import { useRouter } from "next/navigation";
 import { useLazyGetNearbyGaragesQuery } from "@/store/api/garageApi";
 import { toast } from "sonner";
+import { isGarageCurrentlyOpen, getTodayHoursDescription } from "@/utils/schedule";
 
 const SearchGarages: React.FC = () => {
   const { t } = useLanguage();
@@ -250,12 +251,12 @@ const SearchGarages: React.FC = () => {
                           )}
                           <span
                             className={`px-2 py-1 text-xs font-medium rounded-full ${
-                              garage.isOpenNow
+                              (garage.isOpenNow !== undefined ? garage.isOpenNow : isGarageCurrentlyOpen(garage.weekdaysHours, garage.weekendsHours))
                                 ? "bg-green-100 text-green-700"
                                 : "bg-red-100 text-red-700"
                             }`}
                           >
-                            {garage.isOpenNow ? "Open Now" : "Closed"}
+                            {(garage.isOpenNow !== undefined ? garage.isOpenNow : isGarageCurrentlyOpen(garage.weekdaysHours, garage.weekendsHours)) ? "Open Now" : "Closed"}
                           </span>
                         </div>
 
@@ -275,7 +276,7 @@ const SearchGarages: React.FC = () => {
                         {/* Hours & Contact */}
                         <div className="flex items-center gap-4 text-xs text-gray-600">
                           {garage.weekdaysHours && (
-                            <span>⏰ {garage.weekdaysHours}</span>
+                            <span>⏰ {getTodayHoursDescription(garage.weekdaysHours, garage.weekendsHours)}</span>
                           )}
                           {garage.user?.phone && (
                             <a

@@ -480,22 +480,30 @@ export default function FinancialOverviewPage() {
           iconColor="text-blue-600"
           trendIcon={LuTrendingUp}
         />
-        <StatCard
-          icon={LuUserCheck}
-          value={formatAED(proSubRevenue)}
-          label={`Pro Seller Subscriptions (${dateFilter})`}
-          iconBg="bg-purple-50"
-          iconColor="text-purple-600"
-          trendIcon={LuTrendingUp}
-        />
-        <StatCard
-          icon={LuUserCheck}
-          value={formatAED(basicSubRevenue)}
-          label={`Basic Seller Subscriptions (${dateFilter})`}
-          iconBg="bg-indigo-50"
-          iconColor="text-indigo-600"
-          trendIcon={LuTrendingUp}
-        />
+        {/* Seller Subscriptions breakdown card */}
+        <div className="bg-white rounded-xl p-5 sm:p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+          <div className="flex items-start justify-between mb-3">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-purple-50 flex items-center justify-center">
+              <LuUserCheck className="w-5 h-5 sm:w-6 sm:h-6 text-purple-600" />
+            </div>
+            <LuTrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
+          </div>
+          <p className="text-xs sm:text-sm text-gray-500 font-medium mb-2">Seller Subscriptions ({dateFilter})</p>
+          <div className="grid grid-cols-3 gap-2 border border-gray-100 rounded-lg overflow-hidden">
+            <div className="text-center py-2 px-1 bg-indigo-50">
+              <p className="text-[10px] font-semibold text-indigo-400 uppercase tracking-wider">Normal</p>
+              <p className="text-base font-bold text-indigo-700 mt-0.5">{formatAED(basicSubRevenue)}</p>
+            </div>
+            <div className="text-center py-2 px-1 bg-purple-50">
+              <p className="text-[10px] font-semibold text-purple-400 uppercase tracking-wider">Pro</p>
+              <p className="text-base font-bold text-purple-700 mt-0.5">{formatAED(proSubRevenue)}</p>
+            </div>
+            <div className="text-center py-2 px-1 bg-gray-50">
+              <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Total</p>
+              <p className="text-base font-bold text-gray-800 mt-0.5">{formatAED(basicSubRevenue + proSubRevenue)}</p>
+            </div>
+          </div>
+        </div>
         <StatCard
           icon={LuTag}
           value={formatAED(payPerListingRevenue)}
@@ -676,8 +684,8 @@ export default function FinancialOverviewPage() {
                       <p className="text-xs text-gray-400 mt-0.5">{trx.customerEmail}</p>
                     </div>
                   </td>
-                  <td className="py-4 px-5 text-xs text-gray-500 font-mono max-w-[140px] truncate" title={trx.customerId}>
-                    {trx.customerId || "N/A"}
+                  <td className="py-4 px-5 text-xs text-gray-500 font-mono" title={trx.customerId}>
+                    <span className="break-all select-all">{trx.customerId || "N/A"}</span>
                   </td>
                   <td className="py-4 px-5 text-sm font-semibold text-gray-900">
                     {formatAED((trx.amount || 0) / 100)}

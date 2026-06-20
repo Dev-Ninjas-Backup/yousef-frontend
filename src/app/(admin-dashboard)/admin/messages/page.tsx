@@ -46,6 +46,7 @@ export interface AdminContact {
   createdAt: string;
   updatedAt: string;
   garageOwnerId?: string | null;
+  userId?: string | null;
   makeasClosed?: boolean;
   messages?: {
     id: string;
@@ -999,11 +1000,17 @@ export default function MessagesPage() {
                               }`}
                             >
                               <div className="flex items-center justify-between gap-6 mb-1.5">
-                                <span className={`text-xs font-bold ${isReplyFromAdmin ? "text-blue-100" : "text-gray-900"}`}>
-                                  {isReplyFromAdmin
-                                    ? "Admin (You)"
-                                    : `${singleMessage.data.FirstName} (Garage Owner)`}
-                                </span>
+                                 <span className={`text-xs font-bold ${isReplyFromAdmin ? "text-blue-100" : "text-gray-900"}`}>
+                                   {isReplyFromAdmin
+                                     ? "Admin (You)"
+                                     : `${singleMessage.data.FirstName} ${
+                                         singleMessage.data.garageOwnerId
+                                           ? "(Garage Owner)"
+                                           : singleMessage.data.userId
+                                           ? "(Car Owner)"
+                                           : "(Guest)"
+                                       }`}
+                                 </span>
                               </div>
                               <p className="whitespace-pre-wrap">{reply.content}</p>
                               <p className={`text-[9px] mt-2 text-right ${isReplyFromAdmin ? "text-blue-200" : "text-gray-400"}`}>

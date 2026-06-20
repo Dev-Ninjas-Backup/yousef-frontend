@@ -313,47 +313,82 @@ export default function UserManagementPage() {
         </button>
       </div>
 
-      {/* Stats Cards Section */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
-        <div className="bg-white rounded-xl p-5 border border-gray-100 shadow-sm flex items-center gap-4 hover:shadow-md transition-all duration-300">
-          <div className="p-3.5 bg-blue-50 text-blue-600 rounded-2xl">
-            <LuUsers className="w-6 h-6" />
+      {/* Stats Cards Section — compact single-row bar */}
+      <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+        <div className="grid grid-cols-3 sm:grid-cols-6 divide-x divide-gray-100">
+          {/* ── Users group ── */}
+          <div className="col-span-3 sm:col-span-3 grid grid-cols-3 divide-x divide-gray-100">
+            {/* label bar */}
+            <div className="col-span-3 border-b border-gray-100 px-4 py-1.5 bg-gray-50">
+              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-400 inline-block"></span>
+                Users (Car Owners)
+              </span>
+            </div>
+            <div className="px-4 py-3 flex items-center gap-2.5 hover:bg-gray-50 transition-colors">
+              <div className="p-2 bg-blue-50 text-blue-600 rounded-lg shrink-0">
+                <LuUsers className="w-4 h-4" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider truncate">Total</p>
+                <p className="text-lg font-bold text-gray-900 leading-tight">{stats?.carOwners ?? 0}</p>
+              </div>
+            </div>
+            <div className="px-4 py-3 flex items-center gap-2.5 hover:bg-gray-50 transition-colors">
+              <div className="p-2 bg-green-50 text-green-600 rounded-lg shrink-0">
+                <LuCreditCard className="w-4 h-4" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider truncate">Subscribed</p>
+                <p className="text-lg font-bold text-gray-900 leading-tight">{stats?.subscribedCarOwners ?? 0}</p>
+              </div>
+            </div>
+            <div className="px-4 py-3 flex items-center gap-2.5 hover:bg-gray-50 transition-colors">
+              <div className="p-2 bg-rose-50 text-rose-600 rounded-lg shrink-0">
+                <LuUser className="w-4 h-4" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider truncate">Non-subscribed</p>
+                <p className="text-lg font-bold text-gray-900 leading-tight">{stats?.nonSubscribedCarOwners ?? 0}</p>
+              </div>
+            </div>
           </div>
-          <div>
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Total Users</p>
-            <h3 className="text-2xl font-bold text-gray-950 mt-1">{stats?.totalUsers ?? 0}</h3>
-          </div>
-        </div>
 
-        <div className="bg-white rounded-xl p-5 border border-gray-100 shadow-sm flex items-center gap-4 hover:shadow-md transition-all duration-300">
-          <div className="p-3.5 bg-green-50 text-green-600 rounded-2xl">
-            <LuCreditCard className="w-6 h-6" />
-          </div>
-          <div>
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Subscribed Users</p>
-            <h3 className="text-2xl font-bold text-gray-950 mt-1">
-              {stats?.activePaid ?? 0}
-            </h3>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl p-5 border border-gray-100 shadow-sm flex items-center gap-4 hover:shadow-md transition-all duration-300">
-          <div className="p-3.5 bg-sky-50 text-sky-600 rounded-2xl">
-            <LuUser className="w-6 h-6" />
-          </div>
-          <div>
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Normal Users</p>
-            <h3 className="text-2xl font-bold text-gray-950 mt-1">{stats?.carOwners ?? 0}</h3>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl p-5 border border-gray-100 shadow-sm flex items-center gap-4 hover:shadow-md transition-all duration-300">
-          <div className="p-3.5 bg-purple-50 text-purple-600 rounded-2xl">
-            <LuUserCheck className="w-6 h-6" />
-          </div>
-          <div>
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Garage Users</p>
-            <h3 className="text-2xl font-bold text-gray-950 mt-1">{stats?.garageOwners ?? 0}</h3>
+          {/* ── Garages group ── */}
+          <div className="col-span-3 sm:col-span-3 grid grid-cols-3 divide-x divide-gray-100 border-t sm:border-t-0 border-gray-100">
+            <div className="col-span-3 border-b border-gray-100 px-4 py-1.5 bg-gray-50">
+              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-purple-400 inline-block"></span>
+                Garages
+              </span>
+            </div>
+            <div className="px-4 py-3 flex items-center gap-2.5 hover:bg-gray-50 transition-colors">
+              <div className="p-2 bg-purple-50 text-purple-600 rounded-lg shrink-0">
+                <LuUserCheck className="w-4 h-4" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider truncate">Total</p>
+                <p className="text-lg font-bold text-gray-900 leading-tight">{stats?.garageOwners ?? 0}</p>
+              </div>
+            </div>
+            <div className="px-4 py-3 flex items-center gap-2.5 hover:bg-gray-50 transition-colors">
+              <div className="p-2 bg-emerald-50 text-emerald-600 rounded-lg shrink-0">
+                <LuClock className="w-4 h-4" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider truncate">Subscribed</p>
+                <p className="text-lg font-bold text-gray-900 leading-tight">{stats?.subscribedGarages ?? 0}</p>
+              </div>
+            </div>
+            <div className="px-4 py-3 flex items-center gap-2.5 hover:bg-gray-50 transition-colors">
+              <div className="p-2 bg-amber-50 text-amber-600 rounded-lg shrink-0">
+                <LuUserCheck className="w-4 h-4" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider truncate">Non-subscribed</p>
+                <p className="text-lg font-bold text-gray-900 leading-tight">{stats?.nonSubscribedGarages ?? 0}</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>

@@ -8,6 +8,7 @@ interface StatsResponse {
   pendingApproval: number;
   totalViews: number;
   totalInquiries: number;
+  totalDrafts?: number;
 }
 // 2. Performance Summary Interface
 interface PerformanceSummaryResponse {

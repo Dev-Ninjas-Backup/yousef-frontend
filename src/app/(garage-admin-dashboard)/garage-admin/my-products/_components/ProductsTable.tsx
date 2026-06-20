@@ -21,6 +21,8 @@ interface Product {
   inquiries: number;
   createdAt: string;
   updatedAt: string;
+  listingPlan?: string;
+  expiresAt?: string;
 }
 
 interface ProductsTableProps {
@@ -237,10 +239,17 @@ export function ProductsTable({
                   {product.quantity}
                 </td>
                 <td className="py-3 px-4">
-                  <Badge className={getStatusColor(product.status)}>
-                    {getStatusIcon(product.status)}
-                    {product.status}
-                  </Badge>
+                  {product.status === "APPROVED" && product.expiresAt && new Date(product.expiresAt) < new Date() ? (
+                    <Badge className="bg-gray-100 text-gray-700">
+                      <Clock className="w-3.5 h-3.5 mr-1" />
+                      EXPIRED
+                    </Badge>
+                  ) : (
+                    <Badge className={getStatusColor(product.status)}>
+                      {getStatusIcon(product.status)}
+                      {product.status}
+                    </Badge>
+                  )}
                 </td>
                 <td className="py-3 px-4 text-sm text-gray-700">
                   {product.views}
@@ -264,7 +273,7 @@ export function ProductsTable({
                     >
                       <Edit className="w-4 h-4" />
                     </Button>
-                    {product.status === "DRAFT" ? (
+                    {product.status === "DRAFT" || (product.status === "APPROVED" && product.expiresAt && new Date(product.expiresAt) < new Date()) ? (
                       <>
                         <Button
                           variant="ghost"
@@ -330,10 +339,17 @@ export function ProductsTable({
                 <p className="text-xs text-gray-500">
                   {product.brand || "N/A"}
                 </p>
-                <Badge className={`mt-2 ${getStatusColor(product.status)}`}>
-                  {getStatusIcon(product.status)}
-                  {product.status}
-                </Badge>
+                {product.status === "APPROVED" && product.expiresAt && new Date(product.expiresAt) < new Date() ? (
+                  <Badge className="mt-2 bg-gray-100 text-gray-700">
+                    <Clock className="w-3.5 h-3.5 mr-1" />
+                    EXPIRED
+                  </Badge>
+                ) : (
+                  <Badge className={`mt-2 ${getStatusColor(product.status)}`}>
+                    {getStatusIcon(product.status)}
+                    {product.status}
+                  </Badge>
+                )}
               </div>
             </div>
             <div className="grid grid-cols-2 gap-2 text-sm">
@@ -381,7 +397,7 @@ export function ProductsTable({
                 <Edit className="w-4 h-4" />
                 Edit
               </Button>
-              {product.status === "DRAFT" ? (
+              {product.status === "DRAFT" || (product.status === "APPROVED" && product.expiresAt && new Date(product.expiresAt) < new Date()) ? (
                 <>
                   <Button
                     variant="outline"
