@@ -19,107 +19,115 @@ export default function GarageSubTable({
   onReviewBrands,
 }: GarageSubTableProps) {
   return (
-    <div className="bg-gray-50 rounded-lg p-4 my-2">
-      <h4 className="font-medium mb-3">Garages ({garages.length})</h4>
-      <div className="bg-white rounded-lg overflow-hidden border">
+    <div className="bg-blue-50/40 border border-blue-100 border-l-4 border-l-blue-500 rounded-xl p-4 my-3 shadow-sm">
+      <h4 className="font-semibold text-sm text-blue-900 mb-3 flex items-center gap-1.5">
+        <span className="w-1.5 h-3 bg-blue-500 rounded"></span>
+        Garages ({garages.length})
+      </h4>
+      <div className="bg-white rounded-lg overflow-hidden border border-blue-100 shadow-sm">
         <table className="w-full">
-          <thead className="bg-gray-50 border-b">
+          <thead className="bg-blue-50 border-b border-blue-100">
             <tr>
-              <th className="text-left py-2 px-3 text-xs font-semibold text-gray-600 uppercase">
+              <th className="text-left py-2.5 px-4 text-xs font-bold text-blue-900/80 uppercase tracking-wider">
                 Name
               </th>
-              <th className="text-left py-2 px-3 text-xs font-semibold text-gray-600 uppercase">
+              <th className="text-left py-2.5 px-4 text-xs font-bold text-blue-900/80 uppercase tracking-wider">
                 Location
               </th>
-              <th className="text-left py-2 px-3 text-xs font-semibold text-gray-600 uppercase">
+              <th className="text-left py-2.5 px-4 text-xs font-bold text-blue-900/80 uppercase tracking-wider">
                 Contact
               </th>
-              <th className="text-left py-2 px-3 text-xs font-semibold text-gray-600 uppercase">
+              <th className="text-left py-2.5 px-4 text-xs font-bold text-blue-900/80 uppercase tracking-wider">
                 Status
               </th>
-              <th className="text-left py-2 px-3 text-xs font-semibold text-gray-600 uppercase">
+              <th className="text-left py-2.5 px-4 text-xs font-bold text-blue-900/80 uppercase tracking-wider">
                 Expert Claims
               </th>
-              <th className="text-left py-2 px-3 text-xs font-semibold text-gray-600 uppercase">
+              <th className="text-left py-2.5 px-4 text-xs font-bold text-blue-900/80 uppercase tracking-wider">
                 Actions
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-blue-50">
             {garages.map((garage) => (
-              <tr key={garage.garageId} className="hover:bg-gray-50">
-                <td className="py-2 px-3">
-                  <p className="font-medium text-sm">{garage.garageName}</p>
-                  <p className="text-xs text-gray-500">
-                    ID: {garage.garageId.slice(0, 8)}...
+              <tr key={garage.garageId} className="bg-white hover:bg-blue-50/30 transition-colors">
+                <td className="py-3 px-4">
+                  <p className="font-medium text-sm text-slate-800">{garage.garageName}</p>
+                  <p
+                    className="text-xs text-gray-400 font-mono mt-0.5 break-all"
+                    title={garage.garageId}
+                  >
+                    ID: {garage.garageId}
                   </p>
                   {garage.certificationFile && (
                     <a
                       href={garage.certificationFile}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-[10px] bg-green-50 text-green-700 border border-green-200 rounded px-1.5 py-0.5 mt-1 font-semibold hover:bg-green-100 transition-colors w-fit"
+                      className="inline-flex items-center gap-1.5 text-[10px] bg-green-50 text-green-700 border border-green-200 rounded-md px-2 py-0.5 mt-1.5 font-bold hover:bg-green-100 transition-colors w-fit shadow-sm"
                     >
                       <Paperclip className="w-2.5 h-2.5" />
                       <span>Cert Proof</span>
                     </a>
                   )}
                 </td>
-                <td className="py-2 px-3">
-                  <p className="text-sm">
+                <td className="py-3 px-4">
+                  <p className="text-sm text-slate-700 font-medium">
                     {garage.city}, {garage.emirate}
                   </p>
-                  <p className="text-xs text-gray-500">{garage.street}</p>
+                  <p className="text-xs text-gray-500 mt-0.5">{garage.street}</p>
                 </td>
-                <td className="py-2 px-3">
-                  <p className="text-sm">{garage.garagePhone}</p>
-                  <p className="text-xs text-gray-500">{garage.email}</p>
+                <td className="py-3 px-4">
+                  <p className="text-sm text-slate-700 font-medium">{garage.garagePhone}</p>
+                  <p className="text-xs text-gray-400 mt-0.5">{garage.email}</p>
                 </td>
-                <td className="py-2 px-3">
+                <td className="py-3 px-4">
                   <Badge
                     className={`${
                       garage.garageStatus === "APPROVED"
-                        ? "bg-green-100 text-green-800"
+                        ? "bg-green-100 text-green-800 border-green-200"
                         : garage.garageStatus === "PENDING"
-                        ? "bg-yellow-100 text-yellow-800"
-                        : "bg-red-100 text-red-800"
-                    } border-0`}
+                        ? "bg-yellow-100 text-yellow-800 border-yellow-200"
+                        : "bg-red-100 text-red-800 border-red-200"
+                    } border text-xs font-semibold px-2.5 py-0.5`}
                   >
                     {garage.garageStatus}
                   </Badge>
                 </td>
-                <td className="py-2 px-3">
+                <td className="py-3 px-4">
                   {garage.requestedBrandExpertise && garage.requestedBrandExpertise.length > 0 ? (
                     <button
                       onClick={() => onReviewBrands?.(garage)}
-                      className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-yellow-100 hover:bg-yellow-200 text-yellow-800 text-xs font-semibold rounded-full border border-yellow-200 transition-colors shadow-sm animate-pulse"
+                      className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-yellow-100 hover:bg-yellow-200 text-yellow-800 text-xs font-bold rounded-full border border-yellow-200 transition-colors shadow-sm animate-pulse"
                     >
                       <span className="w-1.5 h-1.5 rounded-full bg-yellow-500 animate-ping"></span>
                       {garage.requestedBrandExpertise.length} Pending
                     </button>
                   ) : (
-                    <span className="text-xs text-gray-400">—</span>
+                    <span className="text-xs text-gray-400 font-medium">—</span>
                   )}
                 </td>
-                <td className="py-2 px-3">
-                  <div className="flex items-center gap-1">
+                <td className="py-3 px-4">
+                  <div className="flex items-center gap-1.5">
                     {garage.garageStatus === "PENDING" && (
                       <>
                         <Button
                           size="sm"
                           variant="outline"
-                          className="text-green-600 border-green-200 hover:bg-green-50 h-7 px-2"
+                          className="text-green-600 border-green-200 hover:bg-green-50 h-8 w-8 p-0"
                           onClick={() => onGarageApprove(garage.garageId)}
+                          title="Approve Garage"
                         >
-                          <Check className="w-3 h-3" />
+                          <Check className="w-4 h-4" />
                         </Button>
                         <Button
                           size="sm"
                           variant="outline"
-                          className="text-red-600 border-red-200 hover:bg-red-50 h-7 px-2"
+                          className="text-red-600 border-red-200 hover:bg-red-50 h-8 w-8 p-0"
                           onClick={() => onGarageReject(garage.garageId)}
+                          title="Reject Garage"
                         >
-                          <X className="w-3 h-3" />
+                          <X className="w-4 h-4" />
                         </Button>
                       </>
                     )}
@@ -127,29 +135,32 @@ export default function GarageSubTable({
                       <Button
                         size="sm"
                         variant="outline"
-                        className="text-red-600 border-red-200 hover:bg-red-50 h-7 px-2"
+                        className="text-red-600 border-red-200 hover:bg-red-50 h-8 w-8 p-0"
                         onClick={() => onGarageReject(garage.garageId)}
+                        title="Decline/Suspend Garage"
                       >
-                        <X className="w-3 h-3" />
+                        <X className="w-4 h-4" />
                       </Button>
                     )}
                     {garage.garageStatus === "REJECTED" && (
                       <Button
                         size="sm"
                         variant="outline"
-                        className="text-green-600 border-green-200 hover:bg-green-50 h-7 px-2"
+                        className="text-green-600 border-green-200 hover:bg-green-50 h-8 w-8 p-0"
                         onClick={() => onGarageApprove(garage.garageId)}
+                        title="Approve Garage"
                       >
-                        <Check className="w-3 h-3" />
+                        <Check className="w-4 h-4" />
                       </Button>
                     )}
                     <Button
                       size="sm"
                       variant="ghost"
-                      className="h-7 px-2"
+                      className="h-8 w-8 p-0 text-slate-500 hover:text-slate-700 hover:bg-slate-100"
                       onClick={() => onGarageView(garage)}
+                      title="View Details"
                     >
-                      <Eye className="w-3 h-3" />
+                      <Eye className="w-4 h-4" />
                     </Button>
                   </div>
                 </td>

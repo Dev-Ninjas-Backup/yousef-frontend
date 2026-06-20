@@ -453,39 +453,79 @@ export default function SparePartsManagementPage() {
         </button>
       </div>
 
-      {/* Stats Cards Section */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5">
-        <div className="bg-white rounded-xl p-5 border border-gray-100 shadow-sm flex items-center gap-4 hover:shadow-md transition-all duration-300">
-          <div className="p-3.5 bg-blue-50 text-blue-600 rounded-2xl">
-            <LuSearch className="w-6 h-6" />
+      {/* Stats + Category — single unified card */}
+      <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+        {/* Top row: 3 mini stats */}
+        <div className="grid grid-cols-3 divide-x divide-gray-100 border-b border-gray-100">
+          <div className="flex items-center gap-3 px-5 py-3.5">
+            <div className="p-2 bg-blue-50 text-blue-600 rounded-lg shrink-0">
+              <LuSearch className="w-4 h-4" />
+            </div>
+            <div>
+              <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Total Listings</p>
+              <p className="text-xl font-bold text-gray-900 leading-tight">{totalProducts}</p>
+            </div>
           </div>
-          <div>
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Total Listings</p>
-            <h3 className="text-2xl font-bold text-gray-950 mt-1">{totalProducts}</h3>
+          <div className="flex items-center gap-3 px-5 py-3.5">
+            <div className="p-2 bg-purple-50 text-purple-600 rounded-lg shrink-0">
+              <LuTrendingUp className="w-4 h-4" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Top Category</p>
+              <p className="text-sm font-bold text-gray-900 leading-tight truncate" title={topCategory?.categoryName}>
+                {topCategory ? `${topCategory.categoryName} (${topCategory.productCount})` : "None"}
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 px-5 py-3.5">
+            <div className="p-2 bg-green-50 text-green-600 rounded-lg shrink-0">
+              <LuCheck className="w-4 h-4" />
+            </div>
+            <div>
+              <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Total Categories</p>
+              <p className="text-xl font-bold text-gray-900 leading-tight">{dbCategories.length}</p>
+            </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-xl p-5 border border-gray-100 shadow-sm flex items-center gap-4 hover:shadow-md transition-all duration-300">
-          <div className="p-3.5 bg-purple-50 text-purple-600 rounded-2xl">
-            <LuTrendingUp className="w-6 h-6" />
+        {/* Bottom row: category pills */}
+        {categoryStats.length > 0 && (
+          <div className="px-4 py-2 flex items-center gap-3 overflow-x-auto bg-gray-50/50">
+            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest whitespace-nowrap shrink-0">Filter:</span>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <button
+                onClick={() => handleCategoryChange("All Categories")}
+                className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold border transition-all whitespace-nowrap ${
+                  categoryFilter === "All Categories"
+                    ? "bg-blue-600 text-white border-blue-600"
+                    : "bg-white text-gray-600 border-gray-200 hover:border-blue-400 hover:text-blue-600"
+                }`}
+              >
+                All <span className="opacity-75">({totalProducts})</span>
+              </button>
+              {[...categoryStats]
+                .sort((a, b) => b.productCount - a.productCount)
+                .map((stat) => (
+                  <button
+                    key={stat.categoryName}
+                    onClick={() => handleCategoryChange(stat.categoryName)}
+                    title={`${stat.categoryName}: ${stat.productCount} listings`}
+                    className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold border transition-all whitespace-nowrap ${
+                      categoryFilter === stat.categoryName
+                        ? "bg-blue-600 text-white border-blue-600"
+                        : "bg-white text-gray-600 border-gray-200 hover:border-blue-400 hover:text-blue-600"
+                    }`}
+                  >
+                    {getCategoryIcon(stat.categoryName, "w-2.5 h-2.5")}
+                    {stat.categoryName}
+                    <span className={`font-bold ${categoryFilter === stat.categoryName ? "text-blue-100" : "text-gray-400"}`}>
+                      {stat.productCount}
+                    </span>
+                  </button>
+                ))}
+            </div>
           </div>
-          <div>
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Top Category</p>
-            <h3 className="text-lg sm:text-xl font-bold text-gray-950 mt-1 truncate max-w-[200px]" title={topCategory ? `${topCategory.categoryName} (${topCategory.productCount})` : "None"}>
-              {topCategory ? `${topCategory.categoryName} (${topCategory.productCount})` : "None"}
-            </h3>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl p-5 border border-gray-100 shadow-sm flex items-center gap-4 hover:shadow-md transition-all duration-300">
-          <div className="p-3.5 bg-green-50 text-green-600 rounded-2xl">
-            <LuCheck className="w-6 h-6" />
-          </div>
-          <div>
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Total Categories</p>
-            <h3 className="text-2xl font-bold text-gray-950 mt-1">{dbCategories.length}</h3>
-          </div>
-        </div>
+        )}
       </div>
 
       {/* Search and Filter Section */}
@@ -536,6 +576,7 @@ export default function SparePartsManagementPage() {
               <option value="PENDING">Pending</option>
               <option value="APPROVED">Approved</option>
               <option value="REJECTED">Rejected</option>
+              <option value="DRAFT">Draft</option>
             </select>
             <LuChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
           </div>
@@ -551,10 +592,10 @@ export default function SparePartsManagementPage() {
               className="w-full appearance-none pl-4 pr-10 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-700 focus:outline-none cursor-pointer"
             >
               <option value="All Time">All Time</option>
-              <option value="Today">Submitted Today</option>
-              <option value="This Week">Submitted This Week</option>
-              <option value="This Month">Submitted This Month</option>
-              <option value="This Year">Submitted This Year</option>
+              <option value="Today">Today</option>
+              <option value="This Week">This Week</option>
+              <option value="This Month">This Month</option>
+              <option value="This Year">This Year</option>
             </select>
             <LuChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
           </div>

@@ -119,20 +119,20 @@ const RevenueTrends = () => {
   };
 
   return (
-    <div className="bg-white rounded-xl p-4 sm:p-5 lg:p-6 shadow-sm border border-gray-100">
-      <h2 className="text-base sm:text-lg font-semibold text-gray-900 mb-4 sm:mb-6">
+    <div className="bg-white rounded-xl p-4 sm:p-5 lg:p-6 shadow-sm border border-gray-100 flex flex-col h-full">
+      <h2 className="text-base sm:text-lg font-semibold text-gray-900 mb-4 sm:mb-6 shrink-0">
         Revenue Trends
       </h2>
       {isLoading ? (
-        <div className="h-64 sm:h-72 lg:h-80 flex items-center justify-center">
+        <div className="flex-1 min-h-[200px] flex items-center justify-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
         </div>
       ) : data && data.length > 0 ? (
-        <div className="h-64 sm:h-72 lg:h-80">
+        <div className="flex-1 min-h-[200px] w-full">
           <Line data={revenueData} options={revenueOptions} />
         </div>
       ) : (
-        <div className="h-64 flex items-center justify-center text-gray-500">
+        <div className="flex-1 min-h-[200px] flex items-center justify-center text-gray-500">
           No revenue data available
         </div>
       )}

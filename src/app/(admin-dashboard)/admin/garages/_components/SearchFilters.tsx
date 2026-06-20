@@ -49,10 +49,10 @@ export default function SearchFilters({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Time</SelectItem>
-              <SelectItem value="Today">Joined Today</SelectItem>
-              <SelectItem value="This Week">Joined This Week</SelectItem>
-              <SelectItem value="This Month">Joined This Month</SelectItem>
-              <SelectItem value="This Year">Joined This Year</SelectItem>
+              <SelectItem value="Today">Today</SelectItem>
+              <SelectItem value="This Week">This Week</SelectItem>
+              <SelectItem value="This Month">This Month</SelectItem>
+              <SelectItem value="This Year">This Year</SelectItem>
             </SelectContent>
           </Select>
         </div>
