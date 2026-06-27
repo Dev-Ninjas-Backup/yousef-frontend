@@ -18,7 +18,7 @@ const CustomerSupport = () => {
   const [createContact, { isLoading }] = useCreateContactMutation();
 
   const [open, setOpen] = useState(false);
-  const [subject, setSubject] = useState<"CAR_SERVICE" | "CAR_PARTS" | "LIMITED_TIME_OFFER" | "OTHERS">("CAR_SERVICE");
+  const [subject, setSubject] = useState<"CAR_SERVICE" | "CAR_PARTS" | "LIMITED_TIME_OFFER" | "EXCLUSIVE_OFFER" | "OTHERS">("CAR_SERVICE");
   const [otherSubject, setOtherSubject] = useState("");
   const [message, setMessage] = useState("");
 
@@ -102,9 +102,9 @@ const CustomerSupport = () => {
             <form onSubmit={handleSubmit} className="space-y-4 pt-4">
               <div className="space-y-1.5">
                 <Label htmlFor="subject" className="text-xs font-bold text-gray-700">Support Subject <span className="text-red-500">*</span></Label>
-                <Select
+                 <Select
                   value={subject}
-                  onValueChange={(val) => setSubject(val as "CAR_PARTS" | "CAR_SERVICE" | "LIMITED_TIME_OFFER" | "OTHERS")}
+                  onValueChange={(val) => setSubject(val as any)}
                 >
                   <SelectTrigger id="subject" className="bg-gray-550 bg-gray-50 border-gray-200 h-10 rounded-xl text-sm">
                     <SelectValue placeholder="Select Subject" />
@@ -113,6 +113,7 @@ const CustomerSupport = () => {
                     <SelectItem value="CAR_SERVICE" className="cursor-pointer">Car Service Query</SelectItem>
                     <SelectItem value="CAR_PARTS" className="cursor-pointer">Car Parts Sourcing Query</SelectItem>
                     <SelectItem value="LIMITED_TIME_OFFER" className="cursor-pointer">Limited Time Offer</SelectItem>
+                    <SelectItem value="EXCLUSIVE_OFFER" className="cursor-pointer">Exclusive Offers</SelectItem>
                     <SelectItem value="OTHERS" className="cursor-pointer">Others / Profile / Account Support</SelectItem>
                   </SelectContent>
                 </Select>
