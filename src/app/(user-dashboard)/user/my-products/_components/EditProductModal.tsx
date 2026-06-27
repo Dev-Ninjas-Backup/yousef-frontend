@@ -164,7 +164,10 @@ export function EditProductModal({
       toast.success("Product updated successfully!");
       onOpenChange(false);
     } catch (error: any) {
-      console.error("Update error:", error);
+      console.error(
+        "Update error:",
+        error instanceof Error ? error : JSON.parse(JSON.stringify(error))
+      );
       const errorMsg =
         error?.data?.message || error?.message || "Failed to update product";
       toast.error(errorMsg);

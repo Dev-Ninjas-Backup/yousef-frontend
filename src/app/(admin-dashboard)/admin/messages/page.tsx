@@ -615,7 +615,7 @@ export default function MessagesPage() {
       id: item.id,
       sender: `${item.FirstName} ${item.LastName}`,
       subject:
-        item.subject === "LIMITED_TIME_OFFER"
+        item.subject === "EXCLUSIVE_OFFER"
           ? "Apply for Exclusive Offer"
           : item.subject === "OTHERS" && item.othersubject
           ? item.othersubject
@@ -665,9 +665,9 @@ export default function MessagesPage() {
     return original?.subject;
   };
 
-  const customerInquiries = sortedMessages.filter((m) => !m.garageOwnerId && getSubjectType(m.id) !== "LIMITED_TIME_OFFER");
-  const businessMessages = sortedMessages.filter((m) => !!m.garageOwnerId && getSubjectType(m.id) !== "LIMITED_TIME_OFFER");
-  const exclusiveOffers = sortedMessages.filter((m) => getSubjectType(m.id) === "LIMITED_TIME_OFFER");
+  const customerInquiries = sortedMessages.filter((m) => !m.garageOwnerId && getSubjectType(m.id) !== "EXCLUSIVE_OFFER");
+  const businessMessages = sortedMessages.filter((m) => !!m.garageOwnerId && getSubjectType(m.id) !== "EXCLUSIVE_OFFER");
+  const exclusiveOffers = sortedMessages.filter((m) => getSubjectType(m.id) === "EXCLUSIVE_OFFER");
 
   const filteredSystemNotifications = systemNotifications.filter((n) => {
     const matchesSearch =
@@ -700,10 +700,12 @@ export default function MessagesPage() {
       setSelectedId(customerInquiries[0].id);
     } else if (activeTab === "garage" && businessMessages.length > 0 && !selectedId) {
       setSelectedId(businessMessages[0].id);
+    } else if (activeTab === "exclusive" && exclusiveOffers.length > 0 && !selectedId) {
+      setSelectedId(exclusiveOffers[0].id);
     } else if (activeTab === "system" && sortedSystemNotifications.length > 0 && !selectedId) {
       setSelectedId(sortedSystemNotifications[0].id);
     }
-  }, [activeTab, customerInquiries, businessMessages, sortedSystemNotifications, selectedId]);
+  }, [activeTab, customerInquiries, businessMessages, exclusiveOffers, sortedSystemNotifications, selectedId]);
 
   const handleSendReply = async () => {
     if (!selectedId || (!replyText.trim() && !replyAttachment)) return;
@@ -1016,9 +1018,9 @@ export default function MessagesPage() {
           </div>
 
           {/* Right Details */}
-          <div className="lg:col-span-2 bg-white rounded-xl border shadow-sm overflow-hidden min-h-[650px]">
+          <div className="lg:col-span-2 bg-white rounded-xl border shadow-sm overflow-hidden h-[650px] flex flex-col">
             {activeTab !== "system" && singleMessage ? (
-              <div className="flex flex-col h-full bg-slate-50/10">
+              <div className="flex flex-col h-full bg-slate-50/10 overflow-hidden">
                 <div className="p-6 border-b bg-white">
                   <div className="flex items-center gap-2 mb-2">
                     {activeTab === "customer" ? (
@@ -1041,7 +1043,7 @@ export default function MessagesPage() {
                     )}
                   </div>
                   <h2 className="text-xl font-bold text-gray-900 tracking-tight">
-                    {singleMessage.data.subject === "LIMITED_TIME_OFFER"
+                    {singleMessage.data.subject === "EXCLUSIVE_OFFER"
                       ? "Apply for Exclusive Offer"
                       : singleMessage.data.subject === "OTHERS" && singleMessage.data.othersubject
                       ? singleMessage.data.othersubject
@@ -1095,7 +1097,7 @@ export default function MessagesPage() {
                         {singleMessage.data.message}
                       </p>
                       
-                      {singleMessage.data.subject === "LIMITED_TIME_OFFER" && (
+                      {singleMessage.data.subject === "EXCLUSIVE_OFFER" && (
                         (singleMessage.data.priceBeforeDiscount || singleMessage.data.priceAfterDiscount) && (
                           <div className="mt-3 bg-orange-50/50 border border-orange-100 rounded-xl p-3 flex items-center justify-between gap-4">
                             <div className="flex items-center gap-3">

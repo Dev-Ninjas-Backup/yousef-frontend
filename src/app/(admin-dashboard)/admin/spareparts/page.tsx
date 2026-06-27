@@ -615,6 +615,9 @@ export default function SparePartsManagementPage() {
           <table className="w-full">
             <thead>
               <tr className="border-b border-gray-100 bg-gray-50">
+                <th className="text-left py-4 px-5 text-xs font-semibold text-gray-600 uppercase w-12">
+                  SL
+                </th>
                 <th
                   className="text-left py-4 px-5 text-xs font-semibold text-gray-600 uppercase cursor-pointer hover:bg-gray-100 select-none transition-colors"
                   onClick={() => handleSort("partName")}
@@ -712,11 +715,14 @@ export default function SparePartsManagementPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {sortedSpareParts.map((part) => (
+              {sortedSpareParts.map((part, index) => (
                 <tr
                   key={part.id}
                   className="hover:bg-gray-50 transition-colors"
                 >
+                  <td className="py-4 px-5 text-sm text-gray-500 font-medium w-12">
+                    {index + 1}
+                  </td>
                   <td className="py-4 px-5">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-lg bg-gray-50 border border-gray-100 flex-shrink-0 flex items-center justify-center overflow-hidden">

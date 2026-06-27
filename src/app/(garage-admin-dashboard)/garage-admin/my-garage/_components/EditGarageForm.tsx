@@ -695,9 +695,9 @@ export function EditGarageForm({
 
       <Card>
         <CardHeader className="space-y-1">
-          <CardTitle>Brand Expertise (American, Japanese, etc.)</CardTitle>
+          <CardTitle>Expertise (American, Japanese, etc.)</CardTitle>
           <p className="text-xs text-amber-600 font-medium bg-amber-50 border border-amber-200 rounded-md p-2 w-fit">
-            Note: Newly selected brands will undergo admin review before appearing on your profile.
+            Note: Newly selected Expertise will undergo admin review before appearing on your profile.
           </p>
         </CardHeader>
         <CardContent>

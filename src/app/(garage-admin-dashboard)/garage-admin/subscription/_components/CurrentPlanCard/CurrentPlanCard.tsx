@@ -1,12 +1,30 @@
+"use client";
+
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { CreditCard, Info, Sparkles } from "lucide-react";
-import { subscriptionApi } from "@/store/api/garageAdminApis/subscription/subscription";
+import {
+  subscriptionApi,
+  useCreateMonthlySubscriptionMutation,
+} from "@/store/api/garageAdminApis/subscription/subscription";
+import { toast } from "sonner";
+import { openPaymentInNewTab } from "@/utils/paymentUtils";
 
 const CurrentPlanCard = () => {
   const { data } = subscriptionApi.useGetCurrentPlanQuery();
+  const [createSubscription, { isLoading: isUpgrading }] =
+    useCreateMonthlySubscriptionMutation();
+
+  const handleUpgrade = async () => {
+    try {
+      const response = await createSubscription().unwrap();
+      openPaymentInNewTab(response.url);
+    } catch (error: any) {
+      toast.error(error?.data?.message || "Failed to initiate upgrade");
+    }
+  };
   const calculateProgress = () => {
     if (!data?.startDate || !data?.endDate) return 0;
 
@@ -47,9 +65,16 @@ const CurrentPlanCard = () => {
                 Current Plan
               </h3>
             </div>
-            <Badge className="bg-white text-blue-600 hover:bg-white w-fit text-xs sm:text-sm">
-              {data?.planType}
-            </Badge>
+            <div className="flex items-center gap-2 flex-wrap">
+              <Badge className="bg-white text-blue-600 hover:bg-white w-fit text-xs sm:text-sm">
+                {data?.planType}
+              </Badge>
+              {data?.subscriptionCancelAtPeriodEnd && (
+                <Badge className="bg-red-500 text-white hover:bg-red-500 w-fit text-xs sm:text-sm font-bold border-0">
+                  Cancellation Pending
+                </Badge>
+              )}
+            </div>
           </div>
 
           <p className="text-xs sm:text-sm">{data?.message}</p>
@@ -69,15 +94,19 @@ const CurrentPlanCard = () => {
 
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 pt-2">
             <p className="text-xs sm:text-sm flex flex-col gap-1">
-              {isPaid ? "Subscription ends on " : "Trial ends on "}
+              {data?.subscriptionCancelAtPeriodEnd ? "Access ends on " : (isPaid ? "Subscription ends on " : "Trial ends on ")}
               <span className="font-semibold text-base sm:text-lg md:text-xl">
                 {formatDate(data?.endDate)}
               </span>
             </p>
             {!isPaid && (
-              <Button className="bg-white text-blue-600 hover:bg-gray-100 gap-2 w-full sm:w-auto text-xs sm:text-sm">
+              <Button
+                onClick={handleUpgrade}
+                disabled={isUpgrading}
+                className="bg-white text-blue-600 hover:bg-gray-100 gap-2 w-full sm:w-auto text-xs sm:text-sm"
+              >
                 <CreditCard className="w-4 h-4" />
-                <span>Upgrade Now</span>
+                <span>{isUpgrading ? "Redirecting..." : "Upgrade Now"}</span>
               </Button>
             )}
           </div>

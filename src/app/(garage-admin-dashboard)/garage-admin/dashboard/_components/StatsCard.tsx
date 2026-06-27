@@ -8,6 +8,7 @@ interface StatsCardProps {
   iconColor: string;
   bgColor: string;
   trend?: { icon: LucideIcon; color: string };
+  description?: string;
 }
 
 export function StatsCard({
@@ -16,6 +17,7 @@ export function StatsCard({
   label,
   bgColor,
   trend,
+  description,
 }: StatsCardProps) {
   const TrendIcon = trend?.icon;
 
@@ -25,6 +27,7 @@ export function StatsCard({
     "bg-yellow-50": "bg-yellow-50",
     "bg-purple-50": "bg-purple-50",
     "bg-indigo-50": "bg-indigo-50",
+    "bg-gray-50": "bg-gray-50",
   };
 
   const iconBgMap: Record<string, string> = {
@@ -33,6 +36,7 @@ export function StatsCard({
     "bg-yellow-50": "bg-yellow-600",
     "bg-purple-50": "bg-purple-600",
     "bg-indigo-50": "bg-indigo-600",
+    "bg-gray-50": "bg-slate-500",
   };
 
   const trendIconMap: Record<string, string> = {
@@ -41,27 +45,25 @@ export function StatsCard({
     "bg-yellow-50": "text-yellow-600",
     "bg-purple-50": "text-purple-600",
     "bg-indigo-50": "text-indigo-600",
+    "bg-gray-50": "text-slate-500",
   };
 
   return (
-    <Card
-      className={`p-6 relative overflow-hidden ${
-        cardBgMap[bgColor] || bgColor
-      }`}
-    >
+    <Card className={`p-6 relative overflow-hidden ${cardBgMap[bgColor] || bgColor}`}>
       <div className="flex items-start justify-between">
-        <div className={`${iconBgMap[bgColor] || bgColor} p-3 rounded-lg`}>
+        <div className={`${iconBgMap[bgColor] || "bg-gray-500"} p-3 rounded-lg`}>
           <Icon className="text-white w-6 h-6" />
         </div>
         {TrendIcon && (
-          <TrendIcon
-            className={`${trendIconMap[bgColor] || trend.color} w-5 h-5`}
-          />
+          <TrendIcon className={`${trendIconMap[bgColor] || "text-gray-600"} w-5 h-5`} />
         )}
       </div>
       <div className="mt-4">
         <p className="text-3xl font-bold text-gray-900">{value ?? "..."}</p>
         <p className="text-sm text-gray-600 mt-1">{label}</p>
+        {description && (
+          <p className="text-[10px] text-gray-500 mt-0.5 font-medium">{description}</p>
+        )}
       </div>
     </Card>
   );

@@ -4,6 +4,7 @@ interface InquiryMessage {
   content: string;
   isFromAdmin: boolean;
   createdAt: string;
+  attachment?: string | null;
 }
 
 interface Inquiry {
@@ -32,6 +33,7 @@ interface CreateInquiryRequest {
 interface ReplyInquiryRequest {
   contactId: string;
   content: string;
+  attachment?: string;
 }
 
 interface CreateInquiryResponse {

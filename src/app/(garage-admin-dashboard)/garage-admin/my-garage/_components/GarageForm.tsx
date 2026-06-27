@@ -473,7 +473,7 @@ export function GarageForm({ onCancel, onSave, initialData, isEditMode: isEditMo
 
         <Card>
           <CardHeader>
-            <CardTitle>Brand Expertise (American, Japanese, etc.)</CardTitle>
+            <CardTitle>Expertise (American, Japanese, etc.)</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">

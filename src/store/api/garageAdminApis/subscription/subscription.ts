@@ -8,6 +8,9 @@ interface CurrentPlanResponse {
   endDate: string;
   daysRemaining: number;
   message: string;
+  subscriptionCancelAtPeriodEnd?: boolean;
+  productMonthlyPendingPlanType?: string | null;
+  productMonthlyCancelAtPeriodEnd?: boolean;
 }
 // 2. Create Subscription Interface
 interface CreateSubscriptionResponse {
@@ -78,7 +81,22 @@ export const subscriptionApi = apiSlice.injectEndpoints({
       ],
     }),
 
-  
+    downgradeProductPlan: builder.mutation<any, { planType: string }>({
+      query: (body) => ({
+        url: "/subscription/downgrade-product-plan",
+        method: "PATCH",
+        body,
+      }),
+      invalidatesTags: ["SubscriptionCurrentPlan"],
+    }),
+
+    cancelProductMonthly: builder.mutation<any, void>({
+      query: () => ({
+        url: "/subscription/cancel-product-plan",
+        method: "PATCH",
+      }),
+      invalidatesTags: ["SubscriptionCurrentPlan"],
+    }),
   }),
 });
 
@@ -87,4 +105,6 @@ export const {
   useCreateMonthlySubscriptionMutation,
   useGetTransactionHistoryQuery,
   useCancelSubscriptionMutation,
+  useDowngradeProductPlanMutation,
+  useCancelProductMonthlyMutation,
 } = subscriptionApi;

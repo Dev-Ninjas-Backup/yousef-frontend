@@ -33,10 +33,11 @@ const StatsCardGrid = ({ garageId }: StatsCardGridProps) => {
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
       <StatsCard
         icon={Coins}
-        value={`${profileData?.data?.promotionCredits || 0} AED`}
+        value={`${profileData?.data?.promotionCredits || 0} Credits`}
         label="Promotion Credits"
         iconColor="text-indigo-600"
         bgColor="bg-indigo-50"
+        description="1 credit = 1 AED"
       />
       <StatsCard
         icon={Package}

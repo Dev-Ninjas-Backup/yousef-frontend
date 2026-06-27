@@ -62,7 +62,7 @@ const GetInTouch: React.FC = () => {
     if (subject !== "OTHERS") {
       setFormData(prev => ({ ...prev, othersubject: "" }));
     }
-    if (subject !== "LIMITED_TIME_OFFER" && subject !== "EXCLUSIVE_OFFER") {
+    if (subject !== "EXCLUSIVE_OFFER") {
       setFormData(prev => ({ ...prev, priceBeforeDiscount: "", priceAfterDiscount: "" }));
     }
   };
@@ -104,7 +104,7 @@ const GetInTouch: React.FC = () => {
         submitData.append("othersubject", formData.othersubject);
       }
 
-      if (formData.subject === "LIMITED_TIME_OFFER") {
+      if (formData.subject === "EXCLUSIVE_OFFER") {
         if (formData.priceBeforeDiscount) {
           submitData.append("priceBeforeDiscount", formData.priceBeforeDiscount);
         }
@@ -352,7 +352,7 @@ const GetInTouch: React.FC = () => {
             )}
 
             {/* Pricing fields (for Exclusive Offers) */}
-            {(formData.subject === "LIMITED_TIME_OFFER" || formData.subject === "EXCLUSIVE_OFFER") && (
+            {formData.subject === "EXCLUSIVE_OFFER" && (
               <motion.div 
                 className="grid sm:grid-cols-2 gap-5"
                 initial={{ opacity: 0, height: 0 }}
