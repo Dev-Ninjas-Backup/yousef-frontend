@@ -6,8 +6,8 @@ import { motion } from "framer-motion";
 import { Loader2, MapPin, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useGetNearbyGaragesQuery } from "@/store/api/garageApi";
-import Image from "next/image";
-import { getTodayHoursDescription } from "@/utils/schedule";
+import { isGarageCurrentlyOpen } from "@/utils/schedule";
+import GarageCard from "@/app/(main-layout)/service/_components/garage-card/GarageCard";
 
 function SearchNearbyContent() {
   const searchParams = useSearchParams();
@@ -85,103 +85,36 @@ function SearchNearbyContent() {
         {/* Garages Grid */}
         {garages && garages.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {garages.map((garage: any, index: number) => (
-              <motion.div
+            {garages.map((garage: any) => (
+              <GarageCard
                 key={garage.id}
-                onClick={() => handleGarageClick(garage.id)}
-                className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.08, ease: "easeOut" }}
-                whileHover={{ y: -5, transition: { duration: 0.2 } }}
-              >
-                {/* Image */}
-                <div className="relative h-48 bg-gray-100">
-                  {garage.coverPhoto ? (
-                    <Image
-                      src={garage.coverPhoto}
-                      alt={garage.name}
-                      fill
-                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 400px"
-                      className="object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gray-200">
-                      <span className="text-gray-400">No image</span>
-                    </div>
-                  )}
-                  {/* Distance Badge */}
-                  <div className="absolute top-3 right-3 bg-blue-600 text-white px-3 py-1 rounded-full flex items-center gap-1">
-                    <MapPin className="w-3 h-3" />
-                    <span className="text-sm font-medium">
-                      {garage.distance?.toFixed(1) || "N/A"} km
-                    </span>
-                  </div>
-                </div>
-
-                {/* Content */}
-                <div className="p-4">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                    {garage.name}
-                  </h3>
-                  <p className="text-sm text-gray-600 mb-2">
-                    {garage.city}, {garage.emirate}
-                  </p>
-                  <p className="text-xs text-gray-500 line-clamp-2 mb-3">
-                    {garage.formattedAddress}
-                  </p>
-
-                  {/* Services */}
-                  {garage.services && garage.services.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mb-3">
-                      {garage.services.slice(0, 3).map((service: string, idx: number) => (
-                        <span
-                          key={idx}
-                          className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded"
-                        >
-                          {service}
-                        </span>
-                      ))}
-                      {garage.services.length > 3 && (
-                        <span className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded">
-                          +{garage.services.length - 3} more
-                        </span>
-                      )}
-                    </div>
-                  )}
-
-                  {/* Rating */}
-                  {garage.averageRating && (
-                    <div className="flex items-center gap-2">
-                      <div className="flex items-center">
-                        <span className="text-yellow-500">★</span>
-                        <span className="text-sm font-medium ml-1">
-                          {garage.averageRating.toFixed(1)}
-                        </span>
-                      </div>
-                      <span className="text-xs text-gray-500">
-                        ({garage.totalReviews || 0} reviews)
-                      </span>
-                    </div>
-                  )}
-
-                  {/* Open Status & Hours */}
-                  <div className="mt-3 pt-3 border-t border-gray-100 flex items-center justify-between">
-                    {garage.weekdaysHours && (
-                      <span className="text-xs text-gray-500">
-                        ⏰ {getTodayHoursDescription(garage.weekdaysHours, garage.weekendsHours)}
-                      </span>
-                    )}
-                    <span className={`px-2 py-0.5 text-[10px] font-bold rounded-full border ${
-                      garage.isOpenNow
-                        ? "bg-green-50 text-green-700 border-green-100"
-                        : "bg-rose-50 text-rose-600 border-rose-100"
-                    }`}>
-                      {garage.isOpenNow ? "Open Now" : "Closed"}
-                    </span>
-                  </div>
-                </div>
-              </motion.div>
+                id={garage.id}
+                name={garage.name}
+                rating={garage.averageRating || 0}
+                reviews={garage.totalReviews || 0}
+                distance={typeof garage.distance === "number" ? `${garage.distance.toFixed(1)} km` : (garage.distance || "")}
+                location={`${garage.city || ""}, ${garage.emirate || ""}`}
+                services={garage.services || []}
+                description={garage.description || ""}
+                priceRange={garage.priceRange || "AED 150-300"}
+                status={
+                  (garage.isOpenNow !== undefined
+                    ? garage.isOpenNow
+                    : isGarageCurrentlyOpen(
+                        garage.weekdaysHours,
+                        garage.weekendsHours
+                      ))
+                    ? "Open Now"
+                    : "Closed"
+                }
+                position={{ lat: garage.garageLat, lng: garage.garageLng }}
+                ownerId={garage.userId || garage.user?.id}
+                phone={garage.garagePhone || garage.user?.phone}
+                brandExpertise={garage.brandExpertise || []}
+                profileImage={garage.profileImage}
+                weekdaysHours={garage.weekdaysHours}
+                weekendsHours={garage.weekendsHours}
+              />
             ))}
           </div>
         ) : (

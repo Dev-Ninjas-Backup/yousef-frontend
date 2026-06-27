@@ -41,15 +41,21 @@ const CustomerSupport = () => {
     const lastName = nameParts.slice(1).join(" ") || "Owner";
 
     try {
-      await createContact({
-        FirstName: firstName,
-        LastName: lastName,
-        email: currentUser?.email || "garage-owner@example.com",
-        subject: subject,
-        message: message,
-        othersubject: subject === "OTHERS" ? otherSubject : undefined,
-        garageOwnerId: currentUser?.id,
-      }).unwrap();
+      const submitData = new FormData();
+      submitData.append("FirstName", firstName);
+      submitData.append("LastName", lastName);
+      submitData.append("email", currentUser?.email || "garage-owner@example.com");
+      submitData.append("phone", (currentUser as any)?.phone || "+971500000000");
+      submitData.append("subject", subject);
+      submitData.append("message", message);
+      if (subject === "OTHERS" && otherSubject) {
+        submitData.append("othersubject", otherSubject);
+      }
+      if (currentUser?.id) {
+        submitData.append("garageOwnerId", currentUser.id);
+      }
+
+      await createContact(submitData).unwrap();
 
       toast.success("Support message sent to admin successfully! We will contact you via email.");
       setMessage("");

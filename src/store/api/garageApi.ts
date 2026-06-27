@@ -49,6 +49,7 @@ export interface GarageData {
   updatedAt: string;
   averageRating: number;
   totalReviews: number;
+  distance?: number;
   user: {
     id: string;
     email: string;

@@ -18,7 +18,8 @@ import { searchGaragesTranslations } from "@/translations/searchGarages";
 import { useRouter } from "next/navigation";
 import { useLazyGetNearbyGaragesQuery } from "@/store/api/garageApi";
 import { toast } from "sonner";
-import { isGarageCurrentlyOpen, getTodayHoursDescription } from "@/utils/schedule";
+import { isGarageCurrentlyOpen } from "@/utils/schedule";
+import GarageCard from "@/app/(main-layout)/service/_components/garage-card/GarageCard";
 
 const SearchGarages: React.FC = () => {
   const { t } = useLanguage();
@@ -207,91 +208,37 @@ const SearchGarages: React.FC = () => {
                   View All
                 </Button>
               </div>
-              <div className="space-y-3 max-h-[380px] overflow-y-auto pr-1">
+              <div className="space-y-4 max-h-[520px] overflow-y-auto pr-1">
                 {nearbyResults.map((garage) => (
-                  <div
+                  <GarageCard
                     key={garage.id}
-                    className="p-4 border rounded-lg transition-colors bg-white"
-                  >
-                    <div className="flex items-start gap-4">
-                      {/* Left: Main Info */}
-                      <div className="flex-1">
-                        <div className="flex items-start justify-between mb-2">
-                          <div>
-                            <h4
-                              onClick={() => handleGarageClick(garage.id)}
-                              className="font-semibold text-gray-900 text-lg cursor-pointer hover:text-blue-700 hover:underline transition-colors inline-block"
-                            >
-                              {garage.name}
-                            </h4>
-                            <p className="text-sm text-gray-600 mt-1">
-                              {garage.address}
-                            </p>
-                          </div>
-                          <div className="flex items-center gap-1 bg-blue-50 px-3 py-1 rounded-full">
-                            <MapPin className="w-4 h-4 text-blue-600" />
-                            <span className="text-sm font-semibold text-blue-600">
-                              {garage.distance?.toFixed(1)} km
-                            </span>
-                          </div>
-                        </div>
-
-                        {/* Rating & Status */}
-                        <div className="flex items-center gap-4 mb-3">
-                          {garage.averageRating && (
-                            <div className="flex items-center gap-1">
-                              <span className="text-yellow-500 text-lg">★</span>
-                              <span className="font-semibold text-gray-900">
-                                {garage.averageRating.toFixed(1)}
-                              </span>
-                              <span className="text-sm text-gray-500">
-                                ({garage.totalReviews} reviews)
-                              </span>
-                            </div>
-                          )}
-                          <span
-                            className={`px-2 py-1 text-xs font-medium rounded-full ${
-                              (garage.isOpenNow !== undefined ? garage.isOpenNow : isGarageCurrentlyOpen(garage.weekdaysHours, garage.weekendsHours))
-                                ? "bg-green-100 text-green-700"
-                                : "bg-red-100 text-red-700"
-                            }`}
-                          >
-                            {(garage.isOpenNow !== undefined ? garage.isOpenNow : isGarageCurrentlyOpen(garage.weekdaysHours, garage.weekendsHours)) ? "Open Now" : "Closed"}
-                          </span>
-                        </div>
-
-                        {/* Brand Expertise */}
-                        {garage.brandExpertise &&
-                          garage.brandExpertise.length > 0 && (
-                            <div className="mb-2">
-                              <span className="text-xs text-gray-600 font-medium">
-                                Expertise:{" "}
-                              </span>
-                              <span className="text-xs text-gray-700">
-                                {garage.brandExpertise.join(", ")}
-                              </span>
-                            </div>
-                          )}
-
-                        {/* Hours & Contact */}
-                        <div className="flex items-center gap-4 text-xs text-gray-600">
-                          {garage.weekdaysHours && (
-                            <span>⏰ {getTodayHoursDescription(garage.weekdaysHours, garage.weekendsHours)}</span>
-                          )}
-                          {garage.user?.phone && (
-                            <a
-                              href={`tel:${garage.user.phone}`}
-                              onClick={(e) => e.stopPropagation()}
-                              className="inline-flex items-center gap-1 hover:text-blue-700 hover:underline transition-colors"
-                            >
-                              <span>📞</span>
-                              <span>{garage.user.phone}</span>
-                            </a>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                    id={garage.id}
+                    name={garage.name}
+                    rating={garage.averageRating || 0}
+                    reviews={garage.totalReviews || 0}
+                    distance={typeof garage.distance === "number" ? `${garage.distance.toFixed(1)} km` : (garage.distance || "")}
+                    location={`${garage.city || ""}, ${garage.emirate || ""}`}
+                    services={garage.services || []}
+                    description={garage.description || ""}
+                    priceRange={garage.priceRange || "AED 150-300"}
+                    status={
+                      (garage.isOpenNow !== undefined
+                        ? garage.isOpenNow
+                        : isGarageCurrentlyOpen(
+                            garage.weekdaysHours,
+                            garage.weekendsHours
+                          ))
+                        ? "Open Now"
+                        : "Closed"
+                    }
+                    position={{ lat: garage.garageLat, lng: garage.garageLng }}
+                    ownerId={garage.userId || garage.user?.id}
+                    phone={garage.garagePhone || garage.user?.phone}
+                    brandExpertise={garage.brandExpertise || []}
+                    profileImage={garage.profileImage}
+                    weekdaysHours={garage.weekdaysHours}
+                    weekendsHours={garage.weekendsHours}
+                  />
                 ))}
               </div>
             </div>

@@ -43,6 +43,9 @@ export const serviceTranslations = {
       allServices: "All Services",
       expertsIn: "Experts In",
       allExpertises: "All Expertises",
+      allStatuses: "All Statuses",
+      openNow: "Open Now",
+      closed: "Closed",
     },
     map: {
       enableLocation: "Enable Precise Location",
@@ -97,6 +100,9 @@ export const serviceTranslations = {
       allServices: "جميع الخدمات",
       expertsIn: "خبراء في",
       allExpertises: "جميع التخصصات",
+      allStatuses: "جميع الحالات",
+      openNow: "مفتوح الآن",
+      closed: "مغلق",
     },
     map: {
       enableLocation: "تفعيل الموقع الدقيق",
@@ -150,6 +156,9 @@ export const serviceTranslations = {
       allServices: "सभी सेवाएं",
       expertsIn: "विशेषज्ञ",
       allExpertises: "सभी विशेषज्ञता",
+      allStatuses: "सभी स्थिति",
+      openNow: "अभी खुला है",
+      closed: "बंद है",
     },
     map: {
       enableLocation: "सटीक स्थान सक्षम करें",

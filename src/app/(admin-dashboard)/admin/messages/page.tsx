@@ -48,6 +48,10 @@ export interface AdminContact {
   garageOwnerId?: string | null;
   userId?: string | null;
   makeasClosed?: boolean;
+  phone?: string | null;
+  priceBeforeDiscount?: string | null;
+  priceAfterDiscount?: string | null;
+  attachment?: string | null;
   messages?: {
     id: string;
     contactId: string;
@@ -540,7 +544,7 @@ export default function MessagesPage() {
   const router = useRouter();
   const userId = user?.id || "guest";
 
-  const [activeTab, setActiveTab] = useState<"customer" | "garage" | "system" | "live">("customer");
+  const [activeTab, setActiveTab] = useState<"customer" | "garage" | "exclusive" | "system" | "live">("customer");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [replyText, setReplyText] = useState("");
@@ -572,7 +576,7 @@ export default function MessagesPage() {
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
       const tab = params.get("tab");
-      if (tab === "customer" || tab === "garage" || tab === "system" || tab === "live") {
+      if (tab === "customer" || tab === "garage" || tab === "exclusive" || tab === "system" || tab === "live") {
         setActiveTab(tab);
       }
     }
@@ -608,7 +612,11 @@ export default function MessagesPage() {
       id: item.id,
       sender: `${item.FirstName} ${item.LastName}`,
       subject:
-        item.subject === "OTHERS" && item.othersubject ? item.othersubject : item.subject,
+        item.subject === "LIMITED_TIME_OFFER"
+          ? "Apply for Exclusive Offer"
+          : item.subject === "OTHERS" && item.othersubject
+          ? item.othersubject
+          : item.subject,
       preview: item.message,
       date: new Date(item.createdAt).toLocaleDateString(),
       isUnread: !item.makeasClosed,
@@ -648,8 +656,14 @@ export default function MessagesPage() {
     return sortOrder === "desc" ? bTime - aTime : aTime - bTime;
   });
 
-  const customerInquiries = sortedMessages.filter((m) => !m.garageOwnerId);
-  const businessMessages = sortedMessages.filter((m) => !!m.garageOwnerId);
+  const getSubjectType = (id: string) => {
+    const original = data?.data.find((item) => item.id === id);
+    return original?.subject;
+  };
+
+  const customerInquiries = sortedMessages.filter((m) => !m.garageOwnerId && getSubjectType(m.id) !== "LIMITED_TIME_OFFER");
+  const businessMessages = sortedMessages.filter((m) => !!m.garageOwnerId && getSubjectType(m.id) !== "LIMITED_TIME_OFFER");
+  const exclusiveOffers = sortedMessages.filter((m) => getSubjectType(m.id) === "LIMITED_TIME_OFFER");
 
   const filteredSystemNotifications = systemNotifications.filter((n) => {
     const matchesSearch =
@@ -731,6 +745,7 @@ export default function MessagesPage() {
           [
             { key: "customer", label: "Customer Inquiries", badge: customerInquiries.length, color: "blue", extra: undefined as string | undefined, icon: undefined as React.ReactNode },
             { key: "garage", label: "Garage Messages", badge: businessMessages.length as number | null, color: "purple", extra: undefined as string | undefined, icon: undefined as React.ReactNode },
+            { key: "exclusive", label: "Exclusive Offers", badge: exclusiveOffers.length as number | null, color: "orange", extra: undefined as string | undefined, icon: undefined as React.ReactNode },
             { key: "system", label: "System Alerts", badge: sortedSystemNotifications.length as number | null, color: "gray", extra: undefined as string | undefined, icon: undefined as React.ReactNode },
             { key: "live", label: "Live Messages", badge: liveUnreadCount > 0 ? liveUnreadCount : null as number | null, color: "green", extra: undefined as string | undefined, icon: <Headphones className="w-4 h-4" /> as React.ReactNode },
           ]
@@ -743,6 +758,8 @@ export default function MessagesPage() {
               ? "border-purple-600 text-purple-600"
               : color === "green"
               ? "border-green-600 text-green-600"
+              : color === "orange"
+              ? "border-orange-500 text-orange-600"
               : "border-gray-800 text-gray-800";
           const badgeBg =
             color === "blue"
@@ -751,12 +768,14 @@ export default function MessagesPage() {
               ? "bg-purple-100 text-purple-800"
               : color === "green"
               ? "bg-green-100 text-green-800"
+              : color === "orange"
+              ? "bg-orange-100 text-orange-850"
               : "bg-gray-100 text-gray-800";
 
           return (
             <button
               key={key}
-              onClick={() => { setActiveTab(key as "customer" | "garage" | "system" | "live"); setSelectedId(null); }}
+              onClick={() => { setActiveTab(key as any); setSelectedId(null); }}
               className={`flex items-center gap-2 px-5 py-4 border-b-2 text-sm font-semibold transition-all duration-200 ${
                 isActive ? `${activeStyle} font-bold` : "border-transparent text-gray-500 hover:text-gray-900"
               }`}
@@ -871,6 +890,29 @@ export default function MessagesPage() {
                   </button>
                 ))}
 
+              {activeTab === "exclusive" &&
+                exclusiveOffers.map((m) => (
+                  <button
+                    key={m.id}
+                    onClick={() => setSelectedId(m.id)}
+                    className={`w-full text-left p-4 hover:bg-gray-50 flex flex-col gap-1 transition-all ${
+                      selectedId === m.id
+                        ? "bg-orange-50/70 border-l-4 border-orange-500 pl-3"
+                        : "border-l-4 border-transparent"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <h3 className="font-bold text-sm text-gray-900 truncate">{m.sender}</h3>
+                      <span className="text-[10px] text-gray-400 shrink-0 font-medium">{m.date}</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <Tag className="w-3 h-3 text-orange-500" />
+                      <p className="text-xs font-semibold text-orange-600 truncate">{formatSubject(m.subject)}</p>
+                    </div>
+                    <p className="text-xs text-gray-600 line-clamp-1 mt-1 leading-normal">{m.preview}</p>
+                  </button>
+                ))}
+
               {activeTab === "system" &&
                 sortedSystemNotifications.map((n) => (
                   <button
@@ -912,6 +954,12 @@ export default function MessagesPage() {
                   <p className="text-sm font-medium">No garage messages found</p>
                 </div>
               )}
+              {!isLoading && activeTab === "exclusive" && exclusiveOffers.length === 0 && (
+                <div className="p-8 text-center text-gray-500">
+                  <AlertCircle className="w-8 h-8 text-gray-300 mx-auto mb-2" />
+                  <p className="text-sm font-medium">No exclusive offer requests found</p>
+                </div>
+              )}
               {!isLoading && activeTab === "system" && sortedSystemNotifications.length === 0 && (
                 <div className="p-8 text-center text-gray-500">
                   <AlertCircle className="w-8 h-8 text-gray-300 mx-auto mb-2" />
@@ -931,6 +979,10 @@ export default function MessagesPage() {
                       <span className="bg-blue-100 text-blue-800 text-[10px] font-extrabold px-2.5 py-1 rounded uppercase tracking-wider">
                         Customer Inquiry
                       </span>
+                    ) : activeTab === "exclusive" ? (
+                      <span className="bg-orange-100 text-orange-850 text-[10px] font-extrabold px-2.5 py-1 rounded uppercase tracking-wider">
+                        Exclusive Offer Request
+                      </span>
                     ) : (
                       <span className="bg-purple-100 text-purple-800 text-[10px] font-extrabold px-2.5 py-1 rounded uppercase tracking-wider">
                         Garage Message
@@ -943,17 +995,26 @@ export default function MessagesPage() {
                     )}
                   </div>
                   <h2 className="text-xl font-bold text-gray-900 tracking-tight">
-                    {singleMessage.data.subject === "OTHERS" && singleMessage.data.othersubject
+                    {singleMessage.data.subject === "LIMITED_TIME_OFFER"
+                      ? "Apply for Exclusive Offer"
+                      : singleMessage.data.subject === "OTHERS" && singleMessage.data.othersubject
                       ? singleMessage.data.othersubject
                       : formatSubject(singleMessage.data.subject)}
                   </h2>
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mt-3">
-                    <p className="text-sm text-gray-600">
+                    <div className="text-sm text-gray-600 flex flex-wrap items-center gap-1.5">
                       <span className="font-semibold text-gray-800">From:</span>{" "}
-                      {singleMessage.data.FirstName} {singleMessage.data.LastName}
-                      <span className="text-gray-400 mx-2">|</span>
+                      <span>{singleMessage.data.FirstName} {singleMessage.data.LastName}</span>
+                      <span className="text-gray-400">|</span>
                       <span className="text-blue-600 hover:underline">{singleMessage.data.email}</span>
-                    </p>
+                      {singleMessage.data.phone && (
+                        <>
+                          <span className="text-gray-400">|</span>
+                          <span className="font-semibold text-gray-700">Phone:</span>
+                          <span className="text-gray-900">{singleMessage.data.phone}</span>
+                        </>
+                      )}
+                    </div>
                     <p className="text-xs text-gray-400 font-medium">
                       {new Date(singleMessage.data.createdAt).toLocaleString()}
                     </p>
@@ -964,7 +1025,7 @@ export default function MessagesPage() {
                   ref={chatContainerRef}
                   className="flex-1 p-6 overflow-y-auto bg-[#F8FAFC] space-y-5 flex flex-col"
                 >
-                  <div className="flex items-start gap-3 max-w-[85%] self-start bg-white p-5 rounded-2xl rounded-tl-none border border-gray-150 shadow-sm">
+                  <div className="flex items-start gap-3 max-w-[85%] self-start bg-white p-5 rounded-2xl rounded-tl-none border border-gray-150 shadow-sm w-full">
                     <div className="flex-1 space-y-1">
                       <div className="flex items-center gap-2 flex-wrap">
                         <span className="font-bold text-xs text-gray-900">
@@ -977,7 +1038,56 @@ export default function MessagesPage() {
                       <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap mt-1">
                         {singleMessage.data.message}
                       </p>
-                      <p className="text-[10px] text-gray-400 pt-1 text-right">
+                      
+                      {singleMessage.data.subject === "LIMITED_TIME_OFFER" && (
+                        (singleMessage.data.priceBeforeDiscount || singleMessage.data.priceAfterDiscount) && (
+                          <div className="mt-3 bg-orange-50/50 border border-orange-100 rounded-xl p-3 flex items-center justify-between gap-4">
+                            <div className="flex items-center gap-3">
+                              {singleMessage.data.priceBeforeDiscount && (
+                                <div className="text-xs text-gray-500">
+                                  Original: <span className="line-through font-semibold text-gray-700">{singleMessage.data.priceBeforeDiscount} AED</span>
+                                </div>
+                              )}
+                              {singleMessage.data.priceBeforeDiscount && singleMessage.data.priceAfterDiscount && (
+                                <div className="text-gray-300 text-xs">|</div>
+                              )}
+                              {singleMessage.data.priceAfterDiscount && (
+                                <div className="text-xs text-gray-500">
+                                  Discounted: <span className="font-extrabold text-green-600">{singleMessage.data.priceAfterDiscount} AED</span>
+                                </div>
+                              )}
+                            </div>
+                            {singleMessage.data.priceBeforeDiscount && singleMessage.data.priceAfterDiscount && (
+                              <span className="bg-red-100 text-red-700 text-[10px] font-black px-2 py-0.5 rounded">
+                                SAVE {Math.round(100 - (parseFloat(singleMessage.data.priceAfterDiscount) / parseFloat(singleMessage.data.priceBeforeDiscount)) * 100)}%
+                              </span>
+                            )}
+                          </div>
+                        )
+                      )}
+
+                      {singleMessage.data.attachment && (
+                        <div className="mt-4 pt-3 border-t border-gray-100">
+                          <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2">Image Attachment</p>
+                          <a 
+                            href={singleMessage.data.attachment} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="inline-block relative rounded-lg overflow-hidden border border-gray-200 hover:border-blue-300 transition-colors shadow-xs group"
+                          >
+                            <img 
+                              src={singleMessage.data.attachment} 
+                              alt="Attachment Preview" 
+                              className="max-h-[140px] max-w-[200px] object-cover group-hover:opacity-90 transition-opacity"
+                            />
+                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white text-xs font-bold transition-opacity">
+                              View Full Size
+                            </div>
+                          </a>
+                        </div>
+                      )}
+
+                      <p className="text-[10px] text-gray-400 pt-2 text-right">
                         {new Date(singleMessage.data.createdAt).toLocaleString()}
                       </p>
                     </div>
