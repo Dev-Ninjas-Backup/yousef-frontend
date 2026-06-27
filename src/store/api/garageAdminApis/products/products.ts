@@ -207,7 +207,7 @@ export const productApi = apiSlice.injectEndpoints({
             } else if (key === "verificationImage" && value instanceof File) {
               formData.append("verificationImage", value);
             } else {
-              formData.append(key, value.toString());
+              formData.append(key, value === null ? "null" : value.toString());
             }
           }
         });

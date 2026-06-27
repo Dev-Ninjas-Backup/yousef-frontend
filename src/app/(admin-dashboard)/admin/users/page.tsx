@@ -496,6 +496,9 @@ export default function UserManagementPage() {
           <table className="w-full">
             <thead>
               <tr className="border-b border-gray-100 bg-gray-50">
+                <th className="text-left py-4 px-5 text-xs font-semibold text-gray-600 uppercase tracking-wider w-12">
+                  SL
+                </th>
                 <th
                   className="text-left py-4 px-5 text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none transition-colors"
                   onClick={() => handleSort("fullName")}
@@ -578,8 +581,11 @@ export default function UserManagementPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {sortedUsers.map((user) => (
+              {sortedUsers.map((user, index) => (
                 <tr key={user.id} className="hover:bg-gray-50 transition-colors">
+                  <td className="py-4 px-5 text-sm text-gray-500 font-medium w-12">
+                    {index + 1}
+                  </td>
                   <td className="py-4 px-5">
                     <div className="flex items-center gap-3">
                       {user.profilePhoto ? (

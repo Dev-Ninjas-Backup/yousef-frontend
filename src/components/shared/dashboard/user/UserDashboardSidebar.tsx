@@ -82,9 +82,10 @@ export default function UserDashboardSidebar({ activePage }: UserDashboardSideba
           billingText: `Next billing: ${formatDate(expiryDate)}`,
           benefits: [
             "Up to 10 listings",
+            `Listings count: ${limitData?.basicListingsUsed || 0}/10 used`,
             "Standard visibility",
             "Promotion allowed",
-            "Active for 60 days"
+            "Active for 15 days"
           ],
           badgeColor: "bg-blue-100 text-blue-700 border border-blue-200"
         };
@@ -158,7 +159,7 @@ export default function UserDashboardSidebar({ activePage }: UserDashboardSideba
         period: "/Listing",
         billingText: `${limitData.productCredits} credits remaining`,
         benefits: [
-          "Active for 45 days per listing",
+          "Active for 15 days per listing",
           "Standard visibility",
           "Promotion available"
         ],
@@ -185,6 +186,23 @@ export default function UserDashboardSidebar({ activePage }: UserDashboardSideba
 
   // Calculate Progress details
   const getPlanProgress = () => {
+    // Basic Monthly Plan Listings Limit Progress
+    if (
+      limitData?.hasProductMonthly &&
+      (limitData?.productMonthlyPlanType || user?.productMonthlyPlanType || "").toUpperCase() === "BASIC"
+    ) {
+      const used = limitData?.basicListingsUsed || 0;
+      const total = limitData?.basicListingsLimit || 10;
+      const percentage = (used / total) * 100;
+      return {
+        show: true,
+        label: `Listings: ${used} / ${total} used`,
+        subLabel: total - used === 0 ? "Limit reached" : `${total - used} listings left`,
+        percent: percentage,
+        barColor: total - used === 0 ? "bg-gradient-to-r from-rose-500 to-red-600" : "bg-gradient-to-r from-blue-500 to-indigo-600",
+      };
+    }
+
     // 1. Subscription Plans (Garage/Product Monthly)
     if (limitData?.hasGarageMonthly || limitData?.hasProductMonthly) {
       const expiryDate = limitData?.hasGarageMonthly
@@ -209,12 +227,6 @@ export default function UserDashboardSidebar({ activePage }: UserDashboardSideba
           const diff = end - start;
           if (diff > 0) {
             totalDays = Math.round(diff / (1000 * 60 * 60 * 24));
-          }
-        } else {
-          // Fallback based on plan type if dates are missing
-          const planType = (limitData?.productMonthlyPlanType || user?.productMonthlyPlanType || "PRO").toUpperCase();
-          if (planType === "BASIC") {
-            totalDays = 60;
           }
         }
         

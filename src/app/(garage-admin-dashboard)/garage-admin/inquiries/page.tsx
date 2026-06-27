@@ -13,7 +13,9 @@ import {
   AlertCircle,
   RotateCcw,
   SlidersHorizontal,
-  Info
+  Info,
+  Paperclip,
+  X
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -55,6 +57,8 @@ function InquiriesContent() {
   // Selected Inquiry State
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [replyText, setReplyText] = useState("");
+  const [replyAttachment, setReplyAttachment] = useState<File | null>(null);
+  const [isUploadingAttachment, setIsUploadingAttachment] = useState(false);
 
   // Filter & Search States
   const [searchQuery, setSearchQuery] = useState("");
@@ -155,18 +159,42 @@ function InquiriesContent() {
   }, [processedInquiries, selectedId, hasInitialized]);
 
   const handleSendReply = async () => {
-    if (!selectedId || !replyText.trim()) return;
+    if (!selectedId || (!replyText.trim() && !replyAttachment)) return;
 
     try {
+      let attachmentUrl: string | undefined = undefined;
+      if (replyAttachment) {
+        setIsUploadingAttachment(true);
+        const formData = new FormData();
+        formData.append("file", replyAttachment);
+        const uploadRes = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5050"}/aws-file-upload-additional-all/upload-s3-additional`,
+          {
+            method: "POST",
+            body: formData,
+          }
+        );
+        const uploadData = await uploadRes.json();
+        if (uploadData && uploadData.file) {
+          attachmentUrl = uploadData.file;
+        } else {
+          throw new Error("Upload failed");
+        }
+      }
+
       await replyInquiry({
         contactId: selectedId,
         content: replyText,
+        attachment: attachmentUrl,
       }).unwrap();
 
       toast.success("Reply sent successfully!");
       setReplyText("");
+      setReplyAttachment(null);
     } catch (err: any) {
       toast.error(err?.data?.message || "Failed to send reply. Please try again.");
+    } finally {
+      setIsUploadingAttachment(false);
     }
   };
 
@@ -454,6 +482,22 @@ function InquiriesContent() {
                             </span>
                           </div>
                           <p className="text-gray-700 text-sm">{msg.content}</p>
+                          {msg.attachment && (
+                            <div className="mt-2 pt-2 border-t border-gray-100">
+                              <a 
+                                href={msg.attachment} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="inline-block relative rounded-lg overflow-hidden border border-gray-200 hover:border-blue-300 transition-colors p-1 bg-white"
+                              >
+                                <img 
+                                  src={msg.attachment} 
+                                  alt="Attachment Preview" 
+                                  className="max-h-[120px] max-w-[180px] object-cover rounded"
+                                />
+                              </a>
+                            </div>
+                          )}
                         </div>
                       ))}
                     </div>
@@ -463,6 +507,22 @@ function InquiriesContent() {
 
               {/* Reply Form */}
               <div className="border-t p-6 bg-white space-y-4">
+                {replyAttachment && (
+                  <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 p-2 px-3 rounded-xl w-fit shadow-xs">
+                    <Paperclip className="w-4 h-4 text-blue-500 shrink-0" />
+                    <span className="text-xs font-semibold text-gray-700 truncate max-w-[200px]">
+                      {replyAttachment.name}
+                    </span>
+                    <button
+                      onClick={() => setReplyAttachment(null)}
+                      className="text-red-500 hover:text-red-700 transition-colors p-1"
+                      title="Remove file"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                )}
+
                 <textarea
                   value={replyText}
                   onChange={(e) => setReplyText(e.target.value)}
@@ -470,14 +530,36 @@ function InquiriesContent() {
                   placeholder="Write your response to the customer..."
                   className="w-full p-4 bg-gray-50 border border-gray-200 focus:border-blue-500 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all resize-none shadow-inner"
                 />
-                <div className="flex justify-end">
+                
+                <div className="flex items-center justify-between gap-4">
+                  <div>
+                    <input
+                      type="file"
+                      id="reply-file-upload"
+                      className="hidden"
+                      accept="image/*"
+                      onChange={(e) => {
+                        if (e.target.files && e.target.files[0]) {
+                          setReplyAttachment(e.target.files[0]);
+                        }
+                      }}
+                    />
+                    <label
+                      htmlFor="reply-file-upload"
+                      className="inline-flex items-center gap-2 cursor-pointer p-3 px-4 hover:bg-gray-50 border border-gray-200 rounded-xl transition-all text-xs font-bold text-gray-600 hover:border-gray-300 shadow-xs active:scale-[0.98]"
+                    >
+                      <Paperclip className="w-4 h-4 text-gray-500" />
+                      <span>Add Image</span>
+                    </label>
+                  </div>
+
                   <button
-                    disabled={!replyText.trim() || isReplying}
+                    disabled={(!replyText.trim() && !replyAttachment) || isReplying || isUploadingAttachment}
                     onClick={handleSendReply}
                     className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold text-sm disabled:opacity-50 transition-all duration-200 shadow-md shadow-blue-500/10 hover:shadow-blue-500/20 active:scale-[0.98]"
                   >
                     <Send className="w-4 h-4" />
-                    {isReplying ? "Sending..." : "Send Reply"}
+                    {isReplying || isUploadingAttachment ? "Sending..." : "Send Reply"}
                   </button>
                 </div>
               </div>

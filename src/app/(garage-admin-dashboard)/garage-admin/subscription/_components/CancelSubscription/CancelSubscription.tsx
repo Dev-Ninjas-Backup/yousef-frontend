@@ -3,7 +3,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { AlertCircle } from "lucide-react";
-import { useCancelSubscriptionMutation } from "@/store/api/garageAdminApis/subscription/subscription";
+import { useCancelSubscriptionMutation, useGetCurrentPlanQuery } from "@/store/api/garageAdminApis/subscription/subscription";
 import { toast } from "sonner";
 import { useState } from "react";
 import {
@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dialog";
 
 const CancelSubscription = () => {
+  const { data } = useGetCurrentPlanQuery();
   const [cancelSubscription, { isLoading }] = useCancelSubscriptionMutation();
   const [showDialog, setShowDialog] = useState(false);
 
@@ -44,13 +45,23 @@ const CancelSubscription = () => {
               If you cancel, you'll continue to have access until the end of
               your billing period. You can reactivate anytime before it expires.
             </p>
-            <Button
-              onClick={() => setShowDialog(true)}
-              variant="outline"
-              className="border-red-600 text-red-600 hover:bg-red-50 w-full sm:w-auto text-xs sm:text-sm"
-            >
-              Cancel Plan
-            </Button>
+            {data?.subscriptionCancelAtPeriodEnd ? (
+              <Button
+                disabled
+                variant="outline"
+                className="border-gray-200 text-gray-400 bg-gray-50 cursor-not-allowed w-full sm:w-auto text-xs sm:text-sm font-semibold"
+              >
+                Plan Cancelled
+              </Button>
+            ) : (
+              <Button
+                onClick={() => setShowDialog(true)}
+                variant="outline"
+                className="border-red-600 text-red-600 hover:bg-red-50 w-full sm:w-auto text-xs sm:text-sm"
+              >
+                Cancel Plan
+              </Button>
+            )}
           </div>
         </CardContent>
       </Card>

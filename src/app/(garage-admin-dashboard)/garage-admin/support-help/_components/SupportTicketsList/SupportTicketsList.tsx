@@ -13,6 +13,8 @@ import {
   Tag,
   AlertCircle,
   Search,
+  Paperclip,
+  X,
 } from "lucide-react";
 import { toast } from "react-toastify";
 
@@ -24,6 +26,8 @@ export default function SupportTicketsList() {
   const [replyText, setReplyText] = useState("");
   const [sendingId, setSendingId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [replyAttachment, setReplyAttachment] = useState<File | null>(null);
+  const [isUploadingAttachment, setIsUploadingAttachment] = useState(false);
 
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
@@ -54,19 +58,47 @@ export default function SupportTicketsList() {
   };
 
   const handleSendReply = async () => {
-    if (!selectedTicketId || !replyText.trim()) return;
+    if (!selectedTicketId || (!replyText.trim() && !replyAttachment)) return;
 
     const ticketId = selectedTicketId;
     try {
       setSendingId(ticketId);
-      const res = await replyContactTicket({ contactId: ticketId, content: replyText.trim() }).unwrap();
+      let attachmentUrl: string | undefined = undefined;
+
+      if (replyAttachment) {
+        setIsUploadingAttachment(true);
+        const formData = new FormData();
+        formData.append("file", replyAttachment);
+        const uploadRes = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5050"}/aws-file-upload-additional-all/upload-s3-additional`,
+          {
+            method: "POST",
+            body: formData,
+          }
+        );
+        const uploadData = await uploadRes.json();
+        if (uploadData && uploadData.file) {
+          attachmentUrl = uploadData.file;
+        } else {
+          throw new Error("Upload failed");
+        }
+      }
+
+      const res = await replyContactTicket({ 
+        contactId: ticketId, 
+        content: replyText.trim(),
+        attachment: attachmentUrl
+      }).unwrap();
+      
       toast.success(res.message || "Reply sent successfully");
       setReplyText("");
+      setReplyAttachment(null);
     } catch (err: any) {
       toast.error(err?.data?.message || "Failed to send reply");
       console.error("Failed to send reply", err);
     } finally {
       setSendingId(null);
+      setIsUploadingAttachment(false);
     }
   };
 
@@ -227,6 +259,22 @@ export default function SupportTicketsList() {
                     <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap mt-1">
                       {activeTicket.message}
                     </p>
+                    {activeTicket.attachment && (
+                      <div className="mt-2 pt-2 border-t border-gray-100">
+                        <a 
+                          href={activeTicket.attachment} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="inline-block relative rounded-lg overflow-hidden border border-gray-200 hover:border-blue-300 transition-colors p-1 bg-white"
+                        >
+                          <img 
+                            src={activeTicket.attachment} 
+                            alt="Attachment Preview" 
+                            className="max-h-[120px] max-w-[180px] object-cover rounded"
+                          />
+                        </a>
+                      </div>
+                    )}
                     <p className="text-[9px] text-gray-400 pt-1 text-right">
                       {new Date(activeTicket.createdAt).toLocaleString()}
                     </p>
@@ -260,6 +308,22 @@ export default function SupportTicketsList() {
                           </span>
                         </div>
                         <p className="whitespace-pre-wrap">{reply.content}</p>
+                         {reply.attachment && (
+                           <div className={`mt-2 pt-2 border-t ${isReplyFromAdmin ? "border-gray-200" : "border-blue-500/35"}`}>
+                             <a 
+                               href={reply.attachment} 
+                               target="_blank" 
+                               rel="noopener noreferrer"
+                               className="inline-block relative rounded-lg overflow-hidden border border-gray-200 hover:border-blue-300 transition-colors p-1 bg-white"
+                             >
+                               <img 
+                                 src={reply.attachment} 
+                                 alt="Reply Attachment" 
+                                 className="max-h-[120px] max-w-[180px] object-cover rounded"
+                                />
+                             </a>
+                           </div>
+                         )}
                         <p
                           className={`text-[9px] mt-2 text-right ${
                             isReplyFromAdmin ? "text-gray-400" : "text-blue-200"
@@ -273,9 +337,24 @@ export default function SupportTicketsList() {
                 })}
               </div>
 
-              {/* Reply Box */}
-              {!isClosed ? (
+               {!isClosed ? (
                 <div className="border-t p-4 bg-white space-y-3">
+                  {replyAttachment && (
+                    <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 p-2 px-3 rounded-xl w-fit shadow-xs">
+                      <Paperclip className="w-3.5 h-3.5 text-blue-500 shrink-0" />
+                      <span className="text-[10px] font-semibold text-gray-700 truncate max-w-[200px]">
+                        {replyAttachment.name}
+                      </span>
+                      <button
+                        onClick={() => setReplyAttachment(null)}
+                        className="text-red-500 hover:text-red-700 transition-colors p-1"
+                        title="Remove file"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  )}
+
                   <textarea
                     value={replyText}
                     onChange={(e) => setReplyText(e.target.value)}
@@ -283,14 +362,36 @@ export default function SupportTicketsList() {
                     placeholder="Type your reply to the support team..."
                     className="w-full p-3 bg-gray-50 border border-gray-200 focus:border-blue-500 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all resize-none shadow-sm"
                   />
-                  <div className="flex justify-end">
+                  
+                  <div className="flex items-center justify-between gap-4">
+                    <div>
+                      <input
+                        type="file"
+                        id="ticket-reply-file-upload"
+                        className="hidden"
+                        accept="image/*"
+                        onChange={(e) => {
+                          if (e.target.files && e.target.files[0]) {
+                            setReplyAttachment(e.target.files[0]);
+                          }
+                        }}
+                      />
+                      <label
+                        htmlFor="ticket-reply-file-upload"
+                        className="inline-flex items-center gap-1.5 cursor-pointer p-2 px-3 hover:bg-gray-50 border border-gray-200 rounded-lg transition-all text-[11px] font-bold text-gray-600 hover:border-gray-300 shadow-xs active:scale-[0.98]"
+                      >
+                        <Paperclip className="w-3.5 h-3.5 text-gray-500" />
+                        <span>Add Image</span>
+                      </label>
+                    </div>
+
                     <button
-                      disabled={!replyText.trim() || sendingId === activeTicket.id}
+                      disabled={(!replyText.trim() && !replyAttachment) || sendingId === activeTicket.id || isUploadingAttachment}
                       onClick={handleSendReply}
                       className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold text-xs disabled:opacity-50 transition-all shadow-sm active:scale-[0.98]"
                     >
                       <Send className="w-3.5 h-3.5" />
-                      {sendingId === activeTicket.id ? "Sending..." : "Send Reply"}
+                      {sendingId === activeTicket.id || isUploadingAttachment ? "Sending..." : "Send Reply"}
                     </button>
                   </div>
                 </div>

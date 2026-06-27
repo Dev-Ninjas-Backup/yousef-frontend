@@ -118,6 +118,10 @@ interface UserLimitResponse {
   hasProductMonthly: boolean;
   productMonthlyEndsAt: string | null;
   productMonthlyPlanType?: string | null;
+  productMonthlyPendingPlanType?: string | null;
+  productMonthlyCancelAtPeriodEnd?: boolean;
+  basicListingsUsed?: number;
+  basicListingsLimit?: number;
 }
 
 export const userProductApi = apiSlice.injectEndpoints({
@@ -204,7 +208,7 @@ export const userProductApi = apiSlice.injectEndpoints({
             } else if (key === "verificationImage" && value instanceof File) {
               formData.append("verificationImage", value);
             } else {
-              formData.append(key, value.toString());
+              formData.append(key, value === null ? "null" : value.toString());
             }
           }
         });

@@ -108,7 +108,7 @@ const FeaturedPromotions: React.FC = () => {
             <Tag className="w-4 h-4" />
             <span className="font-semibold">Exclusive Offers</span>
           </div>
-          <h2 className="text-base mb-2 text-[#101828]">Exclusive Deals & Services</h2>
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-3 text-[#101828]">Exclusive Deals & Services</h2>
           <p className="text-base text-gray-600">Discover premium discounts and limited-time deals from famous brands and local workshops.</p>
         </div>
       </AnimateOnScroll>

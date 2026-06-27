@@ -2,6 +2,7 @@
 const nextConfig = {
   allowedDevOrigins: ['169.254.83.107'],
   images: {
+    unoptimized: true,
     dangerouslyAllowLocalIP: true,
     remotePatterns: [
       {

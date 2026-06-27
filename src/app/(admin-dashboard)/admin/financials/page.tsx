@@ -179,6 +179,22 @@ export default function FinancialOverviewPage() {
     .filter(trx => trx.type === "PRODUCT_PROMOTION" || trx.type === "PRODUCT_PROMOTION_CREDIT")
     .reduce((sum, trx) => sum + (trx.amount || 0), 0) / 100;
 
+  const promotion7DaysRevenue = completedFilter
+    .filter(
+      (trx) =>
+        (trx.type === "PRODUCT_PROMOTION" || trx.type === "PRODUCT_PROMOTION_CREDIT") &&
+        (trx.planType === "7" || (!trx.planType && (trx.amount || 0) / 100 <= 49))
+    )
+    .reduce((sum, trx) => sum + (trx.amount || 0), 0) / 100;
+
+  const promotion15DaysRevenue = completedFilter
+    .filter(
+      (trx) =>
+        (trx.type === "PRODUCT_PROMOTION" || trx.type === "PRODUCT_PROMOTION_CREDIT") &&
+        (trx.planType === "15" || (!trx.planType && (trx.amount || 0) / 100 > 49))
+    )
+    .reduce((sum, trx) => sum + (trx.amount || 0), 0) / 100;
+
   const otherRevenue = completedFilter
     .filter(trx => 
       trx.type !== "GARAGE_SUBSCRIPTION" && 
@@ -512,14 +528,30 @@ export default function FinancialOverviewPage() {
           iconColor="text-orange-600"
           trendIcon={LuTrendingUp}
         />
-        <StatCard
-          icon={LuSparkles}
-          value={formatAED(promotionRevenue)}
-          label={`Product Promotions (${dateFilter})`}
-          iconBg="bg-amber-50"
-          iconColor="text-amber-600"
-          trendIcon={LuTrendingUp}
-        />
+        {/* Product Promotions breakdown card */}
+        <div className="bg-white rounded-xl p-5 sm:p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+          <div className="flex items-start justify-between mb-3">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-amber-50 flex items-center justify-center">
+              <LuSparkles className="w-5 h-5 sm:w-6 sm:h-6 text-amber-600" />
+            </div>
+            <LuTrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
+          </div>
+          <p className="text-xs sm:text-sm text-gray-500 font-medium mb-2">Product Promotions ({dateFilter})</p>
+          <div className="grid grid-cols-3 gap-2 border border-gray-100 rounded-lg overflow-hidden">
+            <div className="text-center py-2 px-1 bg-amber-50/50">
+              <p className="text-[10px] font-semibold text-amber-600 uppercase tracking-wider">7 Days</p>
+              <p className="text-base font-bold text-amber-700 mt-0.5">{formatAED(promotion7DaysRevenue)}</p>
+            </div>
+            <div className="text-center py-2 px-1 bg-yellow-50/50">
+              <p className="text-[10px] font-semibold text-yellow-600 uppercase tracking-wider">15 Days</p>
+              <p className="text-base font-bold text-yellow-700 mt-0.5">{formatAED(promotion15DaysRevenue)}</p>
+            </div>
+            <div className="text-center py-2 px-1 bg-gray-50">
+              <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Total</p>
+              <p className="text-base font-bold text-gray-800 mt-0.5">{formatAED(promotion7DaysRevenue + promotion15DaysRevenue)}</p>
+            </div>
+          </div>
+        </div>
         <StatCard
           icon={LuLayers}
           value={formatAED(otherRevenue)}

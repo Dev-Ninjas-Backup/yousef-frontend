@@ -27,7 +27,7 @@ export const contactApi = apiSlice.injectEndpoints({
       providesTags: ["SupportTicket"],
     }),
 
-    replyContactTicket: builder.mutation<any, { contactId: string; content: string }>({
+    replyContactTicket: builder.mutation<any, { contactId: string; content: string; attachment?: string }>({
       query: (data) => ({
         url: "/contact/reply",
         method: "POST",

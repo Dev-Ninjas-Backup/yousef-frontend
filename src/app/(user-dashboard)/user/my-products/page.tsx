@@ -29,8 +29,14 @@ import {
   SlidersHorizontal,
   ChevronDown,
   ArrowUpDown,
-  RefreshCw
+  RefreshCw,
+  AlertTriangle
 } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  useCreateMonthlyPaymentMutation,
+  useCreatePayPerPaymentMutation,
+} from "@/store/api/garageAdminApis/products/products";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
@@ -261,6 +267,14 @@ export default function UserMyProductsPage() {
     return map;
   }, [categoriesData]);
   const [updateProduct] = useUpdateUserProductMutation();
+  const [createMonthlyPayment, { isLoading: isMonthlyPaymentLoading }] = useCreateMonthlyPaymentMutation();
+  const [createPayPerPayment, { isLoading: isPayPerPaymentLoading }] = useCreatePayPerPaymentMutation();
+  const [repostError, setRepostError] = useState<{
+    code: string;
+    message: string;
+    amount?: number;
+    plan?: string;
+  } | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isPermanentDelete, setIsPermanentDelete] = useState(false);
@@ -383,7 +397,42 @@ export default function UserMyProductsPage() {
       await updateProduct({ id: product.id, data: { status: "PENDING" } }).unwrap();
       toast.success("Listing reposted successfully! It is now pending admin approval.");
     } catch (error: any) {
-      toast.error(error?.data?.message || "Failed to repost listing");
+      if (
+        error?.data?.code === "PAY_PER_PAYMENT_REQUIRED" ||
+        error?.data?.code === "BASIC_PLAN_LIMIT_EXCEEDED" ||
+        error?.data?.code === "PRODUCT_MONTHLY_SUBSCRIPTION_REQUIRED"
+      ) {
+        setRepostError({
+          code: error.data.code,
+          message: error.data.message,
+          amount: error.data.amount,
+          plan: error.data.plan,
+        });
+      } else {
+        toast.error(error?.data?.message || "Failed to repost listing");
+      }
+    }
+  };
+
+  const handlePaymentRedirect = async (type: "PAY_PER" | "MONTHLY") => {
+    try {
+      if (type === "PAY_PER") {
+        const response = await createPayPerPayment().unwrap();
+        if (response.url) {
+          window.open(response.url, "_blank");
+          setRepostError(null);
+          toast.success("Stripe checkout opened! Refresh after successful payment.");
+        }
+      } else {
+        const response = await createMonthlyPayment({ planType: "PRO" }).unwrap();
+        if (response.url) {
+          window.open(response.url, "_blank");
+          setRepostError(null);
+          toast.success("Stripe checkout opened! Refresh after successful payment.");
+        }
+      }
+    } catch (err: any) {
+      toast.error(err?.data?.message || "Failed to initiate payment. Please try again.");
     }
   };
 
@@ -988,6 +1037,60 @@ export default function UserMyProductsPage() {
             isPermanent={isPermanentDelete}
           />
         </>
+      )}
+
+      {repostError && (
+        <Dialog open={!!repostError} onOpenChange={(open) => !open && setRepostError(null)}>
+          <DialogContent className="max-w-md p-6">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2.5 text-lg font-bold text-gray-900">
+                <AlertTriangle className="w-5 h-5 text-amber-500 shrink-0" />
+                Payment & Plan Limit Reached
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-3">
+              <p className="text-sm text-gray-600 leading-relaxed">
+                {repostError.message}
+              </p>
+              <div className="p-3 bg-indigo-50/50 border border-indigo-100 rounded-xl space-y-2">
+                <span className="text-xs font-semibold text-indigo-800 uppercase tracking-wider block">Available Options:</span>
+                <div className="grid grid-cols-1 gap-2.5">
+                  <button
+                    disabled={isPayPerPaymentLoading || isMonthlyPaymentLoading}
+                    onClick={() => handlePaymentRedirect("PAY_PER")}
+                    className="w-full text-left bg-white hover:bg-gray-50 border p-3 rounded-xl flex items-center justify-between transition-all group"
+                  >
+                    <div>
+                      <span className="font-bold text-sm text-gray-900 group-hover:text-blue-600 transition-colors">Pay-Per Listing</span>
+                      <p className="text-[11px] text-gray-500 mt-0.5">Pay 9 AED to publish this single listing</p>
+                    </div>
+                    <span className="font-extrabold text-blue-600 text-sm">9 AED</span>
+                  </button>
+                  <button
+                    disabled={isPayPerPaymentLoading || isMonthlyPaymentLoading}
+                    onClick={() => handlePaymentRedirect("MONTHLY")}
+                    className="w-full text-left bg-white hover:bg-gray-50 border p-3 rounded-xl flex items-center justify-between transition-all group"
+                  >
+                    <div>
+                      <span className="font-bold text-sm text-gray-900 group-hover:text-blue-600 transition-colors">Spare Parts Monthly</span>
+                      <p className="text-[11px] text-gray-500 mt-0.5">Subscribe to list up to unlimited parts</p>
+                    </div>
+                    <span className="font-extrabold text-blue-600 text-sm">99 AED</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div className="flex justify-end gap-2.5">
+              <Button
+                variant="outline"
+                onClick={() => setRepostError(null)}
+                className="rounded-xl px-4 font-semibold"
+              >
+                Cancel
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       )}
     </div>
   );
