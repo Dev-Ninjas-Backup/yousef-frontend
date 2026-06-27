@@ -23,7 +23,7 @@ interface ExtendedContactFormData {
   LastName: string;
   email: string;
   phone: string;
-  subject: "CAR_PARTS" | "CAR_SERVICE" | "LIMITED_TIME_OFFER" | "OTHERS";
+  subject: "CAR_PARTS" | "CAR_SERVICE" | "LIMITED_TIME_OFFER" | "EXCLUSIVE_OFFER" | "OTHERS";
   message: string;
   othersubject?: string;
   priceBeforeDiscount?: string;
@@ -62,7 +62,7 @@ const GetInTouch: React.FC = () => {
     if (subject !== "OTHERS") {
       setFormData(prev => ({ ...prev, othersubject: "" }));
     }
-    if (subject !== "LIMITED_TIME_OFFER") {
+    if (subject !== "LIMITED_TIME_OFFER" && subject !== "EXCLUSIVE_OFFER") {
       setFormData(prev => ({ ...prev, priceBeforeDiscount: "", priceAfterDiscount: "" }));
     }
   };
@@ -320,6 +320,7 @@ const GetInTouch: React.FC = () => {
                   <SelectItem value="CAR_PARTS" className="cursor-pointer"><span>{trans.form.subjects.carParts}</span></SelectItem>
                   <SelectItem value="CAR_SERVICE" className="cursor-pointer"><span>{trans.form.subjects.carService}</span></SelectItem>
                   <SelectItem value="LIMITED_TIME_OFFER" className="cursor-pointer"><span>{trans.form.subjects.limitedTimeOffer}</span></SelectItem>
+                  <SelectItem value="EXCLUSIVE_OFFER" className="cursor-pointer"><span>{trans.form.subjects.exclusiveOffer}</span></SelectItem>
                   <SelectItem value="OTHERS" className="cursor-pointer"><span>{trans.form.subjects.others}</span></SelectItem>
                 </SelectContent>
               </Select>
@@ -351,7 +352,7 @@ const GetInTouch: React.FC = () => {
             )}
 
             {/* Pricing fields (for Exclusive Offers) */}
-            {formData.subject === "LIMITED_TIME_OFFER" && (
+            {(formData.subject === "LIMITED_TIME_OFFER" || formData.subject === "EXCLUSIVE_OFFER") && (
               <motion.div 
                 className="grid sm:grid-cols-2 gap-5"
                 initial={{ opacity: 0, height: 0 }}

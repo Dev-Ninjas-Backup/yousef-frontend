@@ -44,6 +44,7 @@ export interface PaginationParams {
 export interface ReplyAdminMessagePayload {
   contactId: string;
   content: string;
+  attachment?: string;
 }
 
 export interface BaseResponse {

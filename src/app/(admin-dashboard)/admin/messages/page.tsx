@@ -6,7 +6,7 @@ import {
   useReplyAdminMessageMutation,
 } from "@/store/fetures/admin.meaasge.api";
 import React, { useEffect, useState, useRef } from "react";
-import { LuSearch, LuSend } from "react-icons/lu";
+import { LuSearch, LuSend, LuPaperclip, LuX } from "react-icons/lu";
 import { toast } from "react-toastify";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
@@ -77,6 +77,7 @@ interface UIMessage {
   date: string;
   isUnread: boolean;
   garageOwnerId?: string | null;
+  userId?: string | null;
 }
 
 const formatSubject = (subject: string | null | undefined) => {
@@ -548,6 +549,8 @@ export default function MessagesPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [replyText, setReplyText] = useState("");
+  const [replyAttachment, setReplyAttachment] = useState<File | null>(null);
+  const [isUploadingAttachment, setIsUploadingAttachment] = useState(false);
 
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
@@ -621,6 +624,7 @@ export default function MessagesPage() {
       date: new Date(item.createdAt).toLocaleDateString(),
       isUnread: !item.makeasClosed,
       garageOwnerId: item.garageOwnerId,
+      userId: item.userId,
     })) ?? [];
 
   const filteredMessages = messages.filter((m) => {
@@ -702,13 +706,41 @@ export default function MessagesPage() {
   }, [activeTab, customerInquiries, businessMessages, sortedSystemNotifications, selectedId]);
 
   const handleSendReply = async () => {
-    if (!selectedId || !replyText.trim()) return;
+    if (!selectedId || (!replyText.trim() && !replyAttachment)) return;
     try {
-      const res = await replyAdminMessage({ contactId: selectedId, content: replyText }).unwrap();
+      let attachmentUrl: string | undefined = undefined;
+      if (replyAttachment) {
+        setIsUploadingAttachment(true);
+        const formData = new FormData();
+        formData.append("file", replyAttachment);
+        const uploadRes = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5050"}/aws-file-upload-additional-all/upload-s3-additional`,
+          {
+            method: "POST",
+            body: formData,
+          }
+        );
+        const uploadData = await uploadRes.json();
+        if (uploadData && uploadData.file) {
+          attachmentUrl = uploadData.file;
+        } else {
+          throw new Error("Upload failed");
+        }
+      }
+
+      const res = await replyAdminMessage({
+        contactId: selectedId,
+        content: replyText,
+        attachment: attachmentUrl,
+      }).unwrap();
+
       toast.success(res.message || "Reply sent successfully");
       setReplyText("");
+      setReplyAttachment(null);
     } catch {
-      toast.error("Failed to send reply");
+      toast.error("Failed to send reply or upload attachment");
+    } finally {
+      setIsUploadingAttachment(false);
     }
   };
 
@@ -856,7 +888,14 @@ export default function MessagesPage() {
                     }`}
                   >
                     <div className="flex items-center justify-between gap-2">
-                      <h3 className="font-bold text-sm text-gray-900 truncate">{m.sender}</h3>
+                      <h3 className="font-bold text-sm text-gray-900 truncate flex items-center gap-1.5">
+                        <span>{m.sender}</span>
+                        {!m.userId && !m.garageOwnerId && (
+                          <span className="bg-amber-100 text-amber-850 text-[9px] font-black px-1.5 py-0.5 rounded tracking-wider uppercase scale-90 origin-left">
+                            Guest
+                          </span>
+                        )}
+                      </h3>
                       <span className="text-[10px] text-gray-400 shrink-0 font-medium">{m.date}</span>
                     </div>
                     <div className="flex items-center gap-1.5">
@@ -902,7 +941,14 @@ export default function MessagesPage() {
                     }`}
                   >
                     <div className="flex items-center justify-between gap-2">
-                      <h3 className="font-bold text-sm text-gray-900 truncate">{m.sender}</h3>
+                      <h3 className="font-bold text-sm text-gray-900 truncate flex items-center gap-1.5">
+                        <span>{m.sender}</span>
+                        {!m.userId && !m.garageOwnerId && (
+                          <span className="bg-amber-100 text-amber-850 text-[9px] font-black px-1.5 py-0.5 rounded tracking-wider uppercase scale-90 origin-left">
+                            Guest
+                          </span>
+                        )}
+                      </h3>
                       <span className="text-[10px] text-gray-400 shrink-0 font-medium">{m.date}</span>
                     </div>
                     <div className="flex items-center gap-1.5">
@@ -1005,6 +1051,11 @@ export default function MessagesPage() {
                     <div className="text-sm text-gray-600 flex flex-wrap items-center gap-1.5">
                       <span className="font-semibold text-gray-800">From:</span>{" "}
                       <span>{singleMessage.data.FirstName} {singleMessage.data.LastName}</span>
+                      {!singleMessage.data.garageOwnerId && !singleMessage.data.userId && (
+                        <span className="bg-amber-100 text-amber-850 text-[9px] font-black px-1.5 py-0.5 rounded tracking-wider uppercase">
+                          Guest User
+                        </span>
+                      )}
                       <span className="text-gray-400">|</span>
                       <span className="text-blue-600 hover:underline">{singleMessage.data.email}</span>
                       {singleMessage.data.phone && (
@@ -1031,6 +1082,11 @@ export default function MessagesPage() {
                         <span className="font-bold text-xs text-gray-900">
                           {singleMessage.data.FirstName} {singleMessage.data.LastName}
                         </span>
+                        {!singleMessage.data.garageOwnerId && !singleMessage.data.userId && (
+                          <span className="bg-amber-100 text-amber-850 text-[9px] font-black px-1.5 py-0.5 rounded tracking-wider uppercase">
+                            Guest
+                          </span>
+                        )}
                         <span className="text-[10px] text-gray-400 font-semibold bg-gray-100 px-2 py-0.5 rounded-full">
                           Original Ticket
                         </span>
@@ -1123,6 +1179,22 @@ export default function MessagesPage() {
                                  </span>
                               </div>
                               <p className="whitespace-pre-wrap">{reply.content}</p>
+                              {reply.attachment && (
+                                <div className={`mt-2.5 pt-2.5 border-t ${isReplyFromAdmin ? "border-blue-500/35" : "border-gray-150"}`}>
+                                  <a 
+                                    href={reply.attachment} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className={`inline-block relative rounded-lg overflow-hidden border hover:opacity-90 transition-opacity p-1 bg-white ${isReplyFromAdmin ? "border-blue-500" : "border-gray-200"}`}
+                                  >
+                                    <img 
+                                      src={reply.attachment} 
+                                      alt="Reply Attachment" 
+                                      className="max-h-[120px] max-w-[180px] object-cover rounded"
+                                    />
+                                  </a>
+                                </div>
+                              )}
                               <p className={`text-[9px] mt-2 text-right ${isReplyFromAdmin ? "text-blue-200" : "text-gray-400"}`}>
                                 {new Date(reply.createdAt).toLocaleString()}
                               </p>
@@ -1135,6 +1207,22 @@ export default function MessagesPage() {
                 </div>
 
                 <div className="border-t p-6 bg-white space-y-4">
+                  {replyAttachment && (
+                    <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 p-2 px-3 rounded-xl w-fit shadow-xs">
+                      <LuPaperclip className="w-4 h-4 text-blue-500 shrink-0" />
+                      <span className="text-xs font-semibold text-gray-700 truncate max-w-[200px]">
+                        {replyAttachment.name}
+                      </span>
+                      <button
+                        onClick={() => setReplyAttachment(null)}
+                        className="text-red-500 hover:text-red-700 transition-colors p-1"
+                        title="Remove file"
+                      >
+                        <LuX className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  )}
+
                   <textarea
                     value={replyText}
                     onChange={(e) => setReplyText(e.target.value)}
@@ -1142,14 +1230,45 @@ export default function MessagesPage() {
                     placeholder="Type your reply..."
                     className="w-full p-4 bg-gray-50 border border-gray-200 focus:border-blue-500 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all resize-none shadow-inner"
                   />
-                  <div className="flex justify-end">
+                  
+                  <div className="flex items-center justify-between gap-4">
+                    <div>
+                      <input
+                        type="file"
+                        id="reply-file-upload"
+                        className="hidden"
+                        accept="image/*"
+                        onChange={(e) => {
+                          if (e.target.files && e.target.files[0]) {
+                            setReplyAttachment(e.target.files[0]);
+                          }
+                        }}
+                      />
+                      <label
+                        htmlFor="reply-file-upload"
+                        className="inline-flex items-center gap-2 cursor-pointer p-3 px-4 hover:bg-gray-50 border border-gray-200 rounded-xl transition-all text-xs font-bold text-gray-600 hover:border-gray-300 shadow-xs active:scale-[0.98]"
+                      >
+                        <LuPaperclip className="w-4 h-4 text-gray-400" />
+                        Attach Image
+                      </label>
+                    </div>
+
                     <button
-                      disabled={!replyText.trim() || isReplying}
+                      disabled={(!replyText.trim() && !replyAttachment) || isReplying || isUploadingAttachment}
                       onClick={handleSendReply}
                       className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold text-sm disabled:opacity-50 transition-all duration-200 shadow-md shadow-blue-500/10 hover:shadow-blue-500/20 active:scale-[0.98]"
                     >
-                      <LuSend size={15} />
-                      {isReplying ? "Sending..." : "Send Reply"}
+                      {isReplying || isUploadingAttachment ? (
+                        <>
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                          <span>{isUploadingAttachment ? "Uploading..." : "Sending..."}</span>
+                        </>
+                      ) : (
+                        <>
+                          <LuSend size={15} />
+                          <span>Send Reply</span>
+                        </>
+                      )}
                     </button>
                   </div>
                 </div>
