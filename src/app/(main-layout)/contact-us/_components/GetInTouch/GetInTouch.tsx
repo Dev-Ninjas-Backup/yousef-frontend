@@ -15,35 +15,55 @@ import {
 import { Send, Loader2, MessageCircle, ShieldCheck, Lock, User2, Mail, PenLine, Truck, Handshake, Info, BadgeCheck } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { contactTranslations } from "@/translations/contact";
-import { useCreateContactMutation, ContactFormData } from "@/store/api/contactApi";
+import { useCreateContactMutation } from "@/store/api/contactApi";
 import { toast } from "sonner";
+
+interface ExtendedContactFormData {
+  FirstName: string;
+  LastName: string;
+  email: string;
+  phone: string;
+  subject: "CAR_PARTS" | "CAR_SERVICE" | "LIMITED_TIME_OFFER" | "EXCLUSIVE_OFFER" | "OTHERS";
+  message: string;
+  othersubject?: string;
+  priceBeforeDiscount?: string;
+  priceAfterDiscount?: string;
+  garageOwnerId?: string;
+}
 
 const GetInTouch: React.FC = () => {
   const { t } = useLanguage();
   const trans = t(contactTranslations);
   const [createContact, { isLoading }] = useCreateContactMutation();
 
-  const [formData, setFormData] = useState<ContactFormData>({
+  const [formData, setFormData] = useState<ExtendedContactFormData>({
     FirstName: "",
     LastName: "",
     email: "",
+    phone: "",
     subject: "CAR_PARTS",
     message: "",
-    othersubject: ""
+    othersubject: "",
+    priceBeforeDiscount: "",
+    priceAfterDiscount: ""
   });
 
+  const [attachmentFile, setAttachmentFile] = useState<File | null>(null);
   const [showOtherSubject, setShowOtherSubject] = useState(false);
 
-  const handleInputChange = (field: keyof ContactFormData, value: string) => {
+  const handleInputChange = (field: keyof ExtendedContactFormData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
   const handleSubjectChange = (value: string) => {
-    const subject = value as ContactFormData["subject"];
+    const subject = value as ExtendedContactFormData["subject"];
     setFormData(prev => ({ ...prev, subject }));
     setShowOtherSubject(subject === "OTHERS");
     if (subject !== "OTHERS") {
       setFormData(prev => ({ ...prev, othersubject: "" }));
+    }
+    if (subject !== "LIMITED_TIME_OFFER" && subject !== "EXCLUSIVE_OFFER") {
+      setFormData(prev => ({ ...prev, priceBeforeDiscount: "", priceAfterDiscount: "" }));
     }
   };
 
@@ -55,10 +75,50 @@ const GetInTouch: React.FC = () => {
       return;
     }
 
+    if (!formData.phone.trim()) {
+      toast.error("Phone number is required");
+      return;
+    }
+
     try {
-      const submitData = { ...formData };
-      if (formData.subject !== "OTHERS") {
-        delete submitData.othersubject;
+      const submitData = new FormData();
+      submitData.append("FirstName", formData.FirstName);
+      submitData.append("LastName", formData.LastName);
+      submitData.append("email", formData.email);
+      
+      // Formatting phone: prepend +971 if not present
+      let formattedPhone = formData.phone.trim();
+      if (!formattedPhone.startsWith("+")) {
+        // Assume UAE code if prefix not provided
+        if (formattedPhone.startsWith("971")) {
+          formattedPhone = "+" + formattedPhone;
+        } else {
+          formattedPhone = "+971" + formattedPhone.replace(/^0+/, "");
+        }
+      }
+      submitData.append("phone", formattedPhone);
+      submitData.append("subject", formData.subject);
+      submitData.append("message", formData.message);
+
+      if (formData.subject === "OTHERS" && formData.othersubject) {
+        submitData.append("othersubject", formData.othersubject);
+      }
+
+      if (formData.subject === "LIMITED_TIME_OFFER") {
+        if (formData.priceBeforeDiscount) {
+          submitData.append("priceBeforeDiscount", formData.priceBeforeDiscount);
+        }
+        if (formData.priceAfterDiscount) {
+          submitData.append("priceAfterDiscount", formData.priceAfterDiscount);
+        }
+      }
+
+      if (formData.garageOwnerId) {
+        submitData.append("garageOwnerId", formData.garageOwnerId);
+      }
+
+      if (attachmentFile) {
+        submitData.append("attachment", attachmentFile);
       }
 
       await createContact(submitData).unwrap();
@@ -69,11 +129,19 @@ const GetInTouch: React.FC = () => {
         FirstName: "",
         LastName: "",
         email: "",
+        phone: "",
         subject: "CAR_PARTS",
         message: "",
-        othersubject: ""
+        othersubject: "",
+        priceBeforeDiscount: "",
+        priceAfterDiscount: ""
       });
+      setAttachmentFile(null);
       setShowOtherSubject(false);
+      
+      // Reset file input element
+      const fileInput = document.getElementById("attachment") as HTMLInputElement;
+      if (fileInput) fileInput.value = "";
     } catch (error: any) {
       toast.error(error?.data?.message || "Failed to send message. Please try again.");
     }
@@ -222,6 +290,25 @@ const GetInTouch: React.FC = () => {
               </div>
             </div>
 
+            {/* Phone */}
+            <div className="space-y-1.5">
+              <Label htmlFor="phone" className="text-[#111827] font-semibold text-[13px]">Phone Number *</Label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                  <span className="text-gray-400 text-sm font-semibold pl-1">+971</span>
+                </div>
+                <Input
+                  id="phone"
+                  type="tel"
+                  placeholder="50 123 4567"
+                  className="pl-14 bg-[#fafafa] border-gray-200 h-11 focus-visible:ring-blue-500 rounded-xl text-[14px]"
+                  value={formData.phone}
+                  onChange={(e) => handleInputChange("phone", e.target.value)}
+                  required
+                />
+              </div>
+            </div>
+
             {/* Subject */}
             <div className="space-y-1.5">
               <Label htmlFor="subject" className="text-[#111827] font-semibold text-[13px]">{trans.form.subject}</Label>
@@ -233,6 +320,7 @@ const GetInTouch: React.FC = () => {
                   <SelectItem value="CAR_PARTS" className="cursor-pointer"><span>{trans.form.subjects.carParts}</span></SelectItem>
                   <SelectItem value="CAR_SERVICE" className="cursor-pointer"><span>{trans.form.subjects.carService}</span></SelectItem>
                   <SelectItem value="LIMITED_TIME_OFFER" className="cursor-pointer"><span>{trans.form.subjects.limitedTimeOffer}</span></SelectItem>
+                  <SelectItem value="EXCLUSIVE_OFFER" className="cursor-pointer"><span>{trans.form.subjects.exclusiveOffer}</span></SelectItem>
                   <SelectItem value="OTHERS" className="cursor-pointer"><span>{trans.form.subjects.others}</span></SelectItem>
                 </SelectContent>
               </Select>
@@ -262,6 +350,53 @@ const GetInTouch: React.FC = () => {
                 </div>
               </motion.div>
             )}
+
+            {/* Pricing fields (for Exclusive Offers) */}
+            {(formData.subject === "LIMITED_TIME_OFFER" || formData.subject === "EXCLUSIVE_OFFER") && (
+              <motion.div 
+                className="grid sm:grid-cols-2 gap-5"
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+              >
+                <div className="space-y-1.5">
+                  <Label htmlFor="priceBeforeDiscount" className="text-[#111827] font-semibold text-[13px]">Original Price (AED) (Optional)</Label>
+                  <Input
+                    id="priceBeforeDiscount"
+                    type="number"
+                    placeholder="e.g. 500"
+                    className="bg-[#fafafa] border-gray-200 h-11 focus-visible:ring-blue-500 rounded-xl text-[14px]"
+                    value={formData.priceBeforeDiscount || ""}
+                    onChange={(e) => handleInputChange("priceBeforeDiscount", e.target.value)}
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="priceAfterDiscount" className="text-[#111827] font-semibold text-[13px]">Discounted Price (AED) (Optional)</Label>
+                  <Input
+                    id="priceAfterDiscount"
+                    type="number"
+                    placeholder="e.g. 350"
+                    className="bg-[#fafafa] border-gray-200 h-11 focus-visible:ring-blue-500 rounded-xl text-[14px]"
+                    value={formData.priceAfterDiscount || ""}
+                    onChange={(e) => handleInputChange("priceAfterDiscount", e.target.value)}
+                  />
+                </div>
+              </motion.div>
+            )}
+
+            {/* Attachment File Input */}
+            <div className="space-y-1.5">
+              <Label htmlFor="attachment" className="text-[#111827] font-semibold text-[13px]">Image Attachment (Optional)</Label>
+              <Input
+                id="attachment"
+                type="file"
+                accept="image/*"
+                className="bg-[#fafafa] border-gray-205 border-gray-200 h-11 focus-visible:ring-blue-500 rounded-xl text-[14px] file:mr-4 file:py-1.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                onChange={(e) => {
+                  const file = e.target.files?.[0] || null;
+                  setAttachmentFile(file);
+                }}
+              />
+            </div>
 
             {/* Message */}
             <div className="space-y-1.5">

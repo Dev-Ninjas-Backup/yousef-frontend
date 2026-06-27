@@ -74,6 +74,7 @@ export const promotionalApi = apiSlice.injectEndpoints({
       providesTags: ['Garage'],
     }),
   }),
+  overrideExisting: true,
 });
 
 export const {

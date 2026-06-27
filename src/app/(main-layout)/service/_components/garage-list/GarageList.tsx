@@ -158,6 +158,7 @@ export default function GarageList({ searchParams }: GarageListProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [selectedService, setSelectedService] = useState<string | null>(null);
   const [selectedExpertise, setSelectedExpertise] = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState<"all" | "open" | "closed">("all");
   const [userCoords, setUserCoords] = useState<{ lat: number; lng: number } | null>(null);
   const observerTarget = useRef(null);
 
@@ -240,11 +241,11 @@ export default function GarageList({ searchParams }: GarageListProps) {
     userLng: userCoords ? userCoords.lng.toString() : undefined,
   });
 
-  // Reset when showMap, search params, filters, sorting, or garage search query change
+  // Reset when showMap, search params, filters, sorting, status, or garage search query change
   useEffect(() => {
     setCurrentPage(1);
     setHasMore(true);
-  }, [searchParams, showMap, selectedService, selectedExpertise, sortBy, debouncedSearch]);
+  }, [searchParams, showMap, selectedService, selectedExpertise, sortBy, debouncedSearch, statusFilter]);
 
   // Transform and accumulate garages for infinite scroll
   useEffect(() => {
@@ -318,7 +319,11 @@ export default function GarageList({ searchParams }: GarageListProps) {
     return () => observer.disconnect();
   }, [showMap, hasMore, isLoading]);
 
-  const garages = allGarages;
+  const garages = allGarages.filter((garage) => {
+    if (statusFilter === "all") return true;
+    const isOpen = isGarageCurrentlyOpen(garage.weekdaysHours, garage.weekendsHours);
+    return statusFilter === "open" ? isOpen : !isOpen;
+  });
 
   const pagination = garagesResponse?.data?.pagination;
   const totalGarages = pagination?.total || 0;
@@ -368,7 +373,7 @@ export default function GarageList({ searchParams }: GarageListProps) {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
               <h2 className="text-2xl font-extrabold text-gray-900 tracking-tight">
-                {totalGarages} {trans.list.garagesFound}
+                {statusFilter !== "all" ? garages.length : totalGarages} {trans.list.garagesFound}
               </h2>
               <p className="text-sm text-gray-500 mt-0.5">
                 {searchParams.emirate && `in ${searchParams.emirate}`}
@@ -434,7 +439,7 @@ export default function GarageList({ searchParams }: GarageListProps) {
                 <SelectTrigger className="w-full sm:w-[180px] bg-white border-gray-200 shadow-xs h-10">
                   <SelectValue placeholder={trans.filters?.expertsIn || "Experts In"} />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-white">
                   <SelectItem value="all">{trans.filters?.allExpertises || "All Expertises"}</SelectItem>
                   {[
                     "American cars",
@@ -449,6 +454,27 @@ export default function GarageList({ searchParams }: GarageListProps) {
                       {origin}
                     </SelectItem>
                   ))}
+                </SelectContent>
+              </Select>
+
+              {/* Status Filter */}
+              <Select
+                value={statusFilter}
+                onValueChange={(val) => setStatusFilter(val as "all" | "open" | "closed")}
+              >
+                <SelectTrigger className="w-full sm:w-[180px] bg-white border-gray-200 shadow-xs h-10">
+                  <SelectValue placeholder={trans.filters?.allStatuses || "All Statuses"} />
+                </SelectTrigger>
+                <SelectContent className="bg-white">
+                  <SelectItem value="all">
+                    {trans.filters?.allStatuses || "All Statuses"}
+                  </SelectItem>
+                  <SelectItem value="open">
+                    {trans.filters?.openNow || "Open Now"}
+                  </SelectItem>
+                  <SelectItem value="closed">
+                    {trans.filters?.closed || "Closed"}
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
