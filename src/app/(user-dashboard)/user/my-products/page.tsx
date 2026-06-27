@@ -819,6 +819,7 @@ export default function UserMyProductsPage() {
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-gray-50 border-b border-gray-100">
+                    <th className="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider w-12">SL</th>
                     <th className="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Image</th>
                     <th className="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Product Name</th>
                     <th className="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Category</th>
@@ -833,8 +834,12 @@ export default function UserMyProductsPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
-                  {processedProducts.map((product) => (
+                  {processedProducts.map((product, index) => (
                     <tr key={product.id} className="hover:bg-gray-50/50 transition-colors">
+                      {/* Serial Number */}
+                      <td className="p-4 text-sm text-gray-500 font-medium w-12">
+                        {index + 1}
+                      </td>
                       {/* Thumbnail Image */}
                       <td className="p-4">
                         <div className="relative w-12 h-12 bg-gray-50 rounded-lg overflow-hidden border border-gray-100">

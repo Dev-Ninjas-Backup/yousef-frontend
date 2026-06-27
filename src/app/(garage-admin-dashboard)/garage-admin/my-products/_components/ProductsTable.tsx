@@ -34,6 +34,8 @@ interface ProductsTableProps {
   onEdit: (id: string) => void;
   onDelete: (id: string, isPermanent?: boolean) => void;
   onRepost: (product: Product) => void;
+  currentPage?: number;
+  limit?: number;
 }
 
 export function ProductsTable({
@@ -45,6 +47,8 @@ export function ProductsTable({
   onEdit,
   onDelete,
   onRepost,
+  currentPage,
+  limit,
 }: ProductsTableProps) {
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -120,6 +124,9 @@ export function ProductsTable({
         <table className="w-full">
           <thead className="bg-gray-50 border-b">
             <tr>
+              <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 select-none w-12">
+                SL
+              </th>
               <th 
                 onClick={() => handleSort("product")}
                 className="text-left py-3 px-4 text-sm font-semibold text-gray-700 cursor-pointer hover:bg-gray-100 select-none transition-colors group"
@@ -198,8 +205,11 @@ export function ProductsTable({
             </tr>
           </thead>
           <tbody className="divide-y">
-            {products.map((product) => (
+            {products.map((product, index) => (
               <tr key={product.id} className="hover:bg-gray-50">
+                <td className="py-3 px-4 text-sm text-gray-500 font-medium w-12">
+                  {currentPage && limit ? (currentPage - 1) * limit + index + 1 : index + 1}
+                </td>
                 <td className="py-3 px-4">
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">

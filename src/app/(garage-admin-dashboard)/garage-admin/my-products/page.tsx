@@ -178,6 +178,8 @@ export default function MyProductsPage() {
             onEdit={handleEdit}
             onDelete={handleDelete}
             onRepost={handleRepost}
+            currentPage={page}
+            limit={limit}
           />
           {pagination && (
             <Pagination
