@@ -87,7 +87,7 @@ export default function SupportTicketsList() {
   }
 
   // Filter tickets by search query
-  const filteredTickets = tickets.filter((t) => {
+  const filteredTickets = tickets.filter((t: any) => {
     const subjectLabel = getSubjectLabel(t.subject, t.othersubject);
     return (
       subjectLabel.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -95,7 +95,7 @@ export default function SupportTicketsList() {
     );
   });
 
-  const activeTicket = tickets.find((t) => t.id === selectedTicketId);
+  const activeTicket = tickets.find((t: any) => t.id === selectedTicketId);
   const replies = activeTicket?.messages || [];
   const isClosed = activeTicket?.makeasClosed;
 
@@ -132,7 +132,7 @@ export default function SupportTicketsList() {
                 <p className="text-xs font-medium">No tickets found</p>
               </div>
             ) : (
-              filteredTickets.map((ticket) => {
+              filteredTickets.map((ticket: any) => {
                 const isSelected = selectedTicketId === ticket.id;
                 const repliesCount = ticket.messages?.length || 0;
                 const ticketClosed = ticket.makeasClosed;

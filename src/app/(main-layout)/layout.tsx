@@ -6,7 +6,7 @@ import Navbar from "@/components/shared/main/Navbar/Navbar";
 import { TranslationProvider } from "@/context/LanguageContext";
 import { FloatingChatWidget } from "@/components/chat/FloatingChatWidget";
 
-const MainLayout = ({ children }: { children: ReactNode }) => {
+const MainLayout = ({ children, modal }: { children: ReactNode; modal: ReactNode }) => {
   return (
     <TranslationProvider>
       <div>
@@ -14,6 +14,7 @@ const MainLayout = ({ children }: { children: ReactNode }) => {
         <div className="p-3"> {children}</div>
         <Footer />
         <FloatingChatWidget />
+        {modal}
       </div>
     </TranslationProvider>
   );

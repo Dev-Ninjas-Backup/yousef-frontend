@@ -1,5 +1,5 @@
 import { useGetMyProductsQuery } from "@/store/api/garageAdminApis/products/products";
-import { CreditCard, MessageCircleQuestionMark } from "lucide-react";
+import { CreditCard, MessageCircleQuestionMark, Tag } from "lucide-react";
 import {
   LuChartColumn,
   LuFileText,
@@ -53,6 +53,11 @@ export const adminNavItems: NavItem[] = [
     label: "Financials",
     path: "/admin/financials",
     icon: <LuDollarSign className="text-lg" />,
+  },
+  {
+    label: "Exclusive Offers",
+    path: "/admin/exclusive-offers",
+    icon: <Tag className="text-lg" />,
   },
   {
     label: "Messages",

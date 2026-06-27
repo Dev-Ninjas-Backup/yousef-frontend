@@ -15,6 +15,10 @@ export interface AdminContact {
   garageOwnerId?: string | null;
   userId?: string | null;
   makeasClosed?: boolean;
+  phone?: string | null;
+  priceBeforeDiscount?: string | null;
+  priceAfterDiscount?: string | null;
+  attachment?: string | null;
   messages?: {
     id: string;
     contactId: string;

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Tag, Clock, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { featuredPromotionsTranslations } from "@/translations/featuredPromotions";
-import { useGetPromotionalProductsQuery } from "@/store/api/promotionalApi";
+import { useGetExclusiveOffersQuery } from "@/store/api/exclusiveOfferApi";
 import { useRouter } from "next/navigation";
 import Toyotaimg from "@/assets/home/FeaturedPromotions/ImageWithFallback.png";
 import { AnimateOnScroll, StaggerOnScroll, fadeUp, scaleIn } from "@/lib/animations";
@@ -19,28 +19,23 @@ const FeaturedPromotions: React.FC = () => {
   const [cardScrollPosition, setCardScrollPosition] = useState(0);
 
   const {
-    data: promotionalProducts,
+    data: offers = [],
     isLoading,
     error,
-  } = useGetPromotionalProductsQuery();
+  } = useGetExclusiveOffersQuery();
 
   // Transform API data to match component structure
   const promotions =
-    promotionalProducts?.map((product, index) => ({
-      id: product.id,
-      title: product.partName,
-      description:
-        product.description ||
-        `${product.brand} ${product.partName} - ${product.condition} condition. High quality parts with warranty.`,
-      image: product.photos?.[0] || Toyotaimg,
-      badge: "Featured Parts",
-      validUntil: new Date(
-        Date.now() + 30 * 24 * 60 * 60 * 1000
-      ).toLocaleDateString(), // 30 days from now
-      price: product.price,
-      brand: product.brand,
-      views: product.views,
-      inquiries: product.inquiries,
+    offers?.map((offer) => ({
+      id: offer.id,
+      title: offer.title,
+      description: offer.description,
+      image: offer.bannerImage || Toyotaimg,
+      badge: offer.brand ? `${offer.brand} Discount` : "Exclusive Offer",
+      validUntil: offer.validUnit,
+      price: offer.price,
+      originalPrice: offer.originalPrice,
+      brand: offer.brand,
     })) || [];
 
   const scrollCards = (direction: "left" | "right") => {
@@ -61,7 +56,7 @@ const FeaturedPromotions: React.FC = () => {
   };
 
   const handleShowDetails = (productId: string) => {
-    router.push(`/spare-parts/product/${productId}`);
+    router.push(`/exclusive-offer/${productId}`);
   };
 
   const nextSlide = () => {
@@ -98,7 +93,7 @@ const FeaturedPromotions: React.FC = () => {
       <section className="container mx-auto px-4 py-8 md:py-16">
         <div className="text-center">
           <p className="text-gray-500">
-            No promotional products available at the moment.
+            No exclusive offers or promotions available at the moment.
           </p>
         </div>
       </section>
@@ -111,10 +106,10 @@ const FeaturedPromotions: React.FC = () => {
         <div className="text-center mb-6 md:mb-8">
           <div className="inline-flex items-center gap-2 bg-[#0D6EFD] text-white px-4 py-2 rounded-md mb-4 text-sm md:text-base">
             <Tag className="w-4 h-4" />
-            <span className="font-semibold">{trans.badge}</span>
+            <span className="font-semibold">Exclusive Offers</span>
           </div>
-          <h2 className="text-base mb-2 text-[#101828]">{trans.title}</h2>
-          <p className="text-base text-gray-600">{trans.subtitle}</p>
+          <h2 className="text-base mb-2 text-[#101828]">Exclusive Deals & Services</h2>
+          <p className="text-base text-gray-600">Discover premium discounts and limited-time deals from famous brands and local workshops.</p>
         </div>
       </AnimateOnScroll>
 
@@ -128,15 +123,12 @@ const FeaturedPromotions: React.FC = () => {
               >
                 {promotions.map((promo, idx) => (
                   <div key={promo.id} className="min-w-full relative">
-                    <Image
-                      src={promo.image}
+                    <img
+                      src={typeof promo.image === "string" ? promo.image : (promo.image as any).src}
                       alt={promo.title}
-                      fill
-                      sizes="(max-width: 1280px) 100vw, 1280px"
-                      className="object-cover"
-                      priority={idx === 0}
+                      className="absolute inset-0 w-full h-full object-cover"
                     />
-                    <div className="absolute inset-0 bg-black/50" />
+                    <div className="absolute inset-0 bg-black/55" />
                     <div className="absolute inset-0 flex flex-col justify-center px-6 md:px-12 text-white md:py-20 left-4 md:left-10">
                       <div className="flex flex-wrap gap-2 md:gap-3 mb-3 md:mb-4">
                         <span className="inline-flex items-center gap-1 bg-green-500 px-2 md:px-3 py-2 rounded-full text-xs md:text-sm">
@@ -145,13 +137,18 @@ const FeaturedPromotions: React.FC = () => {
                         </span>
                         <span className="inline-flex items-center gap-1 bg-white text-black px-2 md:px-3 py-2 rounded-full text-xs md:text-sm">
                           <Clock className="w-3 h-3" />
-                          {trans.validUntil} {promo.validUntil}
+                          {promo.validUntil}
                         </span>
                       </div>
-                      <h3 className="font-bold mb-2 md:mb-3">{promo.title}</h3>
+                      <h3 className="font-bold mb-2 md:mb-3 text-xl sm:text-2xl md:text-3xl lg:text-4xl">{promo.title}</h3>
                       <p className="text-base mb-2">
+                        {promo.originalPrice && (
+                          <span className="line-through text-gray-300 text-sm mr-2">
+                            {promo.originalPrice} AED
+                          </span>
+                        )}
                         <span className="text-yellow-400 font-bold">
-                          ${promo.price}
+                          {promo.price ? `${promo.price} AED` : "Free"}
                         </span>
                         {promo.brand && (
                           <span className="ml-2 text-sm">by {promo.brand}</span>
@@ -218,34 +215,29 @@ const FeaturedPromotions: React.FC = () => {
                   }`}
                 >
                   <div className="relative h-32 md:h-40">
-                    <Image
-                      src={promo.image}
+                    <img
+                      src={typeof promo.image === "string" ? promo.image : (promo.image as any).src}
                       alt={promo.title}
-                      fill
-                      sizes="208px"
-                      className="object-cover"
+                      className="w-full h-full object-cover"
                     />
                   </div>
-                  <div className="p-3 md:p-4">
-                    <h4 className="font-semibold text-xs md:text-sm mb-1 line-clamp-1">
-                      {promo.title}
-                    </h4>
-                    <p className="text-[10px] md:text-xs text-gray-600 mb-2 border inline py-1 px-2 rounded-md">
-                      {promo.badge}
-                    </p>
-                    <div className="flex items-center justify-between gap-1 mt-1">
-                      <div className="flex">
-                        {[...Array(5)].map((_, i) => (
-                          <span
-                            key={i}
-                            className="text-xs md:text-sm text-yellow-400"
-                          >
-                            ★
-                          </span>
-                        ))}
-                      </div>
-                      <span className="text-[9px] md:text-xs text-gray-500">
-                        (4.61 89 {trans.reviews})
+                  <div className="p-3 md:p-4 flex flex-col justify-between flex-grow">
+                    <div>
+                      <h4 className="font-semibold text-xs md:text-sm mb-1.5 line-clamp-1 text-gray-800">
+                        {promo.title}
+                      </h4>
+                      <span className="text-[10px] md:text-xs font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">
+                        {promo.badge}
+                      </span>
+                    </div>
+                    <div className="mt-3 flex items-baseline gap-1.5 flex-wrap">
+                      {promo.originalPrice && (
+                        <span className="line-through text-gray-400 text-[10px] md:text-xs">
+                          {promo.originalPrice} AED
+                        </span>
+                      )}
+                      <span className="font-bold text-green-600 text-xs md:text-sm">
+                        {promo.price ? `${promo.price} AED` : "Free"}
                       </span>
                     </div>
                   </div>

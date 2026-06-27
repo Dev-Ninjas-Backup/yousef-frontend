@@ -12,11 +12,11 @@ export interface ContactFormData {
 
 export const contactApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    createContact: builder.mutation<any, ContactFormData>({
-      query: (data) => ({
+    createContact: builder.mutation<any, FormData>({
+      query: (formData) => ({
         url: "/contact",
         method: "POST",
-        body: data,
+        body: formData,
       }),
       invalidatesTags: ["SupportTicket"],
     }),
