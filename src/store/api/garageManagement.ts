@@ -5,6 +5,7 @@ export interface GarageOwner {
   userId: string;
   ownerName: string;
   phone: string;
+  profilePhoto?: string;
   Garage_Name: string;
   serviceCategories: string[];
   Contract: string;

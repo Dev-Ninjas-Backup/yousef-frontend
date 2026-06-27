@@ -299,6 +299,8 @@ export default function GarageManagementPage() {
         onGarageReject={handleGarageReject}
         onGarageView={setSelectedGarage}
         onReviewBrands={handleReviewBrands}
+        currentPage={page}
+        limit={10}
       />
 
       {/* Pagination */}

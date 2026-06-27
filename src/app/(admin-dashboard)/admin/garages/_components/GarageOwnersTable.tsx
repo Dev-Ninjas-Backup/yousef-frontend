@@ -35,6 +35,8 @@ interface GarageOwnersTableProps {
   onGarageReject: (garageId: string) => void;
   onGarageView: (garage: GarageInfo) => void;
   onReviewBrands?: (garage: GarageInfo) => void;
+  currentPage?: number;
+  limit?: number;
 }
 
 export default function GarageOwnersTable({
@@ -48,6 +50,8 @@ export default function GarageOwnersTable({
   onGarageReject,
   onGarageView,
   onReviewBrands,
+  currentPage,
+  limit,
 }: GarageOwnersTableProps) {
   const [expandedOwners, setExpandedOwners] = useState<Set<string>>(new Set());
   const [sortField, setSortField] = useState<string | null>(null);
@@ -116,6 +120,9 @@ export default function GarageOwnersTable({
         <table className="w-full">
           <thead className="bg-gray-50 border-b">
             <tr>
+              <th className="text-left py-4 px-6 text-xs font-semibold text-gray-600 uppercase w-12">
+                SL
+              </th>
               <th
                 className="text-left py-4 px-6 text-xs font-semibold text-gray-600 uppercase cursor-pointer hover:bg-gray-100 select-none transition-colors"
                 onClick={() => handleSort("ownerName")}
@@ -190,7 +197,7 @@ export default function GarageOwnersTable({
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
-            {sortedGarageOwners.map((owner) => (
+            {sortedGarageOwners.map((owner, index) => (
               <React.Fragment key={owner.userId}>
                 {/* Owner Row */}
                 {(() => {
@@ -200,6 +207,9 @@ export default function GarageOwnersTable({
                   ) || 0;
                   return (
                     <tr key={owner.userId} className="hover:bg-gray-50">
+                      <td className="py-4 px-6 text-sm text-gray-500 font-medium w-12">
+                        {currentPage && limit ? (currentPage - 1) * limit + index + 1 : index + 1}
+                      </td>
                       <td className="py-4 px-6">
                         <div className="flex items-center gap-3">
                           <button
@@ -212,6 +222,21 @@ export default function GarageOwnersTable({
                               <Plus className="w-4 h-4" />
                             )}
                           </button>
+                          
+                          {/* Owner Profile Photo */}
+                          {owner.profilePhoto ? (
+                            <img
+                              src={owner.profilePhoto}
+                              alt={owner.ownerName}
+                              className="w-10 h-10 rounded-full object-cover border border-gray-200 shrink-0"
+                            />
+                          ) : (
+                            <div className="w-10 h-10 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0">
+                              <span className="text-blue-600 font-semibold text-sm">
+                                {owner.ownerName?.charAt(0).toUpperCase() || "?"}
+                              </span>
+                            </div>
+                          )}
                           <div>
                             <div className="flex items-center gap-2">
                               <p className="font-medium text-gray-900">
@@ -326,7 +351,7 @@ export default function GarageOwnersTable({
                 {/* Expanded Garages Table */}
                 {expandedOwners.has(owner.userId) && (
                   <tr>
-                    <td colSpan={7} className="py-0 px-6">
+                    <td colSpan={8} className="py-0 px-6">
                       <GarageSubTable
                         garages={owner.garages}
                         onGarageApprove={onGarageApprove}

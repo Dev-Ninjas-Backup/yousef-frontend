@@ -52,24 +52,42 @@ export default function GarageSubTable({
             {garages.map((garage) => (
               <tr key={garage.garageId} className="bg-white hover:bg-blue-50/30 transition-colors">
                 <td className="py-3 px-4">
-                  <p className="font-medium text-sm text-slate-800">{garage.garageName}</p>
-                  <p
-                    className="text-xs text-gray-400 font-mono mt-0.5 break-all"
-                    title={garage.garageId}
-                  >
-                    ID: {garage.garageId}
-                  </p>
-                  {garage.certificationFile && (
-                    <a
-                      href={garage.certificationFile}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 text-[10px] bg-green-50 text-green-700 border border-green-200 rounded-md px-2 py-0.5 mt-1.5 font-bold hover:bg-green-100 transition-colors w-fit shadow-sm"
-                    >
-                      <Paperclip className="w-2.5 h-2.5" />
-                      <span>Cert Proof</span>
-                    </a>
-                  )}
+                  <div className="flex items-center gap-3">
+                    {/* Garage Thumbnail Image */}
+                    {garage.profileImage ? (
+                      <img
+                        src={garage.profileImage}
+                        alt={garage.garageName}
+                        className="w-10 h-10 rounded-lg object-cover border border-blue-100 shrink-0"
+                      />
+                    ) : (
+                      <div className="w-10 h-10 rounded-lg bg-blue-50/50 border border-blue-100 flex items-center justify-center shrink-0">
+                        <span className="text-blue-600 font-bold text-xs">
+                          {garage.garageName?.charAt(0).toUpperCase() || "?"}
+                        </span>
+                      </div>
+                    )}
+                    <div>
+                      <p className="font-medium text-sm text-slate-800">{garage.garageName}</p>
+                      <p
+                        className="text-xs text-gray-400 font-mono mt-0.5 break-all"
+                        title={garage.garageId}
+                      >
+                        ID: {garage.garageId}
+                      </p>
+                      {garage.certificationFile && (
+                        <a
+                          href={garage.certificationFile}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 text-[10px] bg-green-50 text-green-700 border border-green-200 rounded-md px-2 py-0.5 mt-1.5 font-bold hover:bg-green-100 transition-colors w-fit shadow-sm"
+                        >
+                          <Paperclip className="w-2.5 h-2.5" />
+                          <span>Cert Proof</span>
+                        </a>
+                      )}
+                    </div>
+                  </div>
                 </td>
                 <td className="py-3 px-4">
                   <p className="text-sm text-slate-700 font-medium">
