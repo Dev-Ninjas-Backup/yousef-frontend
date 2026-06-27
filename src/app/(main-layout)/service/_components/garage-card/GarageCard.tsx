@@ -349,7 +349,7 @@ export default function GarageCard({
             <Button
               size="sm"
               variant="outline"
-              className="border-green-600 bg-green-600 text-white  hover:bg-green-50"
+              className="border-green-600 bg-green-600 text-white hover:bg-green-50 hover:text-green-600 hover:border-green-600 transition-colors"
               onClick={handleMessage}
             >
               <MessageCircle className="h-4 w-4" />
@@ -357,7 +357,7 @@ export default function GarageCard({
             <Button
               size="sm"
               variant="outline"
-              className="border-green-600 bg-green-600 text-white hover:bg-green-50"
+              className="border-green-600 bg-green-600 text-white hover:bg-green-50 hover:text-green-600 hover:border-green-600 transition-colors"
               onClick={handleCall}
             >
               <Phone className="h-4 w-4" />
