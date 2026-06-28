@@ -445,7 +445,7 @@ function UserDashboardContent() {
 
           {/* Downgrade Confirmation Modal */}
           {showDowngradeModal && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm animate-fade-in p-4">
+            <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/40 backdrop-blur-sm animate-fade-in p-4">
               <div className="bg-white rounded-2xl p-5 sm:p-6 w-full max-w-md shadow-2xl border border-gray-100 relative transform transition-all scale-100">
                 <div className="flex items-center gap-3 mb-4 text-amber-600">
                   <div className="p-2.5 bg-amber-50 rounded-full shrink-0">
@@ -479,7 +479,7 @@ function UserDashboardContent() {
 
           {/* Cancel Confirmation Modal */}
           {showCancelModal && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm animate-fade-in p-4">
+            <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/40 backdrop-blur-sm animate-fade-in p-4">
               <div className="bg-white rounded-2xl p-5 sm:p-6 w-full max-w-md shadow-2xl border border-gray-100 relative transform transition-all scale-100">
                 <div className="flex items-center gap-3 mb-4 text-red-600">
                   <div className="p-2.5 bg-red-50 rounded-full shrink-0">
