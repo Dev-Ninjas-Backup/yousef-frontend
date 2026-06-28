@@ -90,7 +90,7 @@ function DocumentCard({ label, url }: { label: string; url: string }) {
       {/* Full preview toggle for images */}
       {image && preview && (
         <div
-          className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center"
+          className="fixed inset-0 z-[9999] bg-black/70 flex items-center justify-center"
           onClick={() => setPreview(false)}
         >
           <div className="relative max-w-3xl max-h-[90vh] w-full mx-4">
