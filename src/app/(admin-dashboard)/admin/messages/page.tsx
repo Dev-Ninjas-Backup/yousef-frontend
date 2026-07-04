@@ -51,6 +51,7 @@ export interface AdminContact {
   phone?: string | null;
   priceBeforeDiscount?: string | null;
   priceAfterDiscount?: string | null;
+  offerDuration?: string | null;
   attachment?: string | null;
   messages?: {
     id: string;
@@ -243,7 +244,7 @@ function LiveMessagesPanel() {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       {/* Left: Conversation List */}
-      <div className="bg-white rounded-xl border shadow-sm flex flex-col h-[650px] overflow-hidden">
+      <div className="bg-white rounded-xl border shadow-sm flex flex-col h-[750px] overflow-hidden">
         <div className="p-4 border-b bg-gray-50/50 space-y-3">
           <div className="flex items-center justify-between">
             <h3 className="font-bold text-sm text-gray-800">Live Messages</h3>
@@ -347,11 +348,11 @@ function LiveMessagesPanel() {
       </div>
 
       {/* Right: Chat View */}
-      <div className="lg:col-span-2 bg-white rounded-xl border shadow-sm overflow-hidden min-h-[650px] flex flex-col">
+      <div className="lg:col-span-2 bg-white rounded-xl border shadow-sm overflow-hidden min-h-[750px] h-[750px] flex flex-col">
         {selectedConvParticipantId ? (
           <>
             {/* Chat Header */}
-            <div className="px-6 py-4 border-b bg-white flex items-center gap-3">
+            <div className="px-4 py-3 border-b bg-white flex items-center gap-3">
               <div className="relative">
                 {conversations?.find((c) => c.participant.id === selectedConvParticipantId)?.participant.profilePhoto ? (
                   <img
@@ -494,7 +495,7 @@ function LiveMessagesPanel() {
             </div>
 
             {/* Input */}
-            <div className="border-t p-4 bg-white">
+            <div className="border-t p-3 bg-white">
               <div className="flex items-center gap-3">
                 <input
                   ref={inputRef}
@@ -515,7 +516,7 @@ function LiveMessagesPanel() {
                 <button
                   onClick={handleSendLiveMessage}
                   disabled={!liveMessage.trim() || isUploading}
-                  className="inline-flex items-center gap-2 px-5 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-semibold text-sm disabled:opacity-50 transition-all duration-200 shadow-md shadow-green-500/20 active:scale-[0.98]"
+                  className="inline-flex items-center gap-2 px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-xl font-semibold text-sm disabled:opacity-50 transition-all duration-200 shadow-md shadow-green-500/20 active:scale-[0.98]"
                 >
                   <Send className="w-4 h-4" />
                   Send
@@ -546,6 +547,7 @@ export default function MessagesPage() {
   const userId = user?.id || "guest";
 
   const [activeTab, setActiveTab] = useState<"customer" | "garage" | "exclusive" | "system" | "live">("customer");
+  const [offerSubTab, setOfferSubTab] = useState<"all" | "exclusive" | "limited">("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [replyText, setReplyText] = useState("");
@@ -582,6 +584,10 @@ export default function MessagesPage() {
       if (tab === "customer" || tab === "garage" || tab === "exclusive" || tab === "system" || tab === "live") {
         setActiveTab(tab);
       }
+      const messageId = params.get("messageId") || params.get("inquiryId");
+      if (messageId) {
+        setSelectedId(messageId);
+      }
     }
   }, []);
 
@@ -595,15 +601,60 @@ export default function MessagesPage() {
 
   const { data, isLoading } = useGetAdminContactsQuery({ page, limit });
 
+  // Sync tab from URL query parameter on mount
+  useEffect(() => {
+    if (typeof window !== "undefined" && data?.data) {
+      const params = new URLSearchParams(window.location.search);
+      const messageId = params.get("messageId") || params.get("inquiryId");
+      if (messageId) {
+        const foundItem = data.data.find((item) => item.id === messageId);
+        if (foundItem) {
+          setSelectedId(messageId);
+          // Set tab
+          if (foundItem.subject === "EXCLUSIVE_OFFER") {
+            setActiveTab("exclusive");
+            setOfferSubTab("exclusive");
+          } else if (foundItem.subject === "LIMITED_TIME_OFFER") {
+            setActiveTab("exclusive");
+            setOfferSubTab("limited");
+          } else if (foundItem.garageOwnerId) {
+            setActiveTab("garage");
+          } else {
+            setActiveTab("customer");
+          }
+        }
+      }
+    }
+  }, [data]);
+
   const { data: singleMessage } = useGetAdminContactByIdQuery(selectedId!, {
     skip: !selectedId || activeTab === "system" || activeTab === "live",
   });
 
   const [replyAdminMessage, { isLoading: isReplying }] = useReplyAdminMessageMutation();
 
+  // Reset selected ID only if it doesn't belong to the newly selected active tab
   useEffect(() => {
-    setSelectedId(null);
-  }, [page, activeTab]);
+    if (selectedId && data?.data) {
+      const item = data.data.find((m) => m.id === selectedId);
+      if (item) {
+        const isCustomer = !item.garageOwnerId && item.subject !== "EXCLUSIVE_OFFER" && item.subject !== "LIMITED_TIME_OFFER";
+        const isGarage = !!item.garageOwnerId && item.subject !== "EXCLUSIVE_OFFER" && item.subject !== "LIMITED_TIME_OFFER";
+        const isExclusive = item.subject === "EXCLUSIVE_OFFER" || item.subject === "LIMITED_TIME_OFFER";
+        
+        const matchesTab = 
+          (activeTab === "customer" && isCustomer) ||
+          (activeTab === "garage" && isGarage) ||
+          (activeTab === "exclusive" && isExclusive);
+          
+        if (!matchesTab) {
+          setSelectedId(null);
+        }
+      } else {
+        setSelectedId(null);
+      }
+    }
+  }, [page, activeTab, data]);
 
   useEffect(() => {
     const timeoutId = setTimeout(scrollToBottom, 50);
@@ -665,9 +716,15 @@ export default function MessagesPage() {
     return original?.subject;
   };
 
-  const customerInquiries = sortedMessages.filter((m) => !m.garageOwnerId && getSubjectType(m.id) !== "EXCLUSIVE_OFFER");
-  const businessMessages = sortedMessages.filter((m) => !!m.garageOwnerId && getSubjectType(m.id) !== "EXCLUSIVE_OFFER");
+  const customerInquiries = sortedMessages.filter((m) => !m.garageOwnerId && getSubjectType(m.id) !== "EXCLUSIVE_OFFER" && getSubjectType(m.id) !== "LIMITED_TIME_OFFER");
+  const businessMessages = sortedMessages.filter((m) => !!m.garageOwnerId && getSubjectType(m.id) !== "EXCLUSIVE_OFFER" && getSubjectType(m.id) !== "LIMITED_TIME_OFFER");
+  const allOffers = sortedMessages.filter((m) => getSubjectType(m.id) === "EXCLUSIVE_OFFER" || getSubjectType(m.id) === "LIMITED_TIME_OFFER");
   const exclusiveOffers = sortedMessages.filter((m) => getSubjectType(m.id) === "EXCLUSIVE_OFFER");
+  const limitedTimeOffers = sortedMessages.filter((m) => getSubjectType(m.id) === "LIMITED_TIME_OFFER");
+  const displayedOffers = 
+    offerSubTab === "exclusive" ? exclusiveOffers : 
+    offerSubTab === "limited" ? limitedTimeOffers : 
+    allOffers;
 
   const filteredSystemNotifications = systemNotifications.filter((n) => {
     const matchesSearch =
@@ -700,12 +757,18 @@ export default function MessagesPage() {
       setSelectedId(customerInquiries[0].id);
     } else if (activeTab === "garage" && businessMessages.length > 0 && !selectedId) {
       setSelectedId(businessMessages[0].id);
-    } else if (activeTab === "exclusive" && exclusiveOffers.length > 0 && !selectedId) {
-      setSelectedId(exclusiveOffers[0].id);
+    } else if (activeTab === "exclusive" && !selectedId) {
+      const currentList = 
+        offerSubTab === "exclusive" ? exclusiveOffers :
+        offerSubTab === "limited" ? limitedTimeOffers :
+        allOffers;
+      if (currentList.length > 0) {
+        setSelectedId(currentList[0].id);
+      }
     } else if (activeTab === "system" && sortedSystemNotifications.length > 0 && !selectedId) {
       setSelectedId(sortedSystemNotifications[0].id);
     }
-  }, [activeTab, customerInquiries, businessMessages, exclusiveOffers, sortedSystemNotifications, selectedId]);
+  }, [activeTab, offerSubTab, customerInquiries, businessMessages, exclusiveOffers, limitedTimeOffers, allOffers, sortedSystemNotifications, selectedId]);
 
   const handleSendReply = async () => {
     if (!selectedId || (!replyText.trim() && !replyAttachment)) return;
@@ -779,7 +842,7 @@ export default function MessagesPage() {
           [
             { key: "customer", label: "Customer Inquiries", badge: customerInquiries.length, color: "blue", extra: undefined as string | undefined, icon: undefined as React.ReactNode },
             { key: "garage", label: "Garage Messages", badge: businessMessages.length as number | null, color: "purple", extra: undefined as string | undefined, icon: undefined as React.ReactNode },
-            { key: "exclusive", label: "Exclusive Offers", badge: exclusiveOffers.length as number | null, color: "orange", extra: undefined as string | undefined, icon: undefined as React.ReactNode },
+            { key: "exclusive", label: "Offers", badge: allOffers.length as number | null, color: "orange", extra: undefined as string | undefined, icon: undefined as React.ReactNode },
             { key: "system", label: "System Alerts", badge: sortedSystemNotifications.length as number | null, color: "gray", extra: undefined as string | undefined, icon: undefined as React.ReactNode },
             { key: "live", label: "Live Messages", badge: liveUnreadCount > 0 ? liveUnreadCount : null as number | null, color: "green", extra: undefined as string | undefined, icon: <Headphones className="w-4 h-4" /> as React.ReactNode },
           ]
@@ -836,7 +899,7 @@ export default function MessagesPage() {
       {activeTab !== "live" && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left List */}
-          <div className="bg-white rounded-xl border flex flex-col h-[650px] shadow-sm overflow-hidden">
+          <div className="bg-white rounded-xl border flex flex-col h-[750px] shadow-sm overflow-hidden">
             <div className="p-4 border-b space-y-3 bg-gray-50/50">
               <div className="relative">
                 <LuSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -868,6 +931,34 @@ export default function MessagesPage() {
                   <option value="asc">Oldest First</option>
                 </select>
               </div>
+              {activeTab === "exclusive" && (
+                <div className="flex bg-gray-100 p-1 rounded-xl gap-1 text-[11px] font-bold">
+                  <button
+                    onClick={() => { setOfferSubTab("all"); setSelectedId(null); }}
+                    className={`flex-1 py-1.5 rounded-lg transition-all ${
+                      offerSubTab === "all" ? "bg-white text-gray-900 shadow-xs" : "text-gray-505 text-gray-500 hover:text-gray-950"
+                    }`}
+                  >
+                    All ({allOffers.length})
+                  </button>
+                  <button
+                    onClick={() => { setOfferSubTab("exclusive"); setSelectedId(null); }}
+                    className={`flex-1 py-1.5 rounded-lg transition-all ${
+                      offerSubTab === "exclusive" ? "bg-white text-gray-900 shadow-xs" : "text-gray-500 hover:text-gray-950"
+                    }`}
+                  >
+                    Exclusive ({exclusiveOffers.length})
+                  </button>
+                  <button
+                    onClick={() => { setOfferSubTab("limited"); setSelectedId(null); }}
+                    className={`flex-1 py-1.5 rounded-lg transition-all ${
+                      offerSubTab === "limited" ? "bg-white text-gray-900 shadow-xs" : "text-gray-500 hover:text-gray-950"
+                    }`}
+                  >
+                    Limited ({limitedTimeOffers.length})
+                  </button>
+                </div>
+              )}
             </div>
 
             <div className="flex-1 overflow-y-auto divide-y divide-gray-100">
@@ -932,7 +1023,7 @@ export default function MessagesPage() {
                 ))}
 
               {activeTab === "exclusive" &&
-                exclusiveOffers.map((m) => (
+                displayedOffers.map((m) => (
                   <button
                     key={m.id}
                     onClick={() => setSelectedId(m.id)}
@@ -1002,10 +1093,14 @@ export default function MessagesPage() {
                   <p className="text-sm font-medium">No garage messages found</p>
                 </div>
               )}
-              {!isLoading && activeTab === "exclusive" && exclusiveOffers.length === 0 && (
+              {!isLoading && activeTab === "exclusive" && displayedOffers.length === 0 && (
                 <div className="p-8 text-center text-gray-500">
                   <AlertCircle className="w-8 h-8 text-gray-300 mx-auto mb-2" />
-                  <p className="text-sm font-medium">No exclusive offer requests found</p>
+                  <p className="text-sm font-medium">
+                    {offerSubTab === "exclusive" ? "No exclusive offer requests found" :
+                     offerSubTab === "limited" ? "No limited time offer requests found" :
+                     "No offer requests found"}
+                  </p>
                 </div>
               )}
               {!isLoading && activeTab === "system" && sortedSystemNotifications.length === 0 && (
@@ -1018,59 +1113,68 @@ export default function MessagesPage() {
           </div>
 
           {/* Right Details */}
-          <div className="lg:col-span-2 bg-white rounded-xl border shadow-sm overflow-hidden h-[650px] flex flex-col">
+          <div className="lg:col-span-2 bg-white rounded-xl border shadow-sm overflow-hidden h-[750px] flex flex-col">
             {activeTab !== "system" && singleMessage ? (
               <div className="flex flex-col h-full bg-slate-50/10 overflow-hidden">
-                <div className="p-6 border-b bg-white">
-                  <div className="flex items-center gap-2 mb-2">
-                    {activeTab === "customer" ? (
-                      <span className="bg-blue-100 text-blue-800 text-[10px] font-extrabold px-2.5 py-1 rounded uppercase tracking-wider">
-                        Customer Inquiry
-                      </span>
-                    ) : activeTab === "exclusive" ? (
-                      <span className="bg-orange-100 text-orange-850 text-[10px] font-extrabold px-2.5 py-1 rounded uppercase tracking-wider">
-                        Exclusive Offer Request
-                      </span>
-                    ) : (
-                      <span className="bg-purple-100 text-purple-800 text-[10px] font-extrabold px-2.5 py-1 rounded uppercase tracking-wider">
-                        Garage Message
-                      </span>
-                    )}
-                    {singleMessage.data.makeasClosed && (
-                      <span className="bg-green-100 text-green-800 text-[10px] font-bold px-2 py-0.5 rounded">
-                        Closed
-                      </span>
-                    )}
+                <div className="p-3.5 border-b bg-white">
+                  {/* Row 1: Badges, Subject and Time */}
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      {activeTab === "customer" ? (
+                        <span className="bg-blue-100 text-blue-800 text-[9px] font-extrabold px-2 py-0.5 rounded uppercase tracking-wider">
+                          Customer Inquiry
+                        </span>
+                      ) : singleMessage.data.subject === "EXCLUSIVE_OFFER" ? (
+                        <span className="bg-orange-100 text-orange-850 text-[9px] font-extrabold px-2 py-0.5 rounded uppercase tracking-wider">
+                          Exclusive Offer Request
+                        </span>
+                      ) : singleMessage.data.subject === "LIMITED_TIME_OFFER" ? (
+                        <span className="bg-orange-100 text-orange-850 text-[9px] font-extrabold px-2 py-0.5 rounded uppercase tracking-wider">
+                          Limited Time Offer
+                        </span>
+                      ) : (
+                        <span className="bg-purple-100 text-purple-800 text-[9px] font-extrabold px-2 py-0.5 rounded uppercase tracking-wider">
+                          Garage Message
+                        </span>
+                      )}
+                      {singleMessage.data.makeasClosed && (
+                        <span className="bg-green-100 text-green-800 text-[9px] font-bold px-1.5 py-0.5 rounded">
+                          Closed
+                        </span>
+                      )}
+                      <h2 className="text-base font-bold text-gray-900 tracking-tight">
+                        {singleMessage.data.subject === "EXCLUSIVE_OFFER"
+                          ? "Apply for Exclusive Offer"
+                          : singleMessage.data.subject === "OTHERS" && singleMessage.data.othersubject
+                          ? singleMessage.data.othersubject
+                          : formatSubject(singleMessage.data.subject)}
+                      </h2>
+                    </div>
+                    <p className="text-[11px] text-gray-400 font-medium">
+                      {new Date(singleMessage.data.createdAt).toLocaleString()}
+                    </p>
                   </div>
-                  <h2 className="text-xl font-bold text-gray-900 tracking-tight">
-                    {singleMessage.data.subject === "EXCLUSIVE_OFFER"
-                      ? "Apply for Exclusive Offer"
-                      : singleMessage.data.subject === "OTHERS" && singleMessage.data.othersubject
-                      ? singleMessage.data.othersubject
-                      : formatSubject(singleMessage.data.subject)}
-                  </h2>
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mt-3">
-                    <div className="text-sm text-gray-600 flex flex-wrap items-center gap-1.5">
-                      <span className="font-semibold text-gray-800">From:</span>{" "}
+
+                  {/* Row 2: Sender details */}
+                  <div className="flex items-center justify-between gap-2 mt-1.5 text-xs text-gray-500">
+                    <div className="flex flex-wrap items-center gap-1">
+                      <span className="font-semibold text-gray-700">From:</span>{" "}
                       <span>{singleMessage.data.FirstName} {singleMessage.data.LastName}</span>
                       {!singleMessage.data.garageOwnerId && !singleMessage.data.userId && (
-                        <span className="bg-amber-100 text-amber-850 text-[9px] font-black px-1.5 py-0.5 rounded tracking-wider uppercase">
+                        <span className="bg-amber-100 text-amber-850 text-[9px] font-black px-1.5 py-0.5 rounded tracking-wider uppercase scale-90 origin-left">
                           Guest User
                         </span>
                       )}
-                      <span className="text-gray-400">|</span>
+                      <span className="text-gray-300">|</span>
                       <span className="text-blue-600 hover:underline">{singleMessage.data.email}</span>
                       {singleMessage.data.phone && (
                         <>
-                          <span className="text-gray-400">|</span>
-                          <span className="font-semibold text-gray-700">Phone:</span>
-                          <span className="text-gray-900">{singleMessage.data.phone}</span>
+                          <span className="text-gray-300">|</span>
+                          <span className="font-semibold text-gray-650">Phone:</span>
+                          <span className="text-gray-800">{singleMessage.data.phone}</span>
                         </>
                       )}
                     </div>
-                    <p className="text-xs text-gray-400 font-medium">
-                      {new Date(singleMessage.data.createdAt).toLocaleString()}
-                    </p>
                   </div>
                 </div>
 
@@ -1097,28 +1201,36 @@ export default function MessagesPage() {
                         {singleMessage.data.message}
                       </p>
                       
-                      {singleMessage.data.subject === "EXCLUSIVE_OFFER" && (
-                        (singleMessage.data.priceBeforeDiscount || singleMessage.data.priceAfterDiscount) && (
-                          <div className="mt-3 bg-orange-50/50 border border-orange-100 rounded-xl p-3 flex items-center justify-between gap-4">
-                            <div className="flex items-center gap-3">
-                              {singleMessage.data.priceBeforeDiscount && (
-                                <div className="text-xs text-gray-500">
-                                  Original: <span className="line-through font-semibold text-gray-700">{singleMessage.data.priceBeforeDiscount} AED</span>
-                                </div>
-                              )}
+                      {(singleMessage.data.subject === "EXCLUSIVE_OFFER" || singleMessage.data.subject === "LIMITED_TIME_OFFER") && (
+                        (singleMessage.data.priceBeforeDiscount || singleMessage.data.priceAfterDiscount || singleMessage.data.offerDuration) && (
+                          <div className="mt-3 bg-orange-50/50 border border-orange-100 rounded-xl p-3 flex flex-col gap-2.5">
+                            <div className="flex items-center justify-between gap-4">
+                              <div className="flex items-center gap-3">
+                                {singleMessage.data.priceBeforeDiscount && (
+                                  <div className="text-xs text-gray-500">
+                                    Original: <span className="line-through font-semibold text-gray-700">{singleMessage.data.priceBeforeDiscount} AED</span>
+                                  </div>
+                                )}
+                                {singleMessage.data.priceBeforeDiscount && singleMessage.data.priceAfterDiscount && (
+                                  <div className="text-gray-300 text-xs">|</div>
+                                )}
+                                {singleMessage.data.priceAfterDiscount && (
+                                  <div className="text-xs text-gray-500">
+                                    {singleMessage.data.subject === "EXCLUSIVE_OFFER" ? "Discounted:" : "Offer Price:"} <span className="font-extrabold text-green-600">{singleMessage.data.priceAfterDiscount} AED</span>
+                                  </div>
+                                )}
+                              </div>
                               {singleMessage.data.priceBeforeDiscount && singleMessage.data.priceAfterDiscount && (
-                                <div className="text-gray-300 text-xs">|</div>
-                              )}
-                              {singleMessage.data.priceAfterDiscount && (
-                                <div className="text-xs text-gray-500">
-                                  Discounted: <span className="font-extrabold text-green-600">{singleMessage.data.priceAfterDiscount} AED</span>
-                                </div>
+                                <span className="bg-red-100 text-red-700 text-[10px] font-black px-2 py-0.5 rounded">
+                                  SAVE {Math.round(100 - (parseFloat(singleMessage.data.priceAfterDiscount) / parseFloat(singleMessage.data.priceBeforeDiscount)) * 100)}%
+                                </span>
                               )}
                             </div>
-                            {singleMessage.data.priceBeforeDiscount && singleMessage.data.priceAfterDiscount && (
-                              <span className="bg-red-100 text-red-700 text-[10px] font-black px-2 py-0.5 rounded">
-                                SAVE {Math.round(100 - (parseFloat(singleMessage.data.priceAfterDiscount) / parseFloat(singleMessage.data.priceBeforeDiscount)) * 100)}%
-                              </span>
+                            {singleMessage.data.offerDuration && (
+                              <div className="text-xs text-gray-500 pt-2 border-t border-orange-100/50 flex items-center gap-1.5">
+                                <span className="font-semibold text-gray-650">Duration:</span>
+                                <span className="font-bold text-orange-700 bg-orange-100/60 px-2 py-0.5 rounded text-[10px]">{singleMessage.data.offerDuration}</span>
+                              </div>
                             )}
                           </div>
                         )
@@ -1208,9 +1320,9 @@ export default function MessagesPage() {
                   )}
                 </div>
 
-                <div className="border-t p-6 bg-white space-y-4">
+                <div className="border-t p-3 bg-white">
                   {replyAttachment && (
-                    <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 p-2 px-3 rounded-xl w-fit shadow-xs">
+                    <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 p-1.5 px-3 mb-2 rounded-xl w-fit shadow-xs">
                       <LuPaperclip className="w-4 h-4 text-blue-500 shrink-0" />
                       <span className="text-xs font-semibold text-gray-700 truncate max-w-[200px]">
                         {replyAttachment.name}
@@ -1225,15 +1337,8 @@ export default function MessagesPage() {
                     </div>
                   )}
 
-                  <textarea
-                    value={replyText}
-                    onChange={(e) => setReplyText(e.target.value)}
-                    rows={4}
-                    placeholder="Type your reply..."
-                    className="w-full p-4 bg-gray-50 border border-gray-200 focus:border-blue-500 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all resize-none shadow-inner"
-                  />
-                  
-                  <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-2">
+                    {/* Attachment Button */}
                     <div>
                       <input
                         type="file"
@@ -1248,32 +1353,44 @@ export default function MessagesPage() {
                       />
                       <label
                         htmlFor="reply-file-upload"
-                        className="inline-flex items-center gap-2 cursor-pointer p-3 px-4 hover:bg-gray-50 border border-gray-200 rounded-xl transition-all text-xs font-bold text-gray-600 hover:border-gray-300 shadow-xs active:scale-[0.98]"
+                        className="inline-flex items-center justify-center cursor-pointer w-10 h-10 hover:bg-gray-50 border border-gray-200 rounded-xl transition-all text-gray-600 hover:border-gray-300 shadow-xs active:scale-[0.98]"
+                        title="Attach Image"
                       >
-                        <LuPaperclip className="w-4 h-4 text-gray-400" />
-                        Attach Image
+                        <LuPaperclip className="w-5 h-5 text-gray-400" />
                       </label>
                     </div>
 
+                    {/* Input Field */}
+                    <input
+                      type="text"
+                      value={replyText}
+                      onChange={(e) => setReplyText(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          handleSendReply();
+                        }
+                      }}
+                      placeholder="Type your reply..."
+                      className="flex-1 px-4 h-10 bg-gray-50 border border-gray-200 focus:border-blue-500 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all shadow-inner"
+                    />
+
+                    {/* Send Button */}
                     <button
                       disabled={(!replyText.trim() && !replyAttachment) || isReplying || isUploadingAttachment}
                       onClick={handleSendReply}
-                      className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold text-sm disabled:opacity-50 transition-all duration-200 shadow-md shadow-blue-500/10 hover:shadow-blue-500/20 active:scale-[0.98]"
+                      className="inline-flex items-center justify-center w-10 h-10 bg-blue-600 hover:bg-blue-700 text-white rounded-xl disabled:opacity-50 transition-all duration-200 shadow-md shadow-blue-500/10 hover:shadow-blue-500/20 active:scale-[0.98] shrink-0"
+                      title="Send Reply"
                     >
                       {isReplying || isUploadingAttachment ? (
-                        <>
-                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                          <span>{isUploadingAttachment ? "Uploading..." : "Sending..."}</span>
-                        </>
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                       ) : (
-                        <>
-                          <LuSend size={15} />
-                          <span>Send Reply</span>
-                        </>
+                        <LuSend size={16} />
                       )}
                     </button>
                   </div>
                 </div>
+
               </div>
             ) : activeTab === "system" && selectedSystemNotification ? (
               <div className="flex flex-col h-full bg-slate-50/10">

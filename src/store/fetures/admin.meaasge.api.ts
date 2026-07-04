@@ -18,6 +18,7 @@ export interface AdminContact {
   phone?: string | null;
   priceBeforeDiscount?: string | null;
   priceAfterDiscount?: string | null;
+  offerDuration?: string | null;
   attachment?: string | null;
   messages?: {
     id: string;

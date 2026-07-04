@@ -28,6 +28,7 @@ interface ExtendedContactFormData {
   othersubject?: string;
   priceBeforeDiscount?: string;
   priceAfterDiscount?: string;
+  offerDuration?: string;
   garageOwnerId?: string;
 }
 
@@ -45,7 +46,8 @@ const GetInTouch: React.FC = () => {
     message: "",
     othersubject: "",
     priceBeforeDiscount: "",
-    priceAfterDiscount: ""
+    priceAfterDiscount: "",
+    offerDuration: ""
   });
 
   const [attachmentFile, setAttachmentFile] = useState<File | null>(null);
@@ -62,8 +64,10 @@ const GetInTouch: React.FC = () => {
     if (subject !== "OTHERS") {
       setFormData(prev => ({ ...prev, othersubject: "" }));
     }
-    if (subject !== "EXCLUSIVE_OFFER") {
-      setFormData(prev => ({ ...prev, priceBeforeDiscount: "", priceAfterDiscount: "" }));
+    if (subject !== "EXCLUSIVE_OFFER" && subject !== "LIMITED_TIME_OFFER") {
+      setFormData(prev => ({ ...prev, priceBeforeDiscount: "", priceAfterDiscount: "", offerDuration: "" }));
+    } else if (subject === "EXCLUSIVE_OFFER") {
+      setFormData(prev => ({ ...prev, offerDuration: "" }));
     }
   };
 
@@ -75,11 +79,6 @@ const GetInTouch: React.FC = () => {
       return;
     }
 
-    if (!formData.phone.trim()) {
-      toast.error("Phone number is required");
-      return;
-    }
-
     try {
       const submitData = new FormData();
       submitData.append("FirstName", formData.FirstName);
@@ -87,16 +86,18 @@ const GetInTouch: React.FC = () => {
       submitData.append("email", formData.email);
       
       // Formatting phone: prepend +971 if not present
-      let formattedPhone = formData.phone.trim();
-      if (!formattedPhone.startsWith("+")) {
-        // Assume UAE code if prefix not provided
-        if (formattedPhone.startsWith("971")) {
-          formattedPhone = "+" + formattedPhone;
-        } else {
-          formattedPhone = "+971" + formattedPhone.replace(/^0+/, "");
+      if (formData.phone.trim()) {
+        let formattedPhone = formData.phone.trim();
+        if (!formattedPhone.startsWith("+")) {
+          // Assume UAE code if prefix not provided
+          if (formattedPhone.startsWith("971")) {
+            formattedPhone = "+" + formattedPhone;
+          } else {
+            formattedPhone = "+971" + formattedPhone.replace(/^0+/, "");
+          }
         }
+        submitData.append("phone", formattedPhone);
       }
-      submitData.append("phone", formattedPhone);
       submitData.append("subject", formData.subject);
       submitData.append("message", formData.message);
 
@@ -104,12 +105,15 @@ const GetInTouch: React.FC = () => {
         submitData.append("othersubject", formData.othersubject);
       }
 
-      if (formData.subject === "EXCLUSIVE_OFFER") {
+      if (formData.subject === "EXCLUSIVE_OFFER" || formData.subject === "LIMITED_TIME_OFFER") {
         if (formData.priceBeforeDiscount) {
           submitData.append("priceBeforeDiscount", formData.priceBeforeDiscount);
         }
         if (formData.priceAfterDiscount) {
           submitData.append("priceAfterDiscount", formData.priceAfterDiscount);
+        }
+        if (formData.subject === "LIMITED_TIME_OFFER" && formData.offerDuration) {
+          submitData.append("offerDuration", formData.offerDuration);
         }
       }
 
@@ -134,7 +138,8 @@ const GetInTouch: React.FC = () => {
         message: "",
         othersubject: "",
         priceBeforeDiscount: "",
-        priceAfterDiscount: ""
+        priceAfterDiscount: "",
+        offerDuration: ""
       });
       setAttachmentFile(null);
       setShowOtherSubject(false);
@@ -292,7 +297,7 @@ const GetInTouch: React.FC = () => {
 
             {/* Phone */}
             <div className="space-y-1.5">
-              <Label htmlFor="phone" className="text-[#111827] font-semibold text-[13px]">Phone Number *</Label>
+              <Label htmlFor="phone" className="text-[#111827] font-semibold text-[13px]">Phone Number</Label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
                   <span className="text-gray-400 text-sm font-semibold pl-1">+971</span>
@@ -304,7 +309,6 @@ const GetInTouch: React.FC = () => {
                   className="pl-14 bg-[#fafafa] border-gray-200 h-11 focus-visible:ring-blue-500 rounded-xl text-[14px]"
                   value={formData.phone}
                   onChange={(e) => handleInputChange("phone", e.target.value)}
-                  required
                 />
               </div>
             </div>
@@ -351,41 +355,58 @@ const GetInTouch: React.FC = () => {
               </motion.div>
             )}
 
-            {/* Pricing fields (for Exclusive Offers) */}
-            {formData.subject === "EXCLUSIVE_OFFER" && (
+            {/* Pricing and Duration fields (for Exclusive Offers or Limited Time Offers) */}
+            {(formData.subject === "EXCLUSIVE_OFFER" || formData.subject === "LIMITED_TIME_OFFER") && (
               <motion.div 
-                className="grid sm:grid-cols-2 gap-5"
+                className="space-y-5"
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
               >
-                <div className="space-y-1.5">
-                  <Label htmlFor="priceBeforeDiscount" className="text-[#111827] font-semibold text-[13px]">Original Price (AED) (Optional)</Label>
-                  <Input
-                    id="priceBeforeDiscount"
-                    type="number"
-                    placeholder="e.g. 500"
-                    className="bg-[#fafafa] border-gray-200 h-11 focus-visible:ring-blue-500 rounded-xl text-[14px]"
-                    value={formData.priceBeforeDiscount || ""}
-                    onChange={(e) => handleInputChange("priceBeforeDiscount", e.target.value)}
-                  />
+                <div className="grid sm:grid-cols-2 gap-5">
+                  <div className="space-y-1.5">
+                    <Label htmlFor="priceBeforeDiscount" className="text-[#111827] font-semibold text-[13px]">Original Price (AED)</Label>
+                    <Input
+                      id="priceBeforeDiscount"
+                      type="number"
+                      placeholder="e.g. 500"
+                      className="bg-[#fafafa] border-gray-200 h-11 focus-visible:ring-blue-500 rounded-xl text-[14px]"
+                      value={formData.priceBeforeDiscount || ""}
+                      onChange={(e) => handleInputChange("priceBeforeDiscount", e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="priceAfterDiscount" className="text-[#111827] font-semibold text-[13px]">
+                      {formData.subject === "EXCLUSIVE_OFFER" ? "Discounted Price (AED)" : "Offer Price (AED)"}
+                    </Label>
+                    <Input
+                      id="priceAfterDiscount"
+                      type="number"
+                      placeholder="e.g. 350"
+                      className="bg-[#fafafa] border-gray-200 h-11 focus-visible:ring-blue-500 rounded-xl text-[14px]"
+                      value={formData.priceAfterDiscount || ""}
+                      onChange={(e) => handleInputChange("priceAfterDiscount", e.target.value)}
+                    />
+                  </div>
                 </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="priceAfterDiscount" className="text-[#111827] font-semibold text-[13px]">Discounted Price (AED) (Optional)</Label>
-                  <Input
-                    id="priceAfterDiscount"
-                    type="number"
-                    placeholder="e.g. 350"
-                    className="bg-[#fafafa] border-gray-200 h-11 focus-visible:ring-blue-500 rounded-xl text-[14px]"
-                    value={formData.priceAfterDiscount || ""}
-                    onChange={(e) => handleInputChange("priceAfterDiscount", e.target.value)}
-                  />
-                </div>
+                {formData.subject === "LIMITED_TIME_OFFER" && (
+                  <div className="space-y-1.5">
+                    <Label htmlFor="offerDuration" className="text-[#111827] font-semibold text-[13px]">Time Duration</Label>
+                    <Input
+                      id="offerDuration"
+                      type="text"
+                      placeholder="e.g. 3 days, 1 week, valid until Friday"
+                      className="bg-[#fafafa] border-gray-200 h-11 focus-visible:ring-blue-500 rounded-xl text-[14px]"
+                      value={formData.offerDuration || ""}
+                      onChange={(e) => handleInputChange("offerDuration", e.target.value)}
+                    />
+                  </div>
+                )}
               </motion.div>
             )}
 
             {/* Attachment File Input */}
             <div className="space-y-1.5">
-              <Label htmlFor="attachment" className="text-[#111827] font-semibold text-[13px]">Image Attachment (Optional)</Label>
+              <Label htmlFor="attachment" className="text-[#111827] font-semibold text-[13px]">Image Attachment</Label>
               <Input
                 id="attachment"
                 type="file"

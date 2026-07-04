@@ -36,11 +36,12 @@ export default function NotificationDropdown() {
   const userId = user?.id || "guest";
 
   const getLinkForNotification = (type: string, meta: any) => {
+    const isAdmin = user?.role === "SUPER_ADMIN";
     switch (type) {
       case "CustomerInquiryAlert": {
         const inquiryId = meta?.inquiryId;
         const senderEmail = meta?.senderEmail;
-        let link = "/garage-admin/inquiries";
+        let link = isAdmin ? "/admin/messages" : "/garage-admin/inquiries";
         if (inquiryId) {
           link += `?inquiryId=${inquiryId}`;
         } else if (senderEmail) {
@@ -52,6 +53,9 @@ export default function NotificationDropdown() {
         return "/admin/users";
       case "NewMessage": {
         const partnerId = meta?.fromUserId;
+        if (isAdmin) {
+          return partnerId ? `/admin/messages?tab=live&userId=${partnerId}` : "/admin/messages?tab=live";
+        }
         const baseLink = user?.role === "GARAGE_OWNER" ? "/garage-admin/messages" : "/user/messages";
         return partnerId ? `${baseLink}?userId=${partnerId}` : baseLink;
       }
