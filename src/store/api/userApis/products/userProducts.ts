@@ -153,6 +153,7 @@ export const userProductApi = apiSlice.injectEndpoints({
         if (data.sellerPhoneNumber)
           formData.append("sellerPhoneNumber", data.sellerPhoneNumber);
         if (data.garageId) formData.append("garageId", data.garageId);
+        if (data.status) formData.append("status", data.status);
 
         // Photos (max 5)
         if (data.photos && data.photos.length > 0) {

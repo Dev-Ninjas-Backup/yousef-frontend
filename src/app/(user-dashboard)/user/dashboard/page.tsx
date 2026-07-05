@@ -1,6 +1,6 @@
 "use client";
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import ProfileHeader from "./_components/ProfileHeader";
 import ProfileForm from "./_components/ProfileForm";
 import LoadingSpinner from "./_components/LoadingSpinner";
@@ -45,6 +45,11 @@ function UserDashboardContent() {
   const [cancelProductMonthly, { isLoading: isCancelling }] = useCancelProductMonthlyMutation();
   const [showDowngradeModal, setShowDowngradeModal] = useState(false);
   const [showCancelModal, setShowCancelModal] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleDowngradeConfirm = async () => {
     try {
@@ -206,7 +211,7 @@ function UserDashboardContent() {
               <div 
                 className={`relative rounded-xl border p-5 flex flex-col justify-between transition-all ${
                   limitData?.hasProductMonthly
-                    ? "border-gray-200 bg-gray-50/20 opacity-60"
+                    ? "border-gray-200 hover:border-emerald-300 bg-white"
                     : "border-emerald-500 bg-emerald-50/5 ring-1 ring-emerald-500/30 shadow-[0_0_20px_rgba(16,185,129,0.1)]"
                 }`}
               >
@@ -262,8 +267,6 @@ function UserDashboardContent() {
                 className={`relative rounded-xl border p-5 flex flex-col justify-between transition-all ${
                   limitData?.hasProductMonthly && activePlanType === "BASIC"
                     ? "border-blue-500 bg-blue-50/5 ring-1 ring-blue-500/30 shadow-[0_0_20px_rgba(59,130,246,0.1)] scale-[1.01]"
-                    : (limitData?.hasProductMonthly && activePlanType !== "BASIC")
-                    ? "border-gray-200 bg-gray-50/20 opacity-60"
                     : "border-gray-200 hover:border-blue-300 bg-white"
                 }`}
               >
@@ -444,7 +447,7 @@ function UserDashboardContent() {
           </div>
 
           {/* Downgrade Confirmation Modal */}
-          {showDowngradeModal && (
+          {mounted && showDowngradeModal && createPortal(
             <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/40 backdrop-blur-sm animate-fade-in p-4">
               <div className="bg-white rounded-2xl p-5 sm:p-6 w-full max-w-md shadow-2xl border border-gray-100 relative transform transition-all scale-100">
                 <div className="flex items-center gap-3 mb-4 text-amber-600">
@@ -474,11 +477,12 @@ function UserDashboardContent() {
                   </button>
                 </div>
               </div>
-            </div>
+            </div>,
+            document.body
           )}
 
           {/* Cancel Confirmation Modal */}
-          {showCancelModal && (
+          {mounted && showCancelModal && createPortal(
             <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/40 backdrop-blur-sm animate-fade-in p-4">
               <div className="bg-white rounded-2xl p-5 sm:p-6 w-full max-w-md shadow-2xl border border-gray-100 relative transform transition-all scale-100">
                 <div className="flex items-center gap-3 mb-4 text-red-600">
@@ -508,7 +512,8 @@ function UserDashboardContent() {
                   </button>
                 </div>
               </div>
-            </div>
+            </div>,
+            document.body
           )}
 
           <ReviewForm />
