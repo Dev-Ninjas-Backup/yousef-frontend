@@ -1,16 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
   useSearchGaragesQuery,
   useLazySearchGaragesQuery,
   useUpdateGarageOwnerStatusMutation,
   useUpdateGarageStatusMutation,
   useDeleteGarageMutation,
+  useGetAllGaragesQuery,
   GarageOwner,
   GarageInfo,
 } from "@/store/api/garageManagement";
-import { Loader2, Download } from "lucide-react";
+import { Loader2, Download, Users, Wrench, Clock, Coins } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import SearchFilters from "./_components/SearchFilters";
@@ -47,6 +48,23 @@ export default function GarageManagementPage() {
     page,
     limit: 10,
   });
+
+  const { data: allGaragesRes } = useGetAllGaragesQuery();
+
+  const stats = useMemo(() => {
+    const owners = allGaragesRes?.data || [];
+    const totalOwners = owners.length;
+    const pendingOwners = owners.filter((o) => o.garageStatus === "PENDING").length;
+    const totalGarages = owners.reduce((acc, o) => acc + (o.garages?.length || 0), 0);
+    const totalRevenue = owners.reduce((acc, o) => acc + (o.revenue || 0), 0);
+
+    return {
+      totalOwners,
+      pendingOwners,
+      totalGarages,
+      totalRevenue,
+    };
+  }, [allGaragesRes]);
 
   const [updateOwnerStatus] = useUpdateGarageOwnerStatusMutation();
   const [updateGarageStatus] = useUpdateGarageStatusMutation();
@@ -266,6 +284,57 @@ export default function GarageManagementPage() {
           <Download className="w-4 h-4" />
           Export Data
         </Button>
+      </div>
+
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        {/* Card 1: Total Owners */}
+        <div className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all duration-200 flex items-center gap-4 group hover:-translate-y-0.5">
+          <div className="p-3 bg-blue-50 text-blue-600 rounded-xl group-hover:bg-blue-600 group-hover:text-white transition-all duration-300">
+            <Users className="w-6 h-6" />
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Total Owners</p>
+            <h3 className="text-xl sm:text-2xl font-extrabold text-gray-900 mt-1">{stats.totalOwners}</h3>
+            <p className="text-[10px] text-gray-500 mt-0.5">Registered garage owners</p>
+          </div>
+        </div>
+
+        {/* Card 2: Total Garages */}
+        <div className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all duration-200 flex items-center gap-4 group hover:-translate-y-0.5">
+          <div className="p-3 bg-indigo-50 text-indigo-600 rounded-xl group-hover:bg-indigo-600 group-hover:text-white transition-all duration-300">
+            <Wrench className="w-6 h-6" />
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Total Garages</p>
+            <h3 className="text-xl sm:text-2xl font-extrabold text-gray-900 mt-1">{stats.totalGarages}</h3>
+            <p className="text-[10px] text-gray-500 mt-0.5">Active service locations</p>
+          </div>
+        </div>
+
+        {/* Card 3: Pending Approval */}
+        <div className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all duration-200 flex items-center gap-4 group hover:-translate-y-0.5">
+          <div className={`p-3 rounded-xl transition-all duration-300 ${stats.pendingOwners > 0 ? 'bg-amber-50 text-amber-600 group-hover:bg-amber-500 group-hover:text-white' : 'bg-gray-50 text-gray-500 group-hover:bg-gray-500 group-hover:text-white'}`}>
+            <Clock className="w-6 h-6" />
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Pending Review</p>
+            <h3 className={`text-xl sm:text-2xl font-extrabold mt-1 ${stats.pendingOwners > 0 ? 'text-amber-600' : 'text-gray-900'}`}>{stats.pendingOwners}</h3>
+            <p className="text-[10px] text-gray-500 mt-0.5">Requires admin approval</p>
+          </div>
+        </div>
+
+        {/* Card 4: Total Revenue */}
+        <div className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all duration-200 flex items-center gap-4 group hover:-translate-y-0.5">
+          <div className="p-3 bg-emerald-50 text-emerald-600 rounded-xl group-hover:bg-emerald-600 group-hover:text-white transition-all duration-300">
+            <Coins className="w-6 h-6" />
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Total Revenue</p>
+            <h3 className="text-xl sm:text-2xl font-extrabold text-emerald-600 mt-1">AED {stats.totalRevenue.toLocaleString()}</h3>
+            <p className="text-[10px] text-gray-500 mt-0.5">From monthly subscriptions</p>
+          </div>
+        </div>
       </div>
 
       {/* Search & Filters */}
