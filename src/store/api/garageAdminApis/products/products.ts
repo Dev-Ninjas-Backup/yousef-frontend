@@ -152,6 +152,7 @@ export const productApi = apiSlice.injectEndpoints({
         if (data.sellerPhoneNumber)
           formData.append("sellerPhoneNumber", data.sellerPhoneNumber);
         if (data.garageId) formData.append("garageId", data.garageId);
+        if (data.status) formData.append("status", data.status);
 
         // Photos (max 5)
         if (data.photos && data.photos.length > 0) {
@@ -246,7 +247,7 @@ export const productApi = apiSlice.injectEndpoints({
     }),
 
     // Create Promotion Payment
-    createPromotionPayment: builder.mutation<PaymentResponse, { duration?: string } | void>({
+    createPromotionPayment: builder.mutation<PaymentResponse, { duration?: string; useCredits?: boolean } | void>({
       query: (data) => ({
         url: "/products/create-promotion-payment",
         method: "POST",

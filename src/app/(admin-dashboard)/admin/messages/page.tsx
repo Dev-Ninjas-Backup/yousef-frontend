@@ -98,6 +98,7 @@ function LiveMessagesPanel() {
   const [liveMessage, setLiveMessage] = useState("");
   const [localMessages, setLocalMessages] = useState<any[]>([]);
   const [isUploading, setIsUploading] = useState(false);
+  const [liveAttachment, setLiveAttachment] = useState<File | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -200,13 +201,16 @@ function LiveMessagesPanel() {
   }, [selectedConvParticipantId, allMessages, currentUserId, markAsRead]);
 
   const handleSendLiveMessage = async () => {
-    if (!liveMessage.trim() || !selectedConvParticipantId) return;
+    if ((!liveMessage.trim() && !liveAttachment) || !selectedConvParticipantId) return;
     setIsUploading(true);
     try {
       const token = Cookies.get("token");
       const formData = new FormData();
       formData.append("content", liveMessage.trim());
       formData.append("recipientId", selectedConvParticipantId);
+      if (liveAttachment) {
+        formData.append("file", liveAttachment);
+      }
 
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/private-chat/send-message/${selectedConvParticipantId}`,
@@ -219,6 +223,7 @@ function LiveMessagesPanel() {
       const data = await res.json();
       if (data.success && data.message) {
         setLocalMessages((prev) => [...prev, data.message]);
+        setLiveAttachment(null);
       }
     } catch (err) {
       console.error("Send failed:", err);
@@ -496,7 +501,45 @@ function LiveMessagesPanel() {
 
             {/* Input */}
             <div className="border-t p-3 bg-white">
+              {liveAttachment && (
+                <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 p-1.5 px-3 mb-2 rounded-xl w-fit shadow-xs">
+                  <LuPaperclip className="w-4 h-4 text-green-500 shrink-0" />
+                  <span className="text-xs font-semibold text-gray-700 truncate max-w-[200px]">
+                    {liveAttachment.name}
+                  </span>
+                  <button
+                    onClick={() => setLiveAttachment(null)}
+                    className="text-red-500 hover:text-red-700 transition-colors p-1"
+                    title="Remove file"
+                  >
+                    <LuX className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              )}
+
               <div className="flex items-center gap-3">
+                {/* File Upload Button */}
+                <div>
+                  <input
+                    type="file"
+                    id="live-file-upload"
+                    className="hidden"
+                    accept="image/*"
+                    onChange={(e) => {
+                      if (e.target.files && e.target.files[0]) {
+                        setLiveAttachment(e.target.files[0]);
+                      }
+                    }}
+                  />
+                  <label
+                    htmlFor="live-file-upload"
+                    className="inline-flex items-center justify-center cursor-pointer w-10 h-10 hover:bg-gray-50 border border-gray-200 rounded-xl transition-all text-gray-600 hover:border-gray-300 shadow-xs active:scale-[0.98]"
+                    title="Attach Image"
+                  >
+                    <LuPaperclip className="w-5 h-5 text-gray-400" />
+                  </label>
+                </div>
+
                 <input
                   ref={inputRef}
                   value={liveMessage}
@@ -515,11 +558,17 @@ function LiveMessagesPanel() {
                 />
                 <button
                   onClick={handleSendLiveMessage}
-                  disabled={!liveMessage.trim() || isUploading}
+                  disabled={(!liveMessage.trim() && !liveAttachment) || isUploading}
                   className="inline-flex items-center gap-2 px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-xl font-semibold text-sm disabled:opacity-50 transition-all duration-200 shadow-md shadow-green-500/20 active:scale-[0.98]"
                 >
-                  <Send className="w-4 h-4" />
-                  Send
+                  {isUploading ? (
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  ) : (
+                    <>
+                      <Send className="w-4 h-4" />
+                      Send
+                    </>
+                  )}
                 </button>
               </div>
             </div>

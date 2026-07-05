@@ -72,6 +72,7 @@ export default function AddProductPage() {
   const [selectedPlanCard, setSelectedPlanCard] = useState<PlanCardType>("FREE");
   const [promoDuration, setPromoDuration] = useState<"7" | "15">("15");
   const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [usePromotionCredits, setUsePromotionCredits] = useState(true);
 
   const [formData, setFormData] = useState({
     partName: "",
@@ -169,10 +170,10 @@ export default function AddProductPage() {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent, isDraft = false) => {
     e.preventDefault();
 
-    if (!agreedToTerms) {
+    if (!isDraft && !agreedToTerms) {
       toast.error("You must agree to the terms and guidelines to publish a product.");
       return;
     }
@@ -195,7 +196,7 @@ export default function AddProductPage() {
     }
 
     // Save form data to localStorage first so it's not lost in case of a page reload
-    if (isAnyPaymentNeeded) {
+    if (!isDraft && isAnyPaymentNeeded) {
       localStorage.setItem("productFormData", JSON.stringify(formData));
       
       try {
@@ -206,7 +207,10 @@ export default function AddProductPage() {
           const response = await createPayPerPayment().unwrap();
           openPaymentInNewTab(response.url);
         } else if (needsPromotionPayment) {
-          const response = await createPromotionPayment({ duration: promoDuration }).unwrap();
+          const response = await createPromotionPayment({ 
+            duration: promoDuration, 
+            useCredits: usePromotionCredits 
+          }).unwrap();
           openPaymentInNewTab(response.url);
         }
       } catch (error: any) {
@@ -235,9 +239,10 @@ export default function AddProductPage() {
         listingPlan: selectedPlanCard,
         promotedDuration: promoDuration,
         garageId: formData.garageId || undefined,
+        status: isDraft ? "DRAFT" : "PENDING",
       }).unwrap();
 
-      toast.success("Product created successfully!");
+      toast.success(isDraft ? "Product saved as draft successfully!" : "Product created successfully!");
       localStorage.removeItem("productFormData");
       router.push("/garage-admin/my-products");
     } catch (error: any) {
@@ -258,7 +263,7 @@ export default function AddProductPage() {
     : Number(paymentConfig?.promotionalAdPrice7Days || 99);
 
   const userCredits = userLimit?.promotionCredits || 0;
-  const promoDeduction = Math.min(promoPrice, userCredits);
+  const promoDeduction = usePromotionCredits ? Math.min(promoPrice, userCredits) : 0;
   const remainingPromoCost = promoPrice - promoDeduction;
 
   const needsPromotionPayment =
@@ -876,6 +881,19 @@ export default function AddProductPage() {
                           <span className="h-2 w-2 rounded-full bg-indigo-600 animate-ping" />
                           Promotion Selected: {promoDuration} Days
                         </p>
+                        {userCredits > 0 && (
+                          <div className="flex items-center space-x-2 bg-white/70 border border-indigo-100/50 p-2.5 rounded-xl my-2">
+                            <Checkbox
+                              id="use-promo-credits"
+                              checked={usePromotionCredits}
+                              onCheckedChange={(checked) => setUsePromotionCredits(checked as boolean)}
+                              className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-500 shrink-0"
+                            />
+                            <Label htmlFor="use-promo-credits" className="cursor-pointer text-[10px] text-gray-700 leading-normal font-bold">
+                              Use available promotion credits
+                            </Label>
+                          </div>
+                        )}
                         <div className="space-y-1.5 text-[11px] font-medium text-indigo-800">
                           <div className="flex justify-between">
                             <span>Promotion Cost:</span>
@@ -953,9 +971,18 @@ export default function AddProductPage() {
               variant="outline"
               onClick={() => router.back()}
               disabled={isLoading}
-              className="w-full sm:w-auto border-gray-300 text-gray-700 hover:bg-gray-50 px-6 font-semibold"
+              className="w-full sm:w-auto border-gray-300 text-gray-700 hover:bg-gray-50 px-6 font-semibold sm:mr-auto"
             >
               Cancel
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={(e) => handleSubmit(e, true)}
+              disabled={isLoading || isPaymentProcessing}
+              className="w-full sm:w-auto border-indigo-200 text-indigo-700 hover:bg-indigo-550/5 hover:border-indigo-300 px-6 font-bold transition-all disabled:opacity-50"
+            >
+              Save as Draft
             </Button>
             <Button
               type="submit"

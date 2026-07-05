@@ -433,20 +433,20 @@ export default function UserDashboardSidebar({ activePage }: UserDashboardSideba
 
         {/* Action Buttons */}
         <div className="flex gap-3">
-          <Link
-            href="/user/dashboard#plans"
-            className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2.5 border border-blue-200 bg-white hover:bg-blue-50/30 text-blue-600 text-xs font-semibold rounded-xl transition-all shadow-sm text-center"
+          <button
+            onClick={() => {
+              const element = document.getElementById("plans");
+              if (element) {
+                element.scrollIntoView({ behavior: "smooth" });
+              } else {
+                window.location.hash = "plans";
+              }
+            }}
+            className="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-xl transition-all shadow-md hover:shadow-blue-500/20 active:scale-95 text-center cursor-pointer"
           >
             <Settings className="w-3.5 h-3.5" />
             Manage Plan
-          </Link>
-          <Link
-            href="/user/dashboard#plans"
-            className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-xl transition-all shadow-md hover:shadow-blue-500/20 active:scale-95 text-center"
-          >
-            <Zap className="w-3.5 h-3.5" />
-            Upgrade Plan
-          </Link>
+          </button>
         </div>
       </div>
     </div>
