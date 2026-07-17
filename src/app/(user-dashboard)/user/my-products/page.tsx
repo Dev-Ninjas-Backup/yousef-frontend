@@ -952,42 +952,42 @@ export default function UserMyProductsPage() {
                         <div className="flex gap-2 justify-center">
                           <button
                             onClick={() => handleViewDetails(product)}
-                            className="px-2.5 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-600 text-xs font-semibold rounded-lg transition-colors flex items-center gap-1"
+                            className="p-1.5 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg transition-colors"
+                            title="View"
                           >
                             <Eye className="w-3.5 h-3.5" />
-                            View
                           </button>
                           <button
                             onClick={() => handleEdit(product)}
-                            className="px-2.5 py-1.5 bg-gray-50 hover:bg-gray-100 text-gray-700 text-xs font-semibold rounded-lg transition-colors flex items-center gap-1"
+                            className="p-1.5 bg-gray-550 bg-gray-50 hover:bg-gray-100 text-gray-700 rounded-lg transition-colors"
+                            title="Edit"
                           >
                             <Edit className="w-3.5 h-3.5" />
-                            Edit
                           </button>
                           {product.status === "DRAFT" || (product.status === "APPROVED" && product.expiresAt && new Date(product.expiresAt) < new Date()) ? (
                             <>
                               <button
                                 onClick={() => handleRepost(product)}
-                                className="px-2.5 py-1.5 bg-green-550 bg-green-50 hover:bg-green-100 text-green-700 text-xs font-semibold rounded-lg transition-colors flex items-center gap-1"
+                                className="p-1.5 bg-green-550 bg-green-50 hover:bg-green-100 text-green-700 rounded-lg transition-colors"
+                                title="Repost"
                               >
                                 <RefreshCw className="w-3.5 h-3.5" />
-                                Repost
                               </button>
                               <button
                                 onClick={() => handleDelete(product, true)}
-                                className="px-2.5 py-1.5 bg-red-100 hover:bg-red-200 text-red-700 text-xs font-semibold rounded-lg transition-colors flex items-center gap-1"
+                                className="p-1.5 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg transition-colors"
+                                title="Delete Permanently"
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
-                                Permanent
                               </button>
                             </>
                           ) : (
                             <button
                               onClick={() => handleDelete(product)}
-                              className="px-2.5 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-semibold rounded-lg transition-colors flex items-center gap-1"
+                              className="p-1.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg transition-colors"
+                              title="Delete"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
-                              Delete
                             </button>
                           )}
                         </div>

@@ -456,6 +456,8 @@ export function LocationForm({ initialData, onLocationChange }: LocationFormProp
               onChange={(e) => updateLocationData("garageLat", parseFloat(e.target.value) || 0)}
               placeholder="25.2048"
               required
+              disabled
+              className="bg-gray-50 text-gray-500 cursor-not-allowed"
             />
           </div>
           <div>
@@ -468,6 +470,8 @@ export function LocationForm({ initialData, onLocationChange }: LocationFormProp
               onChange={(e) => updateLocationData("garageLng", parseFloat(e.target.value) || 0)}
               placeholder="55.2708"
               required
+              disabled
+              className="bg-gray-50 text-gray-500 cursor-not-allowed"
             />
           </div>
         </div>
@@ -479,8 +483,8 @@ export function LocationForm({ initialData, onLocationChange }: LocationFormProp
             id="formattedAddress"
             value={locationData.formattedAddress}
             placeholder="Auto-filled from Google Places"
-            readOnly
-            className="bg-gray-50 text-gray-500"
+            disabled
+            className="bg-gray-50 text-gray-500 cursor-not-allowed"
           />
         </div>
 
@@ -491,8 +495,8 @@ export function LocationForm({ initialData, onLocationChange }: LocationFormProp
             id="placeId"
             value={locationData.placeId}
             placeholder="Auto-filled from Google Places"
-            readOnly
-            className="bg-gray-50 text-gray-550"
+            disabled
+            className="bg-gray-50 text-gray-500 cursor-not-allowed"
           />
         </div>
       </CardContent>
