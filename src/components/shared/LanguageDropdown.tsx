@@ -54,10 +54,22 @@ export const LanguageDropdown = ({ onLanguageChange }: LanguageDropdownProps) =>
         const savedLanguage = localStorage.getItem('selectedLanguage');
         if (savedLanguage) {
             try {
-                const lang = JSON.parse(savedLanguage);
+                let code = "";
+                // Try to parse as JSON first
+                try {
+                    const parsed = JSON.parse(savedLanguage);
+                    if (parsed && typeof parsed === "object" && parsed.code) {
+                        code = parsed.code;
+                    } else if (typeof parsed === "string") {
+                        code = parsed;
+                    }
+                } catch {
+                    // If JSON.parse fails, assume it is a plain string code
+                    code = savedLanguage;
+                }
 
                 // Verify it's in our supported list
-                const foundLang = languages.find(l => l.code === lang.code) || languages[0];
+                const foundLang = languages.find(l => l.code === code) || languages[0];
                 setSelectedLanguage(foundLang);
                 setLanguage(foundLang.code as "en" | "ar" | "hi");
 
