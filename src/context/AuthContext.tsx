@@ -7,6 +7,7 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { setCredentials, setLoading, logout } from "@/store/slices/authSlice";
 import { User, UserRole } from "@/types/auth";
 import { useGetProfileQuery, useLoginMutation } from "@/store/api/authApi";
+import { apiSlice } from "@/store/api/apiSlice";
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
@@ -88,6 +89,7 @@ export const useAuth = () => {
 
   const handleLogout = () => {
     dispatch(logout());
+    dispatch(apiSlice.util.resetApiState());
     Cookies.remove("user");
     Cookies.remove("token");
     router.push("/");
