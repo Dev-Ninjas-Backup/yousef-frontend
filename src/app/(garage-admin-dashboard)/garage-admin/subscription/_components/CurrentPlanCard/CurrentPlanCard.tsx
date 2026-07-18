@@ -12,14 +12,14 @@ import {
 import { toast } from "sonner";
 import { openPaymentInNewTab } from "@/utils/paymentUtils";
 
-const CurrentPlanCard = () => {
-  const { data } = subscriptionApi.useGetCurrentPlanQuery();
+const CurrentPlanCard = ({ garageId }: { garageId: string }) => {
+  const { data } = subscriptionApi.useGetCurrentPlanQuery(garageId, { skip: !garageId });
   const [createSubscription, { isLoading: isUpgrading }] =
     useCreateMonthlySubscriptionMutation();
 
   const handleUpgrade = async () => {
     try {
-      const response = await createSubscription().unwrap();
+      const response = await createSubscription(garageId).unwrap();
       openPaymentInNewTab(response.url);
     } catch (error: any) {
       toast.error(error?.data?.message || "Failed to initiate upgrade");

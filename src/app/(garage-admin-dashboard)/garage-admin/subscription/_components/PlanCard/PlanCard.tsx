@@ -10,20 +10,20 @@ import { toast } from "sonner";
 import { openPaymentInNewTab } from "@/utils/paymentUtils";
 import { useGetPaymentConfigQuery } from "@/store/fetures/setting.api";
 
-const PlanCard = () => {
+const PlanCard = ({ garageId }: { garageId: string }) => {
   const [createSubscription, { isLoading }] =
     useCreateMonthlySubscriptionMutation();
 
   const { data: configData } = useGetPaymentConfigQuery();
   const price = configData?.data?.monthlyGaragePrice || "99";
 
-  const { data: currentPlan } = useGetCurrentPlanQuery();
+  const { data: currentPlan } = useGetCurrentPlanQuery(garageId, { skip: !garageId });
   const isPlanActive = currentPlan?.planType === "PAID";
 
   const handleSubscribe = async () => {
     if (isPlanActive) return;
     try {
-      const response = await createSubscription().unwrap();
+      const response = await createSubscription(garageId).unwrap();
       console.log(response, "stripe response............");
       openPaymentInNewTab(response.url);
     } catch (error: any) {

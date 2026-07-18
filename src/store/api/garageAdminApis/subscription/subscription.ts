@@ -50,17 +50,18 @@ type TransactionHistoryResponse = Transaction[];
 
 export const subscriptionApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    getCurrentPlan: builder.query<CurrentPlanResponse, void>({
-      query: () => "/subscription/current-plan",
+    getCurrentPlan: builder.query<CurrentPlanResponse, string | void>({
+      query: (garageId) => garageId ? `/subscription/current-plan?garageId=${garageId}` : "/subscription/current-plan",
       providesTags: ["SubscriptionCurrentPlan"],
     }),
     createMonthlySubscription: builder.mutation<
       CreateSubscriptionResponse,
-      void
+      string | void
     >({
-      query: () => ({
+      query: (garageId) => ({
         url: "/subscription/monthly-subscription",
         method: "POST",
+        body: garageId ? { garageId } : undefined,
       }),
       invalidatesTags: ["SubscriptionCurrentPlan"],
     }),
@@ -70,10 +71,11 @@ export const subscriptionApi = apiSlice.injectEndpoints({
       providesTags: ["SubscriptionTransactionHistory"],
     }),
 
-    cancelSubscription: builder.mutation<CancelSubscriptionResponse, void>({
-      query: () => ({
+    cancelSubscription: builder.mutation<CancelSubscriptionResponse, string | void>({
+      query: (garageId) => ({
         url: "/subscription/cancel-subscription",
         method: "PATCH",
+        body: garageId ? { garageId } : undefined,
       }),
       invalidatesTags: [
         "SubscriptionCurrentPlan",
