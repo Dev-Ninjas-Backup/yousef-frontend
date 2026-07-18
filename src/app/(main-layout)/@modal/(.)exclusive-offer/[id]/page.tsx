@@ -20,8 +20,8 @@ export default function InterceptedExclusiveOfferPage({
 
   return (
     <Dialog open={true} onOpenChange={(open) => { if (!open) handleClose(); }}>
-      <DialogContent className="max-w-3xl p-0 overflow-hidden bg-transparent border-0 shadow-2xl">
-        <ExclusiveOfferDetail id={id} isModal={true} onClose={handleClose} />
+      <DialogContent className="sm:max-w-4xl w-full max-h-[90vh] overflow-y-auto p-0 bg-white border border-gray-100 rounded-2xl shadow-2xl">
+        <ExclusiveOfferDetail id={id} isModal={true} />
       </DialogContent>
     </Dialog>
   );
