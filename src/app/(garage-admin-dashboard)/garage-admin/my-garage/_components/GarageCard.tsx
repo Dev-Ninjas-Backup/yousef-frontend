@@ -6,7 +6,26 @@ interface GarageCardProps {
   onClick: () => void;
 }
 
+import { useState } from "react";
+
+const DefaultCoverPhoto = ({ name }: { name: string }) => (
+  <div className="w-full h-full bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 flex flex-col items-center justify-center relative overflow-hidden p-6 text-white select-none">
+    <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff08_1px,transparent_1px),linear-gradient(to_bottom,#ffffff08_1px,transparent_1px)] bg-[size:20px_20px] pointer-events-none" />
+    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-blue-400 rounded-full blur-[80px] opacity-30" />
+    <svg className="w-12 h-12 mb-1.5 opacity-90 relative z-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 21v-4.875c0-.621.504-1.125 1.125-1.125h5.25c.621 0 1.125.504 1.125 1.125V21m0 0h4.5V3.545M12.75 21h7.5V10.75M2.25 21h1.5m18 0h-18M2.25 9l4.5-1.636M18.75 3l-1.5.545m0 0l-5.25 1.91-5.25-1.91L5.25 3m12 0v12.75M12.75 5.818V10.75M12.75 10.75H20.25M9 10.75H3.75M9 10.75V21M3.75 10.75V21" />
+    </svg>
+    <span className="font-extrabold tracking-wider text-sm relative z-10 uppercase drop-shadow-md text-center max-w-full truncate px-2">
+      {name}
+    </span>
+    <span className="text-[9px] opacity-75 uppercase tracking-widest mt-0.5 relative z-10 font-medium">
+      SayaraHub Partner
+    </span>
+  </div>
+);
+
 export function GarageCard({ garage, onClick }: GarageCardProps) {
+  const [imgError, setImgError] = useState(false);
   const totalReviews = garage.reviews?.length || 0;
   const averageRating = totalReviews > 0
     ? garage.reviews.reduce((sum: number, r: any) => sum + r.overallExperience, 0) / totalReviews
@@ -31,11 +50,16 @@ export function GarageCard({ garage, onClick }: GarageCardProps) {
       className="bg-white rounded-lg shadow-md overflow-hidden cursor-pointer hover:shadow-lg transition-shadow"
     >
       <div className="h-48 bg-gray-200">
-        <img
-          src={garage.coverPhoto}
-          alt={garage.name}
-          className="w-full h-full object-cover"
-        />
+        {(!garage.coverPhoto || imgError) ? (
+          <DefaultCoverPhoto name={garage.name} />
+        ) : (
+          <img
+            src={garage.coverPhoto}
+            alt={garage.name}
+            onError={() => setImgError(true)}
+            className="w-full h-full object-cover"
+          />
+        )}
       </div>
       <div className="p-4">
         <div className="flex items-start justify-between mb-2 gap-2">
