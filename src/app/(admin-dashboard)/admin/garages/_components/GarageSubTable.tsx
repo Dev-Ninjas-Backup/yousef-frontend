@@ -132,20 +132,18 @@ export default function GarageSubTable({
                         <Button
                           size="sm"
                           variant="outline"
-                          className="text-green-600 border-green-200 hover:bg-green-50 h-8 w-8 p-0"
+                          className="text-green-600 border-green-200 hover:bg-green-50 h-7 px-2 text-[10px] font-bold uppercase tracking-wider"
                           onClick={() => onGarageApprove(garage.garageId)}
-                          title="Approve Garage"
                         >
-                          <Check className="w-4 h-4" />
+                          Approve
                         </Button>
                         <Button
                           size="sm"
                           variant="outline"
-                          className="text-red-600 border-red-200 hover:bg-red-50 h-8 w-8 p-0"
+                          className="text-red-600 border-red-200 hover:bg-red-50 h-7 px-2 text-[10px] font-bold uppercase tracking-wider"
                           onClick={() => onGarageReject(garage.garageId)}
-                          title="Reject Garage"
                         >
-                          <X className="w-4 h-4" />
+                          Reject
                         </Button>
                       </>
                     )}

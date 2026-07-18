@@ -48,6 +48,8 @@ export const useGarageAuth = () => {
     serviceCategories: [] as string[],
     garageLogo: null as File | null,
     tradeLicense: null as File | null,
+    userLat: "",
+    userLng: "",
     agreeToTerms: false,
   });
   const [error, setError] = useState("");
@@ -167,6 +169,12 @@ export const useGarageAuth = () => {
       }
       if (formData.tradeLicense) {
         formDataToSend.append('tradeLicense', formData.tradeLicense);
+      }
+      if (formData.userLat) {
+        formDataToSend.append('userLat', formData.userLat);
+      }
+      if (formData.userLng) {
+        formDataToSend.append('userLng', formData.userLng);
       }
 
       const result = await garageRegister(formDataToSend).unwrap();

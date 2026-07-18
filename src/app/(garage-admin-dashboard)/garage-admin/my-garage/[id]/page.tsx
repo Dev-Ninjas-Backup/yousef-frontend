@@ -15,6 +15,38 @@ import { DeleteGarageModal } from "../_components/DeleteGarageModal";
 import { useGetGarageReviewsQuery } from "@/store/api/reviewApi";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
+const DefaultCoverPhoto = ({ name }: { name: string }) => (
+  <div className="w-full h-full bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 flex flex-col items-center justify-center relative overflow-hidden p-6 text-white select-none">
+    <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff08_1px,transparent_1px),linear-gradient(to_bottom,#ffffff08_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
+    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-blue-400 rounded-full blur-[80px] opacity-35" />
+    <svg className="w-16 h-16 mb-2 opacity-90 relative z-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 21v-4.875c0-.621.504-1.125 1.125-1.125h5.25c.621 0 1.125.504 1.125 1.125V21m0 0h4.5V3.545M12.75 21h7.5V10.75M2.25 21h1.5m18 0h-18M2.25 9l4.5-1.636M18.75 3l-1.5.545m0 0l-5.25 1.91-5.25-1.91L5.25 3m12 0v12.75M12.75 5.818V10.75M12.75 10.75H20.25M9 10.75H3.75M9 10.75V21M3.75 10.75V21" />
+    </svg>
+    <span className="font-extrabold tracking-wider text-xl relative z-10 uppercase drop-shadow-md text-center max-w-lg truncate px-4">
+      {name}
+    </span>
+    <span className="text-xs opacity-75 uppercase tracking-widest mt-1 relative z-10 font-semibold">
+      SayaraHub Garage Partner
+    </span>
+  </div>
+);
+
+const DefaultProfileImage = ({ name }: { name: string }) => {
+  const initials = name
+    ? name
+        .split(" ")
+        .map((n) => n[0])
+        .slice(0, 2)
+        .join("")
+        .toUpperCase()
+    : "G";
+  return (
+    <div className="w-full h-full bg-gradient-to-tr from-blue-100 to-indigo-100 text-blue-700 flex items-center justify-center font-extrabold text-2xl rounded-lg uppercase select-none border-2 border-blue-200 shadow-inner">
+      {initials}
+    </div>
+  );
+};
+
 export default function GarageDetailsPage() {
   const params = useParams();
   const router = useRouter();
@@ -24,6 +56,8 @@ export default function GarageDetailsPage() {
   const [deleteGarage, { isLoading: deleting }] = useDeleteGarageMutation();
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [coverError, setCoverError] = useState(false);
+  const [profileError, setProfileError] = useState(false);
 
   const { data: reviewsResponse } = useGetGarageReviewsQuery(
     { garageId: id, page: 1, limit: 5 },
@@ -66,17 +100,27 @@ export default function GarageDetailsPage() {
 
       <div className="bg-white rounded-lg shadow-md overflow-hidden">
         <div className="h-64 bg-gray-200 relative">
-          <img
-            src={garage.coverPhoto}
-            alt={garage.name}
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute bottom-4 left-4">
+          {(!garage.coverPhoto || coverError) ? (
+            <DefaultCoverPhoto name={garage.name} />
+          ) : (
             <img
-              src={garage.profileImage}
+              src={garage.coverPhoto}
               alt={garage.name}
-              className="w-24 h-24 rounded-lg border-4 border-white object-cover"
+              onError={() => setCoverError(true)}
+              className="w-full h-full object-cover"
             />
+          )}
+          <div className="absolute bottom-4 left-4 w-24 h-24">
+            {(!garage.profileImage || profileError) ? (
+              <DefaultProfileImage name={garage.name} />
+            ) : (
+              <img
+                src={garage.profileImage}
+                alt={garage.name}
+                onError={() => setProfileError(true)}
+                className="w-full h-full rounded-lg border-4 border-white object-cover shadow-md bg-white"
+              />
+            )}
           </div>
         </div>
         <div className="p-6 space-y-6">

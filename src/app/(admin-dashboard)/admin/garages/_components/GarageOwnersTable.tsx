@@ -238,10 +238,25 @@ export default function GarageOwnersTable({
                             </div>
                           )}
                           <div>
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2 flex-wrap">
                               <p className="font-medium text-gray-900">
                                 {owner.ownerName}
                               </p>
+                              {owner.garages?.some((g) => g.garageStatus === "PENDING") && (
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    toggleOwnerExpansion(owner.userId);
+                                  }}
+                                  className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-rose-50 text-rose-800 text-[10px] font-extrabold rounded-full border border-rose-200 transition-all hover:bg-rose-100 animate-pulse"
+                                >
+                                  <span className="relative flex h-1.5 w-1.5">
+                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-rose-500"></span>
+                                  </span>
+                                  <span>Pending Garage</span>
+                                </button>
+                              )}
                               {totalPendingClaims > 0 && (
                                 <span className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-yellow-100 text-yellow-800 text-[10px] font-bold rounded-full border border-yellow-200 animate-pulse">
                                   ⚠️ {totalPendingClaims} Claim{totalPendingClaims > 1 ? "s" : ""}

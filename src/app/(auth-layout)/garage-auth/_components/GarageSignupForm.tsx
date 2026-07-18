@@ -291,6 +291,8 @@ const GarageSignupForm: React.FC<GarageSignupFormProps> = ({
             
             onFieldChange("address", addressVal);
             if (cityVal) onFieldChange("city", cityVal);
+            onFieldChange("userLat", latitude.toString());
+            onFieldChange("userLng", longitude.toString());
             
             const matchedEmirate = emirateOptions.find(
               (e) =>

@@ -39,6 +39,9 @@ export default function NotificationDropdown() {
     const isAdmin = user?.role === "SUPER_ADMIN";
     switch (type) {
       case "CustomerInquiryAlert": {
+        if (meta?.isGarageApproval) {
+          return "/admin/garages";
+        }
         const inquiryId = meta?.inquiryId;
         const senderEmail = meta?.senderEmail;
         let link = isAdmin ? "/admin/messages" : "/garage-admin/inquiries";
