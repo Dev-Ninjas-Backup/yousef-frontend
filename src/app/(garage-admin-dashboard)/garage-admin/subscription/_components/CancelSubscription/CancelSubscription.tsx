@@ -15,14 +15,14 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-const CancelSubscription = () => {
-  const { data } = useGetCurrentPlanQuery();
+const CancelSubscription = ({ garageId }: { garageId: string }) => {
+  const { data } = useGetCurrentPlanQuery(garageId, { skip: !garageId });
   const [cancelSubscription, { isLoading }] = useCancelSubscriptionMutation();
   const [showDialog, setShowDialog] = useState(false);
 
   const handleCancel = async () => {
     try {
-      const response = await cancelSubscription().unwrap();
+      const response = await cancelSubscription(garageId).unwrap();
       toast.success(response.message);
       setShowDialog(false);
     } catch (error: any) {
